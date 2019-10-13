@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pool Control Dashboard</title>
+    <script type="text/javascript" src="../socket.io-client/socket.io.js"></script>
+    <script type="text/javascript" src="../../jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../../jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="scripts/widgets.js"></script>
+    <script type="text/javascript" src="scripts/controller.js"></script>
+    <script type="text/javascript" src="scripts/dashboard.js"></script>
+    <script type="text/javascript" src="scripts/bodies.js"></script>
+    <script type="text/javascript" src="scripts/circuits.js"></script>
+    <script type="text/javascript" src="scripts/pumps.js"></script>
+    <script type="text/javascript" src="scripts/chemistry.js"></script>
+    <script type="text/javascript" src="scripts/lightGroups.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.theme.css" />
+    <link rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="themes/intellibrite.css" />
+    <link rel="stylesheet" type="text/css" href="themes/widgets.css" />
+</head>
+<body>
+    <div class="picDashboard">
+        <div style="display:inline-block;vertical-align:top;max-width:20rem">
+            <div class="picController picControlPanel" style="display:block;"></div>
+            <div class="picChemistry picControlPanel" style="display:block;"></div>
+        </div>
+        <div style="display:inline-block;vertical-align:top;">
+            <div class="picBodies picControlPanel" style="display:block;"></div>
+            <div class="picPumps picControlPanel picPumpContainer" style="display:block;"></div>
+        </div>
+        <div class="picCircuits picControlPanel"></div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('div.picDashboard').dashboard();
+            $('div.picController').controller();
+            $('div.picBodies').bodies();
+            $('div.picCircuits').circuits();
+            $('div.picPumps').pumps();
+            $('div.picChemistry').chemistry();
+        });
+    </script>
+</body>
+</html>
