@@ -17,6 +17,7 @@
     <script type="text/javascript" src="scripts/pumps.js"></script>
     <script type="text/javascript" src="scripts/chemistry.js"></script>
     <script type="text/javascript" src="scripts/lightGroups.js"></script>
+    <script type="text/javascript" src="scripts/schedules.js"></script>
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.theme.css" />
     <link rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
@@ -32,6 +33,7 @@
         <div style="display:inline-block;vertical-align:top;">
             <div class="picBodies picControlPanel" style="display:block;"></div>
             <div class="picPumps picControlPanel picPumpContainer" style="display:block;"></div>
+            <div class="picSchedules picControlPanel picScheduleContainer" style="display:block;"></div>
         </div>
         <div class="picCircuits picControlPanel"></div>
     </div>
@@ -43,6 +45,7 @@
             $('div.picCircuits').circuits();
             $('div.picPumps').pumps();
             $('div.picChemistry').chemistry();
+            $('div.picSchedules').schedules();
         });
     </script>
 </body>

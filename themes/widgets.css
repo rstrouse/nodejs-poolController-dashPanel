@@ -477,11 +477,11 @@ div.picPumps, div.picChemistry {
     vertical-align: top;
     max-width: 35rem;
 }
-div.picPump {
+div.picPump, div.picSchedule {
     padding-top: .1rem;
     padding-bottom: .1rem;
 }
-div.picPump > div {
+div.picPump > div, div.picSchedule > div {
     display: inline-block;
 }
 div.picChlorSettings div.picSetpoint {
@@ -529,6 +529,32 @@ div.picSuperChlorBtn div.picSuperChlorRemaining {
     font-style:italic;
    
 }
+table.picSchedDays {
+    font-size:.7em;
+    text-align:center;
+    border-collapse:collapse;
+    display:inline-table;
+    margin-left:1rem;
+}
+    table.picSchedDays > tbody > tr:nth-child(1) {
+        color:white;
+        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+        background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+        background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+        background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+        background-image: linear-gradient(top, #159FCF, #13647F);
+    }
+    table.picSchedDays > tbody > tr:nth-child(2) > td {
+        border:solid 1px silver;
+    }
+label.picSchedDays {
+    margin-left:1rem;
+    font-size:.9em;
+}
+span.picSchedTime {
+    font-size:.9em;
+}
+
 div.picSuperChlorBtn:hover {
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
     background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
@@ -547,9 +573,9 @@ div.picSuperChlorBtn:active {
 }
 
 
-label.picPumpName {
+label.picPumpName, label.picScheduleName {
     display:inline-block;
-    min-width:4.5rem;
+    min-width:5rem;
 }
 label.picUnits, span.picUnits {
     color:gray;
@@ -557,7 +583,7 @@ label.picUnits, span.picUnits {
     padding-right:.1em;
     font-size:.8em;
 }
-div.picPump, div.picChlorinator {
+div.picPump, div.picChlorinator, div.picSchedule {
     font-size:.9rem;
     cursor:pointer;
 }

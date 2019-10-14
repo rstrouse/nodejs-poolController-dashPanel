@@ -32,6 +32,10 @@ if (typeof String.prototype.endsWith !== 'function') {
             var self = this, o = self.options, el = self.element;
             el.find('div.picPumps').each(function () { this.initPumps(data); });
         },
+        _createSchedulesPanel: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picSchedules').each(function () { this.initSchedules(data); });
+        },
         _createChemistryPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picChemistry').each(function () { this.initChemistry(data); });
@@ -43,6 +47,7 @@ if (typeof String.prototype.endsWith !== 'function') {
                 el.find('div.picBodies').each(function () { this.initBodies(data); });
                 el.find('div.picCircuits').each(function () { this.initCircuits(data); });
                 el.find('div.picPumps').each(function () { this.initPumps(data); });
+                el.find('div.picSchedules').each(function () { this.initSchedules(data); })
                 el.find('div.picChemistry').each(function () { this.initChemistry(data); });
             })
                 .done(function (status, xhr) { console.log('Done:' + status); })
@@ -80,6 +85,7 @@ if (typeof String.prototype.endsWith !== 'function') {
                     self._createPumpsPanel(data);
                     self._createBodiesPanel(data);
                     self._createChemistryPanel(data);
+                    self._createSchedulesPanel(data);
                     self._initSockets();
                     console.log(data);
                 })
@@ -148,8 +154,11 @@ if (typeof String.prototype.endsWith !== 'function') {
                 console.log({ evt: 'body', data: data });
             });
             o.socket.on('schedule', function (data) {
-
                 console.log({ evt: 'schedule', data: data });
+                $('div.picScheduleContainer').each(function () {
+                    this.setScheduleData(data);
+                });
+
             });
             o.socket.on('delay', function (data) {
                 console.log({ evt: 'delay', data: data });

@@ -15,15 +15,15 @@ if (!String.prototype.padStart) {
     };
 }
 function formatType() { };
-formatType.prototype.MONTHS = [
+formatType.MONTHS = [
     'January', 'February', 'March', 'April', 'May', 'June', 'July',
     'August', 'September', 'October', 'November', 'December'
 ];
-formatType.prototype.DAYS = [
+formatType.DAYS = [
     'Sunday', 'Monday', 'Tuesday', 'Wednesday',
     'Thursday', 'Friday', 'Saturday'
 ];
-formatType.prototype.SUFFIXES = [
+formatType.SUFFIXES = [
     'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th', 'th',
     'th', 'th', 'th', 'th', 'th', 'th', 'th', 'th', 'th', 'th',
     'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th', 'th',
@@ -118,6 +118,9 @@ Number.prototype.format = function (format, empty) {
     if (rd.length === 0 && rw.length === 0) return '';
     return pfx + rw + rd + sfx;
 };
+Date.prototype.isDateTimeEmpty = function() {
+    return (this.getFullYear() < 1970 || this.getFullYear() > 9999);
+}
 Date.prototype.format = function (fmtMask, emptyMask) {
     if (fmtMask.match(/[hHmt]/g) !== null) {
         if (this.isDateTimeEmpty()) return typeof (emptyMask) !== 'undefined' ? emptyMask : '';
@@ -168,6 +171,10 @@ Date.prototype.format = function (fmtMask, emptyMask) {
     //console.log({ formatted: formatted, fmtMask: fmtMask });
     return formatted;
 };
+Date.prototype.addMinutes = function (nMins) {
+    this.setTime(this.getTime() + (nMins * 60000));
+    return this;
+}
 function makeBool(val) {
     if (typeof (val) === 'boolean') return val;
     if (typeof (val) === 'undefined') return false;
@@ -310,22 +317,33 @@ var dataBinder = {
             let tval = val;
             for (let i = 0; i < arr.length; i++) {
                 var s = arr[i];
-                if (typeof (s) === 'undefined' || !s) continue;
+                if (typeof s === 'undefined' || !s) continue;
                 let ndx = s.indexOf('[');
                 if (ndx !== -1) {
                     ndx = parseInt(s.substring(ndx + 1, s.indexOf(']') - 1), 10);
                     s = s.substring(0, ndx - 1);
                 }
                 tval = tval[s];
+                if (typeof tval === 'undefined') break;
                 if (ndx >= 0) tval = tval[ndx];
             }
-            if (typeof (this.val) === 'function') this.val(tval);
+            if (typeof this.val === 'function') this.val(tval);
             else {
                 switch ($this.attr('data-fmttype')) {
+                    case 'time':
+                        {
+                            var dt = new Date();
+                            dt.setHours(0, 0, 0);
+                            dt.addMinutes(tval);
+                            tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                        }
+                        break;
                     case 'date':
                     case 'datetime':
-                        let dt = new Date(tval);
-                        tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                        {
+                            let dt = new Date(tval);
+                            tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                        }
                         break;
                     case 'number':
                         if (typeof (tval) !== 'number') tval = parseFloat(tval);
