@@ -53,7 +53,7 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            if (typeof (data.type) === 'undefined' || data.type.val === 0) {
+            if (typeof data.type === 'undefined' || data.type.val === 0) {
                 setTimeout(function () { el.remove(); }, 10);
             }
             else {
@@ -63,24 +63,25 @@
             }
             el.attr('data-pumptype', data.type.val);
             el.attr('data-id', data.id);
-            switch (data.type.val) {
-                case 1:
-                case 2:
+            switch (data.type.name) {
+                case 'ss':
+                case 'ds':
                     el.find('div.picSpeed').hide();
                     el.find('div.picFlow').hide();
                     el.find('div.picEnergy').hide();
                     break;
-                case 3:
+                case 'vs':
+                case 'vs+svrs':
                     el.find('div.picFlow').hide();
                     el.find('div.picSpeed').show();
                     el.find('div.picEnergy').show();
                     break;
-                case 4:
+                case 'vsf':
                     el.find('div.picFlow').show();
                     el.find('div.picSpeed').show();
                     el.find('div.picEnergy').show();
                     break;
-                case 5:
+                case 'vf':
                     el.find('div.picFlow').show();
                     el.find('div.picSpeed').hide();
                     el.find('div.picEnergy').show();
