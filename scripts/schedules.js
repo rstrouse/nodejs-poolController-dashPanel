@@ -17,7 +17,6 @@
             for (var i = 0; i < data.schedules.length; i++) {
                 // Create a new schedule for each installed schedule.
                 let divSched = $('<div class="picSchedule" />');
-                console.log(data.schedules[i]);
                 divSched.appendTo(el);
                 divSched.schedule(data.schedules[i]);
             }
@@ -116,7 +115,6 @@
                     }
                     for (var k = 0; k < sched.scheduleDays.days.length; k++) {
                         let day = sched.scheduleDays.days[k];
-                        console.log(day);
                         row.find('td:nth-child(' + (day.dow + 1) + ')').find('i:first').removeClass('far').addClass('fas');
                     }
                     return tbl;

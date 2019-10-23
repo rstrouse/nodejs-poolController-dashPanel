@@ -54,6 +54,7 @@
             if (data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
             else el.find('div.picSuperChlorBtn').show();
             el.data('remaining', data.superChlorRemaining);
+            el.attr('data-status', data.status.name);
         },
         countdownSuperChlor: function () {
             var self = this, o = self.options, el = self.element;
@@ -152,10 +153,12 @@
             div.appendTo(el);
             div.attr('data-ison', o.currentOutput > 0);
             div.attr('data-status', o.currentOutput > 0 ? 'on' : 'off');
+
             $('<label class="picChlorinatorName" data-bind="name" />').appendTo(el);
-            $('<div class="picChlorStatus picData"><label class="picInline-label">Status</label><span class="picStatus" data-bind="status.desc" /></div>').appendTo(el);
-            $('<div class="picSaltLevel picData"><label class="picInline-label">Salt Level</label><span class="picSaltLevel" data-bind="saltLevel" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="----" /><label class="picUnits">ppm</label></div>').appendTo(el);
-            $('<div class="picCurrentOutput picData"><label class="picInline-label">Output</label><span class="picCurrentOutput" data-bind="currentOutput" /><label class="picUnits">%</label></div>').appendTo(el);
+            $('<span class="picSaltLevel picData"><label class="picInline-label">Salt</label><span class="picSaltLevel" data-bind="saltLevel" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="----" /><label class="picUnits">ppm</label></span>').appendTo(el);
+            $('<span class="picCurrentOutput picData"><label class="picInline-label">Output</label><span class="picCurrentOutput" data-bind="currentOutput" /><label class="picUnits">%</label></span>').appendTo(el);
+
+            $('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc" /></div>').appendTo(el);
             $('<div class="picSuperChlor picData"><label class="picInline-label">Super Chlor:</label><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration" /></div>').appendTo(el);
             self.setEquipmentData(o);
             self._buildPopover();

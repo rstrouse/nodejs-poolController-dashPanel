@@ -1,4 +1,17 @@
 ﻿var _uniqueId = 1;
+
+if (typeof String.prototype.startsWith !== 'function') {
+    String.prototype.startsWith = function (str) {
+        return this.slice(0, str.length) === str;
+    };
+}
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function (str) {
+        return this.slice(-str.length) === str;
+    };
+}
+
+
 if (!String.prototype.padStart) {
     String.prototype.padStart = function padStart(targetLength, padString) {
         targetLength = targetLength >> 0; //truncate if number, or convert non-number to 0;
@@ -353,9 +366,19 @@ var dataBinder = {
                         tval = dataBinder.formatDuration(tval);
                         break;
                 }
-                $this.text(tval);
+                if ($this.is('input')) {
+                    if (this.type === 'checkbox') $this.prop('checked', makeBool(tval));
+                    else $this.val(val);
+                }
+                else if ($this.is('select')) $this.val(tval);
+                else $this.text(tval);
             }
         });
+    },
+    parseNumber: function (val) {
+        if (typeof val === 'number') return val;
+        var tval = val.replace(/[^0-9\.\-]+/g, '');
+        return tval.indexOf('.') !== -1 ? parseFloat(tval) : parseInt(tval, 10);
     },
     formatDuration: function (dur) {
         var fmt = '';
@@ -368,6 +391,125 @@ var dataBinder = {
         if (min > 0) fmt += ' ' + (min + 'min');
         if (sec > 0) fmt += ' ' + (sec + 'sec');
         return fmt.trim();
+    },
+    fromElement: function (el, obj, arrayRef) {
+        if (typeof arrayRef === 'undefined' || arrayRef === null) arrayRef = [];
+        if (typeof obj === 'undefined' || obj === null) obj = {};
+        var self = this;
+        if (el.is(':input')) {
+            if (el[0].type === 'checkbox') self._bindValue(obj, el, el.is(':checked'), arrayRef);
+            else self._bindValue(obj, el, el.val(), arrayRef);
+        }
+        else if (el.is('select')) 
+            self._bindValue(obj, el, el.val(), arrayRef);
+        else {
+            if (typeof el.attr('data-bind') !== 'undefined') {
+                if (typeof el[0].val === 'function')
+                    self._bindValue(obj, el, el[0].val(), arrayRef);
+                else
+                    self._bindValue(obj, el, el.text(), arrayRef);
+            } 
+            el.find('*[data-bind]').each(function () {
+                $this = $(this);
+                if (typeof this.val === 'function')
+                    self._bindValue(obj, $this, this.val(), arrayRef);
+                else if ($this.is('input')) {
+                    if (this.type === 'checkbox') self._bindValue(obj, $this, $this.is(':checked'), arrayRef);
+                    else self._bindValue(obj, $this, $this.val(), arrayRef);
+                }
+                else if ($this.is('select'))
+                    self._bindValue(obj, $this, $this.val(), arrayRef);
+                else
+                    self._bindValue(obj, $this, $this.text(), arrayRef);
+            });
+        }
+        
+        return obj;
+    },
+    _bindValue: function (obj, el, val, arrayRef) {
+        var binding = el.attr('data-bind');
+        var dataType = el.attr('data-datatype');
+        if (binding && binding.length > 0) {
+            var sRef = '';
+            var arr = binding.split('.');
+            var t = obj;
+            for (var i = 0; i < arr.length - 1; i++) {
+                s = arr[i];
+                if (typeof s === 'undefined' || s.length === 0) continue;
+                sRef += ('.' + s);
+                var ndx = s.lastIndexOf('[');
+                if (ndx !== -1) {
+                    var v = s.substring(0, ndx);
+                    var ndxEnd = s.lastIndexOf(']');
+                    var ord = parseInt(s.substring(ndx + 1, ndxEnd), 10);
+                    if (isNaN(ord)) ord = 0;
+                    if (typeof arrayRef[sRef] === 'undefined') {
+                        if (typeof t[v] === 'undefined') {
+                            t[v] = new Array();
+                            t[v].push(new Object());
+                            t = t[v][0];
+                            arrayRef[sRef] = ord;
+                        }
+                        else {
+                            k = arrayRef[sRef];
+                            if (typeof k === 'undefined') {
+                                a = t[v];
+                                k = a.length;
+                                arrayRef[sRef] = k;
+                                a.push(new Object());
+                                t = a[k];
+                            }
+                            else
+                                t = t[v][k];
+                        }
+                    }
+                    else {
+                        k = arrayRef[sRef];
+                        if (typeof k === 'undefined') {
+                            a = t[v];
+                            k = a.length;
+                            arrayRef[sRef] = k;
+                            a.push(new Object());
+                            t = a[k];
+                        }
+                        else
+                            t = t[v][k];
+                    }
+                }
+                else if (typeof t[s] === 'undefined') {
+                    t[s] = new Object();
+                    t = t[s];
+                }
+                else
+                    t = t[s];
+            }
+            if (typeof dataType === 'undefined') dataType = 'string';
+            switch (dataType) {
+                case 'number':
+                case 'int':
+                case 'float':
+                    t[arr[arr.length - 1]] = this.parseNumber(val);
+                    break;
+                case 'datetime':
+                    t[arr[arr.length - 1]] = Date.parse(val);
+                    break;
+                case 'phone':
+                    var ph = val.replace(/[^\d.,]+/g, '');
+                    ph = ph.replace(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/, "($1)$2-$3");
+                    if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(val))
+                        t[arr[arr.length - 1]] = '';
+                    else
+                        t[arr[arr.length - 1]] = ph;
+                    break;
+                case 'bool':
+                case 'boolean':
+                    t[arr[arr.length - 1]] = makeBool(val);
+                    break;
+                default:
+                    t[arr[arr.length - 1]] = val;
+                    break;
+            }
+        }
     }
 };
 (function ($) {
@@ -416,6 +558,52 @@ var dataBinder = {
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
             return el.find('span.picButtonText').text(val);
+        }
+    });
+})(jQuery);
+(function ($) {
+    $.widget("pic.optionButton", {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el[0].val = function (val) { return self.val(val); };
+            el[0].buttonText = function (val) { return self.buttonText(val); };
+            self._initOptionButton();
+        },
+        _initOptionButton: function () {
+            var self = this, o = self.options, el = self.element;
+            let text = $('<span class="picButtonText" />');
+            var toggle = $('<div class="picOptionToggle"/>');
+            toggle.appendTo(el);
+            toggle.toggleButton();
+            text.appendTo(el);
+            if (o.icon) icon.html(o.icon);
+            el.addClass('picOptionButton');
+            el.attr('data-datatype', 'boolean');
+            if (o.text) text.text(o.text);
+            if (o.bind) el.attr('data-bind', o.bind);
+            if (o.dropdownButton) o.dropdownButton.appendTo(el);
+            el.on('click', function (e) {
+                if (el.hasClass('disabled')) {
+                    e.stopImmediatePropagation();
+                    return;
+                }
+                el.find('div.picIndicator').each(function () {
+                    var v = makeBool($(this).attr('data-status'));
+                    $(this).attr('data-status', !v);
+                });
+            });
+        },
+        buttonText: function (val) {
+            var self = this, o = self.options, el = self.element;
+            return el.find('span.picButtonText').text(val);
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof (val) !== 'undefined')
+                el.find('div.picIndicator').attr('data-status', val);
+            else
+                return el.find('div.picIndicator').attr('data-status');
         }
     });
 })(jQuery);
@@ -656,7 +844,7 @@ var dataBinder = {
             $('<div class="picPopoverHeader"><div class="picPopoverTitle" /></div>').prependTo(el);
             $('<div class="picPopoverBody" />').appendTo(el);
             el.find('div.picPopoverTitle').html(o.title);
-            el.on('click', function (evt) { evt.preventDefault(); });
+            //el.on('click', function (evt) { evt.preventDefault(); });
             var evt = $.Event('initPopover');
             evt.contents = function () { return el.find('div.picPopoverBody'); };
             el.trigger(evt);

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "themes/dashboard.css",
+    "inputFile": "themes/dashboard.scss"
+  },
+  {
+    "outputFile": "themes/controller.css",
+    "inputFile": "themes/controller.scss"
+  }
+]

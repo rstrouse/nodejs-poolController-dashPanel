@@ -1,4 +1,7 @@
-﻿body {
+﻿.disabled {
+    opacity:.5;
+}
+body {
     font-family:arial;
 }
 div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
@@ -12,6 +15,7 @@ div.picBtnPanel {
     padding:.2rem;
     margin-top:.2rem;
 }
+div.picOptoinButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
     margin-left: .2rem;
@@ -19,10 +23,44 @@ div.picActionButton > span {
 div.picFeatures > div.picCircuit[data-showinfeatures=false] {
     display:none;
 }
+
+select, input[type=text], fieldset {
+    font-size:1rem;
+    border-radius:4px;
+}
 div.picLights > div.picCircuit[data-showinfeatures=true] {
     display: none;
 }
-
+div.picOptionButton {
+    text-align: left;
+    white-space: nowrap;
+    border: solid 1px gray;
+    border-radius: 5px;
+    display: inline-block;
+    padding-top: .1rem;
+    padding-bottom: .1rem;
+    padding-right: .2rem;
+    padding-left: .2rem;
+    min-width: 5.4rem;
+    margin: .1rem;
+    /*
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 );
+    background: rgb(238,238,238);
+    background: -moz-linear-gradient(top, rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
+    background: linear-gradient(to bottom, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);*/
+    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+}
+div.picOptionButton > i {
+    margin-left:.4rem;
+}
 div.picActionButton {
     text-align:left;
     white-space: nowrap;
@@ -49,15 +87,16 @@ div.picActionButton {
     -ms-user-select: none;
     cursor: pointer;
 }
-div.picActionButton:hover {
+div.picOptionButton:not(.disabled):hover,
+div.picActionButton:not(.disabled):hover {
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
     background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: linear-gradient(top, #ffaf4b, #ff920a);
 }
-
-div.picActionButton:active {
+div.picOptionButton:not(.disabled):active,
+div.picActionButton:not(.disabled):active {
     color: white;
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
     background-image: -ms-linear-gradient(top, #159FCF, #13647F);
@@ -185,10 +224,10 @@ div.picPopover {
 }
 div.picControlPanel {
     vertical-align: top;
-    max-width: 22rem;
+    /*max-width: 22rem;*/
     display: inline-block;
     margin-top: .4rem;
-    margin-right:.2rem;
+    margin-right: .2rem;
     padding: .4em;
     border: solid 1px gray;
     border-radius: 5px;
@@ -211,9 +250,16 @@ div.picController, div.picChemistry {
     min-width:14.7rem;
 }
 div.picChemistry label.picInline-label {
-    min-width:5rem;
+    min-width:2rem;
     display:inline-block;
     margin-left:1.2rem;
+}
+div.picChemistry span.picStatus {
+    margin-left:1.2rem;
+}
+div.picChlorinator[data-status=commlost] > div.picChlorStatus,
+div.picChlorinator[data-status=ok] > div.picChlorStatus {
+    display: none;
 }
 div.picSaltReqd {
     padding:.2rem;
@@ -409,9 +455,14 @@ div.picFeature {
         background-image: linear-gradient(top, #159FCF, #13647F);
     }
 
-div.picFeature > div.picToggleButton, div.picFeature > div.picFeatureLabel, div.picVirtualCircuit > div.picFeatureLabel, div.picVirtualCircuit > div.picToggleButton {
-    display:inline-block;
-}
+    div.picFeature > div.picToggleButton,
+    div.picFeature > div.picFeatureLabel,
+    div.picVirtualCircuit > div.picFeatureLabel,
+    div.picVirtualCircuit > div.picToggleButton,
+    div.picActionButton > div.picOptionToggle,
+    div.picOptionButton > div.picOptionToggle {
+        display: inline-block;
+    }
 div.picFeature > div.picToggleButton, div.picVirtualCircuit > div.picToggleButton {
     margin-right:.2em;
     vertical-align:middle;
@@ -610,7 +661,10 @@ div.picPump div.picData {
     width:5em;
     text-align:right;
 }
-div.picIndicator[data-status=on], div.picIndicator[data-status=ready], div.picIndicator[data-status=selected] {
+div.picIndicator[data-status=on], 
+div.picIndicator[data-status=ready], 
+div.picIndicator[data-status=selected],
+div.picIndicator[data-status=true] {
     background: -moz-radial-gradient(center, ellipse cover, rgba(0,240,0,1) 0%, rgba(0,0,0,1) 100%); /* ff3.6+ */
     background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(0,240,0,1)), color-stop(100%, rgba(0,0,0,1))); /* safari4+,chrome */
     background: -webkit-radial-gradient(center, ellipse cover, rgba(0,240,0,1) 0%, rgba(0,0,0,1) 100%); /* safari5.1+,chrome10+ */

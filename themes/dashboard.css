@@ -1,0 +1,87 @@
+﻿html {
+  width: 100%;
+  height: 100%;
+  margin: 0px; }
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  background-image: url(images/waterdropbackground.jpg); }
+
+div.dashOuter {
+  width: 100%;
+  display: grid;
+  justify-content: center;
+  box-sizing: border-box;
+  grid-auto-rows: auto;
+  grid-row-gap: 0px; }
+
+div.dashContainer {
+  display: inline-grid;
+  grid-template-columns: 377px 377px; }
+
+.header {
+  display: block;
+  opacity: 1;
+  grid-area: header;
+  background-color: #ffd800;
+  border: solid 1px green; }
+
+div.picControllerTitle {
+  display: table;
+  width: 100%; }
+
+input.picServerAddress {
+  width: 10rem; }
+
+input.picServerPort {
+  width: 4rem; }
+
+div.picOptionLine > label {
+  width: 9rem;
+  display: inline-block; }
+
+div.picPanelMode,
+div.picFreezeProtect {
+  text-align: center;
+  color: blue; }
+
+div.picPanelMode[data-status=auto],
+div.picFreezeProtect[data-status=off] {
+  display: none; }
+
+div.picModel > i {
+  cursor: pointer;
+  padding-right: .2rem; }
+
+div.picModel > i:hover {
+  cursor: pointer;
+  padding-right: .2rem;
+  color: orange; }
+
+div.picPanelMode > label,
+div.picFreezeProtect > label {
+  font-weight: bold;
+  color: red;
+  font-size: 1.2rem;
+  padding-left: .2rem;
+  padding-right: .2rem; }
+
+div.picControllerTitle > div {
+  display: table-cell; }
+
+div.picControllerTitle > div:nth-child(2) {
+  text-align: center; }
+
+div.picControllerTitle > div:nth-child(1) {
+  width: 20%; }
+
+div.picControllerTitle > div:nth-child(3) {
+  width: 20%;
+  text-align: right; }
+
+div.picAppLogging > label,
+div.picPacketLogging > label {
+  min-width: 4rem;
+  display: inline-block; }

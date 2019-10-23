@@ -1,15 +1,4 @@
-﻿if (typeof String.prototype.startsWith !== 'function') {
-    String.prototype.startsWith = function (str) {
-        return this.slice(0, str.length) === str;
-    };
-}
-if (typeof String.prototype.endsWith !== 'function') {
-    String.prototype.endsWith = function (str) {
-        return this.slice(-str.length) === str;
-    };
-}
-
-(function ($) {
+﻿(function ($) {
     $.widget("pic.dashboard", {
         options: { socket: null },
         _create: function () {
@@ -41,25 +30,42 @@ if (typeof String.prototype.endsWith !== 'function') {
             el.find('div.picChemistry').each(function () { this.initChemistry(data); });
         },
         _resetState: function () {
-            o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
-            $.getApiService('/state/all', null, function (data, status, xhr) {
-                el.find('div.picController').each(function () { this.initController(data); });
-                el.find('div.picBodies').each(function () { this.initBodies(data); });
-                el.find('div.picCircuits').each(function () { this.initCircuits(data); });
-                el.find('div.picPumps').each(function () { this.initPumps(data); });
-                el.find('div.picSchedules').each(function () { this.initSchedules(data); })
-                el.find('div.picChemistry').each(function () { this.initChemistry(data); });
-            })
-                .done(function (status, xhr) { console.log('Done:' + status); })
-                .fail(function (xhr, status, error) { console.log('Failed:' + error); });
+            var self = this, o = self.options, el = self.element;
+            console.log('resetting state');
+            $.getJSON('/config/web.services', null, function (data, status, xhr) {
+                console.log(data);
+                o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                $.getApiService('/state/all', null, function (data, status, xhr) {
+                    if (data.equipment.model.startsWith('IntelliCenter')) {
+                        $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
+                        $('div.picDashboard').attr('data-hidethemes', 'false');
+                    }
+                    else {
+                        $('div.picDashboard').attr('data-hidethemes', 'true');
+                        if (data.equipment.model.startsWith('IntelliTouch'))
+                            $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
+                        else if (data.equipment.model.startsWith('EasyTouch'))
+                            $('div.picDashboard').attr('data-controllertype', 'EasyTouch');
+                        else
+                            $('div.picDashboard').attr('data-controllertype', 'SunTouch');
+                        $('div.picDashboard').attr('data-hideintellibrite', 'true');
+
+                    }
+                    self._createControllerPanel(data);
+                    self._createCircuitsPanel(data);
+                    self._createPumpsPanel(data);
+                    self._createBodiesPanel(data);
+                    self._createChemistryPanel(data);
+                    self._createSchedulesPanel(data);
+                    console.log(data);
+                })
+                    .done(function (status, xhr) { console.log('Done:' + status); })
+                    .fail(function (xhr, status, error) { console.log('Failed:' + error); });
+            });
         },
         _initState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getJSON('/config/web', null, function (data, status, xhr) {
-//                console.log(JSON.stringify(data));
-            });
-
             $.getJSON('/config/web.services', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
@@ -79,7 +85,6 @@ if (typeof String.prototype.endsWith !== 'function') {
                         $('div.picDashboard').attr('data-hideintellibrite', 'true');
 
                     }
-
                     self._createControllerPanel(data);
                     self._createCircuitsPanel(data);
                     self._createPumpsPanel(data);
@@ -225,7 +230,7 @@ if (typeof String.prototype.endsWith !== 'function') {
                 el.find('div.picControlPanel').each(function () {
                     $(this).removeClass('picDisconnected');
                 });
-                //self._initState();
+                self._resetState();
             });
             o.socket.on('close', function (sock) {
                 console.log({ msg: 'socket closed:', sock: sock });

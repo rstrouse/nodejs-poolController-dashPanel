@@ -23,20 +23,27 @@
     <link rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
     <link rel="stylesheet" type="text/css" href="themes/intellibrite.css" />
     <link rel="stylesheet" type="text/css" href="themes/widgets.css" />
+    <link rel="stylesheet" type="text/css" href="themes/dashboard.min.css" />
 </head>
 <body>
-    <div class="picDashboard">
-        <div style="display:inline-block;vertical-align:top;max-width:20rem">
+    <div class="dashOuter picDashboard ">
+        <header>
             <div class="picController picControlPanel" style="display:block;"></div>
-            <div class="picChemistry picControlPanel" style="display:block;"></div>
+        </header>
+        <div class="dashContainer">
+            <div>
+                <div class="picBodies picControlPanel" style="display:block;"></div>
+                <div class="picChemistry picControlPanel" style="display:block;"></div>
+                <div class="picPumps picControlPanel picPumpContainer" style="display:block;"></div>
+                <div class="picSchedules picControlPanel picScheduleContainer" style="display:block;"></div>
+            </div>
+            <div>
+                <div class="picCircuits picControlPanel"></div>
+
+            </div>
         </div>
-        <div style="display:inline-block;vertical-align:top;">
-            <div class="picBodies picControlPanel" style="display:block;"></div>
-            <div class="picPumps picControlPanel picPumpContainer" style="display:block;"></div>
-            <div class="picSchedules picControlPanel picScheduleContainer" style="display:block;"></div>
-        </div>
-        <div class="picCircuits picControlPanel"></div>
     </div>
+
     <script type="text/javascript">
         $(document).ready(function () {
             $('div.picDashboard').dashboard();
