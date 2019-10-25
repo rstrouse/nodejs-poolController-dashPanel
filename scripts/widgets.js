@@ -579,6 +579,7 @@ var dataBinder = {
             text.appendTo(el);
             if (o.icon) icon.html(o.icon);
             el.addClass('picOptionButton');
+            if (typeof o.id !== 'undefined') el.prop('id', o.id);
             el.attr('data-datatype', 'boolean');
             if (o.text) text.text(o.text);
             if (o.bind) el.attr('data-bind', o.bind);
@@ -600,13 +601,13 @@ var dataBinder = {
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
-            if (typeof (val) !== 'undefined')
+            if (typeof val !== 'undefined')
                 el.find('div.picIndicator').attr('data-status', val);
             else
                 return el.find('div.picIndicator').attr('data-status');
         }
     });
-})(jQuery);
+})(jQuery); // Option Button
 
 (function ($) {
     $.widget("pic.valueSpinner", {
@@ -695,7 +696,7 @@ var dataBinder = {
         }
 
     });
-})(jQuery);
+})(jQuery); // Value Spinner
 
 (function ($) {
     $.widget("pic.selector", {
@@ -780,7 +781,7 @@ var dataBinder = {
         },
         tabs: function () { return this.element.find('div.picTabs:first'); },
         contents: function () { return this.element.find('div.picTabContents:first'); },
-        tabContent: function (tabId) { return this.contents.find('picTabContent[data-tabid=' + tabId + ']:first'); },
+        tabContent: function (tabId) { return this.contents().find('div.picTabContent[data-tabid=' + tabId + ']:first'); },
         addTab: function (tabObj) {
             var self = this, o = self.options, el = self.element;
             var tab = $('<div class="picTab"><span class="picTabText"/></div>');
