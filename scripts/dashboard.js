@@ -169,11 +169,11 @@
                 console.log({ evt: 'delay', data: data });
             });
             o.socket.on('equipment', function (data) {
-                if(data.equipment.model.startsWith)
-                $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                 console.log({ evt: 'equipment', data: data });
+                if(data.controllerType.startsWith('intellicenter'))
+                    $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                 $('div.picController').each(function () {
-                    this.setEqipmentState(data);
+                    this.setEquipmentState(data);
                 });
             });
 
@@ -182,6 +182,7 @@
                 $('div.picController').each(function () {
                     this.setControllerState(data);
                 });
+                
             });
             o.socket.on('pump', function (data) {
                 console.log({ evt: 'pump', data: data });

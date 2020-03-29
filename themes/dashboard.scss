@@ -21,11 +21,22 @@ div.dashContainer {
     display: inline-grid;
     grid-template-columns: 377px 377px;
 }
+div.dashOuter[data-panel=dashboard] > div.configContainer {
+    display:none;
+}
+div.dashOuter[data-panel=configuration] > div.dashContainer {
+    display: none;
+}
+
 .header {
     display:block;
     opacity:1;
     grid-area:header;
     background-color:#ffd800;
     border:solid 1px green;
+}
+span.picPercentData {
+    padding-left:2px;
+    padding-right:2px;
 }
 @import 'controller.scss';

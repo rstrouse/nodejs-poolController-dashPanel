@@ -21,12 +21,22 @@ div.dashContainer {
   display: inline-grid;
   grid-template-columns: 377px 377px; }
 
+div.dashOuter[data-panel=dashboard] > div.configContainer {
+  display: none; }
+
+div.dashOuter[data-panel=configuration] > div.dashContainer {
+  display: none; }
+
 .header {
   display: block;
   opacity: 1;
   grid-area: header;
   background-color: #ffd800;
   border: solid 1px green; }
+
+span.picPercentData {
+  padding-left: 2px;
+  padding-right: 2px; }
 
 div.picControllerTitle {
   display: table;
@@ -85,3 +95,75 @@ div.picAppLogging > label,
 div.picPacketLogging > label {
   min-width: 4rem;
   display: inline-block; }
+
+div.picBS {
+  color: purple; }
+
+div.picFirmware {
+  font-size: .8rem;
+  display: inline-block;
+  vertical-align: top; }
+
+div.picFirmware > div.picOptionLine > label {
+  width: 4.5rem; }
+
+div.picFirmware > div.picOptionLine > span {
+  display: inline-block;
+  width: 2rem;
+  text-align: right; }
+
+div.picModules {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 1em;
+  padding-right: 1em;
+  font-size: .8rem; }
+
+div.picModules > table > tbody > tr > td:nth-child(1) {
+  width: 70px;
+  text-align: left; }
+
+div.picModules > table > tbody > tr > td:nth-child(2) {
+  width: 200px;
+  text-align: left; }
+
+div.picModules > table {
+  border-collapse: collapse;
+  box-sizing: border-box;
+  border-spacing: 0px; }
+
+div.picModules > table > tbody > tr:nth-child(1) {
+  color: white;
+  font-weight: bold;
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
+  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: linear-gradient(top, #ffaf4b, #ff920a); }
+
+div.picModules > table > tbody > tr:nth-child(n+2) {
+  width: 100%;
+  top: 0;
+  margin: 0px;
+  background-color: white; }
+
+div.picModules > table > tbody > tr:nth-child(n+1) > td {
+  border: solid 1px teal;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-collapse: collapse; }
+
+div.picModules > table > tbody > tr:nth-child(1) > td {
+  border: solid 1px black;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-collapse: collapse; }
+
+div.picConfigIcon {
+  display: inline-block;
+  cursor: pointer;
+  margin-left: .5rem; }
+
+div.picConfigIcon:hover {
+  color: orange;
+  text-shadow: 3px 3px 16px #272634; }

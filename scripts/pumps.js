@@ -49,7 +49,7 @@
         setCircuitRate: function (circuitId, rate) {
             var self = this, o = self.options, el = self.element;
             let pumpId = parseInt(el.attr('data-id'), 10);
-            $.putApiService('/config/pump/circuitRate', { id: pumpId, pumpCircuitId: circuitId, rate: rate });
+            $.putApiService('/config/pump/' + pumpId + '/pumpCircuit/' + circuitId, { rate: rate });
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -125,6 +125,8 @@
                     divPopover.on('initPopover', function (evt) {
                         for (let i = 0; i < data.circuits.length; i++) {
                             let circuit = data.circuits[i];
+                            if (typeof circuit.circuit.type === 'undefined') continue;
+
                             let div = $('<div class="picPumpCircuit"/>');
                             div.attr('data-id', i + 1);
                             let btn = $('<div class="picCircuit" data-hidethemes="true" />');

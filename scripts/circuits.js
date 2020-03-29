@@ -280,6 +280,7 @@
             return false;
         },
         isLight: function (circuit) {
+            if (typeof circuit === 'undefined' || typeof circuit.type === 'undefined') return false;
             // Create a new feature for light types only.
             switch (circuit.type.name) {
                 case 'light':

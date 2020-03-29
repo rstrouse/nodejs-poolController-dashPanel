@@ -15,7 +15,7 @@
             let row = $('<div class="picHeaderRow picControllerTitle" />');
             $('<div class= "picModel"><i class="fas fa-bars" /><span class="picModelData" /></div >').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"/></div>').appendTo(row);
-            $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /></div>').appendTo(row);
+            $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /><div class="picConfigIcon"><i class="fas fa-cogs" /></div></div>').appendTo(row);
             row.appendTo(el);
 
             row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"/><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"/></div>');
@@ -40,8 +40,35 @@
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             });
+            el.find('div.picConfigIcon').on('click', function (evt) {
+                let btn = $(this);
+                let container = $('div.dashOuter');
+                switch (container.attr('data-panel')) {
+                    case 'dashboard':
+                        btn.find('i').attr('class', 'fas fa-home');
+                        container.attr('data-panel', 'configuration');
+                        self._buildConfigPage();
+                        break;
+                    case 'configuration':
+                        btn.find('i').attr('class', 'fas fa-cogs');
+                        container.attr('data-panel', 'dashboard');
+                        self._closeConfigPage();
+                        break;
+                }
+            });
             self.setControllerState(data);
             self.setEquipmentState(data.equipment);
+        },
+        _buildConfigPage: function () {
+            var self = this, o = self.options, el = self.element;
+            // Place a tab bar in the config space.
+            let container = $('div.configContainer');
+            let page = $('<div class="picConfigPage" />').appendTo(container);
+            page.configPage();
+        },
+        _closeConfigPage: function () {
+            var self = this, o = self.options, el = self.element;
+            $('div.configContainer').empty();
         },
         formatDate: function (dt) {
             let pad = function (n) { return (n < 10 ? '0' : '') + n; };
@@ -79,6 +106,23 @@
             el.find('div.picPanelMode').attr('data-status', data.mode.name);
             el.find('div.picPanelMode > label').text(data.mode.desc);
             el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+            el.attr('data-status', data.status.val);
+            $('div.picActionButton[id$=btnReloadConfig]').each(function () {
+                let btn = $(this);
+                if (data.status.val === 1) {
+                    btn.find('i').removeClass('fa-spin');
+                    btn.find('span.picButtonText').text('Reload Config');
+                    btn.removeClass('disabled');
+                }
+                else {
+                    btn.find('i').addClass('fa-spin');
+                    btn.find('span.picButtonText').text('Loading Config...');
+                    btn.addClass('disabled');
+                }
+
+
+            });
+
         },
         setEquipmentState: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -230,16 +274,76 @@
                 });
             });
         },
+        _buildFirmwareTab: function (settings) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picTabPanel:first').each(function () {
+                var tabObj = { id: 'tabFirmware', text: 'System' };
+                var contents = this.addTab(tabObj);
+                var divOuter = $('<div class="picSystem" />');
+                divOuter.appendTo(contents);
+                //$('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '" /><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '" /></div>').appendTo(contents);
+                var btnPnl = $('<div class="picBtnPanel" i/>');
+                btnPnl.appendTo(contents);
+                var btnApply = $('<div id="btnReloadConfig" />');
+                btnApply.appendTo(btnPnl);
+                btnApply.actionButton({ text: 'Reload Config', icon: '<i class="fas fa-redo-alt" />' });
+                btnApply.addClass('disabled');
+                btnApply.on('click', function (e) {
+                    $(this).addClass('disabled');
+                    $(this).find('i').addClass('fa-spin');
+                    // Send this off to the server.
+                    $(this).find('span.picButtonText').text('Loading Config...');
+                    $.putApiService('/app/config/reload', function(data, status, xhr) {
+                        
+                    });
+                    ///$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
+
+                });
+            });
+            $.getApiService('/config/all', null, function (data, status, xhr) {
+                console.log('getting the configuration from the server');
+                console.log(data);
+                el.find('div.picTabPanel:first').find('div.picSystem').each(function () {
+                    let $div = $('<div class="picFirmware" />').appendTo($(this));
+                    $('<div class="picOptionLine"><label>Version</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Bodies</label><span>' + data.bodies.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Pumps</label><span>' + data.pumps.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
+                    let $divMods = $('<div class="picModules" />').appendTo($(this));
+                    let $hdr = $('<table><tbody><tr><td><label>Panel</label></td><td><label>Module</label></td></tr></tbody></table>').appendTo($divMods);
+                    let $tbody = $divMods.find('table:first > tbody');
+                    for (let i = 0; i < data.equipment.modules.length; i++) {
+                        let mod = data.equipment.modules[i];
+                        let $row = $('<tr><td><span>Master</span></td><td><div>' + mod.desc + '</div><div>P/N: ' + mod.part + '</div></td></tr>').appendTo($tbody);
+                    }
+                    let btn = el.find('div[id$=btnReloadConfig]');
+                    let status = parseInt($('div.picController').attr('data-status'), 10);
+                    if (status === 1) {
+                        btn.removeClass('disabled');
+                    }
+                    else {
+                        btn.find('i').addClass('fa-spin');
+                        btn.find('span.picButtonText').text('Loading Config...');
+                    }
+                });
+            });
+
+
+        },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             var tabs = $('<div class="picTabPanel" />');
             console.log('Building controls');
             tabs.appendTo(el);
             tabs.tabBar();
-            $.getJSON('/config/web', null, function (data, status, xhr) {
-                console.log(data);
-                self._buildConnectionsTab(data);
+            $.getJSON('/config/web', null, function (configData, status, xhr) {
+                console.log(configData);
+                self._buildConnectionsTab(configData);
                 self._buildLoggingTab();
+                self._buildFirmwareTab(configData);
                 tabs[0].selectTabById('tabConnections');
                 var evt = $.Event('loaded');
                 el.trigger(evt);

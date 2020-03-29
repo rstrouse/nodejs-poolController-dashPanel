@@ -6,5 +6,9 @@
   {
     "outputFile": "themes/controller.css",
     "inputFile": "themes/controller.scss"
+  },
+  {
+    "outputFile": "themes/configPage.css",
+    "inputFile": "themes/configPage.scss"
   }
 ]
