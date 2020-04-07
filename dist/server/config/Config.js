@@ -7,7 +7,14 @@ const Logger_1 = require("../logger/Logger");
 class Config {
     constructor() {
         this.cfgPath = path.posix.join(process.cwd(), '/config.json');
-        this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, 'utf8')) : {};
+        let cfgText = fs.existsSync(this.cfgPath) ? fs.readFileSync(this.cfgPath, 'utf8') : '{}';
+        try {
+            this._cfg = JSON.parse(cfgText);
+        }
+        catch (err) {
+            console.log('Cannot parse config file: ' + err);
+            this._cfg = {};
+        }
         var def = JSON.parse(fs.readFileSync(path.join(process.cwd(), '/defaultConfig.json'), 'utf8').trim());
         this._cfg = extend(true, {}, def, this._cfg);
     }

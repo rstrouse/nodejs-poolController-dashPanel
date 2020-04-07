@@ -138,3 +138,10 @@ div.picConfigIcon:hover {
     color: orange;
     text-shadow: 3px 3px 16px #272634;
 }
+div.picOptionField > label {
+    display:inline-block;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    vertical-align:middle;
+    overflow:hidden;
+}

@@ -7,21 +7,56 @@
     background: linear-gradient(1deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* w3c */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#DEDEDE', endColorstr='#F0F0F0',GradientType=0 ); /* ie6-9 */
 }
-div.picOptionField, div.picOptionDropdown {
-    display:inline-block;
+div.picOptionField, div.picOptionDropdown, div.picOptionCheckbox {
+    display: inline-block;
+    line-height: 1.4rem;
 }
-
+div.picOptionLine > div {
+    margin-right:.5rem;
+}
+div.picOptionLine {
+    padding-bottom:2px;
+}
 div.picOptionField > label,
 div.picOptionDropdown > label {
     padding-right: .25rem;
     margin-left: .4rem;
 }
-div.picConfigGeneral > div.picOptionLine > div.picOptionField:nth-child(1) > label {
-    display:inline-block;
-    width: 4.5rem;
+div.cfgGeneralDate > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picPickList > label,
+div.cfgGeneralPersonal > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picPickList > label,
+div.cfgGeneralPersonal > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picInputField > label {
+    display: inline-block;
+    width: 5.5rem;
 }
-div.picOptionField[data-bind$=email] > label,
-div.picOptionField[data-bind$=email2] > label {
+div.picOptionField[data-bind$="owner.name"] > div > label,
+div.picOptionField[data-bind$=email] > div > label,
+div.picOptionField[data-bind$=email2] > div > label {
     display: inline-block;
     width: 4.25rem;
 }
+div.picCircuitsList {
+    display: inline-block;
+}
+div.picCircuitsList, div.picCircuitsList-list, div.picCircuitsList-btnPanel {
+    display: inline-block;
+    text-align:left;
+    vertical-align:top;
+}
+div.picCircuitsList-btnPanel {
+    border-right:solid 3px gainsboro;
+
+}
+div.picCircuitOption {
+    text-align: left;
+}
+
+div.picCircuitOption i.picRemoveOption {
+    cursor: pointer;
+    margin-left: .15rem;
+}
+
+div.picCircuitOption i.picRemoveOption:hover {
+    color: orange;
+    text-shadow: 3px 3px 16px #272634;
+}
+

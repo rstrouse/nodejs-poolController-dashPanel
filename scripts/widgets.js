@@ -408,7 +408,7 @@ var dataBinder = {
                     self._bindValue(obj, el, el[0].val(), arrayRef);
                 else
                     self._bindValue(obj, el, el.text(), arrayRef);
-            } 
+            }
             el.find('*[data-bind]').each(function () {
                 $this = $(this);
                 if (typeof this.val === 'function')
@@ -535,7 +535,7 @@ var dataBinder = {
                 return el.find('div.picIndicator').attr('data-status');
         }
     });
-})(jQuery);
+})(jQuery); // Toggle Button
 (function ($) {
     $.widget("pic.actionButton", {
         options: {},
@@ -560,7 +560,7 @@ var dataBinder = {
             return el.find('span.picButtonText').text(val);
         }
     });
-})(jQuery);
+})(jQuery); // Action Button
 (function ($) {
     $.widget("pic.optionButton", {
         options: {},
@@ -608,10 +608,9 @@ var dataBinder = {
         }
     });
 })(jQuery); // Option Button
-
 (function ($) {
     $.widget("pic.valueSpinner", {
-        options: { lastChange: 0, ramp:40, ramps:0, fmtMask:'#,##0.####', fmtEmpty:'' },
+        options: { lastChange: 0, ramp:40, ramps:0, fmtMask:'#,##0.####', fmtEmpty:'', step: 1 },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initValueSpinner();
@@ -646,10 +645,12 @@ var dataBinder = {
             el[0].increment = function () { return self.increment(); };
             el[0].decrement = function () { return self.decrement(); };
             el[0].val = function (val) { return self.val(val); };
-            $('<div class="picSpinner-down"/><div class="picSpinner-value"/><div class="picSpinner-up"/>').appendTo(el);
+            el[0].options = function (opts) { return self.opts(opts); };
+            $('<div class="picSpinner-down"><i class="fas fa-minus"/></div><div class="picSpinner-value"/><div class="picSpinner-up"><i class="fas fa-plus" /></div><span class="picSpinner-units" />').appendTo(el);
             if (typeof o.min === 'undefined') o.min = 0;
             if (typeof o.val === 'undefined') o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
+            el.find('span.picSpinner-units').text(o.units);
             el.on('mousedown', 'div.picSpinner-down', function (evt) {
                 self._rampDecrement();
                 evt.preventDefault();
@@ -674,6 +675,15 @@ var dataBinder = {
                 self._fireValueChanged();
             });
         },
+        opts: function (opts) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof opts !== 'undefined') {
+                $.extend(o, opts);
+                if (typeof opts.val !== 'undefined') self.val(opts.val);
+            }
+            else
+                return o;
+        },
         increment: function () {
             var self = this, o = self.options, el = self.element;
             o.val = Math.min(o.max, o.val + o.step);
@@ -697,7 +707,6 @@ var dataBinder = {
 
     });
 })(jQuery); // Value Spinner
-
 (function ($) {
     $.widget("pic.selector", {
         options: {},
@@ -738,7 +747,8 @@ var dataBinder = {
             });
         }
     });
-})(jQuery);
+})(jQuery); // Selector
+// tabBar
 (function ($) {
     $.widget("pic.tabBar", {
         options: {
@@ -750,34 +760,48 @@ var dataBinder = {
             el.addClass('picTabBar');
             $('<div class="picTabs"></div>').prependTo(el);
             $('<div class="picTabContents"/>').appendTo(el);
-            el.on('click', 'div.picTab', function (evt) {
-                evt.preventDefault();
+            el.find('div.picTabs:first').on('click', 'div.picTab', function (evt) {
                 // Set the active tab here.
                 self.selectTabById($(evt.currentTarget).attr('data-tabid'));
+                evt.preventDefault();
             });
             el[0].tabContent = function (tabId) { return self.tabContent(tabId); };
             el[0].selectTabById = function (tabId) { return self.selectTabById(tabId); };
+            el[0].selectedTabId = function (tabId) { return self.selectedTabId(tabId); };
             el[0].addTab = function (tabObj) { return self.addTab(tabObj); };
             var evt = $.Event('initTabs');
             evt.contents = function () { return self.contents(); };
-
             el.trigger(evt);
         },
         isInDOM: function () { return $.contains(this.element[0].ownerDocument.documentElement, this.element[0]); },
         selectTabById: function (tabId) {
             var self = this, o = self.options, el = self.element;
-            el.find('div.picTabs:first').find('div.picTab').each(function () {
-                var $this = $(this);
-                var id = $this.attr('data-tabid');
-                if (id === tabId) {
-                    $this.addClass('picTabSelected');
-                    self.contents().find('div.picTabContent[data-tabid=' + id + ']').show();
-                }
-                else {
-                    $this.removeClass('picTabSelected');
-                    self.contents().find('div.picTabContent[data-tabid=' + id + ']').hide();
-                }
-            });
+            var evt = $.Event('tabchange');
+            if (o.tabId) evt.oldTab = { id: o.tabId, contents: self.tabContent(o.tabId) };
+            evt.newTab = { id: tabId, contents: self.tabContent(tabId) };
+            el.trigger(evt);
+            //console.log(evt);
+            if (!evt.isDefaultPrevented()) {
+                el.find('div.picTabs:first').children('div.picTab').each(function () {
+                    var $this = $(this);
+                    var id = $this.attr('data-tabid');
+                    if (id === tabId) {
+                        $this.addClass('picTabSelected');
+                        self.contents().find('div.picTabContent[data-tabid=' + id + ']').show();
+                        o.tabId = id;
+                    }
+                    else {
+                        $this.removeClass('picTabSelected');
+                        self.contents().find('div.picTabContent[data-tabid=' + id + ']').hide();
+                    }
+                });
+            }
+        },
+        selectedTabId: function (tabId) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof tabId === 'undefined') return o.tabId;
+            else
+                return self.selectTabById(tabId);
         },
         tabs: function () { return this.element.find('div.picTabs:first'); },
         contents: function () { return this.element.find('div.picTabContents:first'); },
@@ -803,6 +827,7 @@ var dataBinder = {
 
     });
 })(jQuery);
+// popover
 (function ($) {
     $.widget("pic.popover", {
         options: {
@@ -943,3 +968,378 @@ var dataBinder = {
 
     });
 })(jQuery);
+// pickList
+(function ($) {
+    $.widget("pic.pickList", {
+        options: {
+            items: [],
+            columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+            bindColumn: 0,
+            displayColumn: 1,
+            inputStyle: {},
+            labelStyle: {},
+            pickListStyle: { maxHeight: '300px' }
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initPickList();
+        },
+        _initPickList: function () {
+            var self = this, o = self.options, el = self.element;
+            //el[0].val = function (val) { return self.val(val); };
+            if (o.bind) el.attr('data-bind', o.bind);
+            $('<label/>').appendTo(el).text(o.labelText);
+            var itm = self._getItem(o.value);
+            $('<div class="picPickList-value" />').appendTo(el);
+            var col = self._getColumn(o.displayColumn);
+            if (itm && col) self.text(itm[col.binding]);
+            $('<div class="picPickList-drop"><i class="fas fa-caret-down"/></div>').appendTo(el);
+            el.find('div.picPickList-value').css(o.inputStyle);
+            el.find('label:first').css(o.labelStyle);
+            el.attr('data-bind', o.binding);
+            el[0].label = function () { return el.find('label:first'); };
+            el[0].field = function () { return el.find('div.picPickList-value:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].val = function (val) { return self.val(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
+            el.find('div.picPickList-drop').on('click', function (evt) {
+                var div = el.find('div.picPickList-options:first');
+                if (div.length > 0) {
+                    div.remove();
+                    return;
+                }
+                else {
+                    $('div.picPickList-options:first').remove();
+                    if (!el.hasClass('disabled'))
+                        self._buildOptionList();
+                    evt.stopPropagation();
+                }
+            });
+        },
+        _buildOptionHeader: function () {
+            var self = this, o = self.options, el = self.element;
+            var tbl = $('<table class="optHeader"><tbody><tr></tr></tbody></table>');
+            var row = tbl.find('tr:first');
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = self._getColumn(i);
+                var td = $('<td><span class="optText">' + col.text + '</span></td>').appendTo(row);
+                if (col.hidden) td.hide();
+            }
+            return tbl;
+        },
+        _buildOptionList: function () {
+            var self = this, o = self.options, el = self.element;
+            div = $('<div class="picPickList-options" />');
+            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader"><td></td></tr><tr class="optBody"><td><div class="optBody"><div /></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
+            self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
+            var tbody = $('<table class="optBody"><tbody></tbody></table>').appendTo(tblOuter.find('div.optBody > div:first'));
+            var val = self.val();
+
+            for (var i = 0; i < o.items.length; i++) {
+                var row = $('<tr />').appendTo(tbody);
+                var itm = o.items[i];
+                for (var j = 0; j < o.columns.length; j++) {
+                    var col = o.columns[j];
+                    if (j === o.bindColumn) {
+                        row.attr('data-value', itm[col.binding]);
+                        if (typeof val !== 'undefined' && val.toString() === itm[col.binding].toString()) row.addClass('selected');
+                    }
+                    var td = $('<td />').appendTo(row);
+                    var span = $('<span class="optText" />').appendTo(td);
+                    if (col.style) td.css(col.style);
+                    if (col.hidden) td.hide();
+                    span.text(itm[col.binding]);
+
+                }
+            }
+            
+            div.appendTo(el);
+            el.parents('body').one('click', function (evt) {
+                console.log('Removing div');
+                div.remove();
+            });
+            var cols = tblOuter.find('table.optHeader > tbody > tr:first > td');
+            var firstRow = tblOuter.find('table.optBody > tbody > tr:first > td');
+            if (cols.length > 0 && firstRow.length > 0) {
+                for (var k = cols.length - 2; k >= 0; k--) {
+                    var hdrCol$ = $(cols[k]);
+                    var dtaCol$ = $(firstRow[k]);
+                    var colWidth = Math.max(hdrCol$.outerWidth(), dtaCol$.outerWidth());
+                    hdrCol$.css('width', colWidth + 'px');
+                    dtaCol$.css('width', colWidth + 'px');
+                }
+            }
+            var width = tblOuter.find('table.optBody').outerWidth();
+            var height = tblOuter.find('table.optBody').outerHeight();
+            height += tblOuter.find('table.optHeader').outerHeight() + 2;
+
+            css = { width: 'calc(' + width + 'px + 1.25rem)', height: 'calc(' + height + 'px + .5rem)' };
+            //console.log(css);
+            if (o.pickListStyle) div.css(o.pickListStyle);
+            div.css(css);
+
+            self._positionPickList(div);
+            div.on('click', 'table.optBody > tbody > tr', function (evt) {
+                self.val($(evt.currentTarget).attr('data-value'));
+            });
+           
+        
+        },
+        _positionPickList: function (div) {
+            var self = this, o = self.options, el = self.element;
+            var offField = el.find('div.picPickList-value:first').offset();
+            div.css({ left: offField.left + 'px' });
+            var divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
+            var docDims = { height: document.documentElement.clientHeight, width: $(document).outerWidth() };
+            //console.log({ div: divDims, doc: docDims });
+            if (divDims.height > docDims.height) {
+                div.css({ height: docDims.height + 'px' });
+                divDims.height = docDims.height;
+            }
+            if (divDims.off.top + divDims.height > docDims.height)
+                divDims.pos.top -= (divDims.off.top + divDims.height - docDims.height);
+            div.css({ top: divDims.pos.top + 'px' });
+
+            // We have to treat the width and height separately as we will be repositioning after a scrollbar disappears potentially.
+            divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
+            docDims = { height: document.documentElement.clientHeight, width: $(document).outerWidth() };
+            if (divDims.off.left + divDims.width > docDims.width) {
+                docDims.pos.left -= (divDims.off.left + divDims.width - docDims.width);
+            }
+            div.css({ left: divDims.pos.left + 'px' });
+        },
+        _getColumn: function (nCol) {
+            var self = this, o = self.options, el = self.element;
+            return o.columns[nCol];
+        },
+        _getItem: function (value) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof value === 'undefined') return;
+            var bind = self._getColumn(o.bindColumn);
+            for (var i = 0; i < o.items.length; i++) {
+                var itm = o.items[i];
+                var val = typeof itm !== 'undefined' && typeof itm[bind.binding] !== 'undefined' ? itm[bind.binding] : '';
+                if (value.toString() === val.toString()) return itm;
+            }
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) el.addClass('disabled');
+                else el.removeClass('disabled');
+            }
+                
+
+        },
+        text: function (text) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof text !== 'undefined')
+                el.find('div.picPickList-value').html(text);
+            else
+                return el.find('div.picPickList-value').text();
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var itm = self._getItem(val);
+                var colVal = self._getColumn(o.bindColumn);
+                var colText = self._getColumn(o.displayColumn);
+                if (itm) {
+                    // Trigger a selection changed.
+                    var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
+                    var evt = $.Event('beforeselchange');
+                    evt.oldItem = oldItem;
+                    evt.newItem = itm;
+                    el.trigger(evt);
+                    if (!evt.isDefaultPrevented()) {
+                        o.value = itm[colVal.binding];
+                        self.text(itm[colText.binding]);
+                        evt = $.Event('selchanged');
+                        evt.oldItem = oldItem;
+                        evt.newItem = itm;
+                        el.trigger(evt);
+                    }
+                }
+                else {
+                    self.text('');
+                    o.value = null;
+                }
+            }
+            else
+                return o.value;
+        }
+    });
+})(jQuery);
+// inputField
+(function ($) {
+    $.widget("pic.inputField", {
+        options: {
+            inputStyle: {},
+            labelStyle: {},
+            inputAttrs: {},
+            labelAttrs: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initField();
+        },
+        _initField: function () {
+            var self = this, o = self.options, el = self.element;
+            //el[0].val = function (val) { return self.val(val); };
+            if (o.bind) el.attr('data-bind', o.bind);
+            $('<label/>').appendTo(el).text(o.labelText);
+            $('<input type="text" class="picInputField-value" />').appendTo(el);
+            
+            self.val(o.value);
+            el.attr('data-bind', o.binding);
+            self._applyStyles();
+            el[0].label = function () { return el.find('label:first'); };
+            el[0].field = function () { return el.find('input.picInputField-value:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].val = function (val) { return self.val(val); };
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('input.picInputField-value:first');
+            var lbl = el.find('label:first');
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'maxlength':
+                    case 'maxLength':
+                        if (typeof o.inputStyle.width === 'undefined')
+                            o.inputStyle.width = parseInt(o.inputAttrs[ia], 10) * .5 + 'rem';
+                        break;
+                }
+                fld.attr(ia, o.inputAttrs[ia]);
+            }
+            for (var la in o.labelAttrs) {
+                lbl.attr(la, o.labelAttrs[la]);
+            }
+            //console.log(o);
+            if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
+            if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            //if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picInputField-value:first').val(val) });
+            return typeof val !== 'undefined' ? el.find('input.picInputField-value:first').val(val) : el.find('input.picInputField-value:first').val();
+        }
+    });
+})(jQuery); 
+// checkbox
+(function ($) {
+    $.widget("pic.checkbox", {
+        options: {
+            inputStyle: {},
+            labelStyle: {},
+            inputAttrs: {},
+            labelAttrs: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initCheckbox();
+        },
+        _initCheckbox: function () {
+            var self = this, o = self.options, el = self.element;
+            //el[0].val = function (val) { return self.val(val); };
+            if (o.bind) el.attr('data-bind', o.bind);
+            if (typeof o.id === 'undefined') o.id = 'cb_' + _uniqueId++;
+            $('<input type="checkbox" class="picCheckbox-value" />').appendTo(el).attr('id', o.id);
+            $('<label/>').attr('for', o.id).appendTo(el).text(o.labelText);
+            self.val(o.value);
+            el.attr('data-bind', o.binding);
+            self._applyStyles();
+            el[0].label = function () { return el.find('label:first'); };
+            el[0].checkbox = function () { return el.find('input.picCheckbox-value:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].val = function (val) { return self.val(val); };
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('input.picCheckbox-value:first');
+            var lbl = el.find('label:first');
+            for (var la in o.labelAttrs) {
+                lbl.attr(la, o.labelAttrs[la]);
+            }
+            if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
+            if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var cb = el.find('input.picCheckbox-value:first');
+            if (typeof val !== 'undefined') cb.prop('checked', makeBool(val));
+            else return cb.is(':checked');
+        }
+    });
+})(jQuery); 
+// accordian
+(function ($) {
+    $.widget("pic.accordian", {
+        options: {
+            columns: []
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initAccordian();
+        },
+        _initAccordian: function () {
+            var self = this, o = self.options, el = self.element;
+            //el[0].val = function (val) { return self.val(val); };
+            if (o.bind) el.attr('data-bind', o.bind);
+            var title = self._buildTitle().appendTo(el);
+            var contents = $('<div class="picAccordian-contents" />').appendTo(el);
+            el[0].titleBlock = function () { return el.find('div.picAccordian-title:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].expanded = function (val) { return self.expanded(val); };
+            el.on('click', 'div.picAccordian-title', function () {
+                self.toggle();
+            });
+            el.attr('data-expanded', false);
+            contents.hide();
+            self.expanded(makeBool(o.expanded));
+        },
+        _buildTitle: function () {
+            var self = this, o = self.options, el = self.element;
+            var title = $('<div class="picAccordian-title" />');
+            for (var i = 0; i < o.columns.length; i++) {
+                var div = $('<div class="picAccordian-titlecol" />').appendTo(title);
+                var col = o.columns[i];
+                var icon = $('<i />').appendTo(div);
+                if (col.glyph) icon.addClass(col.glyph);
+                var text = $('<span class="picAccordian-title-text" />').appendTo(div);
+                div.css(col.style);
+                text.html(col.text);
+            }
+            $('<i class="picAccordian-title-expand fas fa-angle-double-right" />').appendTo(title);
+            return title;
+        },
+        toggle: function () {
+            var self = this, o = self.options, el = self.element;
+            var exp = makeBool(el.attr('data-expanded'));
+            self.expanded(!exp);
+        },
+        expanded: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var exp = makeBool(el.attr('data-expanded'));
+            if (typeof val !== 'undefined') {
+                if (exp !== val) {
+                    var ico = el.find('i.picAccordian-title-expand:first');
+                    el.attr('data-expanded', val);
+                    if (val) {
+                        el.find('div.picAccordian-contents:first').slideDown(250);
+                        ico.removeClass('fa-angle-double-right');
+                        ico.addClass('fa-angle-double-down');
+                    }
+                    else {
+                        el.find('div.picAccordian-contents:first').slideUp(250);
+                        ico.removeClass('fa-angle-double-down');
+                        ico.addClass('fa-angle-double-right');
+                    }
+                }
+            }
+            else return exp;
+        }
+    });
+})(jQuery); 

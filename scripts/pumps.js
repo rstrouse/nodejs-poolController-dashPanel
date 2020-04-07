@@ -145,7 +145,6 @@
                                 btn.virtualCircuit(circuit.circuit);
                             }
                             else {
-                                console.log(circuit.circuit);
                                 div.attr('data-circuitid', circuit.circuit.id);
                                 btn.circuit(circuit.circuit);
                                 btn.addClass('picFeature');
@@ -157,7 +156,7 @@
                                 val: circuit.units.val === 0 ? circuit.speed : circuit.flow,
                                 min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
                                 max: circuit.units.val === 0 ? data.maxSpeed : data.maxFlow,
-                                step: circuit.units.val === 0 ? data.speedStepSize : data.flowStepSize
+                                step: circuit.units.val === 0 ? 50 : data.flowStepSize
                             });
                             spin.attr('data-id', i + 1);
                             spin.on('change', function (e) {
