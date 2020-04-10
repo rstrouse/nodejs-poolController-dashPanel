@@ -237,6 +237,18 @@
                     var obj = dataBinder.fromElement(opt);
                     $.putApiService('app/logger/setOptions', obj);
                 });
+                var btnPnl = $('<div class="picBtnPanel" />');
+                btnPnl.appendTo(grp);
+                var btnClearLog = $('<div />');
+                btnClearLog.appendTo(btnPnl);
+                btnClearLog.actionButton({ text: 'Clear Messages', icon: '<i class="fas fa-broom" />' });
+                btnClearLog.on('click', function (e) {
+                    $.putApiService('app/logger/clearMessages');
+                    // Send this off to the server.
+                    ///$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
+
+                });
+
 
                 contents.on('change', 'select', function (evt) {
                     var opt = $(evt.currentTarget);

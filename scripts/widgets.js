@@ -1199,6 +1199,7 @@ var dataBinder = {
             el[0].field = function () { return el.find('input.picInputField-value:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].val = function (val) { return self.val(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
@@ -1225,6 +1226,23 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             //if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picInputField-value:first').val(val) });
             return typeof val !== 'undefined' ? el.find('input.picInputField-value:first').val(val) : el.find('input.picInputField-value:first').val();
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('input.picInputField-value:first');
+            if (typeof val === 'undefined') return el.hasClass('disabled');
+            else {
+                if (val) {
+                    el.addClass('disabled');
+                    fld.prop('disabled', true);
+                    fld.attr('disabled', true);
+                }
+                else {
+                    el.remove('disabled');
+                    fld.prop('disabled', false);
+                    fld.removeAttr('disabled');
+                }
+            }
         }
     });
 })(jQuery); 

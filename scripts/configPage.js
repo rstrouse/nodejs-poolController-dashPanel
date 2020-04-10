@@ -474,44 +474,59 @@
                 console.log(opts);
                 for (var i = 0; i < opts.valves.length; i++) {
                     var valve = opts.valves[i];
-                    var type = opts.valveTypes.find(elem => elem.val === valve.type);
-                    var circuit = opts.circuits.find(elem => elem.id === valve.circuit);
-                    var acc = {
-                        columns: [{ text: valve.name, glyph: 'fas fa-compass', style: { width: '14rem' } },
-                        { text: type.desc, style: { width: '8rem' } },
-                        { text: typeof circuit !== 'undefined' ? circuit.name : '', style: { width: '8rem' } }
-                        ]
-                    };
-
-                    var a = self._buildAccordian('cfgValve', acc).appendTo(divOuter);
-                    var pnl = a.find('div.picAccordian-contents');
-                    var line = self._buildLine().appendTo(pnl);
-                    var bind = 'valves[' + i + '].';
-                    self._buildOptionField('valveName', 'Name', bind + 'name', valve.name, { maxlength: 16 }).appendTo(line);
-                    self._buildOptionDropdown('valveType', {
-                        labelText: 'Type', binding: bind + 'type', value: valve.type,
-                        displayColumn: 2, bindColumn: 0,
-                        columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Valve Type', style: { whiteSpace: 'nowrap' } }],
-                        items: opts.valveTypes, inputStyle: { width: '5.7rem' }
-                    }).appendTo(line);
-                    if (valve.id !== 3 && valve.id !== 4) {
-                        self._buildOptionDropdown('circuit', {
-                            labelText: 'Circuit', binding: bind + 'circuit', value: valve.circuit,
-                            columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
-                            items: opts.circuits, inputStyle: { width: '7rem' }
-                        }).appendTo(line);
-                    }
-                    var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-                    var btnSave = $('<div id="btnSaveValve_"' + i + ' />').appendTo(btnPnl).actionButton({ text: 'Save Valve', icon: '<i class="fas fa-save" />' });
-                    btnSave.on('click', function (e) {
-                        $(this).addClass('disabled');
-                        $(this).find('i').addClass('burst-animated');
-                        // Send this off to the server.
-                        //$(this).find('span.picButtonText').text('Loading Config...');
-                        //$.putApiService('/app/config/reload', function (data, status, xhr) {
-                    });
+                    self._buildValvePanel(valve, opts).appendTo(divOuter);
                 }
             });
+        },
+        _buildValvePanel: function (valve, opts) {
+            var self = this, o = self.options, el = self.element;
+            var type = opts.valveTypes.find(elem => elem.val === valve.type);
+            var circuit = opts.circuits.find(elem => elem.id === valve.circuit);
+            var acc = {
+                columns: [{ text: valve.name, glyph: 'fas fa-compass', style: { width: '14rem' } },
+                { text: type.desc, style: { width: '8rem' } },
+                { text: typeof circuit !== 'undefined' ? circuit.name : '', style: { width: '8rem' } }
+                ]
+            };
+
+            var a = self._buildAccordian('cfgValve', acc);
+            var pnl = a.find('div.picAccordian-contents');
+            var line = self._buildLine().appendTo(pnl);
+            var bind = '';
+            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').val(valve.id).appendTo(line);
+            self._buildOptionField('valveName', 'Name', bind + 'name', valve.name, { maxlength: 16 }).appendTo(line);
+            self._buildOptionDropdown('valveType', {
+                labelText: 'Type', binding: bind + 'type', value: valve.type,
+                displayColumn: 2, bindColumn: 0,
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Valve Type', style: { whiteSpace: 'nowrap' } }],
+                items: opts.valveTypes, inputStyle: { width: '5.7rem' }
+            }).appendTo(line);
+            if (!valve.isIntake && !valve.isReturn) {
+                self._buildOptionDropdown('circuit', {
+                    labelText: 'Circuit', binding: bind + 'circuit', value: valve.circuit,
+                    columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
+                    items: opts.circuits, inputStyle: { width: '7rem' }
+                }).appendTo(line);
+                var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
+                var btnSave = $('<div id="btnSaveValve_"' + valve.id + ' />').appendTo(btnPnl).actionButton({ text: 'Save Valve', icon: '<i class="fas fa-save" />' });
+                btnSave.on('click', function (e) {
+                    //$(this).addClass('disabled');
+                    //$(this).find('i').addClass('burst-animated');
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    $.putApiService('/config/valve/' + v.id, v, function (data, status, xhr) {
+                        console.log({ data: data, status: status, xhr: xhr });
+                        var vpnl = self._buildValvePanel(data, opts);
+                        p.parents('div.picAccordian:first').replaceWith(vpnl);
+                        vpnl[0].expanded(true);
+                    });
+                });
+            }
+            else {
+                a.find('div.picInputField[data-bind$=name]')[0].disabled(true);
+                a.find('div.picPickList[data-bind$=type]')[0].disabled(true);
+            }
+            return a;
         },
         _buildGeneralTab: function (contents) {
             var self = this, o = self.options, el = self.element;
@@ -526,26 +541,26 @@
 
                 var line = self._buildLine().appendTo(pnl);
                 console.log(opts);
-                self._buildOptionField('poolAlias', 'Pool Alias', 'pool.alias', cfg.pool.alias, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('ownerName', 'Owner', 'pool.owner.name', cfg.pool.owner.name, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('poolAlias', 'Pool Alias', 'alias', cfg.pool.alias, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('ownerName', 'Owner', 'owner.name', cfg.pool.owner.name, { maxlength: 16 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionField('ownerPhone', 'Phone', 'pool.owner.phone', cfg.pool.owner.phone, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('ownerEmail', 'e-mail', 'pool.owner.email', cfg.pool.owner.email, { maxlength: 32 }).appendTo(line);
+                self._buildOptionField('ownerPhone', 'Phone', 'owner.phone', cfg.pool.owner.phone, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('ownerEmail', 'e-mail', 'owner.email', cfg.pool.owner.email, { maxlength: 32 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionField('ownerPhone2', 'Alt Phone', 'pool.owner.phone2', cfg.pool.owner.phone2, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('ownerEmail2', 'Alt e-mail', 'pool.owner.email2', cfg.pool.owner.email2, { maxlength: 32 }).appendTo(line);
+                self._buildOptionField('ownerPhone2', 'Alt Phone', 'owner.phone2', cfg.pool.owner.phone2, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('ownerEmail2', 'Alt e-mail', 'owner.email2', cfg.pool.owner.email2, { maxlength: 32 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionDropdown('country', {
-                    labelText: 'Country', binding: 'pool.location.country', value: cfg.pool.location.country,
+                    labelText: 'Country', binding: 'location.country', value: cfg.pool.location.country,
                     columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Country', style: { whiteSpace: 'nowrap' } }],
                     items: cfg.countries, inputStyle: { width: '7rem' }, bindColumn: 1
                 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionField('locAddress', 'Address', 'pool.location.address', cfg.pool.location.address, { maxlength: 32 }).appendTo(line);
+                self._buildOptionField('locAddress', 'Address', 'location.address', cfg.pool.location.address, { maxlength: 32 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionField('locCity', 'City', 'pool.location.city', cfg.pool.location.city, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('locState', 'State', 'pool.location.state', cfg.pool.location.state, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('locZip', 'Zip', 'pool.location.zip', cfg.pool.location.zip, { maxlength: 10 }).appendTo(line);
+                self._buildOptionField('locCity', 'City', 'location.city', cfg.pool.location.city, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('locState', 'State', 'location.state', cfg.pool.location.state, { maxlength: 16 }).appendTo(line);
+                self._buildOptionField('locZip', 'Zip', 'location.zip', cfg.pool.location.zip, { maxlength: 10 }).appendTo(line);
                 var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 var btnSave = $('<div id="btnSavePersonal" />').appendTo(btnPnl).actionButton({ text: 'Save Personal', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
@@ -568,7 +583,7 @@
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'abbrev', hidden: false, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Time Zone', style: { whiteSpace: 'nowrap' } }],
                     items: cfg.timeZones, inputStyle: { width: '12rem' }
                 }).appendTo(line);
-                self._buildOptionCheckbox('advAutoDST', 'Auto Adjust DST', 'pool.adjustDST').appendTo(line);
+                self._buildOptionCheckbox('advAutoDST', 'Auto Adjust DST', 'pool.options.adjustDST', cfg.pool.options.adjustDST).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionDropdown('clockMode', {
                     labelText: 'Clock Mode',
@@ -603,10 +618,10 @@
                 pnl = a.find('div.picAccordian-contents');
 
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionCheckbox('advManualOperationPriority', 'Manual OP Priority', 'pool.manualPriority').appendTo(line);
+                self._buildOptionCheckbox('advManualOperationPriority', 'Manual OP Priority', 'options.manualPriority', cfg.pool.options.manualPriority).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
-                self._buildOptionCheckbox('advPumpDelay', 'Pump Off During Valve Action', 'pool.pumpDelay').appendTo(line);
-                self._buildOptionCheckbox('advHeaterCooldownDelay', 'Heater Cooldown Delay', 'pool.cooldownDelay').appendTo(line);
+                self._buildOptionCheckbox('advPumpDelay', 'Pump Off During Valve Action', 'options.pumpDelay', cfg.pool.options.pumpDelay).appendTo(line);
+                self._buildOptionCheckbox('advHeaterCooldownDelay', 'Heater Cooldown Delay', 'options.cooldownDelay', cfg.pool.options.cooldownDelay).appendTo(line);
                 btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 btnSave = $('<div id="btnSaveDelays" />').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
