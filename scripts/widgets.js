@@ -1073,7 +1073,7 @@ var dataBinder = {
             var height = tblOuter.find('table.optBody').outerHeight();
             height += tblOuter.find('table.optHeader').outerHeight() + 2;
 
-            css = { width: 'calc(' + width + 'px + 1.25rem)', height: 'calc(' + height + 'px + .5rem)' };
+            css = { width: 'calc(' + width + 'px + 1.5rem)', height: 'calc(' + height + 'px + .5rem)' };
             //console.log(css);
             if (o.pickListStyle) div.css(o.pickListStyle);
             div.css(css);
@@ -1176,8 +1176,6 @@ var dataBinder = {
 (function ($) {
     $.widget("pic.inputField", {
         options: {
-            inputStyle: {},
-            labelStyle: {},
             inputAttrs: {},
             labelAttrs: {}
         },
@@ -1207,20 +1205,35 @@ var dataBinder = {
             var lbl = el.find('label:first');
             for (var ia in o.inputAttrs) {
                 switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
                     case 'maxlength':
                     case 'maxLength':
-                        if (typeof o.inputStyle.width === 'undefined')
-                            o.inputStyle.width = parseInt(o.inputAttrs[ia], 10) * .5 + 'rem';
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .55 + 'rem' });
                         break;
+                    default:
+                        if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
+                        break;
+                       
                 }
                 fld.attr(ia, o.inputAttrs[ia]);
             }
             for (var la in o.labelAttrs) {
-                lbl.attr(la, o.labelAttrs[la]);
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+                
             }
             //console.log(o);
-            if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
-            if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
+            //if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
+            //if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;

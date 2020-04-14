@@ -52,7 +52,7 @@ div.picLightGroupCircuit > span.picLabel {
     width: 10.5rem;
 }
 div.picLightGroupCircuit > div.picValueSpinner > div.picSpinner-value {
-    width: 1.2rem;
+    width: 2rem;
 }
 div.picCSColors {
     width: 22.5rem;
@@ -62,7 +62,7 @@ div.picIBThemes {
 }
 div.picCSColor {
     width: 4.5rem;
-    height: 1.2rem;
+    height: 1.4rem;
     vertical-align: middle;
     margin-left: .1rem;
     margin-right: .1rem;
@@ -75,8 +75,8 @@ div.picCSColor {
     -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
 }
 div.picIBColor {
-    height: 4px;
-    width: 10.5rem;
+    height: 7px;
+    width: 10.25rem;
     display: block;
     position: absolute;
     margin-top: .07rem;
@@ -85,7 +85,7 @@ div.picIBColor {
     border: solid 1px gray;
 }
 div.picCSColorSelector {
-    height: 1.2rem;
+    height: 2rem;
     border: solid 1px gray;
     border-radius: 5px;
     display: inline-block;
@@ -107,7 +107,7 @@ div.picCSColorSelector {
 }
 
 div.picIBColorSelector {
-    height: 1.2rem;
+    height: 2rem;
     border: solid 1px gray;
     border-radius: 5px;
     display: inline-block;
@@ -115,8 +115,8 @@ div.picIBColorSelector {
     padding-top: .4rem;
     padding-bottom: .4rem;
     padding-right: .2rem;
-    min-width: 10.2rem;
-    width:10.2rem;
+    min-width: 10rem;
+    width:10rem;
     margin: .1rem;
     box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);

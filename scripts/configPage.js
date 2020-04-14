@@ -243,7 +243,7 @@
                         self._buildOptionDropdown('groupCircuit', {
                             labelText: '', binding: binding + 'circuit', value: c.id,
                             columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
-                            items: opts.circuits, inputStyle: { width: "7rem" }
+                            items: opts.circuits, inputStyle: { width: "8rem" }
                         }).appendTo(d);
                         $('<i class="fas fa-trash picRemoveOption" />').appendTo(d);
                     }
@@ -505,7 +505,7 @@
                 self._buildOptionDropdown('circuit', {
                     labelText: 'Circuit', binding: bind + 'circuit', value: valve.circuit,
                     columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
-                    items: opts.circuits, inputStyle: { width: '7rem' }
+                    items: opts.circuits, inputStyle: { width: '8rem' }
                 }).appendTo(line);
                 var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 var btnSave = $('<div id="btnSaveValve_"' + valve.id + ' />').appendTo(btnPnl).actionButton({ text: 'Save Valve', icon: '<i class="fas fa-save" />' });
@@ -548,7 +548,7 @@
                 self._buildOptionField('ownerEmail', 'e-mail', 'owner.email', cfg.pool.owner.email, { maxlength: 32 }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionField('ownerPhone2', 'Alt Phone', 'owner.phone2', cfg.pool.owner.phone2, { maxlength: 16 }).appendTo(line);
-                self._buildOptionField('ownerEmail2', 'Alt e-mail', 'owner.email2', cfg.pool.owner.email2, { maxlength: 32 }).appendTo(line);
+                self._buildOptionField('ownerEmail2', 'Alt e-mail', 'owner.email2', cfg.pool.owner.email2, { maxlength: 32 }, { style: { whiteSpace: 'nowrap' } }).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionDropdown('country', {
                     labelText: 'Country', binding: 'location.country', value: cfg.pool.location.country,
@@ -564,8 +564,12 @@
                 var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 var btnSave = $('<div id="btnSavePersonal" />').appendTo(btnPnl).actionButton({ text: 'Save Personal', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
-                    $(this).addClass('disabled');
-                    $(this).find('i').addClass('burst-animated');
+                    //$(this).addClass('disabled');
+                    //$(this).find('i').addClass('burst-animated');
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    console.log(v);
+                    $.putApiService('/config/general', v);
                     // Send this off to the server.
                     //$(this).find('span.picButtonText').text('Loading Config...');
                     //$.putApiService('/app/config/reload', function (data, status, xhr) {
@@ -577,17 +581,17 @@
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionDropdown('timeZone', {
                     labelText: 'Time Zone',
-                    binding: 'pool.location.timeZone',
+                    binding: 'location.timeZone',
                     value: cfg.pool.location.timeZone || 0,
                     displayColumn: 2,
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'abbrev', hidden: false, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Time Zone', style: { whiteSpace: 'nowrap' } }],
                     items: cfg.timeZones, inputStyle: { width: '12rem' }
                 }).appendTo(line);
-                self._buildOptionCheckbox('advAutoDST', 'Auto Adjust DST', 'pool.options.adjustDST', cfg.pool.options.adjustDST).appendTo(line);
+                self._buildOptionCheckbox('advAutoDST', 'Auto Adjust DST', 'options.adjustDST', cfg.pool.options.adjustDST).appendTo(line);
                 line = self._buildLine().appendTo(pnl);
                 self._buildOptionDropdown('clockMode', {
                     labelText: 'Clock Mode',
-                    binding: 'pool.options.clockMode',
+                    binding: 'options.clockMode',
                     bindColumn: 0,
                     value: cfg.pool.options.clockMode,
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Mode', style: { whiteSpace: 'nowrap' } }],
@@ -596,7 +600,7 @@
                 if (cfg.clockSources.length > 1) {
                     self._buildOptionDropdown('clockSource', {
                         labelText: 'Clock Source',
-                        binding: 'pool.options.clockSource',
+                        binding: 'options.clockSource',
                         value: cfg.pool.options.clockSource,
                         bindColumn: 0,
                         columns: [{ binding: 'name', hidden: true, text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Source', style: { whiteSpace: 'nowrap' } }],
@@ -606,8 +610,13 @@
                 btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 btnSave = $('<div id="btnSaveTimeDate" />').appendTo(btnPnl).actionButton({ text: 'Save Time & Date', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
-                    $(this).addClass('disabled');
-                    $(this).find('i').addClass('burst-animated');
+                    //$(this).addClass('disabled');
+                    //$(this).find('i').addClass('burst-animated');
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    console.log(v);
+                    $.putApiService('/config/general', v);
+
                     // Send this off to the server.
                     //$(this).find('span.picButtonText').text('Loading Config...');
                     //$.putApiService('/app/config/reload', function (data, status, xhr) {
@@ -625,8 +634,12 @@
                 btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 btnSave = $('<div id="btnSaveDelays" />').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
-                    $(this).addClass('disabled');
-                    $(this).find('i').addClass('burst-animated');
+                    //$(this).addClass('disabled');
+                    //$(this).find('i').addClass('burst-animated');
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    console.log(v);
+
                     // Send this off to the server.
                     //$(this).find('span.picButtonText').text('Loading Config...');
                     //$.putApiService('/app/config/reload', function (data, status, xhr) {
@@ -635,11 +648,32 @@
                 acc = { columns: [{ text: 'Sensor Calibration', glyph: 'fas fa-balance-scale-right', style: { width: '20rem' } }] };
                 a = self._buildAccordian('cfgGeneralCalibration', acc).appendTo(divOuter);
                 pnl = a.find('div.picAccordian-contents');
+                line = self._buildLine().appendTo(pnl);
+                $('<span style="margin-left:8.5rem"/><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;" /><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
+                for (var k = 0; k < opts.sensors.length; k++) {
+                    var sensor = opts.sensors[k];
+                    line = self._buildLine().appendTo(pnl);
+                    $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'options.' + sensor.binding + '_curr').val(sensor.temp).appendTo(line);
+                    self._buildOptionSpinner(sensor.binding, sensor.name, 'options.' + sensor.binding, sensor.temp + sensor.tempAdj, { min: -100, max: 100, step: 1, maxlength: 5, units: '°' + opts.tempUnits.name }, { style: { width: '8rem' } }).attr('data-currtemp', sensor.temp).appendTo(line);
+                    $('<span style="width:4.5rem;display:inline-block" /><span style="display:inline-block;width:7rem;text-align:center">' + sensor.temp + '</span>').appendTo(line);
+                }
+
                 btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
                 btnSave = $('<div id="btnSaveCalibration" />').appendTo(btnPnl).actionButton({ text: 'Save Calibration', icon: '<i class="fas fa-save" />' });
                 btnSave.on('click', function (e) {
-                    $(this).addClass('disabled');
-                    $(this).find('i').addClass('burst-animated');
+                    //$(this).addClass('disabled');
+                    //$(this).find('i').addClass('burst-animated');
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    for (var prop in v.options) {
+                        if (prop.endsWith('_curr')) {
+                            var offName = prop.replace('_curr', '');
+                            v.options[offName] = v.options[offName] - v.options[prop];
+                            delete v.options[prop];
+                        }
+                    }
+                    console.log(v);
+
                     // Send this off to the server.
                     //$(this).find('span.picButtonText').text('Loading Config...');
                     //$.putApiService('/app/config/reload', function (data, status, xhr) {
@@ -758,7 +792,7 @@
                         fld.css(fprop.replace('style_', ''), fldAttrs[fprop]);
                     else {
                         if (fprop === 'maxlength')
-                            fld.find('div.picSpinner-value').css('width', parseInt(spinAttrs[fprop], 10) * .6 + 'rem');
+                            fld.find('div.picSpinner-value').css('width', parseInt(spinAttrs[fprop], 10) * .7 + 'rem');
                     }
                 }
             }

@@ -1,4 +1,7 @@
-﻿.disabled {
+﻿div, span, i, input, label {
+    box-sizing:border-box;
+}
+.disabled {
     opacity:.5;
 }
 body {
@@ -472,8 +475,8 @@ div.picBodyIcon {
     text-align:center;
 }
 div.picBodyIcon div.picIndicator {
-    height:2em;
-    width:2em;
+    height:2.5em;
+    width:2.5em;
     cursor:pointer;
 }
 div.picPumps, div.picChemistry {
@@ -603,8 +606,8 @@ div.picIndicator {
     box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
     -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    width: .9em;
-    height: .9em;
+    width: 1em;
+    height: 1em;
     border-radius: 50%;
     margin-left: .15em;
     margin-right: .15em;
@@ -660,7 +663,9 @@ div.picController {
 }
 div.picValueSpinner {
     display: inline-block;
-    margin-bottom:-1px;
+}
+div.picValueSpinner > label {
+    vertical-align:middle;
 }
 div.picSpinner-value {
     font-size: 1.1rem;
@@ -669,6 +674,7 @@ span.picSpinner-units {
     color:gray;
     display:inline-block;
     margin-left:.15rem;
+    vertical-align:middle;
 }
     div.picValueSpinner.picPumpSpeed {
         margin-left: 1em;
@@ -738,7 +744,10 @@ div.picPickList {
 
 }
 div.picPickList > label {
-    margin-right:.25rem;
+    padding-right:.25rem;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    vertical-align:middle;
 }
 div.picPickList-drop {
     border-top-right-radius: 50%;

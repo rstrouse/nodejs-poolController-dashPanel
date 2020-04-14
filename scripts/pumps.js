@@ -159,6 +159,7 @@
                                 step: circuit.units.val === 0 ? 50 : data.flowStepSize
                             });
                             spin.attr('data-id', i + 1);
+                            spin.find('div.picSpinner-value').css({ width: '4.5rem' });
                             spin.on('change', function (e) {
                                 let id = $(e.target).attr('data-id');
                                 //console.log(id);
