@@ -39,12 +39,13 @@ div.picCircuitsList {
 }
 div.picCircuitsList, div.picCircuitsList-list, div.picCircuitsList-btnPanel {
     display: inline-block;
-    text-align:left;
-    vertical-align:top;
+    text-align: left;
+    vertical-align: top;
+    border-collapse:collapse;
 }
-div.picCircuitsList-btnPanel {
-    border-right:solid 3px gainsboro;
 
+div.picCircuitsList-list {
+    border-left: solid 3px gainsboro;
 }
 div.picCircuitOption {
     text-align: left;

@@ -35,6 +35,7 @@ div.picLights > div.picCircuit[data-showinfeatures=true] {
     display: none;
 }
 div.picOptionButton {
+    user-select:none;
     text-align: left;
     white-space: nowrap;
     border: solid 1px gray;
@@ -65,6 +66,7 @@ div.picOptionButton > i {
     margin-left:.4rem;
 }
 div.picActionButton {
+    user-select:none;
     text-align:left;
     white-space: nowrap;
     border: solid 1px gray;
@@ -125,6 +127,7 @@ div.picTab {
     border-top-left-radius: 5px;
     background-color: white;
     margin-bottom: -1px;
+    user-select:none;
 }
 div.picTabContents {
     border-left:solid 1px black;
@@ -662,10 +665,13 @@ div.picController {
     opacity:1;
 }
 div.picValueSpinner {
+    user-select: none;
     display: inline-block;
+    white-space:nowrap;
 }
 div.picValueSpinner > label {
     vertical-align:middle;
+    display:inline-block;
 }
 div.picSpinner-value {
     font-size: 1.1rem;
@@ -741,13 +747,15 @@ div.picSpinner-value {
 }
 
 div.picPickList {
-
+    user-select: none;
+    display: inline-block;
 }
 div.picPickList > label {
     padding-right:.25rem;
     white-space: nowrap;
     text-overflow:ellipsis;
     vertical-align:middle;
+    display:inline-block;
 }
 div.picPickList-drop {
     border-top-right-radius: 50%;
@@ -798,7 +806,7 @@ div.picPickList-options {
     border-radius: 5px;
     background-color: white;
     border-radius: 5px;
-    z-index:100;
+    z-index: 100;
 }
     div.picPickList-options table.optOuter {
         border-radius: 5px;
@@ -876,10 +884,93 @@ div.picPickList-options {
 div.pickList-options > tr.optHeader > table td {
     border: solid 1px black;
 }
-div.picInputField > label {
-    display:inline-block;
-    padding-right:.25rem;
+div.picFieldTip {
+    position:absolute;
 }
+    div.picFieldTip.top::after {
+        content: " ";
+        position: absolute;
+        top: 100%; /* At the bottom of the tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+        background: rgb(252,234,187);
+        background: -moz-linear-gradient(top, rgba(252,234,187,1) 0%, rgba(252,205,77,1) 50%, rgba(248,181,0,1) 51%, rgba(251,223,147,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    }
+
+    div.picFieldTip.bottom::after {
+        content: " ";
+        position: absolute;
+        bottom: 100%; /* At the top of the tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent orangered transparent;
+        background: rgb(252,234,187);
+        background: -moz-linear-gradient(top, rgba(252,234,187,1) 0%, rgba(252,205,77,1) 50%, rgba(248,181,0,1) 51%, rgba(251,223,147,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    }
+    div.picFieldTip.right::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        right: 100%; /* To the left of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent orangered transparent transparent;
+        background: rgb(252,234,187);
+        background: -moz-linear-gradient(top, rgba(252,234,187,1) 0%, rgba(252,205,77,1) 50%, rgba(248,181,0,1) 51%, rgba(251,223,147,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    }
+    div.picFieldTip.left::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        left: 100%; /* To the right of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent transparent orangered;
+        background: rgb(252,234,187);
+        background: -moz-linear-gradient(top, rgba(252,234,187,1) 0%, rgba(252,205,77,1) 50%, rgba(248,181,0,1) 51%, rgba(251,223,147,1) 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    }
+
+div.picFieldTip-message {
+    background: rgb(252,234,187);
+    background: -moz-linear-gradient(top, rgba(252,234,187,1) 0%, rgba(252,205,77,1) 50%, rgba(248,181,0,1) 51%, rgba(251,223,147,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    border: solid 1px gray;
+    border-radius: 5px;
+    padding: .25rem;
+    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+}
+div.picInputField {
+    user-select: none;
+    display: inline-block;
+    line-height: 1.4rem;
+}
+    div.picInputField > label {
+        display: inline-block;
+        padding-right: .25rem;
+    }
 div.picInputField > input {
     border:solid 1px gray;
     line-height:1.4rem;
@@ -889,18 +980,41 @@ div.picInputField > input {
     padding-top:0px;
     padding-bottom:0px;
 }
+div.picCheckbox {
+    display:inline-block;
+}
 div.picCheckbox input[type=checkbox] {
-    height: 1.15rem;
-    width: 1.15rem;
+    height: 1.25rem;
+    width: 1.25rem;
     vertical-align: middle;
-    margin-right: 0px;
+    margin-right: .25rem;
     margin-left: .4rem;
+    margin-top:0px;
+    margin-bottom:0px;
+    line-height:1.4rem;
+}
+div.picColorPicker,
+div.picColorPicker-label,
+div.picColorPicker-value {
+    user-select: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    line-height: 1.4rem;
+    height: 1.4rem;
+    display: inline-block;
+}
+div.picColorPicker-label {
+    line-height: 1.4rem;
+    vertical-align: middle;
 }
 div.picCheckbox > label {
     cursor: pointer;
     user-select: none;
+    line-height:1.4rem;
+    vertical-align:middle;
 }
 div.picAccordian-title {
+    user-select:none;
     border:solid 1px gray;
     cursor:pointer;
     padding:.25rem;
@@ -928,6 +1042,28 @@ i.picAccordian-title-expand {
 div.picAccordian-contents {
     padding:.25rem;
 }
+
+div.picServiceStatusMsg {
+    position:absolute;
+    border: solid 1px gray;
+    border-radius: 10px;
+    padding: 2rem;
+    max-width:15rem;
+    text-align:center;
+    background: #fefdf5;
+    background: -webkit-linear-gradient(-90deg, #fefdf5 0%, #F1DA36 65%);
+    background: linear-gradient(180deg, #fefdf5 0%, #F1DA36 65%);
+    box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='silver',strength=3);
+}
+div.picServiceStatusMsg > div {
+    vertical-align:middle;
+    display:inline-block;
+}
+
+
 div.xxxx {
     background: rgb(246,248,249); /* Old browsers */
     background: -moz-linear-gradient(top, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6-15 */

@@ -287,7 +287,7 @@ jQuery.mergeCallbacks = function (target, source) {
     }
 };
 jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
-    jQuery[method + 'ApiService'] = function (url, data, successCallback, errorCallback, completeCallback) {
+    jQuery[method + 'ApiService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
         if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
             method = method || successCallback;
             completeCallback = errorCallback;
@@ -295,9 +295,39 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             successCallback = data;
             data = undefined;
         }
+        if (typeof message === 'function') {
+            // Shift all the parameters because we aren't calling the service with a status message.
+            completeCallback = errorCallback;
+            errorCallback = successCallback;
+            successCallback = message;
+            message = undefined;
+        }
+        var msg;
+        var overlay;
+        if (typeof message !== 'undefined') {
+            console.log('Showing message: ' + message);
+            // We are displaying a message while the service is underway.
+            msg = $('<div style="visibility:hidden;" />').addClass('picServiceStatusMsg').appendTo(document.body);
+            overlay = $('<div style="background-color:lavender;opacity:.15" />').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            if (message instanceof jQuery) message.appendTo(msg);
+            else
+                $('<div />').html(message).appendTo(msg);
+            msg.css({
+                visibility: '',
+                left: ($(document).width() - msg.width()) / 2,
+                top: ($(document).height() - msg.height()) / 2
+            });
 
+        }
         // Set up the callbacks.
-        var cbComplete = function (jqXHR, status) { };
+        var cbComplete = function (jqXHR, status) {
+            if (typeof msg !== 'undefined') {
+                msg.fadeOut(300, function () {
+                    msg.remove();
+                    if (typeof overlay !== 'undefined') overlay.remove();
+                });
+            }
+        };
         var cbShowError = function (jqXHR, status, error) { };
         var cbShowSuccess = function (data, status, jqXHR) { };
         let serviceUrl = $('div.picDashboard').dashboard('option').apiServiceUrl + (!url.startsWith('/') ? '/' : '') + url;
@@ -321,7 +351,34 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
     };
 });
 
+
 var dataBinder = {
+    checkRequired: function (el, show) {
+        var isValid = true;
+        el.find('*[data-required=true]').each(function () {
+            var val = null;
+            if (typeof this.isEmpty === 'function') {
+                if (this.isEmpty()) {
+                    isValid = false;
+                    if (typeof this.label === 'function')
+                        $('<div />').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                    else 
+                        $('<div />').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                }
+            }
+            else if (typeof this.val === 'function') {
+                val = this.val();
+                if (typeof val === 'undefined') {
+                    isValid = false;
+                    if (typeof this.label === 'function')
+                        $('<div />').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                    else
+                        $('<div />').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                }
+            }
+        });
+        return isValid;
+    },
     bind: function (el, val) {
         el.find('*[data-bind]').each(function () {
             $this = $(this);
@@ -340,38 +397,40 @@ var dataBinder = {
                 if (typeof tval === 'undefined') break;
                 if (ndx >= 0) tval = tval[ndx];
             }
-            if (typeof this.val === 'function') this.val(tval);
-            else {
-                switch ($this.attr('data-fmttype')) {
-                    case 'time':
-                        {
-                            var dt = new Date();
-                            dt.setHours(0, 0, 0);
-                            dt.addMinutes(tval);
-                            tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
-                        }
-                        break;
-                    case 'date':
-                    case 'datetime':
-                        {
-                            let dt = new Date(tval);
-                            tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
-                        }
-                        break;
-                    case 'number':
-                        if (typeof (tval) !== 'number') tval = parseFloat(tval);
-                        tval = tval.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
-                        break;
-                    case 'duration':
-                        tval = dataBinder.formatDuration(tval);
-                        break;
+            if (typeof tval !== 'undefined') {
+                if (typeof this.val === 'function') this.val(tval);
+                else {
+                    switch ($this.attr('data-fmttype')) {
+                        case 'time':
+                            {
+                                var dt = new Date();
+                                dt.setHours(0, 0, 0);
+                                dt.addMinutes(tval);
+                                tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                            }
+                            break;
+                        case 'date':
+                        case 'datetime':
+                            {
+                                let dt = new Date(tval);
+                                tval = dt.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                            }
+                            break;
+                        case 'number':
+                            if (typeof (tval) !== 'number') tval = parseFloat(tval);
+                            tval = tval.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
+                            break;
+                        case 'duration':
+                            tval = dataBinder.formatDuration(tval);
+                            break;
+                    }
+                    if ($this.is('input')) {
+                        if (this.type === 'checkbox') $this.prop('checked', makeBool(tval));
+                        else { $this.val(tval); }
+                    }
+                    else if ($this.is('select')) $this.val(tval);
+                    else $this.text(tval);
                 }
-                if ($this.is('input')) {
-                    if (this.type === 'checkbox') $this.prop('checked', makeBool(tval));
-                    else $this.val(val);
-                }
-                else if ($this.is('select')) $this.val(tval);
-                else $this.text(tval);
             }
         });
     },
@@ -512,6 +571,71 @@ var dataBinder = {
         }
     }
 };
+$.ui.position.fieldTip = {
+    left: function (position, data) {
+        console.log({ fn: 'left', position: position, data: data });
+        var initPos = position.left;
+        $.ui.position.flip.left(position, data);
+        if (initPos !== position.left) {
+            data.elem.removeClass('right').addClass('left');
+        } else {
+            data.elem.removeClass('left').addClass('right');
+        }
+    },
+    top: function (position, data) {
+        var initPos = position.top;
+        console.log({ fn: 'top', position: position, data: data });
+        $.ui.position.flip.top(position, data);
+        if (initPos !== position.top) {
+            data.elem.addClass('tooltipFlipTop');
+        } else {
+            data.elem.removeClass('tooltipFlipTop');
+        }
+    }
+};
+(function ($) {
+    $.widget("pic.fieldTip", {
+        options: {
+            placement: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initFieldTip();
+        },
+        _initFieldTip: function () {
+            var self = this, o = self.options, el = self.element;
+            let div = $('<div class="picFieldTip-message" />');
+            var fld = o.field || el.parent();
+            if (o.message instanceof jQuery)
+                o.message.appendTo(div);
+            else
+                div.html(o.message);
+            el.addClass('picFieldTip');
+            el.css({ visibility: 'hidden' });
+            if (typeof fld !== 'undefined') {
+                var parent = el.parents('div.picAccordian-contents:first') || el.parents('div.picTabContent:first') || el.parents('div.picConfigContainer:first') || el.parents('div.picDashContainer:first');
+                //el.appendTo(parent);
+                var p = {
+                    my: o.placement.my || 'left center',
+                    at: o.placement.at || 'right+7 center',
+                    of: fld,
+                    collision: 'fieldTip',
+                    within: parent[0]
+                };
+                setTimeout(function () {
+                    el.position(p); el.css({ visibility: 'visible' });
+                }, 0);
+
+                if (typeof o.closeAfter === 'undefined') o.closeAfter = Math.max(o.message.length * 100, 5000);
+                if (o.closeAfter > 0) setTimeout(function () {
+                    el.fadeOut(400, function () { el.remove(); });
+                }, o.closeAfter);
+            }
+            div.appendTo(el);
+            el.on('click', function (evt) { el.remove(); evt.preventDefault(); evt.stopPropagation(); });
+        }
+    });
+})(jQuery); // Field Tip
 (function ($) {
     $.widget("pic.toggleButton", {
         options: {},
@@ -568,6 +692,9 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             el[0].val = function (val) { return self.val(val); };
             el[0].buttonText = function (val) { return self.buttonText(val); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            if (o.required === true) self.required(true);
             self._initOptionButton();
         },
         _initOptionButton: function () {
@@ -599,6 +726,16 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             return el.find('span.picButtonText').text(val);
         },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            var val = self.val();
+            return typeof val === 'undefined' || val === '';
+        },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val !== 'undefined')
@@ -606,11 +743,13 @@ var dataBinder = {
             else
                 return el.find('div.picIndicator').attr('data-status');
         }
+       
     });
 })(jQuery); // Option Button
 (function ($) {
     $.widget("pic.valueSpinner", {
-        options: { lastChange: 0, ramp:40, ramps:0, fmtMask:'#,##0.####', fmtEmpty:'', step: 1 },
+        options: {
+            lastChange: 0, ramp: 40, ramps: 0, fmtMask: '#,##0.####', fmtEmpty: '', step: 1, inputAttrs: {}, labelAttrs: {} },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initValueSpinner();
@@ -646,11 +785,18 @@ var dataBinder = {
             el[0].decrement = function () { return self.decrement(); };
             el[0].val = function (val) { return self.val(val); };
             el[0].options = function (opts) { return self.opts(opts); };
-            $('<div class="picSpinner-down"><i class="fas fa-minus"/></div><div class="picSpinner-value"/><div class="picSpinner-up"><i class="fas fa-plus" /></div><span class="picSpinner-units" />').appendTo(el);
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            if (o.required === true) self.required(true);
+            $('<label class="picSpinner-label" /><div class="picSpinner-down"><i class="fas fa-minus"/></div><div class="picSpinner-value"/><div class="picSpinner-up"><i class="fas fa-plus" /></div><span class="picSpinner-units" />').appendTo(el);
             if (typeof o.min === 'undefined') o.min = 0;
             if (typeof o.val === 'undefined') o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
             el.find('span.picSpinner-units').text(o.units);
+            self._applyStyles();
+            if (typeof o.value !== 'undefined') self.val(o.value);
+            if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);
+            if (o.labelText) el.find('label.picSpinner-label:first').html(o.labelText);
             el.on('mousedown', 'div.picSpinner-down', function (evt) {
                 self._rampDecrement();
                 evt.preventDefault();
@@ -684,6 +830,40 @@ var dataBinder = {
             else
                 return o;
         },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picValueSpinner');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+            var fld = el.find('div.picSpinner-value:first');
+            var lbl = el.find('label.picSpinner-label:first');
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        break;
+                    default:
+                        if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
+                        break;
+
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
+        },
         increment: function () {
             var self = this, o = self.options, el = self.element;
             o.val = Math.min(o.max, o.val + o.step);
@@ -698,13 +878,23 @@ var dataBinder = {
             o.lastChange = new Date().getTime();
             return o.val;
         },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return isNaN(self.val());
+        },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val === 'undefined') return o.val;
+            if (val > o.max) val = o.max;
+            else if (val < o.min) val = o.min;
             o.val = Math.min(Math.max(o.min, val), o.max);
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
         }
-
     });
 })(jQuery); // Value Spinner
 (function ($) {
@@ -716,6 +906,9 @@ var dataBinder = {
         },
         _initSelector: function () {
             var self = this, o = self.options, el = self.element;
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            if (o.required === true) self.required(true);
             el.addClass('picSelector');
             for (let i = 0; i < o.opts.length; i++) {
                 let opt = o.opts[i];
@@ -745,10 +938,19 @@ var dataBinder = {
                     el.trigger(e);
                 }
             });
+        },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return el.find('div.picOption div.picIndicator[data-status=selected]').length === 0;
         }
+
     });
 })(jQuery); // Selector
-// tabBar
 (function ($) {
     $.widget("pic.tabBar", {
         options: {
@@ -800,7 +1002,7 @@ var dataBinder = {
         selectedTabId: function (tabId) {
             var self = this, o = self.options, el = self.element;
             if (typeof tabId === 'undefined') return o.tabId;
-            else
+            else if(tabId !== o.tadId)
                 return self.selectTabById(tabId);
         },
         tabs: function () { return this.element.find('div.picTabs:first'); },
@@ -826,8 +1028,7 @@ var dataBinder = {
         }
 
     });
-})(jQuery);
-// popover
+})(jQuery); // Tab Bar
 (function ($) {
     $.widget("pic.popover", {
         options: {
@@ -967,8 +1168,7 @@ var dataBinder = {
         }
 
     });
-})(jQuery);
-// pickList
+})(jQuery); // Popover
 (function ($) {
     $.widget("pic.pickList", {
         options: {
@@ -976,8 +1176,8 @@ var dataBinder = {
             columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
             bindColumn: 0,
             displayColumn: 1,
-            inputStyle: {},
-            labelStyle: {},
+            inputAttrs: {},
+            labelAttrs: {},
             pickListStyle: { maxHeight: '300px' }
         },
         _create: function () {
@@ -986,22 +1186,24 @@ var dataBinder = {
         },
         _initPickList: function () {
             var self = this, o = self.options, el = self.element;
-            //el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
-            $('<label/>').appendTo(el).text(o.labelText);
+            $('<label class="picPickList-label" />').appendTo(el).text(o.labelText);
             var itm = self._getItem(o.value);
             $('<div class="picPickList-value" />').appendTo(el);
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
             $('<div class="picPickList-drop"><i class="fas fa-caret-down"/></div>').appendTo(el);
-            el.find('div.picPickList-value').css(o.inputStyle);
-            el.find('label:first').css(o.labelStyle);
             el.attr('data-bind', o.binding);
-            el[0].label = function () { return el.find('label:first'); };
+            el[0].label = function () { return el.find('label.picPickList-label:first'); };
             el[0].field = function () { return el.find('div.picPickList-value:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].val = function (val) { return self.val(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            el.attr('data-val', o.value);
+            if (o.required === true) self.required(true);
+            self._applyStyles();
             el.find('div.picPickList-drop').on('click', function (evt) {
                 var div = el.find('div.picPickList-options:first');
                 if (div.length > 0) {
@@ -1015,6 +1217,40 @@ var dataBinder = {
                     evt.stopPropagation();
                 }
             });
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picPickList');
+            var fld = el.find('div.picPickList-value:first');
+            var lbl = el.find('label.picPickList-label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        break;
+                    default:
+                        if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
+                        break;
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
         },
         _buildOptionHeader: function () {
             var self = this, o = self.options, el = self.element;
@@ -1042,7 +1278,7 @@ var dataBinder = {
                     var col = o.columns[j];
                     if (j === o.bindColumn) {
                         row.attr('data-value', itm[col.binding]);
-                        if (typeof val !== 'undefined' && val.toString() === itm[col.binding].toString()) row.addClass('selected');
+                        if (typeof val !== 'undefined' && val !== null && val.toString() === itm[col.binding].toString()) row.addClass('selected');
                     }
                     var td = $('<td />').appendTo(row);
                     var span = $('<span class="optText" />').appendTo(td);
@@ -1052,12 +1288,8 @@ var dataBinder = {
 
                 }
             }
-            
             div.appendTo(el);
-            el.parents('body').one('click', function (evt) {
-                console.log('Removing div');
-                div.remove();
-            });
+            el.parents('body').one('click', function (evt) { div.remove(); });
             var cols = tblOuter.find('table.optHeader > tbody > tr:first > td');
             var firstRow = tblOuter.find('table.optBody > tbody > tr:first > td');
             if (cols.length > 0 && firstRow.length > 0) {
@@ -1082,8 +1314,6 @@ var dataBinder = {
             div.on('click', 'table.optBody > tbody > tr', function (evt) {
                 self.val($(evt.currentTarget).attr('data-value'));
             });
-           
-        
         },
         _positionPickList: function (div) {
             var self = this, o = self.options, el = self.element;
@@ -1130,8 +1360,6 @@ var dataBinder = {
                 if (val) el.addClass('disabled');
                 else el.removeClass('disabled');
             }
-                
-
         },
         text: function (text) {
             var self = this, o = self.options, el = self.element;
@@ -1140,26 +1368,37 @@ var dataBinder = {
             else
                 return el.find('div.picPickList-value').text();
         },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return o.value === null || typeof o.value === 'undefined';
+        },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val !== 'undefined') {
                 var itm = self._getItem(val);
                 var colVal = self._getColumn(o.bindColumn);
-                var colText = self._getColumn(o.displayColumn);
-                if (itm) {
-                    // Trigger a selection changed.
-                    var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
-                    var evt = $.Event('beforeselchange');
-                    evt.oldItem = oldItem;
-                    evt.newItem = itm;
-                    el.trigger(evt);
-                    if (!evt.isDefaultPrevented()) {
-                        o.value = itm[colVal.binding];
-                        self.text(itm[colText.binding]);
-                        evt = $.Event('selchanged');
+                if (typeof itm !== 'undefined') {
+                    if (itm[colVal.binding] !== o.value) {
+                        var colText = self._getColumn(o.displayColumn);
+                        // Trigger a selection changed.
+                        var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
+                        var evt = $.Event('beforeselchange');
                         evt.oldItem = oldItem;
                         evt.newItem = itm;
                         el.trigger(evt);
+                        if (!evt.isDefaultPrevented()) {
+                            o.value = itm[colVal.binding];
+                            self.text(itm[colText.binding]);
+                            evt = $.Event('selchanged');
+                            evt.oldItem = oldItem;
+                            evt.newItem = itm;
+                            el.trigger(evt);
+                        }
                     }
                 }
                 else {
@@ -1167,12 +1406,13 @@ var dataBinder = {
                     o.value = null;
                 }
             }
-            else
+            else {
+                if (typeof o.value === 'undefined') console.log(o);
                 return o.value;
+            }
         }
     });
-})(jQuery);
-// inputField
+})(jQuery); // PickList
 (function ($) {
     $.widget("pic.inputField", {
         options: {
@@ -1187,6 +1427,7 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             //el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
+            el.addClass('picInputField');
             $('<label/>').appendTo(el).text(o.labelText);
             $('<input type="text" class="picInputField-value" />').appendTo(el);
             
@@ -1198,11 +1439,17 @@ var dataBinder = {
             el[0].text = function (text) { return self.text(text); };
             el[0].val = function (val) { return self.val(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            if (o.required === true) self.required(true);
+
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
             var fld = el.find('input.picInputField-value:first');
             var lbl = el.find('label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
             for (var ia in o.inputAttrs) {
                 switch (ia) {
                     case 'style':
@@ -1214,11 +1461,9 @@ var dataBinder = {
                         fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .55 + 'rem' });
                         break;
                     default:
-                        if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
+                        if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
                         break;
-                       
                 }
-                fld.attr(ia, o.inputAttrs[ia]);
             }
             for (var la in o.labelAttrs) {
                 switch (la) {
@@ -1234,6 +1479,16 @@ var dataBinder = {
             //console.log(o);
             //if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
             //if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
+        },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            var val = self.val();
+            return typeof val === 'undefined' || val.toString() === '';
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -1258,8 +1513,7 @@ var dataBinder = {
             }
         }
     });
-})(jQuery); 
-// checkbox
+})(jQuery); // Input Field
 (function ($) {
     $.widget("pic.checkbox", {
         options: {
@@ -1277,6 +1531,7 @@ var dataBinder = {
             //el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
             if (typeof o.id === 'undefined') o.id = 'cb_' + _uniqueId++;
+            el.addClass('picCheckbox');
             $('<input type="checkbox" class="picCheckbox-value" />').appendTo(el).attr('id', o.id);
             $('<label/>').attr('for', o.id).appendTo(el).text(o.labelText);
             self.val(o.value);
@@ -1291,6 +1546,8 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             var fld = el.find('input.picCheckbox-value:first');
             var lbl = el.find('label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
             for (var la in o.labelAttrs) {
                 lbl.attr(la, o.labelAttrs[la]);
             }
@@ -1304,8 +1561,7 @@ var dataBinder = {
             else return cb.is(':checked');
         }
     });
-})(jQuery); 
-// accordian
+})(jQuery); // Checkbox
 (function ($) {
     $.widget("pic.accordian", {
         options: {
@@ -1319,11 +1575,13 @@ var dataBinder = {
             var self = this, o = self.options, el = self.element;
             //el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
+            el.addClass('picAccordian');
             var title = self._buildTitle().appendTo(el);
             var contents = $('<div class="picAccordian-contents" />').appendTo(el);
             el[0].titleBlock = function () { return el.find('div.picAccordian-title:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].expanded = function (val) { return self.expanded(val); };
+            el[0].columns = function () { return self.columns(); }
             el.on('click', 'div.picAccordian-title', function () {
                 self.toggle();
             });
@@ -1331,12 +1589,25 @@ var dataBinder = {
             contents.hide();
             self.expanded(makeBool(o.expanded));
         },
+        columns: function () {
+            var self = this, o = self.options, el = self.element;
+            var arr = [];
+            el.find('div.picAccordian-title:first > div.picAccordian-titlecol').each(function () {
+                arr.push({
+                    el: $(this),
+                    elText: function () { return this.el.find('span.picAccordian-title-text'); },
+                    elGlyph: function () { return this.el.find('i:first'); }
+                });
+            });
+            return arr;
+        },
         _buildTitle: function () {
             var self = this, o = self.options, el = self.element;
             var title = $('<div class="picAccordian-title" />');
             for (var i = 0; i < o.columns.length; i++) {
                 var div = $('<div class="picAccordian-titlecol" />').appendTo(title);
                 var col = o.columns[i];
+                div.attr('col-binding', col.binding);
                 var icon = $('<i />').appendTo(div);
                 if (col.glyph) icon.addClass(col.glyph);
                 var text = $('<span class="picAccordian-title-text" />').appendTo(div);
@@ -1346,6 +1617,7 @@ var dataBinder = {
             $('<i class="picAccordian-title-expand fas fa-angle-double-right" />').appendTo(title);
             return title;
         },
+        
         toggle: function () {
             var self = this, o = self.options, el = self.element;
             var exp = makeBool(el.attr('data-expanded'));
@@ -1373,4 +1645,196 @@ var dataBinder = {
             else return exp;
         }
     });
-})(jQuery); 
+})(jQuery); // Accordian
+(function ($) {
+    $.widget("pic.colorPicker", {
+        options: { labelText: '', binding: ''},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initColorPicker();
+        },
+        _initColorPicker: function () {
+            var self = this, o = self.options, el = self.element;
+            $('<label class="picColorPicker-label" />').text(o.labelText).appendTo(el);
+            $('<div class="picColorPicker-value picCSColor" />').appendTo(el);
+            el.attr('data-datatype', 'int');
+            el[0].val = function (val) { return self.val(val); };
+            el[0].isEmpty = function (val) { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            el[0].label = function () { return el.find('label.picColorPicker.label:first'); };
+            if (o.required === true) self.required(true);
+            if (o.binding) el.attr('data-bind', o.binding);
+            el.on('click', function (evt) { self._showPopover(); });
+            self.val(o.value);
+            self._applyStyles();
+        },
+        _showPopover: function () {
+            var self = this, o = self.options, el = self.element;
+            var divVal = el.find('div.picColorPicker-value:first');
+            var divPopover = $('<div class="picCSColors" />');
+            divPopover.appendTo(el.parent());
+            divPopover.on('initPopover', function (evt) {
+                let curr = el.find('div.picColorPicker-value:first').attr('data-color');
+                let divColors = $('<div class= "picLightColors" data-bind="color" />').appendTo(evt.currentTarget);
+                for (let i = 0; i < o.colors.length; i++) {
+                    let color = o.colors[i];
+                    let div = $('<div class="picCSColor picCSColorSelector" data-color="' + color.name + '"><div class="picToggleButton"/><label class="picCSColorLabel" /></div>');
+                    div.appendTo(divColors);
+                    div.attr('data-val', color.val);
+                    div.attr('data-name', color.name);
+                    div.find('label.picCSColorLabel').text(color.desc);
+                    div.find('div.picToggleButton').toggleButton();
+                    div.find('div.picToggleButton > div.picIndicator').attr('data-status', curr === color.name ? 'on' : 'off');
+                    div.on('click', function (e) {
+                        // Select the option and close
+                        divVal.attr('data-color', $(e.currentTarget).attr('data-color'));
+                        divVal.attr('data-val', $(e.currentTarget).attr('data-val'));
+                        divPopover[0].close();
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                }
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+
+            });
+            divPopover.popover({ title: 'Select a Color', popoverStyle: 'modal', placement: { target: el } });
+            divPopover[0].show(el);
+
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picColorPicker');
+            var fld = el.find('div.picColorPicker-value:first');
+            var lbl = el.find('label.picColorPicker-label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        break;
+                    default:
+                        if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
+                        break;
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
+        },
+        _getColor: function (val) {
+            var self = this, o = self.options, el = self.element;
+            return o.colors.find(elem => elem.val === val);
+        },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return self.val() === 'undefined';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var color = self._getColor(val);
+                el.find('div.picColorPicker-value:first').attr('data-color', typeof color !== 'undefined' ? color.name : 'white').attr('data-val', val);
+            }
+            else {
+                return el.find('div.picColorPicker-value:first').attr('data-val');
+            }
+        }
+    });
+})(jQuery); // Color Picker
+(function ($) {
+    $.widget("pic.modalDialog", $.ui.dialog, {
+        options: {
+
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el[0].returnValue = function (value) { return self.returnValue(value); };
+            el[0].dialogArguments = function (args) { return self.dialogArguments(args); };
+            var btns = o.buttons.slice();
+            o.buttons = [];
+            this._super('_create');
+            if (typeof btns !== 'undefined') setTimeout(function () { self._buildButtons(btns); }, 0);
+        },
+        _buildButtons: function (btns) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof btns !== 'undefined') {
+                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
+                for (var i = 0; i < btns.length; i++) {
+                    var btn = btns[i];
+                    var b = $('<div />').appendTo(btnPnl).actionButton({ text: btn.text, icon: btn.icon });
+                    if (typeof btn.click === 'function') b.on('click', btn.click);
+                }
+            }
+        },
+        _destroy: function () {
+            var self = this, o = self.options, el = self.element;
+            this._super('_destroy');
+            el.parents('.ui-dialog:first').remove();
+        },
+        returnValue: function (value) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof value === 'undefined') return o.returnValue;
+            else o.returnValue = value;
+        },
+        dialogArguments: function (args) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof args === 'undefined') return o.dialogArguments;
+            else o.dialogArguments = value;
+        },
+        close: function (event, ui) {
+            var self = this, o = self.options, el = self.element;
+            this._super('_close');
+            this._destroy();
+        }
+    });
+})(jQuery); // Modal Dialog
+$.pic.modalDialog.createConfirm = function (id, options) {
+    var opt = typeof (options) !== 'undefined' && options !== null ? options : {
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true,
+        message: '',
+        buttons: {
+            Cancel: function () { dlg.modalDialog("close"); }
+        }
+    };
+    opt.modal = true;
+    if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
+    var dlg = $('div#' + id);
+    if (dlg.length === 0) {
+        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"/>');
+        dlg.modalDialog(opt);
+    }
+    dlg.html(opt.message);
+    dlg.modalDialog('open');
+    return dlg;
+};
+$.pic.modalDialog.closeDialog = function (el) {
+    var dlg = $(el);
+    if (!dlg.hasClass('ui-dialog-content'))
+        dlg = dlg.parents('.ui-dialog-content:first');
+    dlg.modalDialog('close');
+    return dlg;
+};
+

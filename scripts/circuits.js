@@ -4,6 +4,7 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initCircuits = function (data) { self._initCircuits(data); };
+            el[0].setItem = function (type, data) { self.setItem(type, data); };
         },
         _initCircuits: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -14,6 +15,35 @@
             div = $('<div class="picLights"/>');
             div.appendTo(el);
             div.lights(data);
+        },
+        _isLight: function (name) {
+            switch (name) {
+                case 'light':
+                case 'intellibrite':
+                case 'globrite':
+                case 'globritewhite':
+                case 'magicstream':
+                case 'dimmer':
+                case 'colorcascade':
+                case 'samlight':
+                case 'sallight':
+                case 'photongen':
+                    return true;
+            }
+            return false;
+        },
+        setItem: function (type, data) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof data.type === 'undefined') return;
+            if (type === 'lightGroup' || self._isLight(data.type.name)) {
+                el.find('div.picLights').each(function () {
+                    this.setItem(type, data);
+                });
+            }
+            else
+                el.find('div.picFeatures').each(function () {
+                    this.setItem(type, data);
+                });
         }
     });
     $.widget("pic.features", {
@@ -21,6 +51,7 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self.initFeatures(o);
+            el[0].setItem = function (type, data) { self.setItem(type, data); };
             o = {};
         },
         initFeatures: function (data) {
@@ -50,6 +81,46 @@
                 div.appendTo(el);
                 div.circuitGroup(data.circuitGroups[i]);
             }
+        },
+        setItem: function (type, data) {
+            var self = this, o = self.options, el = self.element;
+            // See if the item exists.
+            var selector = '';
+            var div = el.find('div.picFeature[data-eqid=' + data.id + ']');
+            if (div.length === 0) {
+                // We need to add it.
+                var bAdded = false;
+                var id = parseInt(data.id, 10);
+                el.children('div.picFeature').each(function () {
+                    console.log({ msg: 'Found Feature', id: this.equipmentId() });
+                    if (this.equipmentId() > id) {
+                        console.log({ msg: 'Setting Item', type: type, data: data });
+                        div = $('<div class="picFeature" />').insertBefore($(this));
+                        bAdded = true;
+                        return false;
+                    }
+                });
+                if (!bAdded) div = $('<div class="picFeature" />').appendTo(el);
+                switch (type) {
+                    case 'circuit':
+                        div.addClass('picCircuit');
+                        div.circuit(data);
+                        break;
+                    case 'feature':
+                        div.addClass('picCircuit');
+                        div.feature(data);
+                        break;
+                    case 'circuitGroup':
+                        div.addClass('picCircuitGroup');
+                        div.circuitGroup(data);
+                        break;
+                }
+
+                // Remove it from the lights section if it existed there before.
+                el.parents('div.picCircuits.picControlPanel:first').find('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
+
+
+            }
         }
     });
     $.widget('pic.feature', {
@@ -58,6 +129,7 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
+            el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             o = {};
         },
         _buildControls: function () {
@@ -65,6 +137,7 @@
             el.empty();
             var toggle = $('<div class="picFeatureToggle"/>');
             el.attr('data-featureid', o.id);
+            el.attr('data-eqid', o.id);
             el.attr('data-type', 'feature');
             toggle.appendTo(el);
             toggle.toggleButton();
@@ -100,6 +173,7 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
+            el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             o = {};
         },
         _buildControls: function () {
@@ -107,6 +181,7 @@
             el.empty();
             var toggle = $('<div class="picFeatureToggle"/>');
             el.attr('data-groupid', o.id);
+            el.attr('data-eqid', o.id);
             el.attr('data-type', 'circuitGroup');
             toggle.appendTo(el);
             toggle.toggleButton();
@@ -140,12 +215,16 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
+            el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+
             o = {};
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             if (!el.hasClass('picVirtualCircuit')) el.addClass('picVirtualCircuit');
             el.attr('data-circuitid', o.id);
+            el.attr('data-eqid', o.id);
+
             var toggle = $('<div class="picFeatureToggle"/>');
             toggle.appendTo(el);
             toggle.toggleButton();
@@ -166,6 +245,7 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
+            el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             o = {};
         },
         _buildPopover: function () {
@@ -240,9 +320,13 @@
             var self = this, o = self.options, el = self.element;
             if (!el.hasClass('picCircuit')) el.addClass('picCircuit');
             var toggle = $('<div class="picFeatureToggle"/>');
+
             toggle.appendTo(el);
             toggle.toggleButton();
             el.attr('data-circuitid', o.id);
+            el.attr('data-eqid', o.id);
+
+            el.attr('data-type', 'circuit');
             $('<label class="picFeatureLabel" data-bind="name" />').appendTo(el);
             self._buildPopover();
             el.on('click', function (evt) {
@@ -334,6 +418,7 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._buildControls(o);
+            el[0].setItem = function (type, data) { self.setItem(type, data); };
             o = {};
         },
         _buildControls: function (data) {
@@ -404,13 +489,55 @@
                     return true;
             }
             return false;
+        },
+        setItem: function (type, data) {
+            var self = this, o = self.options, el = self.element;
+            // See if the item exists.
+            var selector = '';
+            var div = el.find('div.picFeature[data-eqid=' + data.id + ']');
+            if (div.length === 0) {
+                // We need to add it.
+                var bAdded = false;
+                var id = parseInt(data.id, 10);
+                el.children('div.picLight').each(function () {
+                    if (this.equipmentId() > id) {
+                        div = $('<div class="picLight picFeature" />').insertBefore($(this));
+                        bAdded = true;
+                        return false;
+                    }
+                });
+                if (!bAdded) div = $('<div class="picFeature" />').appendTo(el);
+                switch (type) {
+                    case 'circuit':
+                        div.addClass('picCircuit');
+                        div.circuit(data);
+                        break;
+                    case 'feature':
+                        div.addClass('picCircuit');
+                        div.feature(data);
+                        break;
+                    case 'circuitGroup':
+                        div.addClass('picCircuitGroup');
+                        div.circuitGroup(data);
+                        break;
+                    case 'lightGroup':
+                        div.addClass('picLightGroup');
+                        div.lightGroup(data);
+                        break;
+                }
+
+                // Remove it from the lights section if it existed there before.
+                el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
+            }
         }
+
     });
     $.widget('pic.light', {
         options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].setState = function (data) { self.setState(data); };
+            el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             self._buildControls();
             o = {};
         },
@@ -419,7 +546,10 @@
             var toggle = $('<div class="picFeatureToggle"/>');
             toggle.appendTo(el);
             toggle.toggleButton();
+            
             el.attr('data-circuitid', o.id);
+            el.attr('data-eqid', o.id);
+
             var lbl = $('<label class="picFeatureLabel"/>');
             lbl.appendTo(el);
             lbl.text(o.name);

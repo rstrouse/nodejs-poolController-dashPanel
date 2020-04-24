@@ -59,7 +59,7 @@
                     self._createSchedulesPanel(data);
                     console.log(data);
                 })
-                    .done(function (status, xhr) { console.log('Done:' + status); })
+                    .done(function (status, xhr) { console.log({ msg: 'Done:', status: status }); })
                     .fail(function (xhr, status, error) { console.log('Failed:' + error); });
             });
         },
@@ -103,6 +103,10 @@
             o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000 });
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
+                var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
+                if (circs.length === 0) $('div.picCircuits.picControlPanel').each(function () {
+                    this.setItem('circuit', data);
+                });
                 $('div.picCircuit[data-circuitid=' + data.id + ']').each(function () {
                     this.setState(data);
                 });
@@ -118,9 +122,21 @@
             });
             o.socket.on('circuitGroup', function (data) {
                 console.log({ evt: 'circuitGroup', data: data });
+                var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
+                if (circs.length === 0) $('div.picCircuits.picControlPanel').each(function () {
+                    this.setItem('circuitGroup', data);
+                });
+                $('div.picCircuitGroup[data-groupid=' + data.id + ']').each(function () {
+                    this.setState(data);
+                });
+
             });
             o.socket.on('lightGroup', function (data) {
                 console.log({ evt: 'lightGroup', data: data });
+                var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
+                if (circs.length === 0) $('div.picCircuits.picControlPanel').each(function () {
+                    this.setItem('lightGroup', data);
+                });
                 $('div.picLightGroup[data-groupid=' + data.id + ']').each(function () {
                     this.setState(data);
                 });
@@ -136,7 +152,11 @@
 
             o.socket.on('feature', function (data) {
                 console.log({ evt: 'feature', data: data });
-                $('div.picCircuit[data-featureid=' + data.id + ']').each(function () {
+                var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
+                if (circs.length === 0) $('div.picCircuits.picControlPanel').each(function () {
+                    this.setItem('feature', data);
+                });
+                $('div.picCircuit[data-featureid= ' + data.id + ']').each(function () {
                     this.setState(data);
                 });
             });

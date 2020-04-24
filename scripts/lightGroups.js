@@ -3,6 +3,7 @@
     _create: function () {
         var self = this, o = self.options, el = self.element;
         el[0].setState = function (data) { self.setState(data); };
+        el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
         self._buildControls();
         o = {};
     },
@@ -12,6 +13,8 @@
         toggle.appendTo(el);
         toggle.toggleButton();
         el.attr('data-groupid', o.id);
+        el.attr('data-equid', o.id);
+
         var lbl = $('<label class="picFeatureLabel"/>');
         lbl.appendTo(el);
         lbl.text(o.name);
