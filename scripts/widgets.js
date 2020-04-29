@@ -328,7 +328,13 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
                 });
             }
         };
-        var cbShowError = function (jqXHR, status, error) { };
+        var cbShowError = function (jqXHR, status, error) {
+            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON };
+            console.log(err);
+            if (err.httpCode >= 299) {
+                $.pic.modalDialog.createApiError(err);
+            }
+        };
         var cbShowSuccess = function (data, status, jqXHR) { };
         let serviceUrl = $('div.picDashboard').dashboard('option').apiServiceUrl + (!url.startsWith('/') ? '/' : '') + url;
 
@@ -1407,7 +1413,7 @@ $.ui.position.fieldTip = {
                 }
             }
             else {
-                if (typeof o.value === 'undefined') console.log(o);
+                //if (typeof o.value === 'undefined') console.log(o);
                 return o.value;
             }
         }
@@ -1808,8 +1814,53 @@ $.ui.position.fieldTip = {
         }
     });
 })(jQuery); // Modal Dialog
+(function ($) {
+    $.widget("pic.errorPanel", {
+        options: {
+
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picErrorPanel');
+            var line = $('<div />').appendTo(el);
+            if (typeof o.error !== 'undefined') {
+                $('<label />').appendTo(line).addClass('errorLabel').text('Message');
+                $('<span />').appendTo(line).addClass('errorMessage').text(o.error.message);
+                if (typeof o.error.equipmentType !== 'undefined') {
+                    line = $('<div />').appendTo(el);
+                    $('<label />').appendTo(line).addClass('errorLabel').text('Eq Type');
+                    $('<span />').appendTo(line).text(o.error.equipmentType);
+                }
+                if (typeof o.error.id !== 'undefined') {
+                    line = $('<div />').appendTo(el);
+                    $('<label />').appendTo(line).addClass('errorLabel').text('Eq Id');
+                    $('<span />').appendTo(line).text(o.error.id);
+                }
+                if (typeof o.error.parameter !== 'undefined') {
+                    line = $('<div />').appendTo(el);
+                    $('<label />').appendTo(line).addClass('errorLabel').text('Param');
+                    $('<span />').appendTo(line).text(o.error.parameter);
+                    if (typeof o.error.value !== 'undefined') {
+                        $('<label />').appendTo(line).text(' = ');
+                        $('<span />').appendTo(line).text(o.error.value);
+                    }
+                }
+                if (typeof o.error.stack !== 'undefined') {
+                    var acc = $('<div />').appendTo(el).accordian({ columns: [{ text: 'Stack Trace', glyph: 'fab fa-stack-overflow', style: { width: '10rem' } }] });
+                    var pnl = acc.find('div.picAccordian-contents');
+                    var div = $('<div />').appendTo(pnl).addClass('picStackTrace').html(o.error.stack);
+                }
+            }
+        }
+    });
+})(jQuery); // Error Panel
+
 $.pic.modalDialog.createConfirm = function (id, options) {
-    var opt = typeof (options) !== 'undefined' && options !== null ? options : {
+    var opt = typeof options !== 'undefined' && options !== null ? options : {
         autoOpen: false,
         height: 300,
         width: 350,
@@ -1837,4 +1888,31 @@ $.pic.modalDialog.closeDialog = function (el) {
     dlg.modalDialog('close');
     return dlg;
 };
+$.pic.modalDialog.createApiError = function (err, options) {
+    var opt = typeof options !== 'undefined' && options !== null ? options : {
+        autoOpen: false,
+        height: 'auto',
+        width: '30rem',
+        modal: true,
+        message: '',
+        buttons: [
+            { text: 'Close', icon: '<i class="far fa-window-close" />', click: function () { dlg.modalDialog("close"); } }
+        ]
+    };
+    opt.modal = true;
+    opt.title = 'Error: ' + typeof err.error !== 'undefined' ? err.error.name : 'General Error';
+    var id = 'errorDialog' + _uniqueId++;
+    if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
+    var dlg = $('div#' + id);
+    if (dlg.length === 0) {
+        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"/>');
+        $('<div />').appendTo(dlg).errorPanel(err);
+        dlg.modalDialog(opt);
+    }
+
+    dlg.modalDialog('open');
+    return dlg;
+};
+
+
 

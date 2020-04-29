@@ -78,12 +78,49 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                console.log(v);
+                // Go back to the server and get the list of all installed pumps at the moment.
                 if (dataBinder.checkRequired(p)) {
-                    //$.putApiService('/config/body', v, function (data, status, xhr) {
-                    //    console.log({ data: data, status: status, xhr: xhr });
-                    //    self.dataBind(data);
-                    //});
+                    $.getApiService('/config/options/pumps', null, function (opts, status, xhr) {
+                        console.log(v);
+                        var valid = true;
+                        // Verify all the addresses are unique.
+                        var type = opts.pumpTypes.find(elem => elem.val === v.type);
+                        if (type.hasAddress) {
+                            for (var j = 0; j < opts.pumps.length; j++) {
+                                var pump = opts.pumps[j];
+                                if (pump.id === v.id) continue;
+                                if (type.hasAddress && pump.address === v.address) {
+                                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=address]:first')).fieldTip({
+                                        message: 'Address conflicts with pump: ' + pump.name
+                                    });
+                                    valid = false;
+                                }
+                            }
+                        }
+                        if (typeof type.maxCircuits !== 'undefined' && type.maxCircuits > 0) {
+                            // If we have circuits then we need to verify that there are no duplicates.
+                            var hash = {};
+                            for (var i = 0; i < v.circuits.length; i++) {
+                                var c = v.circuits[i];
+                                if (typeof hash['c' + c.circuit] !== 'undefined') {
+                                    var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
+                                    $('<div />').appendTo(dd).fieldTip({ message: 'Pump circuits<br/>must be unique' });
+                                    valid = false;
+                                }
+                                hash['c' + c.circuit] = c.circuit;
+                            }
+                        }
+                        if (valid) {
+                            // Save the pump to the server.
+                            //$.putApiService('/config/body', v, function (data, status, xhr) {
+                            //    console.log({ data: data, status: status, xhr: xhr });
+                            //    self.dataBind(data);
+                            //});
+                        }
+
+
+
+                    });
                 }
             });
             el.on('selchanged', 'div.picPickList[data-bind=type]', function (evt) {
@@ -249,7 +286,7 @@
                     labelText: 'Units', binding: binding + 'units', value: circ.units,
                     columns: [{ binding: 'val', hidden:true, text: 'value', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Units', style: { whiteSpace: 'nowrap' } }],
                     style: { marginLeft: '.25rem' },
-                    items: o.pumpUnits, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display: 'none' } }
+                    items: o.pumpUnits, inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display: 'none' } }
                 }).appendTo(line);
             }
             else
@@ -271,12 +308,17 @@
                     self.addCircuit(type, obj.circuits[i]);
                 }
             }
-
+            var ddAddr = el.find('div.picPickList[data-bind$=address]');
             cols[0].elText().text(obj.name);
-            if (typeof type !== 'undefined')
+            if (typeof type !== 'undefined') {
                 cols[1].elText().text(type.desc);
-            else
-                cols[1].elText().text();
+                ddAddr[0].required(type.hasAddress);
+                if (type.hasAddress) ddAddr.show();
+                else ddAddr.hide();
+            }
+            else {
+                cols[1].elText().text('');
+            }
             cols[2].elText().text(circuits);
             var clist = el.find('div.cfgPump-pnlCircuits:first');
             if (type.maxCircuits > 0) clist.show();

@@ -1062,6 +1062,28 @@ div.picServiceStatusMsg > div {
     vertical-align:middle;
     display:inline-block;
 }
+div.picStackTrace {
+    font-size:.8rem;
+    font-family:'Courier New';
+    white-space:pre;
+    width:100%;
+    max-height:10rem;
+    overflow:auto;
+}
+label.errorLabel {
+    display: inline-block;
+    width: 5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align:top;
+    white-space:nowrap;
+    font-weight:bold;
+}
+span.errorMessage {
+    display:inline-block;
+    vertical-align:middle;
+    max-width:20rem;
+}
 
 
 div.xxxx {
