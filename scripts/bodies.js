@@ -100,6 +100,7 @@
                     setPoint: parseInt(body.attr('data-setpoint'), 10)
                 };
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
+                    console.log(data);
                     var divPopover = $('<div/>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {

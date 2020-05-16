@@ -92,9 +92,9 @@
                 var bAdded = false;
                 var id = parseInt(data.id, 10);
                 el.children('div.picFeature').each(function () {
-                    console.log({ msg: 'Found Feature', id: this.equipmentId() });
+                    //console.log({ msg: 'Found Feature', id: this.equipmentId() });
                     if (this.equipmentId() > id) {
-                        console.log({ msg: 'Setting Item', type: type, data: data });
+                        //console.log({ msg: 'Setting Item', type: type, data: data });
                         div = $('<div class="picFeature" />').insertBefore($(this));
                         bAdded = true;
                         return false;
@@ -149,7 +149,7 @@
             el.on('click', function () {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-featureid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-                    console.log('Put message');
+
                 });
                 setTimeout(function () { self.resetState(); }, 3000);
             });
@@ -193,7 +193,6 @@
             el.on('click', function () {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-                    console.log('Put message');
                 });
                 setTimeout(function () { self.resetState(); }, 3000);
             });
@@ -333,7 +332,6 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 evt.stopPropagation();
                 $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-                    console.log('Put message');
                 });
                 setTimeout(function () { self.resetState(); }, 2000);
             });
@@ -403,7 +401,7 @@
             }
             else {
                 if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length > 0) {
-                    console.log('remove id: ' + data.id);
+                    //console.log('remove id: ' + data.id);
                     $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').remove();
                 }
             }
@@ -564,7 +562,6 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 evt.stopPropagation();
                 $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-                    console.log('Put message');
                 });
                 setTimeout(function () { self.resetState(); }, 2000);
             });

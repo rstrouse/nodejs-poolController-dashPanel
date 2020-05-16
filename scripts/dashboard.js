@@ -149,7 +149,6 @@
                 if (data.action.val !== 0) $('span.picIntelliBriteIcon').addClass('fa-spin');
                 else $('span.picIntelliBriteIcon').removeClass('fa-spin');
             });
-
             o.socket.on('feature', function (data) {
                 console.log({ evt: 'feature', data: data });
                 var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
@@ -177,6 +176,9 @@
                     this.setEquipmentData(data);
                 });
                 console.log({ evt: 'body', data: data });
+            });
+            o.socket.on('config', function (data) {
+                console.log({ evt: 'config', data: data });
             });
             o.socket.on('schedule', function (data) {
                 console.log({ evt: 'schedule', data: data });

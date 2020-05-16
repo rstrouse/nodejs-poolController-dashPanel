@@ -13,7 +13,7 @@
         toggle.appendTo(el);
         toggle.toggleButton();
         el.attr('data-groupid', o.id);
-        el.attr('data-equid', o.id);
+        el.attr('data-eqid', o.id);
 
         var lbl = $('<label class="picFeatureLabel"/>');
         lbl.appendTo(el);
