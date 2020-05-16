@@ -34,6 +34,11 @@
                     evt.newTab.contents.empty();
                     $('<div />').appendTo(evt.newTab.contents).configFeatures();
                     break;
+                case 'tabCustomNames':
+                    evt.newTab.contents.empty();
+                    $('<div />').appendTo(evt.newTab.contents).configCustomNames();
+                    break;
+
                 case 'tabValves':
                     evt.newTab.contents.empty();
                     $('<div />').appendTo(evt.newTab.contents).configValves();
@@ -76,7 +81,7 @@
                     { id: 'tabFeatures', text: 'Features', cssClass: 'cfgFeatures' },
                     { id: 'tabCircuitGroups', text: 'Circuit Groups', cssClass: 'cfgCircuitGroups' },
                     { id: 'tabLightGroups', text: 'Light Groups', cssClass: 'cfgLightGroups' }]);
-                if (typeof data.customNames !== 'undefined' && data.customNames.length > 0)
+                //if (typeof data.customNames !== 'undefined' && data.customNames.length > 0)
                     tab.parent().find('div.picTabBar:first')[0].addTab({ id: 'tabCustomNames', text: 'Custom Names', cssClass: 'cfgCustomNames' });
                 tab = self._addConfigTab({ id: 'tabPumps', text: 'Pumps', cssClass: 'cfgPumps' });
                 tab = self._addConfigTab({ id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' });

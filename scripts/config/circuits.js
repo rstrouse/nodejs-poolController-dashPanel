@@ -120,14 +120,34 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
-            el.addClass('cfgLightGroups');
+            el.addClass('cfgCustomNames');
+            pnl = $('<div />').addClass('cfgCustomNames').appendTo(el);
             $.getApiService('/config/options/customNames', null, function (opts, status, xhr) {
                 console.log(opts);
-                var bodies = opts.bodies;
-                for (var i = 0; i < bodies.length; i++) {
-                    //$('<div />').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies })[0].dataBind(opts.bodies[i]);
+                var names = opts.names;
+                for (var i = 0; i < opts.maxCustomNames; i++) {
+                    var name = opts.customNames.find(elem => elem.id === i + 1);
+                    var binding = '';
+                    if (typeof name === 'undefined') name = { id: i + 1, name: '' };
+                    var line = $('<div />').appendTo(pnl).addClass('cfgCustomName');
+                    $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
+                    $('<div />').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: binding + 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
+                    dataBinder.bind(line, name);
                 }
             });
+           
+            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
+            var btnSave = $('<div id="btnSaveNames" />').appendTo(btnPnl).actionButton({ text: 'Save Custom Names', icon: '<i class="fas fa-save" />' });
+            btnSave.on('click', function (e) {
+                var names = [];
+                el.find('div.cfgCustomName').each(function () {
+                    names.push(dataBinder.fromElement($(this)));
+                });
+                $.putApiService('/config/customNames', names, 'Saving Custom Names...', function (data, status, xhr) {
+                    console.log({ data: data, status: status, xhr: xhr });
+                });
+            });
+
         }
     });
 })(jQuery); // Custom Names Tab
@@ -539,8 +559,8 @@
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1, color: 0, swimDelay:0 });
             });
-            $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits);
-
+            $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits).sortable({ axis: 'y', containment: 'parent', cursor:'move', forceHelperSize:true });
+            
 
             var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
             var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save" />' });
@@ -565,9 +585,12 @@
                         }
                         hash['c' + c.circuit] = c.circuit;
                     }
+                    c.position = i + 1;
                 }
                 if (dataBinder.checkRequired(el)) {
                     // Send this off to the server.
+
+
                     //$(this).find('span.picButtonText').text('Loading Config...');
                     //$.putApiService('/app/config/reload', function (data, status, xhr) {
                 }
@@ -597,6 +620,7 @@
             if (typeof color === 'undefined') color = o.colors.find(elem => elem.name === 'white');
             if(typeof color === 'undefined') color = { val: 0, name: 'white', desc: 'white' };
             var binding = 'circuits[' + circuits.length + '].';
+            $('<i class="fas fa-map-pin" style="color:green;padding-left:.5rem;padding-right:.5rem;cursor:pointer;" />').appendTo(line).attr('title', 'Drag to change the light position');
             $('<div />').appendTo(line).pickList({ required: true,
                 labelText: 'Circuit', binding: binding + 'circuit', value: circ.circuit,
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],

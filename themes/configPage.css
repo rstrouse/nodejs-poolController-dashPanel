@@ -54,7 +54,9 @@ div.picCircuitsList-list {
   border-left: solid 3px gainsboro; }
 
 div.picCircuitOption {
-  text-align: left; }
+  text-align: left;
+  margin-top: 1px;
+  margin-bottom: 1px; }
 
 div.picCircuitOption i.picRemoveOption {
   cursor: pointer;

@@ -1465,6 +1465,7 @@ $.ui.position.fieldTip = {
                     case 'maxLength':
                         //if (typeof o.inputStyle.width === 'undefined')
                         fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .55 + 'rem' });
+                        fld.attr('maxlength', o.inputAttrs[ia]);
                         break;
                     default:
                         if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
