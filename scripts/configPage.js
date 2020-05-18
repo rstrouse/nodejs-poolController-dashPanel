@@ -81,7 +81,7 @@
                     { id: 'tabFeatures', text: 'Features', cssClass: 'cfgFeatures' },
                     { id: 'tabCircuitGroups', text: 'Circuit Groups', cssClass: 'cfgCircuitGroups' },
                     { id: 'tabLightGroups', text: 'Light Groups', cssClass: 'cfgLightGroups' }]);
-                //if (typeof data.customNames !== 'undefined' && data.customNames.length > 0)
+                if (data.equipment.maxCustomNames > 0)
                     tab.parent().find('div.picTabBar:first')[0].addTab({ id: 'tabCustomNames', text: 'Custom Names', cssClass: 'cfgCustomNames' });
                 tab = self._addConfigTab({ id: 'tabPumps', text: 'Pumps', cssClass: 'cfgPumps' });
                 tab = self._addConfigTab({ id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' });

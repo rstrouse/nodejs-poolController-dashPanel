@@ -222,7 +222,8 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             var func = o.functions.find(elem => elem.val === obj.type);
-            var eggTimer = obj.eggTimer || 12;
+            if (typeof func === 'undefined') func = o.functions.find(elem => elem.name === 'generic');
+            var eggTimer = obj.eggTimer || 720;
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
             cols[0].elText().text(obj.name);
@@ -332,6 +333,8 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             var func = o.functions.find(elem => elem.val === obj.type);
+            if (typeof func === 'undefined') func = o.functions.find(elem => elem.val === 'generic');
+            if (typeof func === 'undefined') func = { val: -1, desc: 'unknown' };
             var eggTimer = obj.eggTimer || 12;
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
@@ -559,8 +562,21 @@
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1, color: 0, swimDelay:0 });
             });
-            $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits).sortable({ axis: 'y', containment: 'parent', cursor:'move', forceHelperSize:true });
-            
+            $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits).sortable({
+                axis: 'y', containment: 'parent', cursor: 'move', tolerance: 'intersect',
+                update: function (evt, ui) {
+                    var ndx = 0;
+                    $(evt.target).find('div.picCircuitOption').each(function () {
+                        console.log('Found option');
+                        $(this).find('*[data-bind^=circuits]').each(function () {
+                            var fld = $(this);
+                            var b = fld.attr('data-bind');
+                            fld.attr('data-bind', b.replace(/circuits\[\d+\]/, 'circuits[' + ndx + ']'));
+                        });
+                        ndx++;
+                    });
+                }
+            });
 
             var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
             var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save" />' });
@@ -572,27 +588,33 @@
                 v.eggTimer = (v.eggTimerHours * 60) + v.eggTimerMinutes;
                 delete v.eggTimerHours;
                 delete v.eggTimerMinutes;
-                console.log(v);
-                var hash = {};
-                for (var i = 0; i < v.circuits.length; i++) {
-                    var c = v.circuits[i];
-                    var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
-                    if (c.circuit === -1)
-                        $('<div />').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
-                    else {
-                        if (typeof hash['c' + c.circuit] !== 'undefined') {
-                            $('<div />').appendTo(dd).fieldTip({ message: 'Group circuits<br/>must be unique' });
-                        }
-                        hash['c' + c.circuit] = c.circuit;
-                    }
-                    c.position = i + 1;
+                if (typeof v.circuits === 'undefined') {
+                    isValid = false;
+                    $('<div />').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br/>have been created.' });
                 }
-                if (dataBinder.checkRequired(el)) {
-                    // Send this off to the server.
-
-
-                    //$(this).find('span.picButtonText').text('Loading Config...');
-                    //$.putApiService('/app/config/reload', function (data, status, xhr) {
+                else {
+                    console.log(v);
+                    var hash = {};
+                    for (var i = 0; i < v.circuits.length; i++) {
+                        var c = v.circuits[i];
+                        var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
+                        if (c.circuit === -1)
+                            $('<div />').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
+                        else {
+                            if (typeof hash['c' + c.circuit] !== 'undefined') {
+                                $('<div />').appendTo(dd).fieldTip({ message: 'Group circuits<br/>must be unique' });
+                            }
+                            hash['c' + c.circuit] = c.circuit;
+                        }
+                        c.position = i + 1;
+                    }
+                    if (dataBinder.checkRequired(el)) {
+                        // Send this off to the server.
+                        $.putApiService('/config/lightGroup', v, function (data, status, xhr) {
+                            console.log({ data: data, status: status, xhr: xhr });
+                            self.dataBind(data);
+                        });
+                    }
                 }
             });
             var btnDelete = $('<div />').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash" />' });
@@ -641,12 +663,13 @@
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
             var clist = el.find('div.picCircuitsList-list:first');
+            clist.empty();
             cols[0].elText().text(obj.name);
             var circuits = '';
             for (var i = 0; i < obj.circuits.length; i++) {
                 if (i > 0) circuits += ', ';
                 var c = o.circuits.find(elem => elem.id === obj.circuits[i].circuit);
-                circuits += c.name;
+                circuits += typeof c !== 'undefined' ? c.name : 'unknown';
                 self.addCircuit(obj.circuits[i]);
             }
             clist.on('click', 'i.picRemoveOption', function (e) {

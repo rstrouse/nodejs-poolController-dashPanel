@@ -1350,7 +1350,7 @@ $.ui.position.fieldTip = {
         },
         _getItem: function (value) {
             var self = this, o = self.options, el = self.element;
-            if (typeof value === 'undefined') return;
+            if (typeof value === 'undefined' || value === null) return;
             var bind = self._getColumn(o.bindColumn);
             for (var i = 0; i < o.items.length; i++) {
                 var itm = o.items[i];
