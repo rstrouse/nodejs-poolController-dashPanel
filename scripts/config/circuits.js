@@ -176,10 +176,11 @@
             var line = $('<div />').appendTo(pnl);
             $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
             if (o.equipmentNames.length > 0) {
-                $('<div />').appendTo(line).pickList({ required: true,
+                $('<div />').appendTo(line).pickList({
+                    required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputStyle: { width: "7rem" }
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
+                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else
@@ -223,6 +224,7 @@
             var cols = acc[0].columns();
             var func = o.functions.find(elem => elem.val === obj.type);
             if (typeof func === 'undefined') func = o.functions.find(elem => elem.name === 'generic');
+            if (typeof func === 'undefined') func = { val: 0, desc: 'unknown' };
             var eggTimer = obj.eggTimer || 720;
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
@@ -262,8 +264,8 @@
             if (o.equipmentNames.length > 0) {
                 $('<div />').appendTo(line).pickList({ required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputStyle: { width: "7rem" }
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
+                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else
@@ -333,9 +335,9 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             var func = o.functions.find(elem => elem.val === obj.type);
-            if (typeof func === 'undefined') func = o.functions.find(elem => elem.val === 'generic');
+            if (typeof func === 'undefined') func = o.functions.find(elem => elem.name === 'generic');
             if (typeof func === 'undefined') func = { val: -1, desc: 'unknown' };
-            var eggTimer = obj.eggTimer || 12;
+            var eggTimer = obj.eggTimer || 720;
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
             cols[0].elText().text(obj.name);
@@ -372,8 +374,8 @@
             if (o.equipmentNames.length > 0) {
                 $('<div />').appendTo(line).pickList({ required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputStyle: { width: "7rem" }
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
+                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else

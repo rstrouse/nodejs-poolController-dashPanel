@@ -85,6 +85,8 @@
                         var valid = true;
                         // Verify all the addresses are unique.
                         var type = opts.pumpTypes.find(elem => elem.val === v.type);
+                        if (typeof type === 'undefined') type = opts.pumpTypes.find(elem => elem.name === 'vs');
+                        if (typeof type === 'undefined') type = { val: 0, name: 'unknown', desc: 'unknown' };
                         if (type.hasAddress) {
                             for (var j = 0; j < opts.pumps.length; j++) {
                                 var pump = opts.pumps[j];

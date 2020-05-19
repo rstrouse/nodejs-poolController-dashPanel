@@ -63,8 +63,9 @@
                 el.find('div.picCheckbox[data-bind=manualHeat]').hide();
                 cols[0].elGlyph().attr('class', 'fas fa-swimming-pool');
             }
+            var capacity = typeof obj.capacity !== 'undefined' ? obj.capacity || 0 : 0;
             cols[0].elText().text(obj.name);
-            cols[1].elText().text(obj.capacity.format('#,##0') + ' gallons');
+            cols[1].elText().text(capacity.format('#,##0') + ' gallons');
             dataBinder.bind(el, obj);
         }
     });
