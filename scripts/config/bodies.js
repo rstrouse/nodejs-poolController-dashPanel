@@ -55,6 +55,11 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
+            if (typeof obj.type === 'undefined') {
+                if (name.toLowerCase() === 'pool') obj.type = 0;
+                else if (name.toLowerCase() === 'spa') obj.type = 1;
+                else obj.type = 0;
+            }
             if (obj.type === 1) {
                 el.find('div.picCheckbox[data-bind=manualHeat]').show();
                 cols[0].elGlyph().attr('class', 'fas fa-hot-tub');
@@ -63,7 +68,8 @@
                 el.find('div.picCheckbox[data-bind=manualHeat]').hide();
                 cols[0].elGlyph().attr('class', 'fas fa-swimming-pool');
             }
-            var capacity = typeof obj.capacity !== 'undefined' ? obj.capacity || 0 : 0;
+            var capacity = typeof obj.capacity !== 'undefined' ? parseInt(obj.capacity, 10) || 0 : 0;
+            if (isNaN(capacity)) capacity = 0;
             cols[0].elText().text(obj.name);
             cols[1].elText().text(capacity.format('#,##0') + ' gallons');
             dataBinder.bind(el, obj);

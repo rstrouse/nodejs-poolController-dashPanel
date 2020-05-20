@@ -126,7 +126,8 @@
                 console.log(opts);
                 var names = opts.names;
                 for (var i = 0; i < opts.maxCustomNames; i++) {
-                    var name = opts.customNames.find(elem => elem.id === i + 1);
+                    var name = opts.customNames.find(elem => elem.id === i + 201);
+                    if (typeof name === 'undefined') name = { id: i + 201, name: '', desc: '' };
                     var binding = '';
                     if (typeof name === 'undefined') name = { id: i + 1, name: '' };
                     var line = $('<div />').appendTo(pnl).addClass('cfgCustomName');
@@ -141,6 +142,8 @@
             btnSave.on('click', function (e) {
                 var names = [];
                 el.find('div.cfgCustomName').each(function () {
+                    var name = dataBinder.fromElement($(this));
+                    name.id = name.id - 200;
                     names.push(dataBinder.fromElement($(this)));
                 });
                 $.putApiService('/config/customNames', names, 'Saving Custom Names...', function (data, status, xhr) {

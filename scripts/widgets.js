@@ -618,6 +618,7 @@ $.ui.position.fieldTip = {
                 div.html(o.message);
             el.addClass('picFieldTip');
             el.css({ visibility: 'hidden' });
+            console.log(o.message);
             if (typeof fld !== 'undefined') {
                 var parent = el.parents('div.picAccordian-contents:first') || el.parents('div.picTabContent:first') || el.parents('div.picConfigContainer:first') || el.parents('div.picDashContainer:first');
                 //el.appendTo(parent);
@@ -1207,6 +1208,7 @@ $.ui.position.fieldTip = {
             el[0].disabled = function (val) { return self.disabled(val); };
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
+            el[0].items = function (val) { self.itemList(val); }
             el.attr('data-val', o.value);
             if (o.required === true) self.required(true);
             self._applyStyles();
@@ -1356,6 +1358,15 @@ $.ui.position.fieldTip = {
                 var itm = o.items[i];
                 var val = typeof itm !== 'undefined' && typeof itm[bind.binding] !== 'undefined' ? itm[bind.binding] : '';
                 if (value.toString() === val.toString()) return itm;
+            }
+        },
+        itemList: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return o.items;
+            else {
+                var cv = self.val();
+                o.items = val;
+                self.val(cv);
             }
         },
         disabled: function (val) {

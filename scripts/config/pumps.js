@@ -13,7 +13,7 @@
                 console.log(opts);
                 var pumps = opts.pumps;
                 for (var i = 0; i < pumps.length; i++) {
-                    $('<div />').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits })[0].dataBind(pumps[i]);
+                    $('<div />').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models })[0].dataBind(pumps[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
                 var btnAdd = $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" />' });
@@ -21,7 +21,7 @@
                     var groups = el.find('div.picConfigCategory.cfgPump');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div />').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits });
+                    var pnl = $('<div />').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models });
                     var pt = opts.pumpTypes[0];
                     pnl[0].dataBind({
                         id: -1, name: 'Pump ' + (groups.length + 1),
@@ -58,7 +58,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div />').appendTo(pnl);
             $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-            $('<div />').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            $('<div />').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'3.25rem' } } });
             $('<div />').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
@@ -66,12 +66,24 @@
             });
             var addrs = [];
             for (var k = 0; k < o.maxPumps; k++) addrs.push({ val: k + 96, desc: k + 1 });
-            console.log({ maxPumps: o.maxPumps, addrs: addrs });
             $('<div />').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Address', style: { whiteSpace: 'nowrap' } }],
                 items: addrs, inputAttrs: { style: { width: '2rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
+            $('<div />').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Body', binding: binding + 'body',
+                columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
+                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            });
+            line = $('<div />').appendTo(pnl);
+            $('<div />').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Model', binding: binding + 'model',
+                columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Model', style: { whiteSpace: 'nowrap' } }],
+                items: [], inputAttrs: { style: { width: '11rem' } }, labelAttrs: { style: { width: '3.25rem', marginLeft: '0rem' } }
+            });
+
+
             line = $('<div class="picPumpDetails" />').appendTo(pnl);
             var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
             var btnSave = $('<div id="btnSavePump" />').appendTo(btnPnl).actionButton({ text: 'Save Pump', icon: '<i class="fas fa-save" />' });
@@ -95,6 +107,7 @@
                                     $('<div />').appendTo(el.find('div.picPickList[data-bind$=address]:first')).fieldTip({
                                         message: 'Address conflicts with pump: ' + pump.name
                                     });
+                                    
                                     valid = false;
                                 }
                             }
@@ -113,15 +126,17 @@
                             }
                         }
                         if (valid) {
+                            console.log(v);
+                            $.putApiService('/config/pump', v, function (data, status, xhr) {
+                                console.log(data);
+                                self.dataBind(data);
+                            });
                             // Save the pump to the server.
-                            //$.putApiService('/config/body', v, function (data, status, xhr) {
+                            //$.putApiService('/config/pump', v, function (data, status, xhr) {
                             //    console.log({ data: data, status: status, xhr: xhr });
                             //    self.dataBind(data);
                             //});
                         }
-
-
-
                     });
                 }
             });
@@ -147,9 +162,10 @@
                             $.pic.modalDialog.closeDialog(this);
                             if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
                             else {
-                                //$.deleteApiService('/config/pump', v, 'Deleting Pump...', function (c, status, xhr) {
-                                //    p.parents('div.picConfigCategory.cfgPump:first').remove();
-                                //});
+                                console.log('Deleting Pump');
+                                $.deleteApiService('/config/pump', v, 'Deleting Pump...', function (c, status, xhr) {
+                                    p.parents('div.picConfigCategory.cfgPump:first').remove();
+                                });
                             }
                         }
                     },
@@ -193,6 +209,8 @@
                 $('<div />').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
                 $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'maxFlow').appendTo(line);
+
+
 
             var pnlCircuits = $('<div class="cfgPump-pnlCircuits" style="text-align:right;" />').appendTo(pnl);
             $('<div><hr /></div>').appendTo(pnlCircuits);
@@ -301,6 +319,7 @@
             var type = o.pumpTypes.find(elem => elem.val === obj.type);
             var cols = acc[0].columns();
             self._resetPumpPanel(type);
+            console.log(o);
             var circuits = '';
             if (typeof obj.circuits !== 'undefined') {
                 for (var i = 0; i < obj.circuits.length; i++) {
@@ -311,12 +330,35 @@
                 }
             }
             var ddAddr = el.find('div.picPickList[data-bind$=address]');
+            var ddBody = el.find('div.picPickList[data-bind$=body]');
+            var ddModel = el.find('div.picPickList[data-bind$=model]');
+            var models = o.models[type.name];
+            if (typeof models === 'undefined' || models.length <= 1) {
+                ddModel.hide();
+                ddModel[0].items([]);
+                ddModel[0].required(false);
+            }
+            else {
+                ddModel[0].items(models);
+                ddModel.show();
+                ddModel[0].required(true);
+                if (typeof obj.model === 'undefined') obj.model = 0;
+            }
             cols[0].elText().text(obj.name);
             if (typeof type !== 'undefined') {
                 cols[1].elText().text(type.desc);
                 ddAddr[0].required(type.hasAddress);
                 if (type.hasAddress) ddAddr.show();
                 else ddAddr.hide();
+                ddBody[0].required(type.hasBody);
+                if (type.hasBody) {
+                    ddBody.show();
+                    ddBody[0].required(true);
+                }
+                else {
+                    ddBody.hide();
+                    ddBody[0].required(false);
+                }
             }
             else {
                 cols[1].elText().text('');
