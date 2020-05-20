@@ -124,6 +124,8 @@
                                 }
                                 hash['c' + c.circuit] = c.circuit;
                             }
+                            dt = new Date();
+                            
                         }
                         if (valid) {
                             console.log(v);

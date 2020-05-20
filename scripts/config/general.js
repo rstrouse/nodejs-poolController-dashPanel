@@ -93,7 +93,7 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'abbrev', hidden: false, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Time Zone', style: { whiteSpace: 'nowrap' } }],
                 items: o.timeZones, inputAttrs: { style: { width: '12rem' } }, labelAttrs: { style: { width: '5.7rem'} }
             });
-            $('<div />').appendTo(line).checkbox({ labelText: 'Auto Ajust DST', binding: 'options.adjustDST' });
+            $('<div />').appendTo(line).checkbox({ labelText: 'Auto Adjust DST', binding: 'options.adjustDST' });
             line = $('<div />').appendTo(pnl);
             $('<div />').appendTo(line).pickList({
                 labelText: 'Clock Mode', binding: 'options.clockMode', bindColumn: 0,
