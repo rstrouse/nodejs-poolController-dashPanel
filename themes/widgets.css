@@ -18,7 +18,7 @@ div.picBtnPanel {
     padding:.2rem;
     margin-top:.2rem;
 }
-div.picOptoinButton > span,
+div.picOptionButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
     margin-left: .2rem;
@@ -183,7 +183,8 @@ div.picPopover {
 div.picControlPanel {
     vertical-align: top;
     /*max-width: 22rem;*/
-    display: inline-block;
+    display: inl
+ine-block;
     margin-top: .4rem;
     margin-right: .2rem;
     padding: .4em;
@@ -203,6 +204,10 @@ div.picControlPanel {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+}
+div.picControlPanelTitle {
+    border-bottom: solid 3px orange;
+    white-space: nowrap;
 }
 div.picController, div.picChemistry {
     min-width:14.7rem;

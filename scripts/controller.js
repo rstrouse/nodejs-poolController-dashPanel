@@ -15,7 +15,10 @@
             let row = $('<div class="picHeaderRow picControllerTitle" />');
             $('<div class= "picModel"><i class="fas fa-bars" /><span class="picModelData" /></div >').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"/></div>').appendTo(row);
-            $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /><div class="picConfigIcon"><i class="fas fa-cogs" /></div></div>').appendTo(row);
+            if ($('div.dashOuter').length)
+                $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /><div class="picConfigIcon"><i class="fas fa-cogs" /></div></div>').appendTo(row);
+            else
+                $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" />').appendTo(row);
             row.appendTo(el);
 
             row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"/><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"/></div>');
@@ -154,9 +157,7 @@
                 //<legend><input id="cbEnableAppLog" type="checkbox" name="cbEnableAppLog" data-datatype="boolean" data-bind="app.enabled" /><label for="cbEnableAppLog">Application</label></legend>
                 grp.appendTo(divOuter);
                 var leg = $('<legend />').appendTo(grp);
-                var btn = $('<div />');
-                btn.appendTo(leg);
-                btn.optionButton({ text: 'Application', bind: 'app.enabled' });
+                var btn = $('<div class="logger" />').appendTo(leg).optionButton({ text: 'Application', bind: 'app.enabled' });
 
                 var divLine = $('<div class="picAppLogging"><label>Level</label></div>');
                 divLine.appendTo(grp);
@@ -175,21 +176,24 @@
 
                 //<legend><input id="cbEnablePacketLog" type="checkbox" name="cbEnablePacketLog" data-datatype="boolean" data-bind="packet.enabled" /><label for="cbEnablePacketLog">Packets</label></legend>
                 grp.appendTo(divOuter);
-                btn = $('<div />');
-                btn.appendTo(leg);
-                btn.optionButton({ text: 'Packets', bind: 'packet.enabled' });
+                btn = $('<div class="logger" />').appendTo(leg).optionButton({ text: 'Packets', bind: 'packet.enabled' });
 
                 divLine = $('<div class="picPacketLogging"><label>Log to</label></div>');
                 divLine.appendTo(grp);
 
 
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ text: 'Console', bind: 'packet.logToConsole' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Console', bind: 'packet.logToConsole' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'File', bind: 'packet.logToFile' });
+                //btn = $('<div />').appendTo(divLine).optionButton({
+                //    text: 'DashPanel', bind: 'sendLogMessages' }).on('click', function (evt) {
+                //    var opt = $(evt.currentTarget);
+                //    var obj = dataBinder.fromElement(opt);
+                //        $('div.picDashboard').each(function () {
+                //            console.log({ msg: 'Logging to dashpanel', obj: obj });
+                //            this.receiveLogMessages(obj.sendLogMessages);
+                //        });
+                //});
 
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ text: 'File', bind: 'packet.logToFile' });
 
                 //$('<input id="cbLogToConsole" type="checkbox" data-datatype="boolean" data-bind="packet.logToConsole" /><label for="cbLogToConsole">Console</label>').appendTo(divLine);
                 //$('<input id="cbLogToFile" type="checkbox" data-datatype="boolean" data-bind="packet.logToFile" /><label for="cbLogToFile">File</label>').appendTo(divLine);
@@ -198,9 +202,7 @@
                 divLine.appendTo(grp);
 
 
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ id: 'btnBroadcast', text: 'Broadcast', bind: 'packet.broadcast.enabled', dropdownButton: $('<i class="fas fa-filter" />') });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ id: 'btnBroadcast', text: 'Broadcast', bind: 'packet.broadcast.enabled', dropdownButton: $('<i class="fas fa-filter" />') });
                 btn.find('i').on('click', function (evt) {
                     var opt = $(evt.currentTarget);
                     var divPopover = $('<div />');
@@ -218,21 +220,19 @@
                     evt.stopImmediatePropagation();
                 });
 
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ text: 'Pump', bind: 'packet.pump.enabled' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Pump', bind: 'packet.pump.enabled' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Chlorinator', bind: 'packet.chlorinator.enabled' });
 
-                divLine = $('<div class="picPacketLogging"><label></label></div>');
-                divLine.appendTo(grp);
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ text: 'Chlorinator', bind: 'packet.chlorinator.enabled' });
+                divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
 
-                btn = $('<div />');
-                btn.appendTo(divLine);
-                btn.optionButton({ text: 'Replay', bind: 'packet.replay' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'IntelliChem', bind: 'packet.intellichem.enabled' });
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'IntelliValve', bind: 'packet.intellivalve.enabled' });
 
-                contents.on('click', 'div.picOptionButton', function (evt) {
+                divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
+
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Replay', bind: 'packet.replay' });
+
+                contents.on('click', 'div.picOptionButton.logger', function (evt) {
                     var opt = $(evt.currentTarget);
                     var obj = dataBinder.fromElement(opt);
                     $.putApiService('app/logger/setOptions', obj);
@@ -279,9 +279,6 @@
                 btnApply.actionButton({ text: 'Apply', icon: '<i class="fas fa-save" />' });
                 btnApply.addClass('disabled');
                 btnApply.on('click', function (e) {
-
-                    // Send this off to the server.
-                    ///$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
 
                 });
             });

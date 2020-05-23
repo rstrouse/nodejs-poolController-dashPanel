@@ -95,6 +95,9 @@ class HttpServer extends ProtoServer {
             this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '60d' }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '60d' }));
             this.app.get('/config/:section', (req, res) => { return res.status(200).send(Config_1.config.getSection(req.params.section)); });
+            this.app.put('/config/:section', (req, res) => {
+                return res.status(200).send(Config_1.config.getSection(req.params.section));
+            });
             this.isRunning = true;
         }
     }

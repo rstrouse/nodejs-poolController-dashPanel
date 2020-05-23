@@ -10,5 +10,11 @@
   {
     "outputFile": "themes/configPage.css",
     "inputFile": "themes/configPage.scss"
+  },
+  {
+    "outputFile": "themes/messageManager.css",
+    "inputFile": "themes/messageManager.scss"
+
   }
+
 ]

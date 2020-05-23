@@ -568,7 +568,7 @@
                 self.addCircuit({ circuit: -1, color: 0, swimDelay:0 });
             });
             $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits).sortable({
-                axis: 'y', containment: 'parent', cursor: 'move', tolerance: 'intersect',
+                axis: 'y', containment: 'div.cfgLightGroup-pnlCircuits', cursor: 'move', tolerance: 'intersect',
                 update: function (evt, ui) {
                     var ndx = 0;
                     $(evt.target).find('div.picCircuitOption').each(function () {

@@ -27,6 +27,9 @@
       "protocol": "http://",
       "ip": "127.0.0.1",
       "port": 4200
+    },
+    "socket": {
+      "sendLogMessages":  false
     }
   },
   "dashboard": { "startPage": "index.html" },

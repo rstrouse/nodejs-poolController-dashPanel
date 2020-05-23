@@ -4,6 +4,7 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initState();
+            el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -35,7 +36,9 @@
             $.getJSON('/config/web.services', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
+                    $('body').attr('data-controllertype', data.controllerType);
                     if (data.equipment.model.startsWith('IntelliCenter')) {
                         $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                         $('div.picDashboard').attr('data-hidethemes', 'false');
@@ -78,7 +81,7 @@
                         $('div.picDashboard').attr('data-hidethemes', 'true');
                         if (data.equipment.model.startsWith('IntelliTouch'))
                             $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
-                        else if(data.equipment.model.startsWith('EasyTouch')) 
+                        else if (data.equipment.model.startsWith('EasyTouch'))
                             $('div.picDashboard').attr('data-controllertype', 'EasyTouch');
                         else
                             $('div.picDashboard').attr('data-controllertype', 'SunTouch');
@@ -94,8 +97,8 @@
                     self._initSockets();
                     console.log(data);
                 })
-                .done(function (status, xhr) { console.log('Done:' + status); })
-                .fail(function (xhr, status, error) { console.log('Failed:' + error); });
+                    .done(function (status, xhr) { console.log('Done:' + status); })
+                    .fail(function (xhr, status, error) { console.log('Failed:' + error); });
             });
         },
         _initSockets: function () {
@@ -192,7 +195,8 @@
             });
             o.socket.on('equipment', function (data) {
                 console.log({ evt: 'equipment', data: data });
-                if(data.controllerType.startsWith('intellicenter'))
+                $('body').attr('data-controllertype', data.controllerType);
+                if (data.controllerType.startsWith('intellicenter'))
                     $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                 $('div.picController').each(function () {
                     this.setEquipmentState(data);
@@ -204,7 +208,7 @@
                 $('div.picController').each(function () {
                     this.setControllerState(data);
                 });
-                
+
             });
             o.socket.on('pump', function (data) {
                 console.log({ evt: 'pump', data: data });
@@ -218,12 +222,17 @@
                     this.setPumpData(data);
                 });
             });
+            o.socket.on('logMessage', function (data) {
+                console.log({ evt: 'logMessage', data: data });
+            });
+
 
             o.socket.on('heater', function (data) {
                 console.log({ evt: 'heater', data: data });
             });
             o.socket.on('connect_error', function (data) {
                 console.log('connection error:' + data);
+                o.isConnected = false;
                 $('div.picController').each(function () {
                     this.setConnectionError({ status: { val: 255, name: 'error', desc: 'Connection Error' } });
                 });
@@ -250,6 +259,7 @@
             });
             o.socket.on('connect', function (sock) {
                 console.log({ msg: 'socket connected:', sock: sock });
+                o.isConnected = true;
                 el.find('div.picControlPanel').each(function () {
                     $(this).removeClass('picDisconnected');
                 });
@@ -257,9 +267,21 @@
             });
             o.socket.on('close', function (sock) {
                 console.log({ msg: 'socket closed:', sock: sock });
+                o.isConnected = false;
             });
-           
+            o.socket.on('*', function (event, data) {
+                console.log({ evt: event, data: data });
+            });
+        },
+        receiveLogMessages: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof val !== 'undefined') {
+                    console.log(`sendLogMessages Emit ${val}`);
+                    o.socket.emit('sendLogMessages', makeBool(val));
+                    o.sendLogMessages = makeBool(val);
+                }
+            }
         }
-    }
-    );
+    });
 })(jQuery);

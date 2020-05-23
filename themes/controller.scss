@@ -129,12 +129,12 @@ div.picModules > table > tbody > tr:nth-child(1) > td {
     padding-right: 4px;
     border-collapse: collapse;
 }
-div.picConfigIcon {
+div.picConfigIcon, div.picStartLogs {
     display:inline-block;
     cursor:pointer;
     margin-left:.5rem;
 }
-div.picConfigIcon:hover {
+div.picConfigIcon:hover, div.picStartLogs:hover {
     color: orange;
     text-shadow: 3px 3px 16px #272634;
 }
