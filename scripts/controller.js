@@ -200,7 +200,7 @@
 
                 divLine = $('<div class="picPacketLogging"><label>Include</label></div>');
                 divLine.appendTo(grp);
-
+                
 
                 btn = $('<div class="logger" />').appendTo(divLine).optionButton({ id: 'btnBroadcast', text: 'Broadcast', bind: 'packet.broadcast.enabled', dropdownButton: $('<i class="fas fa-filter" />') });
                 btn.find('i').on('click', function (evt) {
