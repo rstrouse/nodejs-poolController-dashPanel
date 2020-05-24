@@ -1323,25 +1323,40 @@ $.ui.position.fieldTip = {
                 self.val($(evt.currentTarget).attr('data-value'));
             });
         },
+        _getOffset: function (el) {
+            var off = { left: 0, top: 0 };
+            el = el[0];
+            while (el) {
+                off.left += el.offsetLeft;
+                off.top += el.offsetTop;
+                el = el.offsetParent;
+            }
+            return off;
+        },
+        _getPosition: function (el) {
+            el = el[0];
+            parent = el.parent;
+            var rect = el.getBoundingClientRect(el);
+            var prect = parent ? parent.getBoundingClientRect(parent) : { left: 0, top: 0 };
+            return { left: rect.left - prect.left, top: rect.top - prect.top };
+        },
         _positionPickList: function (div) {
             var self = this, o = self.options, el = self.element;
-            var offField = el.find('div.picPickList-value:first').offset();
-            div.css({ left: offField.left + 'px' });
-            var divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
+            var fld = el.find('div.picPickList-value:first');
+            var fldDims = { pos: fld.position(), off: fld.offset() };
+            div.css({ left: fldDims.pos.left + 'px' });
+            var divDims = { off: self._getOffset(div), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
             var docDims = { height: document.documentElement.clientHeight, width: $(document).outerWidth() };
 
             var lbl = el.find('label.picPickList-label:first');
-            var lblDims = { off: lbl.offset(), pos: lbl.position(), height: lbl.outerHeight, width: lbl.outerWidth() };
-            
-
-            //console.log({ div: divDims, doc: docDims });
+            var lblDims = { off: self._getOffset(lbl), pos: lbl.position(), height: lbl.outerHeight, width: lbl.outerWidth() };
             if (divDims.height > docDims.height) {
                 div.css({ height: docDims.height + 'px' });
                 divDims.height = docDims.height;
             }
             if (divDims.off.top + divDims.height > docDims.height)
                 divDims.pos.top -= (divDims.off.top + divDims.height - docDims.height);
-            div.css({ top: divDims.pos.top + 'px', left: offField.left });
+            div.css({ top: divDims.pos.top + 'px' });
 
             // We have to treat the width and height separately as we will be repositioning after a scrollbar disappears potentially.
             divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
@@ -1350,7 +1365,6 @@ $.ui.position.fieldTip = {
                 divDims.pos.left -= (divDims.off.left + divDims.width - docDims.width);
                 div.css({ left: divDims.pos.left });
             }
-            console.log({ offField: offField, lblDims: lblDims, divDims: divDims, docDims: docDims, div: div });
         },
         _getColumn: function (nCol) {
             var self = this, o = self.options, el = self.element;
