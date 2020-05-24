@@ -1329,6 +1329,11 @@ $.ui.position.fieldTip = {
             div.css({ left: offField.left + 'px' });
             var divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
             var docDims = { height: document.documentElement.clientHeight, width: $(document).outerWidth() };
+
+            var lbl = el.find('label.picPickList-label:first');
+            var lblDims = { off: lbl.offset(), pos: lbl.position(), height: lbl.outerHeight, width: lbl.outerWidth() };
+            
+
             //console.log({ div: divDims, doc: docDims });
             if (divDims.height > docDims.height) {
                 div.css({ height: docDims.height + 'px' });
@@ -1336,15 +1341,16 @@ $.ui.position.fieldTip = {
             }
             if (divDims.off.top + divDims.height > docDims.height)
                 divDims.pos.top -= (divDims.off.top + divDims.height - docDims.height);
-            div.css({ top: divDims.pos.top + 'px' });
+            div.css({ top: divDims.pos.top + 'px', left: offField.left });
 
             // We have to treat the width and height separately as we will be repositioning after a scrollbar disappears potentially.
             divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
-            docDims = { height: document.documentElement.clientHeight, width: $(document).outerWidth() };
+            docDims = { pos: $(document.documentElement).position(), height: document.documentElement.clientHeight, width: $(document).outerWidth() };
             if (divDims.off.left + divDims.width > docDims.width) {
-                docDims.pos.left -= (divDims.off.left + divDims.width - docDims.width);
+                divDims.pos.left -= (divDims.off.left + divDims.width - docDims.width);
+                div.css({ left: divDims.pos.left });
             }
-            div.css({ left: divDims.pos.left + 'px' });
+            console.log({ offField: offField, lblDims: lblDims, divDims: divDims, docDims: docDims, div: div });
         },
         _getColumn: function (nCol) {
             var self = this, o = self.options, el = self.element;

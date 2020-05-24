@@ -10,9 +10,28 @@
         }
         return 'Unk[' + byte + ']';
     },
+    mapSourceByte: function (msg) { return msg.protocol === 'chlorinator' ? '' : this.extractByte(msg.header, 3); },
+    mapDestByte: function (msg) { return this.extractByte(msg.header, 2); },
+    mapActionByte: function (msg) { return msg.protocol === 'chlorinator' ? this.extractByte(msg.header, 3) : this.extractByte(msg.header, 4); },
     mapSource: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : this.mapAddress(this.extractByte(msg.header, 3)); },
     mapDest: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : this.mapAddress(this.extractByte(msg.header, 2)); },
-    mapChlorinatorAction: function (msg) { return '----'; },
+    mapChlorinatorAction: function (msg) {
+        switch (this.extractByte(msg.header, 3)) {
+            case 0:
+                return 'Get[status]';
+            case 1:
+                return 'Set[status]';
+            case 17:
+                return 'Get[options]';
+            case 18:
+                return 'Set[options]';
+            case 20:
+                return 'Get[name]';
+            case 3:
+                return 'Set[name]';
+        }
+        return '----';
+    },
     mapIntelliCenterAction: function (msg) {
         var action = this.extractByte(msg.header, 4);
         switch (action) {
@@ -277,6 +296,7 @@
             $('<span>Messages</span><div class="picStartLogs mmgrButton picIconRight" title="Start/Stop Log"><i class="far fa-list-alt" /></div>').appendTo(div);
             $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack" /></div>').appendTo(div);
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal" /></div>').appendTo(div);
+            $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom" /></div>').appendTo(div);
 
 
             row = $('<tr />').appendTo(tbody);
@@ -311,6 +331,11 @@
                     el.find('table.msgList-body:first').removeClass('changesOnly');
                 }
             });
+            el.on('click', 'div.picClearMessages', function (evt) {
+                el.find('table.msgList-body > tbody > tr.msgRow').remove();
+                o.messageKeys = {};
+            });
+
             el.on('click', 'i.fa-clipboard', function (evt) {
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
                 mhelper.copyToClipboard(row.data('message'));
@@ -409,7 +434,7 @@
         }
     });
     $.widget("pic.messageDetail", {
-        options: { receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {} },
+        options: { message: null },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].bindMessage = function (msg, prev) { self.bindMessage(msg, prev); };
@@ -419,7 +444,8 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
-            $('<span><span class="picMessageDirection" data-bind="direction" />Message Details</span><div class="picSendMessage mmgrButton picIconRight" title="Send a message"><i class="far fa-paper-plane" /></div>').appendTo(div);
+            $('<span class="picMessageDirection" data-bind="direction" />Message Details</span>').appendTo(div);
+            $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up" /></div>').appendTo(div);
 
             div = $('<div class="msg-detail-panel" style="display:none;" />').appendTo(el);
             var line = $('<div class="dataline" />').appendTo(div);
@@ -441,6 +467,9 @@
             $('<span />').appendTo(line).attr('data-bind', 'dataLen');
             $('<div class="payloadBytes" />').appendTo(div);
             $('<div class="msg-payload" />').appendTo(el);
+            el.on('click', 'div.picAddToQueue', function (evt) {
+                $('div.picSendMessageQueue')[0].addMessage(o.message);
+            });
         },
         bindMessage: function (msg, prev) {
             var self = this, o = self.options, el = self.element;
@@ -453,7 +482,7 @@
                 timestamp: '',
                 dataLen: '',
                 direction: ''
-            }
+            };
             if (typeof msg === 'undefined')
                 el.find('div.msg-detail-panel').hide();
             else {
@@ -468,6 +497,7 @@
                     direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound '
                 };
             }
+            o.message = msg;
             dataBinder.bind(el, obj);
             self.bindPayload(msg, prev);
         },
@@ -505,6 +535,125 @@
             }
         }
 
+    });
+    $.widget("pic.sendMessageQueue", {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el[0].bindQueue = function (queue) { self.bindQueue(queue); };
+            el[0].newQueue = function () { self.newQueue(); };
+            el[0].addMessage = function (msg) { self.addMessage(msg); };
+            self._initQueue();
+        },
+        _initQueue: function () {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
+            $('<span>Send Message Queue</span>').appendTo(div);
+            $('<div class="picSaveQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open" /></div>').appendTo(div);
+            $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue As"><i class="far fa-save" /></div>').appendTo(div);
+            $('<div class="picAddMessage mmgrButton picIconRight" title="Edit Queue"><i class="fas fa-edit" /></div>').appendTo(div);
+
+            $('<div class="picAddMessage mmgrButton picIconRight" title="New Queue"><i class="fas fa-broom" /></div>').appendTo(div);
+
+            div = $('<div class="queue-detail-panel" />').appendTo(el);
+
+            var line = $('<div class="dataline" />').appendTo(div);
+            $('<label>Name:</label>').appendTo(line);
+            $('<span />').appendTo(line).attr('data-bind', 'name');
+            line = $('<div class="dataline" />').appendTo(div);
+            $('<label>Description:</label>').appendTo(line);
+            $('<span />').appendTo(line).attr('data-bind', 'description');
+
+            // Header for the queue list.
+            div = $('<div class="queue-list-header" />').appendTo(el);
+            $('<table class="queue-list-header"><tbody><tr><td></td><td>Proto</td><td>Src/Dest</td><td>Action</td><td>Payload</td><td>Delay</td><td></td></tr></tbody></table>').appendTo(div);
+            div = $('<div class="queue-send-list" />').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
+            $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" />' }).on('click', function (e) {
+            });
+            $('<div />').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane" />' }).on('click', function (e) {
+            });
+            el.on('click', 'div.queued-message-remove', function (evt) {
+                $(evt.currentTarget).parents('div.queued-message:first').remove();
+            });
+            el.on('click', 'div.queued-message-edit', function (evt) {
+                var row = $(evt.currentTarget).parents('div.queued-message:first');
+                var msg = row.data('message');
+                console.log(msg);
+                var divPopover = $('<div />');
+                divPopover.appendTo(el.parent().parent());
+                divPopover.on('initPopover', function (e) {
+                    $('<div />').appendTo(e.contents()).editMessage({ message: msg });
+                    e.stopImmediatePropagation();
+                });
+                divPopover.popover({ title: 'Edit Message', popoverStyle: 'modal', placement: { target: row } });
+                divPopover[0].show(row);
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+            });
+
+            self.newQueue();
+        },
+        bindQueue: function (queue) {
+            var self = this, o = self.options, el = self.element;
+            var pnl = el.find('div.queue-detail-panel');
+            dataBinder.bind(pnl, queue);
+            el.find('div.queue-send-list').empty();
+            if (typeof queue.messages !== 'undefined') {
+                // Bind up all the messages.
+                for (var i = 0; i < queue.messages.length; i++) {
+                    self.addMessage(queue.messages[i]);
+                }
+            }
+        },
+        newQueue: function () { this.bindQueue({ id: 0, name: '<New Queue>', messages: [] }); },
+        addMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            var list = el.find('div.queue-send-list');
+            var div = $('<div class="queued-message" />').appendTo(list);
+            $('<div class="queued-message-edit mmgrButton"><i class="fas fa-edit" /></div>').appendTo(div);
+            $('<span />').appendTo(div).addClass('queued-message-proto').text(msg.protocol).appendTo(div);
+            $('<span />').appendTo(div).addClass('queued-message-srcdest').text(mhelper.mapSourceByte(msg) + ',' + mhelper.mapDestByte(msg)).appendTo(div);
+            $('<span />').appendTo(div).addClass('queued-message-action').text(mhelper.mapActionByte(msg)).appendTo(div);
+            $('<span />').appendTo(div).addClass('queued-message-payload').text(msg.payload.join(',')).appendTo(div);
+            $('<span />').appendTo(div).addClass('queued-message-delay').text(msg.delay || 0).appendTo(div);
+            $('<div class="queued-message-remove mmgrButton"><i class="fas fa-trash-alt" /></div>').appendTo(div);
+            div.data('message', msg);
+        }
+    });
+    $.widget("pic.editMessage", {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initMessage();
+            console.log(o);
+            self.bindMessage(o.message);
+            o.message = undefined;
+        },
+        _initMessage: function () {
+            var self = this, o = self.options, el = self.element;
+            var div = $('<div />').appendTo(el).addClass('edit-message-panel');
+            var line = $('<div />').appendTo(div);
+            $('<div />').appendTo(line).pickList({
+                labelText: 'Protocol', binding: 'protocol',
+                displayColumn: 1,
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Protocol', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 'broadcast', desc: 'Broadcast' },
+                    { val: 'chlorinator', desc: 'Chlorinator' },
+                    { val: 'pump', desc: 'Pump' },
+                    { val: 'chlorinator', desc: 'Chlorinator'},
+                    { val: 'intellivalve', desc: 'Intellivalve' },
+                    { val: 'intellichem', desc: 'Intellichem' }],
+                inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '5.7rem' } }
+            });
+        },
+        bindMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            console.log(msg);
+            dataBinder.bind(el.find('div.edit-message-panel:first'), msg);
+
+        }
     });
 
 })(jQuery);

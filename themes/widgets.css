@@ -183,8 +183,7 @@ div.picPopover {
 div.picControlPanel {
     vertical-align: top;
     /*max-width: 22rem;*/
-    display: inl
-ine-block;
+    display: inline-block;
     margin-top: .4rem;
     margin-right: .2rem;
     padding: .4em;

@@ -4,6 +4,9 @@
   margin: 0px;
   box-sizing: border-box; }
 
+* {
+  box-sizing: border-box; }
+
 body {
   width: 100%;
   height: 100%;
@@ -21,7 +24,7 @@ div.mmgrOuter {
 
 div.messageContainer {
   display: inline-grid;
-  grid-template-columns: 787px 447px; }
+  grid-template-columns: 787px 477px; }
 
 .header {
   display: block;
@@ -181,6 +184,7 @@ tr.msgRow.outbound i.fa-arrow-circle-left {
 tr.msgRow.inbound i.fa-arrow-circle-right {
   color: gray; }
 
+div.queue-detail-panel > div.dataline > label,
 div.msg-detail-panel > div.dataline > label {
   display: inline-block;
   width: 74px;
@@ -219,6 +223,90 @@ tr.msg-payload-decimal > td, tr.msg-payload-ascii > td, tr.msg-payload-hex > td 
   max-width: 21px;
   overflow: hidden;
   box-sizing: border-box; }
+
+table.queue-list-header {
+  box-sizing: border-box;
+  font-size: 8pt;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  table-layout: auto;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+  background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+  background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+  background-image: linear-gradient(top, #159FCF, #13647F); }
+
+table.queue-list-header > tbody > tr > td:nth-child(6),
+table.queue-list-header > tbody > tr > td:nth-child(1) {
+  width: 14px; }
+
+table.queue-list-header > tbody > tr > td:nth-child(2) {
+  width: 47px; }
+
+table.queue-list-header > tbody > tr > td:nth-child(3) {
+  text-align: center;
+  width: 47px; }
+
+table.queue-list-header > tbody > tr > td:nth-child(4) {
+  text-align: center;
+  width: 47px; }
+
+table.queue-list-header > tbody > tr > td:nth-child(5) {
+  text-align: center; }
+
+table.queue-list-header > tbody > tr > td:nth-child(6) {
+  width: 27px;
+  text-align: center; }
+
+div.queue-send-list {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%; }
+
+div.queued-message {
+  width: 100%;
+  font-size: 8pt;
+  white-space: nowrap;
+  line-height: 12px; }
+
+div.queued-message > div.mmgrButton {
+  vertical-align: middle; }
+
+div.queued-message-edit {
+  margin-right: 2px;
+  margin-left: 0px; }
+
+div.queued-message-remove {
+  margin-right: 0px;
+  margin-left: 2px; }
+
+div.queued-message > span {
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-left: 2px;
+  padding-right: 2px;
+  vertical-align: middle; }
+
+span.queued-message-action,
+span.queued-message-srcdest {
+  text-align: center;
+  width: 47px; }
+
+span.queued-message-delay {
+  text-align: center;
+  width: 20px; }
+
+span.queued-message-proto {
+  width: 57px; }
+
+span.queued-message-payload {
+  width: 257px; }
 
 div.picControllerTitle {
   display: table;

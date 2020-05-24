@@ -29,6 +29,7 @@
                 <div class="picMessages picControlPanel" style="display:block;"></div>
             </div>
             <div>
+                <div class="picSendMessageQueue picControlPanel" style="display:block;"></div>
                 <div class="picMessageDetail picControlPanel" style="display:block;"></div>
             </div>
         </div>
@@ -39,6 +40,7 @@
             $('div.picMessageManager').messageManager();
             $('div.picController').controller();
             $('div.picMessages').messageList();
+            $('div.picSendMessageQueue').sendMessageQueue();
             $('div.picMessageDetail').messageDetail();
         });
     </script>
