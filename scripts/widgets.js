@@ -27,7 +27,7 @@ if (!String.prototype.padStart) {
         }
     };
 }
-function formatType() { };
+function formatType() { }
 formatType.MONTHS = [
     'January', 'February', 'March', 'April', 'May', 'June', 'July',
     'August', 'September', 'October', 'November', 'December'
@@ -131,9 +131,9 @@ Number.prototype.format = function (format, empty) {
     if (rd.length === 0 && rw.length === 0) return '';
     return pfx + rw + rd + sfx;
 };
-Date.prototype.isDateTimeEmpty = function() {
+Date.prototype.isDateTimeEmpty = function () {
     return (this.getFullYear() < 1970 || this.getFullYear() > 9999);
-}
+};
 Date.prototype.format = function (fmtMask, emptyMask) {
     if (fmtMask.match(/[hHmt]/g) !== null) {
         if (this.isDateTimeEmpty()) return typeof (emptyMask) !== 'undefined' ? emptyMask : '';
@@ -187,7 +187,7 @@ Date.prototype.format = function (fmtMask, emptyMask) {
 Date.prototype.addMinutes = function (nMins) {
     this.setTime(this.getTime() + (nMins * 60000));
     return this;
-}
+};
 function makeBool(val) {
     if (typeof (val) === 'boolean') return val;
     if (typeof (val) === 'undefined') return false;
@@ -618,7 +618,6 @@ $.ui.position.fieldTip = {
                 div.html(o.message);
             el.addClass('picFieldTip');
             el.css({ visibility: 'hidden' });
-            console.log(o.message);
             if (typeof fld !== 'undefined') {
                 var parent = el.parents('div.picAccordian-contents:first') || el.parents('div.picTabContent:first') || el.parents('div.picConfigContainer:first') || el.parents('div.picDashContainer:first');
                 //el.appendTo(parent);
@@ -1047,6 +1046,7 @@ $.ui.position.fieldTip = {
             targetSelector: null,
             positionStyle: 'movable',
             popoverStyle: 'modal',
+            autoClose: true,
             animation: {
                 type: 'fade',
                 delay: { show: 500, hide: 100 }
@@ -1073,11 +1073,15 @@ $.ui.position.fieldTip = {
             el[0].show = function (elTarget) { self.show(elTarget); };
             el[0].hide = function () { self.hide(); };
             el[0].interactive = function (val) { self.interactive(val); };
-            el[0].titleText = function (val) { return el.find('div.picPopoverTitle').html(val); };
+            el[0].titleText = function (val) { return el.find('span.picPopoverTitle').html(val); };
             el[0].close = function () { return self.close(); };
-            $('<div class="picPopoverHeader"><div class="picPopoverTitle" /></div>').prependTo(el);
+            var header = $('<div class="picPopoverHeader"><div class="picPopoverTitle"><span class="picPopoverTitle" /></div>').prependTo(el);
+            if (!o.autoClose) {
+                $('<div class="picClosePopover pover-icon picIconRight" title="Close"><i class="far fa-window-close" /></div>').appendTo(header.find('div.picPopoverTitle:first'));
+                el.on('click', 'div.picClosePopover', function (evt) { el[0].close(); });
+            }
             $('<div class="picPopoverBody" />').appendTo(el);
-            el.find('div.picPopoverTitle').html(o.title);
+            el.find('span.picPopoverTitle').html(o.title);
             //el.on('click', function (evt) { evt.preventDefault(); });
             var evt = $.Event('initPopover');
             evt.contents = function () { return el.find('div.picPopoverBody'); };
@@ -1101,8 +1105,12 @@ $.ui.position.fieldTip = {
         },
         close: function () {
             var self = this, o = self.options, el = self.element;
-            el.remove();
+            if (!self.isInDOM()) return;
+            var evt = $.Event('beforeClose');
+            el.trigger(evt);
+            if (evt.isDefaultPrevented() || !self.isInDOM()) return;
             $('div.ui-widget-overlay[data-popoverid=' + o.id + ']').remove();
+            el.remove();
         },
         show: function (elTarget) {
             var self = this, o = self.options, el = self.element;
@@ -1115,10 +1123,12 @@ $.ui.position.fieldTip = {
             if (o.popoverStyle === 'modal') {
                 o.overlay = $('<div class="ui-widget-overlay ui-front"></div>');
                 o.overlay.attr('data-popoverid', o.id);
-                o.overlay.one('click', function () {
-                    el.remove();
-                    $('div.ui-widget-overlay[data-popoverid=' + o.id + ']').remove();
-                });
+                if (o.autoClose) {
+                    o.overlay.one('click', function () {
+                        el.remove();
+                        $('div.ui-widget-overlay[data-popoverid=' + o.id + ']').remove();
+                    });
+                }
                 o.overlay.appendTo(document.body);
                 if (o.trigger === 'focus' || o.trigger === 'hover')
                     o.overlay.one('click', function (evt) { self.hide(); });
@@ -1196,7 +1206,10 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             $('<label class="picPickList-label" />').appendTo(el).text(o.labelText);
             var itm = self._getItem(o.value);
-            $('<div class="picPickList-value" />').appendTo(el);
+            if (o.canEdit)
+                $('<div class="picPickList-value"><input type="text" class="picPickList-value" /><div>').appendTo(el);
+            else
+                $('<div class="picPickList-value" />').appendTo(el);
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
             $('<div class="picPickList-drop"><i class="fas fa-caret-down"/></div>').appendTo(el);
@@ -1208,9 +1221,10 @@ $.ui.position.fieldTip = {
             el[0].disabled = function (val) { return self.disabled(val); };
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
-            el[0].items = function (val) { self.itemList(val); }
+            el[0].items = function (val) { self.itemList(val); };
             el.attr('data-val', o.value);
             if (o.required === true) self.required(true);
+            el.attr('data-datatype', o.dataType);
             self._applyStyles();
             el.find('div.picPickList-drop').on('click', function (evt) {
                 var div = el.find('div.picPickList-options:first');
@@ -1224,6 +1238,9 @@ $.ui.position.fieldTip = {
                         self._buildOptionList();
                     evt.stopPropagation();
                 }
+            });
+            el.on('change', 'input.picPickList-value', function (evt) {
+                self.val(el.find('input.picPickList-value:first').val());
             });
         },
         _applyStyles: function () {
@@ -1242,6 +1259,7 @@ $.ui.position.fieldTip = {
                     case 'maxLength':
                         //if (typeof o.inputStyle.width === 'undefined')
                         fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        if (o.canEdit) fld.attr('maxlength', o.inputAttrs[ia]);
                         break;
                     default:
                         if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
@@ -1400,10 +1418,14 @@ $.ui.position.fieldTip = {
         },
         text: function (text) {
             var self = this, o = self.options, el = self.element;
-            if (typeof text !== 'undefined')
-                el.find('div.picPickList-value').html(text);
+            if (typeof text !== 'undefined') {
+                if (o.canEdit)
+                    el.find('input.picPickList-value').val(text);
+                else
+                    el.find('div.picPickList-value').html(text);
+            }
             else
-                return el.find('div.picPickList-value').text();
+                return o.canEdit ? el.find('input.picPickList-value').val : el.find('div.picPickList-value').text();
         },
         required: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -1416,36 +1438,64 @@ $.ui.position.fieldTip = {
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
-            if (typeof val !== 'undefined') {
-                var itm = self._getItem(val);
-                var colVal = self._getColumn(o.bindColumn);
-                if (typeof itm !== 'undefined') {
-                    if (itm[colVal.binding] !== o.value) {
-                        var colText = self._getColumn(o.displayColumn);
+            if (o.canEdit) {
+                var fld = el.find('input.picPickList-value:first');
+                if (typeof val !== 'undefined') {
+                    if (el.attr('data-datatype') === 'int' && typeof val === 'string') {
+                        var match = val.match(/(\d+)/g);
+                        if (match) {
+                            val = parseInt(match.join(''), 10);
+                        }
+                    }
+                    //console.log({ m: 'Setting Val', oldVal: o.value, newVal: val });
+                    evt = $.Event('changed');
+                    evt.oldVal = o.value;
+                    evt.newVal = val;
+                    var itm = self._getItem(evt.newVal);
+                    o.value = evt.newVal;
+                    if (evt.oldVal !== evt.newVal) {
+                        fld.val(val);
                         // Trigger a selection changed.
                         var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
-                        var evt = $.Event('beforeselchange');
                         evt.oldItem = oldItem;
                         evt.newItem = itm;
                         el.trigger(evt);
-                        if (!evt.isDefaultPrevented()) {
-                            o.value = itm[colVal.binding];
-                            self.text(itm[colText.binding]);
-                            evt = $.Event('selchanged');
+                    }
+                }
+                else return fld.val();
+            }
+            else {
+                if (typeof val !== 'undefined') {
+                    var itm = self._getItem(val);
+                    var colVal = self._getColumn(o.bindColumn);
+                    if (typeof itm !== 'undefined') {
+                        if (itm[colVal.binding] !== o.value) {
+                            var colText = self._getColumn(o.displayColumn);
+                            // Trigger a selection changed.
+                            var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
+                            var evt = $.Event('beforeselchange');
                             evt.oldItem = oldItem;
                             evt.newItem = itm;
                             el.trigger(evt);
+                            if (!evt.isDefaultPrevented()) {
+                                o.value = itm[colVal.binding];
+                                self.text(itm[colText.binding]);
+                                evt = $.Event('selchanged');
+                                evt.oldItem = oldItem;
+                                evt.newItem = itm;
+                                el.trigger(evt);
+                            }
                         }
+                    }
+                    else {
+                        self.text('');
+                        o.value = null;
                     }
                 }
                 else {
-                    self.text('');
-                    o.value = null;
+                    //if (typeof o.value === 'undefined') console.log(o);
+                    return o.value;
                 }
-            }
-            else {
-                //if (typeof o.value === 'undefined') console.log(o);
-                return o.value;
             }
         }
     });
@@ -1470,6 +1520,7 @@ $.ui.position.fieldTip = {
             
             self.val(o.value);
             el.attr('data-bind', o.binding);
+            el.attr('data-datatype', o.dataType);
             self._applyStyles();
             el[0].label = function () { return el.find('label:first'); };
             el[0].field = function () { return el.find('input.picInputField-value:first'); };
@@ -1531,6 +1582,11 @@ $.ui.position.fieldTip = {
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             //if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picInputField-value:first').val(val) });
+            if (el.attr('data-datatype') === 'int' && typeof val === 'undefined') {
+                var v = el.find('input.picInputField-value:first').val();
+                var match = v.match(/(\d+)/g);
+                return (match) ? parseInt(match.join(''), 10) : undefined;
+            }
             return typeof val !== 'undefined' ? el.find('input.picInputField-value:first').val(val) : el.find('input.picInputField-value:first').val();
         },
         disabled: function (val) {
@@ -1619,7 +1675,7 @@ $.ui.position.fieldTip = {
             el[0].titleBlock = function () { return el.find('div.picAccordian-title:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].expanded = function (val) { return self.expanded(val); };
-            el[0].columns = function () { return self.columns(); }
+            el[0].columns = function () { return self.columns(); };
             el.on('click', 'div.picAccordian-title', function () {
                 self.toggle();
             });

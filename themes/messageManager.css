@@ -24,7 +24,7 @@ div.mmgrOuter {
 
 div.messageContainer {
   display: inline-grid;
-  grid-template-columns: 787px 477px; }
+  grid-template-columns: 800px 477px; }
 
 .header {
   display: block;
@@ -36,10 +36,6 @@ div.messageContainer {
 span.picPercentData {
   padding-left: 2px;
   padding-right: 2px; }
-
-div.picIconRight {
-  display: inline-block;
-  float: right; }
 
 table.msgList-container {
   width: 100%;
@@ -100,6 +96,12 @@ table.msgList-body > tbody > tr > td > span {
   display: inline-block;
   margin: 0px; }
 
+table.msgList-body > tbody > tr.msgRow.changed > td > span.changed {
+  color: #6495ed; }
+
+table.msgList-body > tbody > tr.msgRow.changed > td > span.new {
+  color: mediumvioletred; }
+
 table.msgList-body > tbody > tr > td:last-child {
   width: 100%; }
 
@@ -112,16 +114,14 @@ table.msgList-header > tbody > tr > td:last-child {
 table.msgList-body > tbody > tr > td:nth-child(1) > span,
 table.msgList-header > tbody > tr > td:nth-child(1),
 table.msgList-body > tbody > tr > td:nth-child(2) > span,
-table.msgList-header > tbody > tr > td:nth-child(2) {
+table.msgList-header > tbody > tr > td:nth-child(2),
+table.msgList-body > tbody > tr > td:nth-child(3) > span,
+table.msgList-header > tbody > tr > td:nth-child(3) {
   width: 16px; }
 
 table.msgList-body > tbody > tr > td:nth-child(1) {
   cursor: pointer;
   text-align: center; }
-
-table.msgList-body > tbody > tr > td:nth-child(3) > span,
-table.msgList-header > tbody > tr > td:nth-child(3) {
-  width: 57px; }
 
 table.msgList-body > tbody > tr > td:nth-child(4) > span,
 table.msgList-header > tbody > tr > td:nth-child(4) {
@@ -133,6 +133,10 @@ table.msgList-header > tbody > tr > td:nth-child(5) {
 
 table.msgList-body > tbody > tr > td:nth-child(6) > span,
 table.msgList-header > tbody > tr > td:nth-child(6) {
+  width: 57px; }
+
+table.msgList-body > tbody > tr > td:nth-child(7) > span,
+table.msgList-header > tbody > tr > td:nth-child(7) {
   width: 70px; }
 
 tr.msgRow > td {
@@ -153,6 +157,11 @@ div.mmgrButton {
 
 div.mmgrButton.selected {
   color: deeppink; }
+
+div.queued-message.selected {
+  color: black;
+  background: -webkit-linear-gradient(-90deg, white 0%, #AEBF76 65%);
+  background: linear-gradient(180deg, white 0%, #AEBF76 65%); }
 
 div.mmgrButton:hover {
   color: orange;
@@ -307,6 +316,16 @@ span.queued-message-proto {
 
 span.queued-message-payload {
   width: 257px; }
+
+div.edit-message-panel,
+div.edit-message-protocol,
+div.edit-message-payload {
+  font-size: 10pt; }
+
+div.edit-message-panel input[type=text],
+div.edit-message-protocol input[type=text],
+div.edit-message-payload input[type=text] {
+  font-size: 10pt; }
 
 div.picControllerTitle {
   display: table;

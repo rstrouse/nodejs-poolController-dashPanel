@@ -109,6 +109,16 @@ div.picActionButton:not(.disabled):active {
     background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
     background-image: linear-gradient(top, #159FCF, #13647F);
 }
+div.picIconRight {
+    display: inline-block;
+    float: right;
+    cursor: pointer;
+}
+div.pover-icon:hover {
+    color: orange;
+    text-shadow: 3px 3px 16px #272634;
+}
+
 
 div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
 div.picDashboard[data-hidethemes=true] div.picLight i.picDropdownButton.fa-palette {
@@ -802,6 +812,16 @@ div.picPickList-value {
     white-space:nowrap;
     text-overflow:ellipsis;
     overflow:hidden;
+}
+input.picPickList-value {
+    border: none;
+    border-width: 0px;
+    margin-left: -.2em;
+    margin-right: -.2em;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding-left: .2em;
+    padding-right: .2em;
 }
 div.picPickList-options {
     position: absolute;
