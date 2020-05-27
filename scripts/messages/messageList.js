@@ -910,7 +910,7 @@ mhelper.init();
                             elMsg.addClass('sent');
                             mm.sendOutboundMessage(msg);
                             self.processNextMessage();
-                        }, (msg.delay || 0) + 1000);
+                        }, (msg.delay || 0));
                     }
                 }
             }
