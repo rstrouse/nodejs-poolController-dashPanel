@@ -240,7 +240,7 @@ jQuery.each(["put", "delete"], function (i, method) {
     };
 });
 jQuery.each(['put', 'delete', 'post'], function (i, method) {
-    jQuery[method + 'JSON'] = function (url, data, successCallback, errorCallback, completeCallback) {
+    jQuery[method + 'JSON'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
         if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
             method = method || successCallback;
             completeCallback = errorCallback;
@@ -248,23 +248,60 @@ jQuery.each(['put', 'delete', 'post'], function (i, method) {
             successCallback = data;
             data = undefined;
         }
+        if (typeof message === 'function') {
+            // Shift all the parameters because we aren't calling the service with a status message.
+            completeCallback = errorCallback;
+            errorCallback = successCallback;
+            successCallback = message;
+            message = undefined;
+        }
+        var msg;
+        var overlay;
+        if (typeof message !== 'undefined') {
+            console.log('Showing message: ' + message);
+            // We are displaying a message while the service is underway.
+            msg = $('<div style="visibility:hidden;" />').addClass('picServiceStatusMsg').appendTo(document.body);
+            overlay = $('<div style="background-color:lavender;opacity:.15" />').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            if (message instanceof jQuery) message.appendTo(msg);
+            else
+                $('<div />').html(message).appendTo(msg);
+            msg.css({
+                visibility: '',
+                left: ($(document).width() - msg.width()) / 2,
+                top: ($(document).height() - msg.height()) / 2
+            });
 
+        }
         // Set up the callbacks.
-        var cbComplete = function (jqXHR, status) { };
-        var cbShowError = function (jqXHR, status, error) { };
+        var cbComplete = function (jqXHR, status) {
+            if (typeof msg !== 'undefined') {
+                msg.fadeOut(300, function () {
+                    msg.remove();
+                    if (typeof overlay !== 'undefined') overlay.remove();
+                });
+            }
+        };
+        var cbShowError = function (jqXHR, status, error) {
+            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON };
+            if (err.httpCode >= 299) {
+                $.pic.modalDialog.createApiError(err);
+            }
+        };
         var cbShowSuccess = function (data, status, jqXHR) { };
+        var serviceUrl = url;
+
 
         // Set up the callbacks.
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
         errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
         completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
-        console.log({ method: method, url: url, data: typeof (data) === 'string' ? data : JSON.stringify(data) });
+        console.log({ method: method, url: url, data: typeof data === 'string' ? data : JSON.stringify(data) });
         return jQuery.ajax({
-            url: url,
+            url: serviceUrl,
             type: method,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
-            data: typeof (data) === 'string' ? data : JSON.stringify(data),
+            data: typeof data === 'string' ? data : JSON.stringify(data),
             error: errorCallback,
             success: successCallback,
             complete: completeCallback
@@ -1296,7 +1333,6 @@ $.ui.position.fieldTip = {
             self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
             var tbody = $('<table class="optBody"><tbody></tbody></table>').appendTo(tblOuter.find('div.optBody > div:first'));
             var val = self.val();
-
             for (var i = 0; i < o.items.length; i++) {
                 var row = $('<tr />').appendTo(tbody);
                 var itm = o.items[i];
@@ -1516,14 +1552,19 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             el.addClass('picInputField');
             $('<label/>').appendTo(el).text(o.labelText);
-            $('<input type="text" class="picInputField-value" />').appendTo(el);
+            if (o.multiLine) {
+                el.addClass('multiline');
+                $('<textarea class="picInputField-value" />').appendTo(el);
+            }
+            else
+                $('<input type="text" class="picInputField-value" />').appendTo(el);
             
             self.val(o.value);
             el.attr('data-bind', o.binding);
             el.attr('data-datatype', o.dataType);
             self._applyStyles();
             el[0].label = function () { return el.find('label:first'); };
-            el[0].field = function () { return el.find('input.picInputField-value:first'); };
+            el[0].field = function () { return el.find('.picInputField-value:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].val = function (val) { return self.val(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
@@ -1534,7 +1575,7 @@ $.ui.position.fieldTip = {
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
-            var fld = el.find('input.picInputField-value:first');
+            var fld = el.find('.picInputField-value:first');
             var lbl = el.find('label:first');
             if (typeof o.style !== 'undefined') el.css(o.style);
 
@@ -1583,15 +1624,15 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             //if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picInputField-value:first').val(val) });
             if (el.attr('data-datatype') === 'int' && typeof val === 'undefined') {
-                var v = el.find('input.picInputField-value:first').val();
+                var v = el.find('.picInputField-value:first').val();
                 var match = v.match(/(\d+)/g);
                 return (match) ? parseInt(match.join(''), 10) : undefined;
             }
-            return typeof val !== 'undefined' ? el.find('input.picInputField-value:first').val(val) : el.find('input.picInputField-value:first').val();
+            return typeof val !== 'undefined' ? el.find('.picInputField-value:first').val(val) : el.find('.picInputField-value:first').val();
         },
         disabled: function (val) {
             var self = this, o = self.options, el = self.element;
-            var fld = el.find('input.picInputField-value:first');
+            var fld = el.find('.picInputField-value:first');
             if (typeof val === 'undefined') return el.hasClass('disabled');
             else {
                 if (val) {
@@ -1988,7 +2029,12 @@ $.pic.modalDialog.createApiError = function (err, options) {
         ]
     };
     opt.modal = true;
-    opt.title = 'Error: ' + typeof err.error !== 'undefined' ? err.error.name : 'General Error';
+    opt.title = 'Error: ';
+    if (typeof err.error === 'object' && err.error !== undefined && err.error.name)
+        opt.title += err.error.name;
+    else
+        opt.title += 'General Error';
+    console.log(opt);
     var id = 'errorDialog' + _uniqueId++;
     if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
     var dlg = $('div#' + id);

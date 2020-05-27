@@ -995,15 +995,24 @@ div.picInputField {
         display: inline-block;
         padding-right: .25rem;
     }
-div.picInputField > input {
-    border:solid 1px gray;
-    line-height:1.4rem;
-    border-radius:5px;
-    padding-left:.15rem;
-    padding-right:.15rem;
-    padding-top:0px;
-    padding-bottom:0px;
-}
+    div.picInputField.multiline > label {
+        vertical-align: top;
+    }
+    div.picInputField > textarea {
+        font-size:inherit;
+        font-family:inherit;
+        resize:none;
+    }
+    div.picInputField > textarea,
+    div.picInputField > input {
+        border: solid 1px gray;
+        line-height: 1.4rem;
+        border-radius: 5px;
+        padding-left: .15rem;
+        padding-right: .15rem;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
 div.picCheckbox {
     display:inline-block;
 }

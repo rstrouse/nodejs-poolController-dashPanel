@@ -5,6 +5,9 @@ import { logger } from "../server/logger/Logger";
 import * as http2 from "http2";
 import * as http from "http";
 import * as https from "https";
+import { outQueues } from "./queues/outboundQueue";
+import * as extend from 'extend';
+import { ApiError } from './Errors';
 
 // This class serves data and pages for
 // external interfaces as well as an internal dashboard.
@@ -86,6 +89,19 @@ export class HttpServer extends ProtoServer {
             });
             this.app.use(express.static(path.join(process.cwd(), 'pages'), { maxAge: '1d' }));
             this.app.use(express.json());
+            // Put in a custom replacer so that we can send error messages to the client.  If we don't do this the base properties of Error
+            // are omitted from the output.
+            this.app.set('json replacer', (key, value) => {
+                if (value instanceof Error) {
+                    var err = {};
+                    Object.getOwnPropertyNames(value).forEach((prop) => { err[prop] = value[prop]; });
+                    console.log('We have an error');
+                    console.log(err);
+                    return err;
+                }
+                return value;
+            });
+
             // start our server on port
             this.server.listen(cfg.port, cfg.ip, function () {
                 logger.info('Server is now listening on %s:%s', cfg.ip, cfg.port);
@@ -99,10 +115,51 @@ export class HttpServer extends ProtoServer {
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '60d' }));
             this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
             this.app.put('/config/:section', (req, res) => {
-
                 return res.status(200).send(config.getSection(req.params.section));
             });
+            this.app.put('/messages/queue', async (req, res, next) => {
+                try {
+                    console.log(`request:  ${JSON.stringify(req.body)}...`);
+                    let queue = await outQueues.saveQueue(req.body);
+                    return res.status(200).send(queue);
+                }
+                catch (err) {
+                    next(err);
+                }
+            });
+            this.app.get('/messages/queue/:id', (req, res, next) => {
+                try {
+                    console.log(`Getting Queue request:  ${JSON.stringify(req.params)}...`);
+                    let id = parseInt(req.params.id, 10);
+                    let queue = outQueues.find(q => { return q.id === id });
+                    if (typeof queue === 'undefined') next(new ApiError(`Outbound queue id:${id} not found.`, 100, 404));
+                    let out = extend(true, {}, queue);
+                    out.messages = queue.loadMessages();
+                    return res.status(200).send(out);
+                }
+                catch (err) { next(err); }
+            });
+            this.app.get('/messages/queues', async (req, res, next) => {
+                try {
+                    console.log(`request:  ${JSON.stringify(req.body)}...`);
+                    return res.status(200).send(outQueues);
+                }
+                catch (err) {
+                    next(err);
+                }
+            });
+
+            // This is last so that it is picked up when we have an error.
+            this.app.use((error, req, res, next) => {
+                logger.error(error);
+                if (!res.headersSent) {
+                    let httpCode = error.httpCode || 500;
+                    res.status(httpCode).send(error);
+                }
+            });
             this.isRunning = true;
+
+
         }
     }
 }

@@ -5,6 +5,7 @@
             var self = this, o = self.options, el = self.element;
             self._initLogs();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
+            el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); }
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -104,6 +105,15 @@
                     $('div.picMessages').each(function () {
                         this.receivingMessages(o.sendLogMessages);
                     });
+                }
+            }
+        },
+        sendOutboundMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof msg !== 'undefined') {
+                    console.log(`sendOutboundMessage Emit ${msg}`);
+                    o.socket.emit('sendOutboundMessage', msg);
                 }
             }
         }

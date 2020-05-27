@@ -268,7 +268,7 @@ table.queue-list-header > tbody > tr > td:nth-child(2) {
 }
 table.queue-list-header > tbody > tr > td:nth-child(3) {
     text-align: center;
-    width: 47px;
+    width: 57px;
 }
 table.queue-list-header > tbody > tr > td:nth-child(4) {
     text-align: center;
@@ -279,7 +279,7 @@ table.queue-list-header > tbody > tr > td:nth-child(5) {
 }
 
 table.queue-list-header > tbody > tr > td:nth-child(6) {
-    width: 27px;
+    width: 70px;
     text-align: center;
 }
 div.queue-send-list {
@@ -287,12 +287,35 @@ div.queue-send-list {
     overflow-y:auto;
     overflow-x:hidden;
     width:100%;
+
 }
 div.queued-message {
     width:100%;
     font-size:8pt;
     white-space:nowrap;
     line-height:12px;
+}
+div.picSendMessageQueue.processing > div.picMessageListTitle > div.mmgrButton {
+    display:none;
+}
+div.picSendMessageQueue.processing div.picActionButton:not(.cancel-button) {
+    display: none;
+}
+div.picSendMessageQueue:not(.processing) div.picActionButton.cancel-button {
+    display: none;
+}
+div.cancelButton {
+    margin-right: 1.5rem;
+    text-align:center;
+}
+
+div.queued-message.sending {
+    background: -webkit-linear-gradient(-90deg, white 0%, #AEBF76 65%);
+    background: linear-gradient(180deg, white 0%, #AEBF76 65%);
+}
+div.queued-message.sent {
+    font-style:italic;
+    color:dimgray;
 }
 div.queued-message > div.mmgrButton {
     vertical-align:middle;
@@ -327,7 +350,7 @@ span.queued-message-proto {
     width:57px;
 }
 span.queued-message-payload {
-    width:257px;
+    width:242px;
 }
 div.edit-message-panel,
 div.edit-message-protocol,

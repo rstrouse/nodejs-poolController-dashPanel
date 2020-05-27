@@ -10,6 +10,8 @@
 *.njsproj
 package-lock.*
 config.json
+dist/
+./dist/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -263,3 +265,9 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+# data files
+data/
+# ignore dist, it is for production files created by npm scripts
+dist/
+
+

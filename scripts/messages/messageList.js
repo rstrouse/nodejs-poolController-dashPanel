@@ -297,7 +297,7 @@
     chemAddrs: [],
     chlorAddrs: [{ val: 0, desc: 'Unspecified' }, { val: 80, desc: 'Chlorinator #1' }, { val: 81, desc: 'Chlorinator #2' }, { val: 82, desc: 'Chlorinator #3' }, { val: 83, desc: 'Chlorinator #4' }],
     controllerBytes: [{ val: 0, desc: 'Unspecified' }, { val: 16, desc: '*Touch' }, { val: 63, desc: 'IntelliCenter' }],
-    valveAddrs: [{ val: 15, desc: 'Broadcast' }, { val: 16, desc: 'Panel' }, { val: 82, desc: 'IntelliValve' }],
+    valveAddrs: [{ val: 12, desc: 'IntelliValve' }, { val: 15, desc: 'Broadcast' }, { val: 16, desc: 'Panel' }],
     broadcastAddrs: [{ val: 15, desc: 'Broadcast' }, { val: 16, desc: 'Panel' }],
     broadcastActions: [ {val: 2, desc: 'Status'}],
     touchActions: [
@@ -695,33 +695,45 @@ mhelper.init();
     });
     $.widget("pic.sendMessageQueue", {
         options: {},
+        msgQueue: [],
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].bindQueue = function (queue) { self.bindQueue(queue); };
             el[0].newQueue = function () { self.newQueue(); };
             el[0].addMessage = function (msg) { self.addMessage(msg); };
-            el[0].saveMessage = function (ndx, msg) { self.updateMessage(ndx, msg); };
+            el[0].saveMessage = function (msg) { self.saveMessage(msg); };
+            el[0].saveQueue = function () { self.saveQueue(); };
+            el[0].loadQueue = function (id) { self.loadQueue(id); };
             self._initQueue();
+        },
+        _fromWindow: function(showError) {
+            var self = this, o = self.options, el = self.element;
+            var queue = dataBinder.fromElement(el);
+            queue.messages = [];
+            el.find('div.queue-send-list > div.queued-message').each(function () {
+                queue.messages.push($(this).data('message'));
+            });
+            return queue;
         },
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
             div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
             $('<span>Send Message Queue</span>').appendTo(div);
-            $('<div class="picSaveQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open" /></div>').appendTo(div);
-            $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue As"><i class="far fa-save" /></div>').appendTo(div);
-            $('<div class="picAddMessage mmgrButton picIconRight" title="Edit Queue"><i class="fas fa-edit" /></div>').appendTo(div);
-
-            $('<div class="picAddMessage mmgrButton picIconRight" title="New Queue"><i class="fas fa-broom" /></div>').appendTo(div);
-
+            $('<div class="picLoadQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open" /></div>').appendTo(div);
+            $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue"><i class="far fa-save" /></div>').appendTo(div);
+            $('<div class="picEditQueue mmgrButton picIconRight" title="Edit Queue"><i class="fas fa-edit" /></div>').appendTo(div);
+            $('<div class="picClearQueue mmgrButton picIconRight" title="New Queue"><i class="fas fa-bahai" /></div>').appendTo(div);
             div = $('<div class="queue-detail-panel" />').appendTo(el);
 
             var line = $('<div class="dataline" />').appendTo(div);
+
+            $('<input type="hidden" data-datatype="int" data-bind="id" />').appendTo(line);
             $('<label>Name:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'name');
+            $('<span data-bind="name" />').appendTo(line).attr('data-bind', 'name');
             line = $('<div class="dataline" />').appendTo(div);
             $('<label>Description:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'description');
+            $('<span data-bind="description" />').appendTo(line).attr('data-bind', 'description');
 
             // Header for the queue list.
             div = $('<div class="queue-list-header" />').appendTo(el);
@@ -743,11 +755,32 @@ mhelper.init();
                 e.stopImmediatePropagation();
             });
             $('<div />').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane" />' }).on('click', function (e) {
+                self.sendQueue();
             });
+            $('<div />').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;" />' }).on('click', function (e) {
+                self.msgQueue.length = 0;                
+            });
+            
             el.on('click', 'div.queued-message-remove', function (evt) {
+                if (el.hasClass('processing')) return;
                 $(evt.currentTarget).parents('div.queued-message:first').remove();
             });
+            el.on('click', 'div.picLoadQueue', function (evt) {
+                var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
+                var divPopover = $('<div />');
+                divPopover.appendTo(el.parent().parent());
+                divPopover.on('initPopover', function (e) {
+                    $('<div />').appendTo(e.contents()).loadQueue();
+                    e.stopImmediatePropagation();
+                });
+                divPopover.popover({ autoClose: false, title: 'Load Saved Queue', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
+                divPopover[0].show($('div.picMessageListTitle:first'));
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+
+            });
             el.on('click', 'div.queued-message-edit', function (evt) {
+                if (el.hasClass('processing')) return;
                 var row = $(evt.currentTarget).parents('div.queued-message:first');
                 var msg = row.data('message');
                 row.addClass('selected');
@@ -765,25 +798,68 @@ mhelper.init();
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             });
-
+            el.on('click', 'div.picEditQueue', function (evt) {
+                self._openEditQueue();
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+            });
+            el.on('click', 'div.picSaveQueue', function (evt) {
+                var queue = self._fromWindow();
+                console.log(queue);
+                if (typeof queue.id === 'number' && !isNaN(queue.id) && queue.id > 0)
+                    self.saveQueue();
+                else
+                    self._openEditQueue();
+            });
+            el.on('click', 'div.picClearQueue', function (evt) { self.newQueue(); });
             self.newQueue();
+        },
+        _openEditQueue: function () {
+            var self = this, o = self.options, el = self.element;
+            var q = dataBinder.fromElement(el);
+            var divPopover = $('<div />');
+            divPopover.appendTo(el.parent().parent());
+            divPopover.on('initPopover', function (e) {
+                $('<div />').appendTo(e.contents()).editQueue({ queue: q });
+                e.stopImmediatePropagation();
+            });
+            divPopover.popover({ autoClose: false, title: 'Edit Queue', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
+            divPopover[0].show($('div.picMessageListTitle:first'));
         },
         bindQueue: function (queue) {
             var self = this, o = self.options, el = self.element;
             var pnl = el.find('div.queue-detail-panel');
             dataBinder.bind(pnl, queue);
-            el.find('div.queue-send-list').empty();
             if (typeof queue.messages !== 'undefined') {
                 // Bind up all the messages.
+                el.find('div.queue-send-list').empty();
                 for (var i = 0; i < queue.messages.length; i++) {
                     self.addMessage(queue.messages[i]);
                 }
             }
         },
-        newQueue: function () { this.bindQueue({ id: 0, name: '<New Queue>', messages: [] }); },
+        saveQueue: function () {
+            var self = this, o = self.options, el = self.element;
+            var queue = self._fromWindow(true);
+            $.putJSON('/messages/queue', queue, 'Saving Queue...', function (data, status, xhr) {
+                self.bindQueue(data);
+            });
+        },
+        newQueue: function () { this.bindQueue({ id: 0, name: '', description: '', messages: [] }); },
         addMessage: function (msg) { this.saveMessage(msg); },
         saveMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
+            // Clean up the message and deal with a copy.  We wany the reference to be new
+            // so that edits aren't changing the original message.
+            msg = $.extend(true, {}, msg);
+            msg.direction = 'out';
+            delete msg.isValid;
+            delete msg.packetCount;
+            delete msg.complete;
+            delete msg.timestamp;
+            delete msg._complete;
+            if (typeof msg.delay === 'undefined') msg.delay = 0;
+
             var list = el.find('div.queue-send-list');
             var div = list.find('div.queued-message.selected');
             if (div.length === 0) div = $('<div class="queued-message" />').appendTo(list);
@@ -796,6 +872,55 @@ mhelper.init();
             $('<span />').appendTo(div).addClass('queued-message-delay').text(msg.delay || 0).appendTo(div);
             $('<div class="queued-message-remove mmgrButton"><i class="fas fa-trash-alt" /></div>').appendTo(div);
             div.data('message', msg);
+        },
+        loadQueue: function (id) {
+            var self = this, o = self.options, el = self.element;
+            $.getJSON('/messages/queue/' + id, undefined, function (data, status, xhr) {
+                console.log(data);
+                self.bindQueue(data);
+            });
+        },
+        sendQueue: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('processing');
+            // Send out the messages on the interval.
+            el.find('div.queued-message').each(function () {
+                self.msgQueue.push(this);
+            });
+            o.messagesToSend = self.msgQueue.length;
+            o.messagesSent = 0;
+            el.find('div.picMessageListTitle:first > span').text('Sending Messages...');
+
+            self.processNextMessage();
+            
+
+        },
+        processNextMessage: function () {
+            var self = this, o = self.options, el = self.element;
+            var mm = $('div.picMessageManager')[0];
+            if (self.msgQueue.length > 0) {
+                var elMsg = $(self.msgQueue.shift());
+                if (elMsg) {
+                    var msg = elMsg.data('message');
+                    el.find('div.queued-message').removeClass('sending');
+                    elMsg.addClass('sending');
+                    if (msg) {
+                        setTimeout(function () {
+                            o.messagesSent++;
+                            elMsg.addClass('sent');
+                            mm.sendOutboundMessage(msg);
+                            self.processNextMessage();
+                        }, (msg.delay || 0) + 1000);
+                    }
+                }
+            }
+            else {
+                el.find('div.queued-message').removeClass('sending').removeClass('sent');
+                el.removeClass('processing');
+                el.find('div.picMessageListTitle:first > span').text('Send Message Queue');
+                $('<div />').appendTo(el.find('div.picMessageListTitle:first > span')).fieldTip({
+                    message: `${o.messagesSent} of ${o.messagesToSend} queued messages sent` });
+            }
         }
     });
     $.widget("pic.editMessage", {
@@ -1097,24 +1222,36 @@ mhelper.init();
             var q = dataBinder.fromElement(el);
             var valid = dataBinder.checkRequired(el, showError);
             if (!valid && showError) return;
-            var queue;
-            return queue;
+            return q;
         },
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
             var div = $('<div />').appendTo(el).addClass('edit-queue');
             var line = $('<div />').appendTo(div);
+            $('<input type="hidden" data-datatype="int" data-bind="id" />').appendTo(line);
+            $('<div />').appendTo(line).inputField({ required: true, labelText: 'Name', binding: 'name', inputAttrs: { maxlength: 27, style: { width: '12rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
+            line = $('<div />').appendTo(div);
+            $('<div />').appendTo(line).inputField({ required: false, multiLine:true, labelText: 'Description', binding: 'description', inputAttrs: { maxlength: 100, style: { width: '19rem', height:'4rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
+
             var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
             $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Queue', icon: '<i class="far fa-save" />' }).on('click', function (e) {
                 var queue = self._fromWindow(true);
+                
                 if (queue) {
                     $('div.picSendMessageQueue').each(function () {
-                        this.setQueue();
+                        this.bindQueue(queue);
+                        this.saveMessage();
                     });
                     // Close the window.
                     el.parents('div.picPopover:first')[0].close();
                 }
             });
+        },
+        bindQueue: function (queue) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof queue.id !== 'number' || queue.id <= 0) el.parents('div.picPopover:first')[0].titleText('Create Queue');
+            dataBinder.bind(el, queue);
+
         }
     });
     $.widget("pic.loadQueue", {
@@ -1122,31 +1259,49 @@ mhelper.init();
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initQueue();
-            self.bindQueue(o.queue);
         },
         _fromWindow(showError) {
             var self = this, o = self.options, el = self.element;
             var q = dataBinder.fromElement(el);
             var valid = dataBinder.checkRequired(el, showError);
             if (!valid && showError) return;
-            var queue;
-            return queue;
+            return q;
         },
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
             var div = $('<div />').appendTo(el).addClass('edit-queue');
-            var line = $('<div />').appendTo(div);
+            var line = $('<div />').css({ minWidth: '20rem' }).appendTo(div);
+            $.getJSON('/messages/queues', undefined, function (data, status, xhr) {
+                console.log(data);
+                $('<div />').appendTo(line).pickList({ required: true,
+                    labelText: 'Queue', binding: 'id',
+                    displayColumn: 1,
+                    columns: [{ binding: 'id', text: 'Id', hidden:true, style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap', width:'7rem' } }, { binding: 'description', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                    items: data,
+                    pickListStyle: { minWidth: '30rem', maxHeight: '300px' },
+                    inputAttrs: { style: { width: '20rem' } }, labelAttrs: { style: { width: '4rem' } }
+                });
+            });
+
             var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Queue', icon: '<i class="far fa-save" />' }).on('click', function (e) {
+            $('<div />').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-dowload" />' }).on('click', function (e) {
+                console.log('Loading queue');
                 var queue = self._fromWindow(true);
+
                 if (queue) {
+                    console.log(queue);
                     $('div.picSendMessageQueue').each(function () {
-                        this.setQueue();
+                        this.loadQueue(queue.id);
                     });
                     // Close the window.
                     el.parents('div.picPopover:first')[0].close();
                 }
             });
+        },
+        bindQueues: function (queue) {
+            var self = this, o = self.options, el = self.element;
+            //dataBinder.bind(el, queue);
+
         }
     });
 })(jQuery);
