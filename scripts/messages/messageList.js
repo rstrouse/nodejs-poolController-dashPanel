@@ -531,7 +531,7 @@ mhelper.init();
                     break;
                 }
             }
-            
+
             $('div.picMessageDetail')[0].bindMessage(msg, prev);
         },
         _bindMessage(row, msg) {
@@ -540,7 +540,7 @@ mhelper.init();
             $('<i class="fas" />').appendTo(inout).addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
             var spChg = $('<span class="changed" />').appendTo($('<td />').appendTo(row));
             var chg = $('<i class="fas" />').appendTo(spChg);
-            
+
             row.attr('data-msgdir', msg.direction);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
             $('<span />').text(msg.protocol).appendTo($('<td />').appendTo(row));
@@ -548,6 +548,7 @@ mhelper.init();
             $('<span />').text(mhelper.mapDest(msg)).appendTo($('<td />').appendTo(row));
             $('<span />').text(mhelper.mapAction(msg)).appendTo($('<td />').appendTo(row));
             $('<span />').text(msg.payload.join(',')).appendTo($('<td />').appendTo(row));
+            if (typeof msg.isValid !== 'undefined' && !msg.isValid) row.addClass('invalid');
             var prev = o.messageKeys[msg.key];
             var hasChanged = false;
             if (typeof prev === 'undefined')
@@ -603,15 +604,17 @@ mhelper.init();
             div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
             $('<span class="picMessageDirection" data-bind="direction" />Message Details</span>').appendTo(div);
             $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up" /></div>').appendTo(div);
-
+            //[255, 0, 255][165, 63, 15, 16, 2, 29][9, 47, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 2, 0, 80, 80, 0, 241, 85, 105, 24, 246, 0, 0, 0, 0, 0, 255, 0][255, 165]
             div = $('<div class="msg-detail-panel" style="display:none;" />').appendTo(el);
             var line = $('<div class="dataline" />').appendTo(div);
             $('<label>Protocol:</label>').appendTo(line);
             $('<span />').appendTo(line).attr('data-bind', 'protocol');
+            $('<div class="msg-invalid-banner" />').appendTo(line).text('Invalid Message');
+
             line = $('<div class="dataline" />').appendTo(div);
             $('<label>Source/Dest:</label>').appendTo(line);
             $('<span />').appendTo(line).attr('data-bind', 'source');
-            $('<span />').appendTo(line).text(' ==> ');
+            $('<span />').appendTo(line).text(' => ');
             $('<span />').appendTo(line).attr('data-bind', 'dest');
             line = $('<div class="dataline" />').appendTo(div);
             $('<label>Action:</label>').appendTo(line);
@@ -625,7 +628,17 @@ mhelper.init();
             $('<div class="payloadBytes" />').appendTo(div);
             $('<div class="msg-payload" />').appendTo(el);
             el.on('click', 'div.picAddToQueue', function (evt) {
-                $('div.picSendMessageQueue')[0].addMessage(o.message);
+                if (typeof o.message !== 'undefined' && o.message) {
+                    $('div.picSendMessageQueue')[0].addMessage(o.message);
+                }
+            });
+            el.on('click', 'td.payload-byte.payload-change', function (evt) {
+                self.showByteDiff(evt.currentTarget, true);
+                evt.stopImmediatePropagation();
+                evt.preventDefault();
+            });
+            el.on('click', function (evt) {
+                el.find('div.msg-payload-bytediff').remove();
             });
         },
         bindMessage: function (msg, prev) {
@@ -654,9 +667,58 @@ mhelper.init();
                     direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound '
                 };
             }
+            (msg.isValid === false) ? el.addClass('invalid') : el.removeClass('invalid');
             o.message = msg;
             dataBinder.bind(el, obj);
             self.bindPayload(msg, prev);
+        },
+        showByteDiff: function (cell, bShow) {
+            var self = this, o = self.options, el = self.element;
+            var ndx = $(cell).attr('data-payload-byte-index');
+            el.find('div.msg-payload-bytediff').remove();
+            $(cell).parents('table.msg-payload:first').find('tbody > tr.msg-payload-header > td[data-payload-byte-index="' + ndx + '"]').each(function () {
+                if (bShow) {
+                    var bprev = parseInt($(this).attr('data-prevbyte'), 10);
+                    var bcurr = parseInt($(this).attr('data-byte'), 10);
+                    self._createByteDiff(bprev, bcurr).appendTo($(this));
+                }
+            });
+        },
+        _createByteDiff: function (bprev, bcurr) {
+            var self = this, o = self.options, el = self.element;
+            var diff = $('<div class="msg-payload-bytediff" />');
+            var tbody = $('<tbody />').appendTo($('<table class="msg-payload-bytediff"></table>').appendTo(diff));
+            var rowHead = $('<tr />').addClass('bytediff-header').appendTo(tbody);
+            var rowPrev = $('<tr />').addClass('bytediff-prev').appendTo(tbody);
+            var rowCurr = $('<tr />').addClass('bytediff-curr').appendTo(tbody);
+            var makeBinaryTable = function (val) {
+                var tbl = $('<table />').addClass('bytediff-bit');
+                var tbody = $('<tbody />').appendTo(tbl);
+                var row = $('<tr />').appendTo(tbody);
+                if (typeof val === 'undefined') row.addClass('bydiff-bit-header');
+                for (var i = 7; i >= 0; i--) {
+                    $('<td />').appendTo(row).text(typeof val === 'undefined' ? i + 1 : (0xFF & val & (1 << i)) > 0 ? 1 : 0);
+                }
+                return tbl;
+            };
+            $('<td />').addClass('bytediff-name').appendTo(rowHead);
+            $('<td />').addClass('bytediff-name').appendTo(rowPrev).text('Previous');
+            $('<td />').addClass('bytediff-name').appendTo(rowCurr).text('Current');
+            $('<td />').addClass('bytediff-dec').appendTo(rowHead).text('dec');
+            $('<td />').addClass('bytediff-dec').appendTo(rowPrev).text(bprev);
+            $('<td />').addClass('bytediff-dec').appendTo(rowCurr).text(bcurr);
+            $('<td />').addClass('bytediff-ascii').appendTo(rowHead).text('ascii');
+            $('<td />').addClass('bytediff-ascii').appendTo(rowPrev).text(mhelper.toAscii(bprev));
+            $('<td />').addClass('bytediff-ascii').appendTo(rowCurr).text(mhelper.toAscii(bcurr));
+            $('<td />').addClass('bytediff-hex').appendTo(rowHead).text('hex');
+            $('<td />').addClass('bytediff-hex').appendTo(rowPrev).text(mhelper.toHex(bprev));
+            $('<td />').addClass('bytediff-hex').appendTo(rowCurr).text(mhelper.toHex(bcurr));
+
+            var cellBinHead = $('<td />').addClass('bytediff-binary').appendTo(rowHead);
+            makeBinaryTable().appendTo($('<div />').appendTo(cellBinHead));
+            makeBinaryTable(bprev).appendTo($('<td />').appendTo(rowPrev));
+            makeBinaryTable(bcurr).appendTo($('<td />').appendTo(rowCurr));
+            return diff;
         },
         bindPayload: function (msg, prev) {
             var self = this, o = self.options, el = self.element;
@@ -680,14 +742,17 @@ mhelper.init();
                     ascii = $('<tr class="msg-payload-ascii" />').appendTo(tbl.find('tbody:first'));
                     hex = $('<tr class="msg-payload-hex" />').appendTo(tbl.find('tbody:first'));
                 }
-                $('<td />').appendTo(header).text(i);
-                var cdec = $('<td class="payload-byte" />').appendTo(decimal).text(bdec);
-                var cascii = $('<td class="payload-byte" />').appendTo(ascii).text(bascii);
-                var chex = $('<td class="payload-byte" />').appendTo(hex).text(bhex);
+                var chead = $('<td />').appendTo(header).attr('data-payload-byte-index', i).text(i);
+                var cdec = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(decimal).text(bdec);
+                var cascii = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(ascii).text(bascii);
+                var chex = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(hex).text(bhex);
                 if (typeof pdec !== 'undefined' && pdec !== bdec) {
-                    cdec.addClass('payload-change').attr('title', 'prev: ' + pdec);
-                    chex.addClass('payload-change').attr('title', 'prev: ' +  mhelper.toHex(pdec));
-                    cascii.addClass('payload-change').attr('title', 'prev: ' +  mhelper.toAscii(pdec));
+                    chead.attr('data-prevbyte', pdec);
+                    chead.attr('data-byte', bdec);
+                    cdec.addClass('payload-change');//.attr('title', 'prev: ' + pdec);
+                    chex.addClass('payload-change');//.attr('title', 'prev: ' +  mhelper.toHex(pdec));
+                    cascii.addClass('payload-change');//.attr('title', 'prev: ' + mhelper.toAscii(pdec));
+
                 }
             }
         }

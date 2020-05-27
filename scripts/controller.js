@@ -227,7 +227,7 @@
 
                 btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'IntelliChem', bind: 'packet.intellichem.enabled' });
                 btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'IntelliValve', bind: 'packet.intellivalve.enabled' });
-
+                btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Invalid', bind: 'packet.invalid' });
                 divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
 
                 btn = $('<div class="logger" />').appendTo(divLine).optionButton({ text: 'Replay', bind: 'packet.replay' });

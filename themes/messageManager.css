@@ -26,6 +26,21 @@ div.messageContainer {
   display: inline-grid;
   grid-template-columns: 800px 477px; }
 
+@media screen and (max-width: 1277px) {
+  div.messageContainer {
+    display: inline-grid;
+    grid-template-columns: 571px 477px; } }
+
+@media screen and (max-width: 1048px) {
+  div.messageContainer {
+    display: inline-grid;
+    grid-template-columns: 547px 477px; } }
+
+@media screen and (max-width: 1024px) {
+  div.messageContainer {
+    display: inline-grid;
+    grid-template-columns: 700px; } }
+
 .header {
   display: block;
   opacity: 1;
@@ -108,6 +123,18 @@ table.msgList-body > tbody > tr > td:last-child {
 table.msgList-body > tbody > tr > td:last-child > span {
   width: 470px; }
 
+@media screen and (max-width: 1277px) {
+  table.msgList-body > tbody > tr > td:last-child > span {
+    width: 247px; } }
+
+@media screen and (max-width: 1048px) {
+  table.msgList-body > tbody > tr > td:last-child > span {
+    width: 224px; } }
+
+@media screen and (max-width: 1024px) {
+  table.msgList-body > tbody > tr > td:last-child > span {
+    width: 372px; } }
+
 table.msgList-header > tbody > tr > td:last-child {
   text-align: center; }
 
@@ -184,7 +211,7 @@ tr.msgRow:hover {
   background-image: linear-gradient(top, #159FCF, #13647F); }
 
 tr.msgRow.invalid {
-  background-color: red;
+  background-color: tomato;
   color: yellow; }
 
 tr.msgRow.outbound i.fa-arrow-circle-left {
@@ -198,6 +225,22 @@ div.msg-detail-panel > div.dataline > label {
   display: inline-block;
   width: 74px;
   font-weight: bold; }
+
+div.msg-invalid-banner {
+  border: solid 1px gray;
+  border-radius: 5px;
+  padding: 4px;
+  float: right;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  background-color: tomato;
+  color: yellow; }
+
+div.picMessageDetail:not(.invalid) div.msg-invalid-banner {
+  display: none; }
 
 div.dataline {
   font-size: 8pt; }
@@ -217,7 +260,8 @@ tr.msg-payload-header {
 
 td.payload-byte.payload-change {
   color: yellow;
-  background-color: cornflowerblue; }
+  background-color: cornflowerblue;
+  cursor: pointer; }
 
 tr.msg-payload-header > td {
   border: solid 1px white;
@@ -232,6 +276,49 @@ tr.msg-payload-decimal > td, tr.msg-payload-ascii > td, tr.msg-payload-hex > td 
   max-width: 21px;
   overflow: hidden;
   box-sizing: border-box; }
+
+div.msg-payload-bytediff {
+  position: absolute;
+  box-sizing: border-box;
+  font-size: 8pt;
+  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  color: black;
+  background-color: white;
+  border: solid 1px gray;
+  border-radius: 5px; }
+
+table.msg-payload-bytediff {
+  border-radius: 5px;
+  border-collapse: collapse; }
+
+tr.bytediff-header > td.bytediff-binary {
+  border-top-right-radius: 5px; }
+
+tr.bytediff-header > td.bytediff-dec,
+tr.bytediff-header > td.bytediff-ascii,
+tr.bytediff-header > td.bytediff-hex {
+  width: 1.7rem; }
+
+tr.bytediff-header > td,
+tr.bytediff-curr > td,
+tr.bytediff-prev > td {
+  border: solid 1px gray;
+  padding-left: 1px;
+  padding-right: 1px; }
+
+tr.bytediff-header > td {
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+  background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+  background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+  background-image: linear-gradient(top, #159FCF, #13647F);
+  color: white; }
+
+tr.bytediff-header > td.bytediff-name {
+  border: none;
+  background: none; }
 
 table.queue-list-header {
   box-sizing: border-box;
