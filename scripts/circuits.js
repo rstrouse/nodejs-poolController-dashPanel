@@ -444,8 +444,38 @@
                 evt.stopImmediatePropagation();
             });
             for (let i = 0; i < data.circuits.length; i++) {
+                try {
+                    // Create a new feature for light types only.
+                    switch (data.circuits[i].type.name) {
+                        case 'light':
+                        case 'intellibrite':
+                        case 'globrite':
+                        case 'globritewhite':
+                        case 'magicstream':
+                        case 'dimmer':
+                        case 'colorcascade':
+                        case 'samlight':
+                        case 'sallight':
+                        case 'photongen':
+                            let div = $('<div class="picLight picFeature picCircuit"/>');
+                            div.appendTo(el);
+                            if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
+                            div.circuit(data.circuits[i]);
+                            break;
+                    }
+                } catch (err) { console.error(err); }
+            }
+            for (let i = 0; i < data.lightGroups.length; i++) {
+                let div = $('<div class="picLight picFeature picLightGroup"/>');
+                div.appendTo(el);
+                div.lightGroup(data.lightGroups[i]);
+                
+            }
+        },
+        isLight: function (circuit) {
+            try {
                 // Create a new feature for light types only.
-                switch (data.circuits[i].type.name) {
+                switch (circuit.type.name) {
                     case 'light':
                     case 'intellibrite':
                     case 'globrite':
@@ -456,36 +486,9 @@
                     case 'samlight':
                     case 'sallight':
                     case 'photongen':
-                        let div = $('<div class="picLight picFeature picCircuit"/>');
-                        div.appendTo(el);
-                        if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
-                        div.circuit(data.circuits[i]);
-                        break;
+                        return true;
                 }
-
-            }
-            for (let i = 0; i < data.lightGroups.length; i++) {
-                let div = $('<div class="picLight picFeature picLightGroup"/>');
-                div.appendTo(el);
-                div.lightGroup(data.lightGroups[i]);
-                
-            }
-        },
-        isLight: function (circuit) {
-            // Create a new feature for light types only.
-            switch (circuit.type.name) {
-                case 'light':
-                case 'intellibrite':
-                case 'globrite':
-                case 'globritewhite':
-                case 'magicstream':
-                case 'dimmer':
-                case 'colorcascade':
-                case 'samlight':
-                case 'sallight':
-                case 'photongen':
-                    return true;
-            }
+            } catch (err) { console.error(err); }
             return false;
         },
         setItem: function (type, data) {
@@ -617,14 +620,16 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
-            el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-            el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
-            el.attr('data-state', data.isOn);
-            el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
-                let pnl = $(this);
-                pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-                pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
-            });
+            try {
+                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
+                el.attr('data-state', data.isOn);
+                el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
+                    let pnl = $(this);
+                    pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
+                    pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+                });
+            } catch (err) { console.error(err); }
             //if (!self.isLight(data)) el.remove(true);
         },
         resetState: function () {

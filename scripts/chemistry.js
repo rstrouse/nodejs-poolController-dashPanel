@@ -13,7 +13,6 @@
             let span = $('<span class="picCircuitTitle"/>');
             span.appendTo(div);
             span.text('Chemistry');
-
             for (let i = 0; i < data.chlorinators.length; i++) {
                 let div = $('<div class="picChlorinator"/>');
                 div.appendTo(el);
@@ -30,31 +29,36 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            el.attr('data-saltrequired', data.saltRequired);
-            //data.state = data.currentOutput > 0 ? 'on' : 'off';
-            el.find('div.picChlorinatorState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
-            dataBinder.bind(el, data);
-            let sc = el.find('div.picSuperChlor');
-            if (data.superChlor) {
-                sc.show();
-                if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
-                if (data.superChlorRemaining > 0) {
-                    o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
-                    el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
-                    el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
+            try {
+                el.attr('data-saltrequired', data.saltRequired);
+                if (!data.isActive === false) el.hide();
+                else el.show();
+                //data.state = data.currentOutput > 0 ? 'on' : 'off';
+                el.find('div.picChlorinatorState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
+                dataBinder.bind(el, data);
+                let sc = el.find('div.picSuperChlor');
+                if (data.superChlor) {
+                    sc.show();
+                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    if (data.superChlorRemaining > 0) {
+                        o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
+                        el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
+                    }
                 }
+                else {
+                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    o.superChlorTimer = null;
+                    sc.hide();
+                    el.find('div.picSuperChlorBtn label.picSuperChlor').text('Super Chlorinate');
+                    el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'off');
+                }
+                if (typeof data.status !== 'object' || data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
+                else el.find('div.picSuperChlorBtn').show();
+                el.data('remaining', data.superChlorRemaining);
+                el.attr('data-status', data.status.name);
             }
-            else {
-                if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
-                o.superChlorTimer = null;
-                sc.hide();
-                el.find('div.picSuperChlorBtn label.picSuperChlor').text('Super Chlorinate');
-                el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'off');
-            }
-            if (data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
-            else el.find('div.picSuperChlorBtn').show();
-            el.data('remaining', data.superChlorRemaining);
-            el.attr('data-status', data.status.name);
+            catch (err) { console.log({ m: 'Error setting chlorinator data', err: err, chlor: data }); }
         },
         countdownSuperChlor: function () {
             var self = this, o = self.options, el = self.element;

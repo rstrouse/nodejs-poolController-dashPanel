@@ -53,54 +53,56 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            if (typeof data.type === 'undefined' || data.type.val === 0) {
-                setTimeout(function () { el.remove(); }, 10);
-            }
-            else {
-                dataBinder.bind(el, data);
-                el.css({ display: '' });
-                el.find('div.picIndicator').attr('data-status', data.command === 10 ? 'on' : 'off');
-            }
-            el.attr('data-pumptype', data.type.val);
-            el.attr('data-id', data.id);
-            switch (data.type.name) {
-                case 'ss':
-                case 'ds':
-                    el.find('div.picSpeed').hide();
-                    el.find('div.picFlow').hide();
-                    el.find('div.picEnergy').hide();
-                    break;
-                case 'vs':
-                case 'vs+svrs':
-                    el.find('div.picFlow').hide();
-                    el.find('div.picSpeed').show();
-                    el.find('div.picEnergy').show();
-                    break;
-                case 'vsf':
-                    el.find('div.picFlow').show();
-                    el.find('div.picSpeed').show();
-                    el.find('div.picEnergy').show();
-                    break;
-                case 'vf':
-                    el.find('div.picFlow').show();
-                    el.find('div.picSpeed').hide();
-                    el.find('div.picEnergy').show();
-                    break;
-                default:
-                    el.hide();
-                    break;
-            }
-            // Bind up any associated circuit speeds.
-            if (typeof (data.circuits) !== 'undefined') {
-                el.parent().find('div.picPopover.picPumpSettings[data-id=' + el.attr('data-id') + ']').each(function () {
-                    let $this = $(this);
-                    for (let i = 0; i < data.circuits.length; i++)
-                        $this.find('div.picPumpCircuit[data-id=' + (i + 1) + ']').each(function () {
-                            console.log(data.circuits[i]);
-                            dataBinder.bind($(this), data.circuits[i]);
-                        });
-                });
-            }
+            try {
+                if (typeof data.type === 'undefined' || data.type.val === 0) {
+                    setTimeout(function () { el.remove(); }, 10);
+                }
+                else {
+                    dataBinder.bind(el, data);
+                    el.css({ display: '' });
+                    el.find('div.picIndicator').attr('data-status', data.command === 10 ? 'on' : 'off');
+                }
+                el.attr('data-pumptype', data.type.val);
+                el.attr('data-id', data.id);
+                switch (data.type.name) {
+                    case 'ss':
+                    case 'ds':
+                        el.find('div.picSpeed').hide();
+                        el.find('div.picFlow').hide();
+                        el.find('div.picEnergy').hide();
+                        break;
+                    case 'vs':
+                    case 'vs+svrs':
+                        el.find('div.picFlow').hide();
+                        el.find('div.picSpeed').show();
+                        el.find('div.picEnergy').show();
+                        break;
+                    case 'vsf':
+                        el.find('div.picFlow').show();
+                        el.find('div.picSpeed').show();
+                        el.find('div.picEnergy').show();
+                        break;
+                    case 'vf':
+                        el.find('div.picFlow').show();
+                        el.find('div.picSpeed').hide();
+                        el.find('div.picEnergy').show();
+                        break;
+                    default:
+                        el.hide();
+                        break;
+                }
+                // Bind up any associated circuit speeds.
+                if (typeof (data.circuits) !== 'undefined') {
+                    el.parent().find('div.picPopover.picPumpSettings[data-id=' + el.attr('data-id') + ']').each(function () {
+                        let $this = $(this);
+                        for (let i = 0; i < data.circuits.length; i++)
+                            $this.find('div.picPumpCircuit[data-id=' + (i + 1) + ']').each(function () {
+                                console.log(data.circuits[i]);
+                                dataBinder.bind($(this), data.circuits[i]);
+                            });
+                    });
+                }
+            } catch (err) { console.error({ m: 'Error setting pump data', err: err, pump: data }); }
         },
         
         _buildControls: function() {

@@ -96,35 +96,37 @@
         },
         setControllerState: function (data) {
             var self = this, o = self.options, el = self.element;
-            let dt = new Date(data.time);
-            el.find('span.picControllerTime').each(function () {
-                $(this).text(self.formatDate(dt));
-            });
-            el.find('div.picControllerStatus').each(function () {
-                let ln = $(this);
-                ln.find('span.picPercentData').text(data.status.name === 'loading' ? data.status.percent + '%' : '');
-                ln.find('span.picStatusData').text(data.status.desc);
-                ln.find('div.picIndicator').attr('data-status', data.status.name);
-            });
-            el.find('div.picPanelMode').attr('data-status', data.mode.name);
-            el.find('div.picPanelMode > label').text(data.mode.desc);
-            el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
-            el.attr('data-status', data.status.val);
-            $('div.picActionButton[id$=btnReloadConfig]').each(function () {
-                let btn = $(this);
-                if (data.status.val === 1) {
-                    btn.find('i').removeClass('fa-spin');
-                    btn.find('span.picButtonText').text('Reload Config');
-                    btn.removeClass('disabled');
-                }
-                else {
-                    btn.find('i').addClass('fa-spin');
-                    btn.find('span.picButtonText').text('Loading Config...');
-                    btn.addClass('disabled');
-                }
+            try {
+                let dt = new Date(data.time);
+                el.find('span.picControllerTime').each(function () {
+                    $(this).text(self.formatDate(dt));
+                });
+                el.find('div.picControllerStatus').each(function () {
+                    let ln = $(this);
+                    ln.find('span.picPercentData').text(data.status.name === 'loading' ? data.status.percent + '%' : '');
+                    ln.find('span.picStatusData').text(data.status.desc);
+                    ln.find('div.picIndicator').attr('data-status', data.status.name);
+                });
+                el.find('div.picPanelMode').attr('data-status', data.mode.name);
+                el.find('div.picPanelMode > label').text(data.mode.desc);
+                el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+                el.attr('data-status', data.status.val);
+                $('div.picActionButton[id$=btnReloadConfig]').each(function () {
+                    let btn = $(this);
+                    if (data.status.val === 1) {
+                        btn.find('i').removeClass('fa-spin');
+                        btn.find('span.picButtonText').text('Reload Config');
+                        btn.removeClass('disabled');
+                    }
+                    else {
+                        btn.find('i').addClass('fa-spin');
+                        btn.find('span.picButtonText').text('Loading Config...');
+                        btn.addClass('disabled');
+                    }
 
 
-            });
+                });
+            } catch (err) { console.error(err); }
 
         },
         setEquipmentState: function (data) {

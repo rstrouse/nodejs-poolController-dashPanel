@@ -47,18 +47,20 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            dataBinder.bind(el, data);
-            el.css({ display: '' });
-            el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-            el.attr('data-id', data.id);
-            el.find('.picSchedDays').remove();
-            self._createDays(data).appendTo(el);
-            //let row = el.find('table.picSchedDays > tbody > tr:last');
-            //row.find('td > i').removeClass('fas').addClass('far');
-            //for (var k = 0; k < data.scheduleDays.days.length; k++) {
-            //    let day = data.scheduleDays.days[k];
-            //    row.find('td:nth-child(' + (day.dow + 1) + ')').find('i:first').removeClass('far').addClass('fas');
-            //}
+            try {
+                dataBinder.bind(el, data);
+                el.css({ display: '' });
+                el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                el.attr('data-id', data.id);
+                el.find('.picSchedDays').remove();
+                self._createDays(data).appendTo(el);
+                //let row = el.find('table.picSchedDays > tbody > tr:last');
+                //row.find('td > i').removeClass('fas').addClass('far');
+                //for (var k = 0; k < data.scheduleDays.days.length; k++) {
+                //    let day = data.scheduleDays.days[k];
+                //    row.find('td:nth-child(' + (day.dow + 1) + ')').find('i:first').removeClass('far').addClass('fas');
+                //}
+            } catch (err) { console.error({ m: 'Error setting schedule', err: err, schedule: data }); }
         },
        
         _buildControls: function() {

@@ -51,21 +51,23 @@
     },
     setState: function (data) {
         var self = this, o = self.options, el = self.element;
-        el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-        el.find('div.picIBColor').attr('data-color', typeof (data.lightingTheme) !== 'undefined' ? data.lightingTheme.name : 'none');
-        el.attr('data-state', data.isOn);
-        if (data.action.val !== 0) {
-            el.find('i.picDropdownButton').addClass('fa-spin');
-        }
-        else {
-            el.find('i.picDropdownButton').removeClass('fa-spin');
-        }
-        el.parent().find('div.picLightSettings[data-circuitid=' + data.id + ']').each(function () {
-            //let pnl = $(this);
-            //pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-            //pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
-            this.setState(data);
-        });
+        try {
+            el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+            el.find('div.picIBColor').attr('data-color', typeof (data.lightingTheme) !== 'undefined' ? data.lightingTheme.name : 'none');
+            el.attr('data-state', data.isOn);
+            if (data.action.val !== 0) {
+                el.find('i.picDropdownButton').addClass('fa-spin');
+            }
+            else {
+                el.find('i.picDropdownButton').removeClass('fa-spin');
+            }
+            el.parent().find('div.picLightSettings[data-circuitid=' + data.id + ']').each(function () {
+                //let pnl = $(this);
+                //pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
+                //pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+                this.setState(data);
+            });
+        } catch (err) { console.error(err); }
     },
     resetState: function () {
         var self = this, o = self.options, el = self.element;

@@ -10,7 +10,8 @@ if (typeof String.prototype.endsWith !== 'function') {
         return this.slice(-str.length) === str;
     };
 }
-
+window.console = window.console || (function () { var c = {}; c.log = c.warn = c.debug = c.info = c.error = c.time = c.dir = c.profile = c.clear = c.exception = c.trace = c.assert = function (s) { }; return c; })();
+window.console.error = window.console.error || (function () { })();
 
 if (!String.prototype.padStart) {
     String.prototype.padStart = function padStart(targetLength, padString) {

@@ -127,25 +127,27 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             dataBinder.bind(el, data);
-            el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
-            el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-            el.attr('data-ison', data.isOn);
-            el.attr('data-setpoint', data.setPoint);
-            el.attr('data-heatmode', data.heatMode.val);
-            switch (data.heatStatus.name) {
-                case 'solar':
-                    el.find('span.picSolarOn').css('display', 'inline-block');
-                    el.find('span.picHeaterOn').hide();
-                    break;
-                case 'heater':
-                    el.find('span.picSolarOn').hide();
-                    el.find('span.picHeaterOn').css('display', 'inline-block');
-                    break;
-                default:
-                    el.find('span.picSolarOn').hide();
-                    el.find('span.picHeaterOn').hide();
-                    break;
-            }
+            try {
+                el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
+                el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                el.attr('data-ison', data.isOn);
+                el.attr('data-setpoint', data.setPoint);
+                el.attr('data-heatmode', data.heatMode.val);
+                switch (data.heatStatus.name) {
+                    case 'solar':
+                        el.find('span.picSolarOn').css('display', 'inline-block');
+                        el.find('span.picHeaterOn').hide();
+                        break;
+                    case 'heater':
+                        el.find('span.picSolarOn').hide();
+                        el.find('span.picHeaterOn').css('display', 'inline-block');
+                        break;
+                    default:
+                        el.find('span.picSolarOn').hide();
+                        el.find('span.picHeaterOn').hide();
+                        break;
+                }
+            } catch (err) { console.error({ msg: 'Error body data', err: err, body: data }); }
         },
         setCircuitState: function (data) {
             var self = this, o = self.options, el = self.element;
