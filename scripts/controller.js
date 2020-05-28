@@ -15,10 +15,10 @@
             let row = $('<div class="picHeaderRow picControllerTitle" />');
             $('<div class= "picModel"><i class="fas fa-bars" /><span class="picModelData" /></div >').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"/></div>').appendTo(row);
-            if ($('div.dashOuter').length)
+            //if ($('div.dashOuter').length)
                 $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /><div class="picConfigIcon"><i class="fas fa-cogs" /></div></div>').appendTo(row);
-            else
-                $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /></div>').appendTo(row);
+            //else
+            //    $('<div class="picControllerStatus"><span class="picStatusData"/><span class="picPercentData" /><div class="picIndicator" data-status="error" /></div>').appendTo(row);
             row.appendTo(el);
 
             row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"/><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"/></div>');
