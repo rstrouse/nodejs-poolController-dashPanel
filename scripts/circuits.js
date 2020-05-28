@@ -381,30 +381,32 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
-            dataBinder.bind(el.parent().find('div.picPopover[data-circuitid=' + data.id + ']'), data);
-            el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-            el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
-            el.attr('data-state', data.isOn);
-            el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
-                let pnl = $(this);
-                pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-                pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
-            });
-            el.find('label.picFeatureLabel').text(data.name);
-            if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
-            if (self.isLight(data)) {
-                // Alright we are a light.  Make sure we have an entry in the lights panel.
-                if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
-                    let divLight = $('<div class="picLight picFeature picCircuit" />').appendTo('div.picLights');
-                    divLight.circuit(data);
+            try {
+                dataBinder.bind(el.parent().find('div.picPopover[data-circuitid=' + data.id + ']'), data);
+                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
+                el.attr('data-state', data.isOn);
+                el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
+                    let pnl = $(this);
+                    pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
+                    pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+                });
+                el.find('label.picFeatureLabel').text(data.name);
+                if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
+                if (self.isLight(data)) {
+                    // Alright we are a light.  Make sure we have an entry in the lights panel.
+                    if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
+                        let divLight = $('<div class="picLight picFeature picCircuit" />').appendTo('div.picLights');
+                        divLight.circuit(data);
+                    }
                 }
-            }
-            else {
-                if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length > 0) {
-                    //console.log('remove id: ' + data.id);
-                    $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').remove();
+                else {
+                    if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length > 0) {
+                        //console.log('remove id: ' + data.id);
+                        $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').remove();
+                    }
                 }
-            }
+            } catch (err) { console.error(err); }
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;

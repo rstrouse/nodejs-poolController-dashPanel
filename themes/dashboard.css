@@ -3,6 +3,9 @@
   height: 100%;
   margin: 0px; }
 
+.tester {
+  width: 25px; }
+
 * {
   box-sizing: border-box; }
 

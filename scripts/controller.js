@@ -97,7 +97,7 @@
         setControllerState: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                let dt = new Date(data.time);
+                let dt = new Date.parseISO(data.time);
                 el.find('span.picControllerTime').each(function () {
                     $(this).text(self.formatDate(dt));
                 });
@@ -446,15 +446,17 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
-            var tabBar = el.find('div.picTabBar:first')[0];
-            var tabInclude = tabBar.tabContent('tabInclude');
-            var tabExclude = tabBar.tabContent('tabExclude');
-            //console.log({ include: tabInclude, exclude: tabExclude });
-            tabInclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.includeActions.length === 0);
-            tabExclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.excludeActions.length === 0);
-            for (var i = 0; i < data.includeActions.length; i++) {
-                tabInclude.find('div.picOptionButton[data-actionid=' + data.includeActions[i] + ']')[0].val(true);
-            }
+            try {
+                var tabBar = el.find('div.picTabBar:first')[0];
+                var tabInclude = tabBar.tabContent('tabInclude');
+                var tabExclude = tabBar.tabContent('tabExclude');
+                //console.log({ include: tabInclude, exclude: tabExclude });
+                tabInclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.includeActions.length === 0);
+                tabExclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.excludeActions.length === 0);
+                for (var i = 0; i < data.includeActions.length; i++) {
+                    tabInclude.find('div.picOptionButton[data-actionid=' + data.includeActions[i] + ']')[0].val(true);
+                }
+            } catch (err) { console.error(err); }
         }
     });
 })(jQuery);

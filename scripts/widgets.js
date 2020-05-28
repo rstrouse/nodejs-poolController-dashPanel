@@ -12,6 +12,12 @@ if (typeof String.prototype.endsWith !== 'function') {
 }
 window.console = window.console || (function () { var c = {}; c.log = c.warn = c.debug = c.info = c.error = c.time = c.dir = c.profile = c.clear = c.exception = c.trace = c.assert = function (s) { }; return c; })();
 window.console.error = window.console.error || (function () { })();
+if (!Date.parseISO) {
+    Date.parseISO = function (sDate) {
+        var s = sDate.split(/[^0-9]/);
+        return new Date(s[0], s[1] - 1, s[2], s[3], s[4], s[5]);
+    };
+}
 
 if (!String.prototype.padStart) {
     String.prototype.padStart = function padStart(targetLength, padString) {

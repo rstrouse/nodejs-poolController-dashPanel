@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-PoolControl.dashPanel",
+  "name": "nodejs-poolcontrol.dashpanel",
   "version": "0.0.1",
   "description": "Dashboard Panel",
   "main": "app.js",
