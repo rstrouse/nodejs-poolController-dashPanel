@@ -19,7 +19,7 @@
                 $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div><div class="picConfigIcon"><i class="fas fa-cogs" /></div></div>').appendTo(row);
             else
                 $('<div class="picControllerStatus"><span class="picStatusData" /><span class="picPercentData" /><div class="picIndicator" data-status="error" /></div>').appendTo(row);
-            console.log(row.html());
+            console.log('jQuery:' + jQuery.fn.jquery + ' jQueryUI:' + ($.ui ? $.ui.version || 'pre 1.6'));
 
             row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"/><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"/></div>');
             row.appendTo(el);
