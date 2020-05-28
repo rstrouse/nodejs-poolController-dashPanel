@@ -18,7 +18,7 @@
             if ($('div.dashOuter').length)
                 $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div><div class="picConfigIcon"><i class="fas fa-cogs"></i></div></div>').appendTo(row);
             else
-                $('<div class="picControllerStatus"><span class="picStatusData"></div><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div></div>').appendTo(row);
+                $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div></div>').appendTo(row);
             console.log('jQuery:' + jQuery.fn.jquery + ' jQueryUI:' + ($.ui.version || 'pre 1.6'));
 
             row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"></i><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"></i></div>');
