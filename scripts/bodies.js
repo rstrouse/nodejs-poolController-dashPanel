@@ -9,14 +9,14 @@
         _initBodies: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picAmbientTemp"/>');
+            let div = $('<div class="picAmbientTemp"></div>');
             div.appendTo(el);
-            let d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"/><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            let d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
-            d = $('<div><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"/><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            d = $('<div><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
             for (let i = 0; i < data.temps.bodies.length; i++) {
-                $('<div/>').appendTo(el).body(data.temps.bodies[i]);
+                $('<div></div>').appendTo(el).body(data.temps.bodies[i]);
             }
             self.setTemps(data.temps);
             for (let i = 0; i < data.circuits.length; i++) {
@@ -50,15 +50,15 @@
         },
         _createSolarIcon: function (size) {
             return $('<span class="fa-stack fa-2x picHeaterStatusIcon picSolarOn" style="vertical-align:middle;line-height:1em;font-size:inherit;">'
-                + '<i class="fas burst-animated fa-certificate fa-stack-1x fa-spin" style="color:goldenrod;vertical-align:middle;font-size:1.3em;" />'
-                + '<i class="fas fa-stack-2x fa-certificate fa-spin" style="color:orange;font-size:1em;vertical-align:middle;" />'
+                + '<i class="fas burst-animated fa-certificate fa-stack-1x fa-spin" style="color:goldenrod;vertical-align:middle;font-size:1.3em;"></i>'
+                + '<i class="fas fa-stack-2x fa-certificate fa-spin" style="color:orange;font-size:1em;vertical-align:middle;"></i>'
                 + '</span > ');
         },
         _createHeaterIcon: function () {
             return $('<span class="fa-stack fa-2x picHeaterStatusIcon picHeaterOn" style="vertical-align:middle;line-height:1em;font-size:inherit">'
-                + '<i class="fas fa-fire-alt fa-stack-1x flicker-animated" style="color:orange;vertical-align:bottom;font-size:1.5em;opacity:.7;" />'
-                + '<i class="fas fa-stack-2x fa-fire-alt flicker-animated" style="color:yellow;font-size:1.25em;vertical-align:bottom;" />'
-                + '<i class="fas fa-stack-2x fa-fire-alt flicker1-animated" style="color:orangered;font-size:1em;vertical-align:bottom;margin-top:.15em;text-shadow: 0 0 .2em orange;" />'
+                + '<i class="fas fa-fire-alt fa-stack-1x flicker-animated" style="color:orange;vertical-align:bottom;font-size:1.5em;opacity:.7;"></i>'
+                + '<i class="fas fa-stack-2x fa-fire-alt flicker-animated" style="color:yellow;font-size:1.25em;vertical-align:bottom;"></i>'
+                + '<i class="fas fa-stack-2x fa-fire-alt flicker1-animated" style="color:orangered;font-size:1em;vertical-align:bottom;margin-top:.15em;text-shadow: 0 0 .2em orange;"></i>'
                 + '</span > ');
         },
         _buildControls: function () {
@@ -70,12 +70,12 @@
             el.attr('data-circuitid', o.circuit);
             el.attr('data-ison', o.isOn);
             $('<div class="picBodyIcon">'
-                + '<div><label class="picBodyText" /></div>'
-                + '<div class="picIndicator"/></div>'
+                + '<div><label class="picBodyText"></label></div>'
+                + '<div class="picIndicator"></div></div>'
 
                 + '<div class="picBodyTemp">'
                 + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-                + '<div><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"/><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>'
+                + '<div><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>'
                 + '</div>'
 
                 + '<div class= "picBodySetPoints">'
@@ -101,11 +101,11 @@
                 };
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
                     console.log(data);
-                    var divPopover = $('<div/>');
+                    var divPopover = $('<div></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
-                        $('<div><label class="picInline-label picSetpointText">' + body.attr('data-body') + ' Set Point</label><div class="picValueSpinner" data-bind="heatSetpoint"/></div>'
-                            + '<div class= "picSelector" data-bind="heatMode" />').appendTo(evt.contents());
+                        $('<div><label class="picInline-label picSetpointText">' + body.attr('data-body') + ' Set Point</label><div class="picValueSpinner" data-bind="heatSetpoint"></div></div>'
+                            + '<div class= "picSelector" data-bind="heatMode"></div>').appendTo(evt.contents());
                         evt.contents().find('div.picValueSpinner').each(function () {
                             $(this).valueSpinner({ val: settings.setPoint, min: 65, max: 104, step: 1 });
                         });
@@ -177,10 +177,10 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
-            var lbl = $('<label class="picFeatureLabel"/>');
+            var lbl = $('<label class="picFeatureLabel"></div>');
             lbl.appendTo(el);
             lbl.text(o.name);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);

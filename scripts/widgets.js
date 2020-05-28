@@ -267,11 +267,11 @@ jQuery.each(['put', 'delete', 'post'], function (i, method) {
         if (typeof message !== 'undefined') {
             console.log('Showing message: ' + message);
             // We are displaying a message while the service is underway.
-            msg = $('<div style="visibility:hidden;" />').addClass('picServiceStatusMsg').appendTo(document.body);
-            overlay = $('<div style="background-color:lavender;opacity:.15" />').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            msg = $('<div style="visibility:hidden;"></div>').addClass('picServiceStatusMsg').appendTo(document.body);
+            overlay = $('<div style="background-color:lavender;opacity:.15"></div>').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
             if (message instanceof jQuery) message.appendTo(msg);
             else
-                $('<div />').html(message).appendTo(msg);
+                $('<div></div>').html(message).appendTo(msg);
             msg.css({
                 visibility: '',
                 left: ($(document).width() - msg.width()) / 2,
@@ -351,11 +351,11 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         if (typeof message !== 'undefined') {
             console.log('Showing message: ' + message);
             // We are displaying a message while the service is underway.
-            msg = $('<div style="visibility:hidden;" />').addClass('picServiceStatusMsg').appendTo(document.body);
-            overlay = $('<div style="background-color:lavender;opacity:.15" />').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            msg = $('<div style="visibility:hidden;"></div>').addClass('picServiceStatusMsg').appendTo(document.body);
+            overlay = $('<div style="background-color:lavender;opacity:.15"></div>').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
             if (message instanceof jQuery) message.appendTo(msg);
             else
-                $('<div />').html(message).appendTo(msg);
+                $('<div></div>').html(message).appendTo(msg);
             msg.css({
                 visibility: '',
                 left: ($(document).width() - msg.width()) / 2,
@@ -411,9 +411,9 @@ var dataBinder = {
                 if (this.isEmpty()) {
                     isValid = false;
                     if (typeof this.label === 'function')
-                        $('<div />').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
                     else 
-                        $('<div />').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' });
                 }
             }
             else if (typeof this.val === 'function') {
@@ -421,9 +421,9 @@ var dataBinder = {
                 if (typeof val === 'undefined') {
                     isValid = false;
                     if (typeof this.label === 'function')
-                        $('<div />').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
                     else
-                        $('<div />').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' });
                 }
             }
         });
@@ -654,7 +654,7 @@ $.ui.position.fieldTip = {
         },
         _initFieldTip: function () {
             var self = this, o = self.options, el = self.element;
-            let div = $('<div class="picFieldTip-message" />');
+            let div = $('<div class="picFieldTip-message"></div>');
             var fld = o.field || el.parent();
             if (o.message instanceof jQuery)
                 o.message.appendTo(div);
@@ -695,7 +695,7 @@ $.ui.position.fieldTip = {
         },
         _initToggleButton: function () {
             var self = this, o = self.options, el = self.element;
-            let div = $('<div class="picIndicator" />');
+            let div = $('<div class="picIndicator"></div>');
             el.addClass('picToggleButton');
             el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
@@ -719,8 +719,8 @@ $.ui.position.fieldTip = {
         },
         _initActionButton: function () {
             var self = this, o = self.options, el = self.element;
-            let icon = $('<span class="picButtonIcon" />');
-            let text = $('<span class="picButtonText" />');
+            let icon = $('<span class="picButtonIcon"></span>');
+            let text = $('<span class="picButtonText"></span>');
             icon.appendTo(el);
             text.appendTo(el);
             if (o.icon) icon.html(o.icon);
@@ -749,8 +749,8 @@ $.ui.position.fieldTip = {
         },
         _initOptionButton: function () {
             var self = this, o = self.options, el = self.element;
-            let text = $('<span class="picButtonText" />');
-            var toggle = $('<div class="picOptionToggle"/>');
+            let text = $('<span class="picButtonText"></span>');
+            var toggle = $('<div class="picOptionToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
             text.appendTo(el);
@@ -838,7 +838,7 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
-            $('<label class="picSpinner-label" /><div class="picSpinner-down"><i class="fas fa-minus"/></div><div class="picSpinner-value"/><div class="picSpinner-up"><i class="fas fa-plus" /></div><span class="picSpinner-units" />').appendTo(el);
+            $('<label class="picSpinner-label"></label><div class="picSpinner-down"><i class="fas fa-minus"></i></div><div class="picSpinner-value"></div><div class="picSpinner-up"><i class="fas fa-plus"></i></div><span class="picSpinner-units"></span>').appendTo(el);
             if (typeof o.min === 'undefined') o.min = 0;
             if (typeof o.val === 'undefined') o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
@@ -962,7 +962,7 @@ $.ui.position.fieldTip = {
             el.addClass('picSelector');
             for (let i = 0; i < o.opts.length; i++) {
                 let opt = o.opts[i];
-                let divOpt = $('<div class="picOption"><div class="picIndicator"/><label class="picOption"/></div>');
+                let divOpt = $('<div class="picOption"><div class="picIndicator"></div><label class="picOption"></label></div>');
                 divOpt.appendTo(el);
                 divOpt.find('label.picOption').text(opt.desc);
                 divOpt.attr('data-name', opt.name);
@@ -1011,7 +1011,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el.addClass('picTabBar');
             $('<div class="picTabs"></div>').prependTo(el);
-            $('<div class="picTabContents"/>').appendTo(el);
+            $('<div class="picTabContents"></div>').appendTo(el);
             el.find('div.picTabs:first').on('click', 'div.picTab', function (evt) {
                 // Set the active tab here.
                 self.selectTabById($(evt.currentTarget).attr('data-tabid'));
@@ -1060,11 +1060,11 @@ $.ui.position.fieldTip = {
         tabContent: function (tabId) { return this.contents().find('div.picTabContent[data-tabid=' + tabId + ']:first'); },
         addTab: function (tabObj) {
             var self = this, o = self.options, el = self.element;
-            var tab = $('<div class="picTab"><span class="picTabText"/></div>');
+            var tab = $('<div class="picTab"><span class="picTabText"></span></div>');
             tab.appendTo(self.tabs());
             tab.attr('data-tabid', tabObj.id);
             tab.find('span.picTabText').each(function () { $(this).text(tabObj.text); });
-            var content = $('<div class="picTabContent" />');
+            var content = $('<div class="picTabContent"></div>');
             content.attr('data-tabid', tabObj.id);
             content.appendTo(self.contents());
 
@@ -1119,12 +1119,12 @@ $.ui.position.fieldTip = {
             el[0].interactive = function (val) { self.interactive(val); };
             el[0].titleText = function (val) { return el.find('span.picPopoverTitle').html(val); };
             el[0].close = function () { return self.close(); };
-            var header = $('<div class="picPopoverHeader"><div class="picPopoverTitle"><span class="picPopoverTitle" /></div>').prependTo(el);
+            var header = $('<div class="picPopoverHeader"><div class="picPopoverTitle"><span class="picPopoverTitle"></span></div>').prependTo(el);
             if (!o.autoClose) {
-                $('<div class="picClosePopover pover-icon picIconRight" title="Close"><i class="far fa-window-close" /></div>').appendTo(header.find('div.picPopoverTitle:first'));
+                $('<div class="picClosePopover pover-icon picIconRight" title="Close"><i class="far fa-window-close"></i></div>').appendTo(header.find('div.picPopoverTitle:first'));
                 el.on('click', 'div.picClosePopover', function (evt) { el[0].close(); });
             }
-            $('<div class="picPopoverBody" />').appendTo(el);
+            $('<div class="picPopoverBody"></div>').appendTo(el);
             el.find('span.picPopoverTitle').html(o.title);
             //el.on('click', function (evt) { evt.preventDefault(); });
             var evt = $.Event('initPopover');
@@ -1248,15 +1248,15 @@ $.ui.position.fieldTip = {
         _initPickList: function () {
             var self = this, o = self.options, el = self.element;
             if (o.bind) el.attr('data-bind', o.bind);
-            $('<label class="picPickList-label" />').appendTo(el).text(o.labelText);
+            $('<label class="picPickList-label"></label>').appendTo(el).text(o.labelText);
             var itm = self._getItem(o.value);
             if (o.canEdit)
-                $('<div class="picPickList-value"><input type="text" class="picPickList-value" /><div>').appendTo(el);
+                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').appendTo(el);
             else
-                $('<div class="picPickList-value" />').appendTo(el);
+                $('<div class="picPickList-value"></div>').appendTo(el);
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
-            $('<div class="picPickList-drop"><i class="fas fa-caret-down"/></div>').appendTo(el);
+            $('<div class="picPickList-drop"><i class="fas fa-caret-down"></i></div>').appendTo(el);
             el.attr('data-bind', o.binding);
             el[0].label = function () { return el.find('label.picPickList-label:first'); };
             el[0].field = function () { return el.find('div.picPickList-value:first'); };
@@ -1335,13 +1335,13 @@ $.ui.position.fieldTip = {
         },
         _buildOptionList: function () {
             var self = this, o = self.options, el = self.element;
-            div = $('<div class="picPickList-options" />');
-            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader"><td></td></tr><tr class="optBody"><td><div class="optBody"><div /></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
+            div = $('<div class="picPickList-options"></div>');
+            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
             self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
             var tbody = $('<table class="optBody"><tbody></tbody></table>').appendTo(tblOuter.find('div.optBody > div:first'));
             var val = self.val();
             for (var i = 0; i < o.items.length; i++) {
-                var row = $('<tr />').appendTo(tbody);
+                var row = $('<tr></tr>').appendTo(tbody);
                 var itm = o.items[i];
                 for (var j = 0; j < o.columns.length; j++) {
                     var col = o.columns[j];
@@ -1349,8 +1349,8 @@ $.ui.position.fieldTip = {
                         row.attr('data-value', itm[col.binding]);
                         if (typeof val !== 'undefined' && val !== null && val.toString() === itm[col.binding].toString()) row.addClass('selected');
                     }
-                    var td = $('<td />').appendTo(row);
-                    var span = $('<span class="optText" />').appendTo(td);
+                    var td = $('<td></td>').appendTo(row);
+                    var span = $('<span class="optText"></span>').appendTo(td);
                     if (col.style) td.css(col.style);
                     if (col.hidden) td.hide();
                     span.text(itm[col.binding]);
@@ -1558,13 +1558,13 @@ $.ui.position.fieldTip = {
             //el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
             el.addClass('picInputField');
-            $('<label/>').appendTo(el).text(o.labelText);
+            $('<label></label>').appendTo(el).text(o.labelText);
             if (o.multiLine) {
                 el.addClass('multiline');
-                $('<textarea class="picInputField-value" />').appendTo(el);
+                $('<textarea class="picInputField-value"></textarea>').appendTo(el);
             }
             else
-                $('<input type="text" class="picInputField-value" />').appendTo(el);
+                $('<input type="text" class="picInputField-value"></input>').appendTo(el);
             
             self.val(o.value);
             el.attr('data-bind', o.binding);
@@ -1674,8 +1674,8 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             if (typeof o.id === 'undefined') o.id = 'cb_' + _uniqueId++;
             el.addClass('picCheckbox');
-            $('<input type="checkbox" class="picCheckbox-value" />').appendTo(el).attr('id', o.id);
-            $('<label/>').attr('for', o.id).appendTo(el).text(o.labelText);
+            $('<input type="checkbox" class="picCheckbox-value"></input>').appendTo(el).attr('id', o.id);
+            $('<label></label>').attr('for', o.id).appendTo(el).text(o.labelText);
             self.val(o.value);
             el.attr('data-bind', o.binding);
             self._applyStyles();
@@ -1719,7 +1719,7 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             el.addClass('picAccordian');
             var title = self._buildTitle().appendTo(el);
-            var contents = $('<div class="picAccordian-contents" />').appendTo(el);
+            var contents = $('<div class="picAccordian-contents"></div>').appendTo(el);
             el[0].titleBlock = function () { return el.find('div.picAccordian-title:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].expanded = function (val) { return self.expanded(val); };
@@ -1745,18 +1745,18 @@ $.ui.position.fieldTip = {
         },
         _buildTitle: function () {
             var self = this, o = self.options, el = self.element;
-            var title = $('<div class="picAccordian-title" />');
+            var title = $('<div class="picAccordian-title"></div>');
             for (var i = 0; i < o.columns.length; i++) {
-                var div = $('<div class="picAccordian-titlecol" />').appendTo(title);
+                var div = $('<div class="picAccordian-titlecol"></div>').appendTo(title);
                 var col = o.columns[i];
                 div.attr('col-binding', col.binding);
-                var icon = $('<i />').appendTo(div);
+                var icon = $('<i></i>').appendTo(div);
                 if (col.glyph) icon.addClass(col.glyph);
-                var text = $('<span class="picAccordian-title-text" />').appendTo(div);
+                var text = $('<span class="picAccordian-title-text"></span>').appendTo(div);
                 div.css(col.style);
                 text.html(col.text);
             }
-            $('<i class="picAccordian-title-expand fas fa-angle-double-right" />').appendTo(title);
+            $('<i class="picAccordian-title-expand fas fa-angle-double-right"></i>').appendTo(title);
             return title;
         },
         
@@ -1797,8 +1797,8 @@ $.ui.position.fieldTip = {
         },
         _initColorPicker: function () {
             var self = this, o = self.options, el = self.element;
-            $('<label class="picColorPicker-label" />').text(o.labelText).appendTo(el);
-            $('<div class="picColorPicker-value picCSColor" />').appendTo(el);
+            $('<label class="picColorPicker-label"></label>').text(o.labelText).appendTo(el);
+            $('<div class="picColorPicker-value picCSColor"></div>').appendTo(el);
             el.attr('data-datatype', 'int');
             el[0].val = function (val) { return self.val(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
@@ -1813,14 +1813,14 @@ $.ui.position.fieldTip = {
         _showPopover: function () {
             var self = this, o = self.options, el = self.element;
             var divVal = el.find('div.picColorPicker-value:first');
-            var divPopover = $('<div class="picCSColors" />');
+            var divPopover = $('<div class="picCSColors"></div>');
             divPopover.appendTo(el.parent());
             divPopover.on('initPopover', function (evt) {
                 let curr = el.find('div.picColorPicker-value:first').attr('data-color');
-                let divColors = $('<div class= "picLightColors" data-bind="color" />').appendTo(evt.currentTarget);
+                let divColors = $('<div class= "picLightColors" data-bind="color"></div>').appendTo(evt.currentTarget);
                 for (let i = 0; i < o.colors.length; i++) {
                     let color = o.colors[i];
-                    let div = $('<div class="picCSColor picCSColorSelector" data-color="' + color.name + '"><div class="picToggleButton"/><label class="picCSColorLabel" /></div>');
+                    let div = $('<div class="picCSColor picCSColorSelector" data-color="' + color.name + '"><div class="picToggleButton"></div><label class="picCSColorLabel"></label></div>');
                     div.appendTo(divColors);
                     div.attr('data-val', color.val);
                     div.attr('data-name', color.name);
@@ -1920,10 +1920,10 @@ $.ui.position.fieldTip = {
         _buildButtons: function (btns) {
             var self = this, o = self.options, el = self.element;
             if (typeof btns !== 'undefined') {
-                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
                 for (var i = 0; i < btns.length; i++) {
                     var btn = btns[i];
-                    var b = $('<div />').appendTo(btnPnl).actionButton({ text: btn.text, icon: btn.icon });
+                    var b = $('<div></div>').appendTo(btnPnl).actionButton({ text: btn.text, icon: btn.icon });
                     if (typeof btn.click === 'function') b.on('click', btn.click);
                 }
             }
@@ -1962,33 +1962,33 @@ $.ui.position.fieldTip = {
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picErrorPanel');
-            var line = $('<div />').appendTo(el);
+            var line = $('<div></div>').appendTo(el);
             if (typeof o.error !== 'undefined') {
-                $('<label />').appendTo(line).addClass('errorLabel').text('Message');
-                $('<span />').appendTo(line).addClass('errorMessage').text(o.error.message);
+                $('<label></label>').appendTo(line).addClass('errorLabel').text('Message');
+                $('<span></span>').appendTo(line).addClass('errorMessage').text(o.error.message);
                 if (typeof o.error.equipmentType !== 'undefined') {
-                    line = $('<div />').appendTo(el);
-                    $('<label />').appendTo(line).addClass('errorLabel').text('Eq Type');
-                    $('<span />').appendTo(line).text(o.error.equipmentType);
+                    line = $('<div></div>').appendTo(el);
+                    $('<label></label>').appendTo(line).addClass('errorLabel').text('Eq Type');
+                    $('<span></span>').appendTo(line).text(o.error.equipmentType);
                 }
                 if (typeof o.error.id !== 'undefined') {
-                    line = $('<div />').appendTo(el);
-                    $('<label />').appendTo(line).addClass('errorLabel').text('Eq Id');
-                    $('<span />').appendTo(line).text(o.error.id);
+                    line = $('<div></div>').appendTo(el);
+                    $('<label></label>').appendTo(line).addClass('errorLabel').text('Eq Id');
+                    $('<span></span>').appendTo(line).text(o.error.id);
                 }
                 if (typeof o.error.parameter !== 'undefined') {
-                    line = $('<div />').appendTo(el);
-                    $('<label />').appendTo(line).addClass('errorLabel').text('Param');
-                    $('<span />').appendTo(line).text(o.error.parameter);
+                    line = $('<div></div>').appendTo(el);
+                    $('<label></label>').appendTo(line).addClass('errorLabel').text('Param');
+                    $('<span></span>').appendTo(line).text(o.error.parameter);
                     if (typeof o.error.value !== 'undefined') {
-                        $('<label />').appendTo(line).text(' = ');
-                        $('<span />').appendTo(line).text(o.error.value);
+                        $('<label></label>').appendTo(line).text(' = ');
+                        $('<span></span>').appendTo(line).text(o.error.value);
                     }
                 }
                 if (typeof o.error.stack !== 'undefined') {
-                    var acc = $('<div />').appendTo(el).accordian({ columns: [{ text: 'Stack Trace', glyph: 'fab fa-stack-overflow', style: { width: '10rem' } }] });
+                    var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Stack Trace', glyph: 'fab fa-stack-overflow', style: { width: '10rem' } }] });
                     var pnl = acc.find('div.picAccordian-contents');
-                    var div = $('<div />').appendTo(pnl).addClass('picStackTrace').html(o.error.stack);
+                    var div = $('<div></div>').appendTo(pnl).addClass('picStackTrace').html(o.error.stack);
                 }
             }
         }
@@ -2010,7 +2010,7 @@ $.pic.modalDialog.createConfirm = function (id, options) {
     if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
     var dlg = $('div#' + id);
     if (dlg.length === 0) {
-        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"/>');
+        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"></div>');
         dlg.modalDialog(opt);
     }
     dlg.html(opt.message);
@@ -2032,7 +2032,7 @@ $.pic.modalDialog.createApiError = function (err, options) {
         modal: true,
         message: '',
         buttons: [
-            { text: 'Close', icon: '<i class="far fa-window-close" />', click: function () { dlg.modalDialog("close"); } }
+            { text: 'Close', icon: '<i class="far fa-window-close"></i>', click: function () { dlg.modalDialog("close"); } }
         ]
     };
     opt.modal = true;
@@ -2046,8 +2046,8 @@ $.pic.modalDialog.createApiError = function (err, options) {
     if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
     var dlg = $('div#' + id);
     if (dlg.length === 0) {
-        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"/>');
-        $('<div />').appendTo(dlg).errorPanel(err);
+        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"></div>');
+        $('<div></div>').appendTo(dlg).errorPanel(err);
         dlg.modalDialog(opt);
     }
 

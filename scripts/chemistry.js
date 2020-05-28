@@ -8,13 +8,13 @@
         _initChemistry: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"/>');
+            let div = $('<div class="picCircuitTitle"></div>');
             div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"/>');
+            let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Chemistry');
             for (let i = 0; i < data.chlorinators.length; i++) {
-                let div = $('<div class="picChlorinator"/>');
+                let div = $('<div class="picChlorinator"></div>');
                 div.appendTo(el);
                 div.chlorinator(data.chlorinators[i]);
             }
@@ -96,13 +96,13 @@
             el.on('click', function (evt) {
                 $.getApiService('/state/chlorinator/' + el.attr('data-id'), function (data, status, xhr) {
                     console.log(data);
-                    var divPopover = $('<div class="picChlorSettings"/>');
+                    var divPopover = $('<div class="picChlorSettings"></div>');
                     divPopover.appendTo(el);
                     divPopover.on('initPopover', function (evt) {
                         let saltReqd = parseFloat(el.attr('data-saltrequired'));
-                        if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"/><span> Add ' + (saltReqd/40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
+                        if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"></i><span> Add ' + (saltReqd/40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
                         if (data.body.val === 32 || data.body.val === 0) {
-                            let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"/></div>');
+                            let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"></div></div>');
                             divSetpoint.appendTo(evt.contents());
                             divSetpoint.find('div.picValueSpinner').each(function () {
                                 $(this).valueSpinner({ val: data.poolSetpoint, min: 0, max: 100, step: 1 });
@@ -111,14 +111,14 @@
                         }
                         if (data.body.val === 32 || data.body.val === 1) {
                             // Add in the spa setpoint.
-                            let divSetpoint = $('<div class="picSpaSetpoint picSetpoint"><label class="picInline-label picSetpointText">Spa Set Point</label><div class="picValueSpinner" data-bind="spaSetpoint"/></div>');
+                            let divSetpoint = $('<div class="picSpaSetpoint picSetpoint"><label class="picInline-label picSetpointText">Spa Set Point</label><div class="picValueSpinner" data-bind="spaSetpoint"></div></div>');
                             divSetpoint.appendTo(evt.contents());
                             divSetpoint.find('div.picValueSpinner').each(function () {
                                 $(this).valueSpinner({ val: data.spaSetpoint, min: 0, max: 100, step: 1 });
                                 $(this).on('change', function (e) { self.putSpaSetpoint(e.value); });
                             });
                         }
-                        let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"/><label class="picUnits">Hours</label></div>');
+                        let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
                         divSuperChlorHours.appendTo(evt.contents());
                         divSuperChlorHours.find('div.picValueSpinner').each(function () {
                             $(this).valueSpinner({ val: data.superChlorHours, min: 1, max: 96, step: 1 });
@@ -126,13 +126,13 @@
                         });
 
                         // Add in the super chlorinate button.
-                        let btn = $('<div class="picSuperChlorBtn"/>');
+                        let btn = $('<div class="picSuperChlorBtn"></div>');
                         btn.appendTo(evt.contents());
 
-                        let toggle = $('<div class="picToggleSuperChlor"/>');
+                        let toggle = $('<div class="picToggleSuperChlor"></div>');
                         toggle.appendTo(btn);
                         toggle.toggleButton();
-                        let lbl = $('<div><div><label class="picSuperChlor">Super Chlorinate</label></div><div class="picSuperChlorRemaining"><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"/></div></div>');
+                        let lbl = $('<div><div><label class="picSuperChlor">Super Chlorinate</label></div><div class="picSuperChlorRemaining"><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div></div>');
                         lbl.appendTo(btn);
                         btn.on('click', function (e) {
                             e.preventDefault();
@@ -152,18 +152,18 @@
         },
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;
-            var div = $('<div class="picChlorinatorState picIndicator"/>');
+            var div = $('<div class="picChlorinatorState picIndicator"></div>');
             el.attr('data-id', o.id);
             div.appendTo(el);
             div.attr('data-ison', o.currentOutput > 0);
             div.attr('data-status', o.currentOutput > 0 ? 'on' : 'off');
 
-            $('<label class="picChlorinatorName" data-bind="name" />').appendTo(el);
-            $('<span class="picSaltLevel picData"><label class="picInline-label">Salt</label><span class="picSaltLevel" data-bind="saltLevel" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="----" /><label class="picUnits">ppm</label></span>').appendTo(el);
-            $('<span class="picCurrentOutput picData"><label class="picInline-label">Output</label><span class="picCurrentOutput" data-bind="currentOutput" /><label class="picUnits">%</label></span>').appendTo(el);
+            $('<label class="picChlorinatorName" data-bind="name"></label>').appendTo(el);
+            $('<span class="picSaltLevel picData"><label class="picInline-label">Salt</label><span class="picSaltLevel" data-bind="saltLevel" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="----"></span><label class="picUnits">ppm</label></span>').appendTo(el);
+            $('<span class="picCurrentOutput picData"><label class="picInline-label">Output</label><span class="picCurrentOutput" data-bind="currentOutput"></span><label class="picUnits">%</label></span>').appendTo(el);
 
-            $('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc" /></div>').appendTo(el);
-            $('<div class="picSuperChlor picData"><label class="picInline-label">Super Chlor:</label><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration" /></div>').appendTo(el);
+            $('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc"></span></div>').appendTo(el);
+            $('<div class="picSuperChlor picData"><label class="picInline-label">Super Chlor:</label><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div>').appendTo(el);
             self.setEquipmentData(o);
             self._buildPopover();
         }

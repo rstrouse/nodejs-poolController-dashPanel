@@ -9,10 +9,10 @@
         _initCircuits: function (data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picFeatures" />');
+            div = $('<div class="picFeatures"></div>');
             div.appendTo(el);
             div.features(data);
-            div = $('<div class="picLights"/>');
+            div = $('<div class="picLights"></div>');
             div.appendTo(el);
             div.lights(data);
         },
@@ -57,27 +57,27 @@
         initFeatures: function (data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"/>');
+            let div = $('<div class="picCircuitTitle"></div>');
             div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"/>');
+            let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Features');
             for (let i = 0; i < data.circuits.length; i++) {
                 // Create a new feature for each of the circuits.  We will hide them if they
                 // are not to be shown in the features menu.
-                let div = $('<div class="picFeature picCircuit"/>');
+                let div = $('<div class="picFeature picCircuit"></div>');
                 let circuit = data.circuits[i];
                 div.appendTo(el);
                 div.circuit(data.circuits[i]);
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
-                let div = $('<div class="picFeature picCircuit"/>');
+                let div = $('<div class="picFeature picCircuit"></div>');
                 div.appendTo(el);
                 div.feature(data.features[i]);
             }
             for (let i = 0; i < data.circuitGroups.length; i++) {
-                let div = $('<div class="picFeature picCircuitGroup"/>');
+                let div = $('<div class="picFeature picCircuitGroup"></div>');
                 div.appendTo(el);
                 div.circuitGroup(data.circuitGroups[i]);
             }
@@ -95,12 +95,12 @@
                     //console.log({ msg: 'Found Feature', id: this.equipmentId() });
                     if (this.equipmentId() > id) {
                         //console.log({ msg: 'Setting Item', type: type, data: data });
-                        div = $('<div class="picFeature" />').insertBefore($(this));
+                        div = $('<div class="picFeature"></div>').insertBefore($(this));
                         bAdded = true;
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature" />').appendTo(el);
+                if (!bAdded) div = $('<div class="picFeature"></div>').appendTo(el);
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
@@ -135,13 +135,13 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
             el.attr('data-featureid', o.id);
             el.attr('data-eqid', o.id);
             el.attr('data-type', 'feature');
             toggle.appendTo(el);
             toggle.toggleButton();
-            var lbl = $('<label class="picFeatureLabel"/>');
+            var lbl = $('<label class="picFeatureLabel"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
@@ -179,13 +179,13 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
             el.attr('data-groupid', o.id);
             el.attr('data-eqid', o.id);
             el.attr('data-type', 'circuitGroup');
             toggle.appendTo(el);
             toggle.toggleButton();
-            var lbl = $('<label class="picFeatureLabel"/>');
+            var lbl = $('<label class="picFeatureLabel"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
@@ -224,10 +224,10 @@
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
-            $('<label class="picFeatureLabel" data-bind="name" />').appendTo(el);
+            $('<label class="picFeatureLabel" data-bind="name"></label>').appendTo(el);
             self.setState(o);
         },
         setState: function (data) {
@@ -251,22 +251,22 @@
             var self = this, o = self.options, el = self.element;
             if (self.hasPopover(o)) {
                 if (self.hasLightThemes(o)) {
-                    var color = $('<i class="fas fa-palette picDropdownButton"/>');
+                    var color = $('<i class="fas fa-palette picDropdownButton"></i>');
                     color.appendTo(el);
-                    var theme = $('<div class="picIBColor" data-color="none"/>');
+                    var theme = $('<div class="picIBColor" data-color="none"></div>');
                     theme.appendTo(el);
                     color.on('click', function (evt) {
                         $.getApiService('config/circuit/' + el.attr('data-circuitid') + '/lightThemes', function (data, status, xhr) {
-                            var divPopover = $('<div class="picIBThemes"/>');
+                            var divPopover = $('<div class="picIBThemes"></div>');
                             divPopover.appendTo(el.parent());
                             divPopover.on('initPopover', function (evt) {
                                 let curr = el.find('div.picIBColor').attr('data-color');
-                                let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme" />');
+                                let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme"></div>');
                                 divThemes.appendTo(evt.contents());
                                 divThemes.attr('data-circuitid', el.attr('data-circuitId'));
                                 for (let i = 0; i < data.length; i++) {
                                     let theme = data[i];
-                                    let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"/><label class="picIBThemeLabel"></label></div>');
+                                    let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"></div><label class="picIBThemeLabel"></label></div>');
                                     div.appendTo(divThemes);
                                     div.attr('data-val', theme.val);
                                     div.attr('data-name', theme.name);
@@ -289,17 +289,17 @@
                     });
                 }
                 if (self.hasDimmer(o)) {
-                    var dim = $('<i class="fas fa-sliders-h picDropdownButton"/>');
+                    var dim = $('<i class="fas fa-sliders-h picDropdownButton"></i>');
                     dim.appendTo(el);
                     dim.on('click', function (evt) {
                         evt.stopImmediatePropagation();
                         evt.preventDefault();
                         $.getApiService('state/circuit/' + el.attr('data-circuitid'), function (data, status, xhr) {
-                            var divPopover = $('<div class="picDimmer"/>');
+                            var divPopover = $('<div class="picDimmer"></div>');
                             divPopover.attr('data-circuitid', el.attr('data-circuitid'));
                             divPopover.appendTo(el.parent());
                             divPopover.on('initPopover', function (evt) {
-                                let divDim = $('<div class="picValueSpinner picDimmer" data-bind="level" />');
+                                let divDim = $('<div class="picValueSpinner picDimmer" data-bind="level"></div>');
                                 divDim.appendTo(evt.contents());
                                 divDim.valueSpinner({ val: data.level, min: 1, max: 100, step: 10 });
                                 divDim.attr('data-circuitid', el.attr('data-circuitId'));
@@ -318,7 +318,7 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             if (!el.hasClass('picCircuit')) el.addClass('picCircuit');
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
 
             toggle.appendTo(el);
             toggle.toggleButton();
@@ -326,7 +326,7 @@
             el.attr('data-eqid', o.id);
 
             el.attr('data-type', 'circuit');
-            $('<label class="picFeatureLabel" data-bind="name" />').appendTo(el);
+            $('<label class="picFeatureLabel" data-bind="name"></label>').appendTo(el);
             self._buildPopover();
             el.on('click', function (evt) {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
@@ -396,7 +396,7 @@
                 if (self.isLight(data)) {
                     // Alright we are a light.  Make sure we have an entry in the lights panel.
                     if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
-                        let divLight = $('<div class="picLight picFeature picCircuit" />').appendTo('div.picLights');
+                        let divLight = $('<div class="picLight picFeature picCircuit"></div>').appendTo('div.picLights');
                         divLight.circuit(data);
                     }
                 }
@@ -423,19 +423,19 @@
         },
         _buildControls: function (data) {
             var self = this, o = self.options, el = self.element;
-            let div = $('<div class="picCircuitTitle"/>');
+            let div = $('<div class="picCircuitTitle"><div>');
             div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"/>');
+            let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Lights');
-            let ibIcon = $('<span class="picIntelliBriteIcon"><i class="fas fa-palette picDropdownButton" /></span>');
+            let ibIcon = $('<span class="picIntelliBriteIcon"><i class="fas fa-palette picDropdownButton"></i></span>');
             ibIcon.appendTo(div);
             ibIcon.on('click', 'i.picDropdownButton', function (evt) {
-                var divPopover = $('<div class="picIBThemes"/>');
+                var divPopover = $('<div class="picIBThemes"></div>');
                 var btn = evt.currentTarget;
                 divPopover.appendTo(el.parent());
                 divPopover.on('initPopover', function (e) {
-                    let divThemes = $('<div class= "picLightSettings" data-bind="lightingTheme" />');
+                    let divThemes = $('<div class= "picLightSettings" data-bind="lightingTheme"></div>');
                     divThemes.appendTo(e.contents());
                     divThemes.attr('data-circuitid', '0');
                     divThemes.lightGroupPanel({ id: '0'});
@@ -459,7 +459,7 @@
                         case 'samlight':
                         case 'sallight':
                         case 'photongen':
-                            let div = $('<div class="picLight picFeature picCircuit"/>');
+                            let div = $('<div class="picLight picFeature picCircuit"></div>');
                             div.appendTo(el);
                             if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
                             div.circuit(data.circuits[i]);
@@ -468,7 +468,7 @@
                 } catch (err) { console.error(err); }
             }
             for (let i = 0; i < data.lightGroups.length; i++) {
-                let div = $('<div class="picLight picFeature picLightGroup"/>');
+                let div = $('<div class="picLight picFeature picLightGroup"></div>');
                 div.appendTo(el);
                 div.lightGroup(data.lightGroups[i]);
                 
@@ -504,12 +504,12 @@
                 var id = parseInt(data.id, 10);
                 el.children('div.picLight').each(function () {
                     if (this.equipmentId() > id) {
-                        div = $('<div class="picLight picFeature" />').insertBefore($(this));
+                        div = $('<div class="picLight picFeature"></div>').insertBefore($(this));
                         bAdded = true;
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature" />').appendTo(el);
+                if (!bAdded) div = $('<div class="picFeature"></div>').appendTo(el);
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
@@ -546,20 +546,20 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            var toggle = $('<div class="picFeatureToggle"/>');
+            var toggle = $('<div class="picFeatureToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
             
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
-            var lbl = $('<label class="picFeatureLabel"/>');
+            var lbl = $('<label class="picFeatureLabel"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
-            var color = $('<i class="fas fa-palette picDropdownButton"/>');
+            var color = $('<i class="fas fa-palette picDropdownButton"></i>');
             color.appendTo(el);
 
-            var theme = $('<div class="picIBColor" data-color="none"/>');
+            var theme = $('<div class="picIBColor" data-color="none"></div>');
             theme.appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
@@ -572,16 +572,16 @@
             });
             el.on('click', 'i.picDropdownButton', function (evt) {
                 $.getApiService('config/circuit/' + el.attr('data-circuitid') + '/lightThemes', function (data, status, xhr) {
-                    var divPopover = $('<div class="picIBThemes"/>');
+                    var divPopover = $('<div class="picIBThemes"></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
                         let curr = el.find('div.picIBColor').attr('data-color');
-                        let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme" />');
+                        let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme"></div>');
                         divThemes.appendTo(evt.contents());
                         divThemes.attr('data-circuitid', el.attr('data-circuitId'));
                         for (let i = 0; i < data.length; i++) {
                             let theme = data[i];
-                            let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"/><label class="picIBThemeLabel"></label></div>');
+                            let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"></div><label class="picIBThemeLabel"></label></div>');
                             div.appendTo(divThemes);
                             div.attr('data-val', theme.val);
                             div.attr('data-name', theme.name);

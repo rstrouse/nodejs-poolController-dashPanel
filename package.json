@@ -18,7 +18,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "extend": "^3.0.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.1",
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-touch-punch-c": "^1.4.0",

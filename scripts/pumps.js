@@ -9,15 +9,15 @@
         _initPumps: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"/>');
+            let div = $('<div class="picCircuitTitle"></div>');
             div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"/>');
+            let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Pumps');
 
             for (let i = 0; i < data.pumps.length; i++) {
                 // Create a new pump for each installed pump.
-                let div = $('<div class="picPump"/>');
+                let div = $('<div class="picPump"></div>');
                 div.appendTo(el);
                 div.pump(data.pumps[i]);
             }
@@ -27,7 +27,7 @@
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picPump[data-id=' + data.id + ']');
             if (pnl.length === 0) {
-                let div = $('<div class="picPump"/>');
+                let div = $('<div class="picPump"></div>');
                 div.appendTo(el);
                 div.pump(data);
             }
@@ -108,11 +108,11 @@
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            $('<div class="picIndicator"/><label class="picPumpName" data-bind="name" />').appendTo(el);
+            $('<div class="picIndicator"></div><label class="picPumpName" data-bind="name"></div>').appendTo(el);
             el.attr('data-id', o.id);
-            $('<div class="picSpeed picData"><span class="picRpm" data-bind="rpm" data-fmttype="number" data-fmtmask="#,##0" data=fmtempty="-,---" /><label class="picUnits">rpm</label></div>').appendTo(el);
-            $('<div class="picFlow picData"><span class="picGpm" data-bind="flow" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---" /><label class="picUnits">gpm</label></div>').appendTo(el);            
-            $('<div class="picEnergy picData"><span class="picWatts" data-bind="watts" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---" /><label class="picUnits">watts</label></div>').appendTo(el);
+            $('<div class="picSpeed picData"><span class="picRpm" data-bind="rpm" data-fmttype="number" data-fmtmask="#,##0" data=fmtempty="-,---"></span><label class="picUnits">rpm</label></div>').appendTo(el);
+            $('<div class="picFlow picData"><span class="picGpm" data-bind="flow" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">gpm</label></div>').appendTo(el);            
+            $('<div class="picEnergy picData"><span class="picWatts" data-bind="watts" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">watts</label></div>').appendTo(el);
             el.on('click', function (evt) {
                 let type = parseInt(el.attr('data-pumptype'), 10);
                 evt.stopImmediatePropagation();
@@ -121,7 +121,7 @@
                 $.getApiService('/state/pump/' + el.attr('data-id'), null, function (data, status, xhr) {
                     console.log(data);
                     // Build a popover for setting the flows and speeds for the circuits.
-                    var divPopover = $('<div class="picPumpSettings"/>');
+                    var divPopover = $('<div class="picPumpSettings"></div>');
                     divPopover.attr('data-id', el.attr('data-id'));
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
@@ -129,14 +129,14 @@
                             let circuit = data.circuits[i];
                             if (typeof circuit.circuit.type === 'undefined') continue;
 
-                            let div = $('<div class="picPumpCircuit"/>');
+                            let div = $('<div class="picPumpCircuit"></div>');
                             div.attr('data-id', i + 1);
-                            let btn = $('<div class="picCircuit" data-hidethemes="true" />');
-                            let spin = $('<div class="picValueSpinner picPumpSpeed" />');
+                            let btn = $('<div class="picCircuit" data-hidethemes="true"></div>');
+                            let spin = $('<div class="picValueSpinner picPumpSpeed"></div>');
                             btn.appendTo(div);
                             spin.appendTo(div);
                             div.appendTo(evt.contents());
-                            $('<label class="picUnits"/>').appendTo(div).text(circuit.units.name);
+                            $('<label class="picUnits"></label>').appendTo(div).text(circuit.units.name);
                             if (circuit.circuit.equipmentType === 'feature') {
                                 div.attr('data-featureid', circuit.circuit.id);
                                 btn.feature(circuit.circuit);

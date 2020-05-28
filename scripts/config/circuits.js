@@ -12,7 +12,7 @@
             $.getApiService('/config/options/circuits', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.circuits.length; i++) {
-                    $('<div />').appendTo(el).pnlAuxCircuitConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.circuits[i]);
+                    $('<div></div>').appendTo(el).pnlAuxCircuitConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.circuits[i]);
                 }
             });
         }
@@ -32,15 +32,15 @@
             $.getApiService('/config/options/features', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.features.length; i++) {
-                    $('<div />').appendTo(el).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.features[i]);
+                    $('<div></div>').appendTo(el).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.features[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-                var btnAdd = $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Feature', icon: '<i class="fas fa-plus" />' });
+                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Feature', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var features = el.find('div.picConfigCategory.cfgFeatures');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div />').insertBefore(btnPnl).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions });
                     pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (opts.features.length + 1), type: 0, showInFeatures: true });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -64,15 +64,15 @@
             $.getApiService('/config/options/circuitGroups', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.circuitGroups.length; i++) {
-                    $('<div />').appendTo(el).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups })[0].dataBind(opts.circuitGroups[i]);
+                    $('<div></div>').appendTo(el).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups })[0].dataBind(opts.circuitGroups[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-                var btnAdd = $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" />' });
+                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgCircuitGroup');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div />').insertBefore(btnPnl).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups });
                     pnl[0].dataBind({ id: 0, eggTimer: 720, circuits: [], name: 'Group ' + (groups.length + 1), type: 2 });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -94,15 +94,15 @@
             $.getApiService('/config/options/lightGroups', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.lightGroups.length; i++) {
-                    $('<div />').appendTo(el).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes })[0].dataBind(opts.lightGroups[i]);
+                    $('<div></div>').appendTo(el).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes })[0].dataBind(opts.lightGroups[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-                var btnAdd = $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" />' });
+                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgLightGroup');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div />').insertBefore(btnPnl).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes });
                     pnl[0].dataBind({ id: 0, eggTimer: 720, circuits: [], name: 'Group ' + (groups.length + 1), type: 1 });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -121,7 +121,7 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgCustomNames');
-            pnl = $('<div />').addClass('cfgCustomNames').appendTo(el);
+            pnl = $('<div></div>').addClass('cfgCustomNames').appendTo(el);
             $.getApiService('/config/options/customNames', null, function (opts, status, xhr) {
                 console.log(opts);
                 var names = opts.names;
@@ -130,15 +130,15 @@
                     if (typeof name === 'undefined') name = { id: i + 201, name: '', desc: '' };
                     var binding = '';
                     if (typeof name === 'undefined') name = { id: i + 1, name: '' };
-                    var line = $('<div />').appendTo(pnl).addClass('cfgCustomName');
-                    $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-                    $('<div />').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: binding + 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
+                    var line = $('<div></div>').appendTo(pnl).addClass('cfgCustomName');
+                    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+                    $('<div></div>').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: binding + 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
                     dataBinder.bind(line, name);
                 }
             });
            
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            var btnSave = $('<div id="btnSaveNames" />').appendTo(btnPnl).actionButton({ text: 'Save Custom Names', icon: '<i class="fas fa-save" />' });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnSave = $('<div id="btnSaveNames"></div>').appendTo(btnPnl).actionButton({ text: 'Save Custom Names', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var names = [];
                 el.find('div.cfgCustomName').each(function () {
@@ -168,7 +168,7 @@
             el.empty();
             el.addClass('picConfigCategory cfgAuxCircuit');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({
+            var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '9rem' } },
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
@@ -176,10 +176,10 @@
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             if (o.equipmentNames.length > 0) {
-                $('<div />').appendTo(line).pickList({
+                $('<div></div>').appendTo(line).pickList({
                     required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
@@ -187,22 +187,22 @@
                 }).appendTo(line);
             }
             else
-                $('<div />').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { } } });
-            $('<div />').appendTo(line).pickList({ required: true,
+                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { } } });
+            $('<div></div>').appendTo(line).pickList({ required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Circuit Function', style: { whiteSpace: 'nowrap' } }],
                 items: o.functions, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             }).appendTo(line);
 
-            $('<div />').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures' });
-            line = $('<div style="text-align:right" />').appendTo(pnl);
-            $('<div />').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures' });
+            line = $('<div style="text-align:right"></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
 
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: {marginLeft: '4rem', marginRight:'.25rem' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: {marginLeft: '4rem', marginRight:'.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Circuit', icon: '<i class="fas fa-save" />' });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Circuit', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
                 //$(this).find('i').addClass('burst-animated');
@@ -254,7 +254,7 @@
             el.empty();
             el.addClass('picConfigCategory cfgFeature');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({
+            var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '9rem' } },
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
@@ -262,33 +262,33 @@
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             if (o.equipmentNames.length > 0) {
-                $('<div />').appendTo(line).pickList({ required: true,
+                $('<div></div>').appendTo(line).pickList({ required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
                     items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else
-                $('<div />').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
-            $('<div />').appendTo(line).pickList({
+                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'feature Function', style: { whiteSpace: 'nowrap' } }],
                 items: o.functions, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
 
-            $('<div />').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures' });
-            line = $('<div style="text-align:right" />').appendTo(pnl);
-            $('<div />').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures' });
+            line = $('<div style="text-align:right"></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
 
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Feature', icon: '<i class="fas fa-save" />' });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Feature', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
                 //$(this).find('i').addClass('burst-animated');
@@ -304,7 +304,7 @@
                     });
                 }
             });
-            var btnDelete = $('<div />').appendTo(btnPnl).actionButton({ text: 'Delete Feature', icon: '<i class="fas fa-trash" />' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Feature', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -314,7 +314,7 @@
                     height: 'auto',
                     title: 'Confirm Delete Feature',
                     buttons: [{
-                        text: 'Yes', icon: '<i class="fas fa-trash" />',
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
                         click: function () {
                             $.pic.modalDialog.closeDialog(this);
                             if (v.id <= 0) p.parents('div.picConfigCategory.cfgFeature:first').remove();
@@ -326,7 +326,7 @@
                         }
                     },
                     {
-                        text: 'No', icon: '<i class="far fa-window-close" />',
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
@@ -365,41 +365,41 @@
             el.empty();
             el.addClass('picConfigCategory cfgCircuitGroup');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({
+            var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '9rem' } },
                     { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'type').appendTo(line);
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'type').appendTo(line);
             if (o.equipmentNames.length > 0) {
-                $('<div />').appendTo(line).pickList({ required: true,
+                $('<div></div>').appendTo(line).pickList({ required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
                     items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else
-                $('<div />').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
-            line = $('<div><hr/></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            line = $('<div><hr></hr></div>').appendTo(pnl);
 
-            var pnlCircuits = $('<div class="cfgCircuitGroup-pnlCircuits" style="text-align:right;" />').appendTo(pnl);
-            line = $('<div class="picCircuitsList-btnPanel" />').appendTo(pnlCircuits);
+            var pnlCircuits = $('<div class="cfgCircuitGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
+            line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Group Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel" />').appendTo(line);
-            var btnAddCircuit = $('<div />').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" />' });
+            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1 });
             });
-            $('<div class="picCircuitsList-list" style="min-width:14rem;" />').appendTo(pnlCircuits);
+            $('<div class="picCircuitsList-list" style="min-width:14rem;"></div>').appendTo(pnlCircuits);
 
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save" />' });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
                 //$(this).find('i').addClass('burst-animated');
@@ -414,19 +414,19 @@
                 var isValid = true;
                 if (typeof v.circuits === 'undefined') {
                     isValid = false;
-                    $('<div />').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br/>have been created.' });
+                    $('<div></div>').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br></br>have been created.' });
                 }
                 else {
                     for (var i = 0; i < v.circuits.length; i++) {
                         var c = v.circuits[i];
                         var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
                         if (c.circuit === -1) {
-                            $('<div />').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
+                            $('<div></div>').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
                             isValid = false;
                         }
                         else {
                             if (typeof hash['c' + c.circuit] !== 'undefined') {
-                                $('<div />').appendTo(dd).fieldTip({ message: 'Group circuits<br/>must be unique' });
+                                $('<div></div>').appendTo(dd).fieldTip({ message: 'Group circuits<br></br>must be unique' });
                                 isValid = false;
                             }
                             hash['c' + c.circuit] = c.circuit;
@@ -440,7 +440,7 @@
                     });
                 }
             });
-            var btnDelete = $('<div />').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash" />' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -450,7 +450,7 @@
                     height: 'auto',
                     title: 'Confirm Delete Circuit Group',
                     buttons: [{
-                        text: 'Yes', icon: '<i class="fas fa-trash" />',
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
                         click: function () {
                             $.pic.modalDialog.closeDialog(this);
                             console.log(v);
@@ -463,7 +463,7 @@
                         }
                     },
                     {
-                        text: 'No', icon: '<i class="far fa-window-close" />',
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
@@ -478,14 +478,14 @@
             var self = this, o = self.options, el = self.element;
             var clist = el.find('div.picCircuitsList-list:first');
             var circuits = clist.find('div.picCircuitOption');
-            var line = $('<div class="picCircuitOption" />').appendTo(clist);
+            var line = $('<div class="picCircuitOption"></div>').appendTo(clist);
             var binding = 'circuits[' + circuits.length + '].';
-            $('<div />').appendTo(line).pickList({ required: true,
+            $('<div></div>').appendTo(line).pickList({ required: true,
                 labelText: 'Circuit', binding: binding + 'circuit', value: circ.circuit,
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
                 items: o.circuits, inputAttrs: { style: { width: '9rem', marginLeft:'.25rem' } }, labelAttrs: { style: { marginRight: '.25rem', display: 'none' } }
             }).appendTo(line);
-            $('<i class="fas fa-trash picRemoveOption" />').appendTo(line);
+            $('<i class="fas fa-trash picRemoveOption"></i>').appendTo(line);
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -537,37 +537,37 @@
             el.empty();
             el.addClass('picConfigCategory cfgLightGroup');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({
+            var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '9rem' } },
                 { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } },
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'type').appendTo(line);
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'type').appendTo(line);
             if (o.equipmentNames.length > 0) {
-                $('<div />').appendTo(line).pickList({
+                $('<div></div>').appendTo(line).pickList({
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
                     items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
             }
             else
-                $('<div />').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
-            line = $('<div><hr/></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            line = $('<div><hr></hr></div>').appendTo(pnl);
 
-            var pnlCircuits = $('<div class="cfgLightGroup-pnlCircuits" style="text-align:right;" />').appendTo(pnl);
-            line = $('<div class="picCircuitsList-btnPanel" />').appendTo(pnlCircuits);
+            var pnlCircuits = $('<div class="cfgLightGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
+            line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Group Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel" />').appendTo(line);
-            var btnAddCircuit = $('<div />').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" />' });
+            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1, color: 0, swimDelay:0 });
             });
-            $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits).sortable({
+            $('<div class="picCircuitsList-list" style="min-width:25rem;"></div>').appendTo(pnlCircuits).sortable({
                 axis: 'y', containment: 'div.cfgLightGroup-pnlCircuits', cursor: 'move', tolerance: 'intersect',
                 update: function (evt, ui) {
                     var ndx = 0;
@@ -583,8 +583,8 @@
                 }
             });
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save" />' });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
                 //$(this).find('i').addClass('burst-animated');
@@ -595,7 +595,7 @@
                 delete v.eggTimerMinutes;
                 if (typeof v.circuits === 'undefined') {
                     isValid = false;
-                    $('<div />').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br/>have been created.' });
+                    $('<div></div>').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br></br>have been created.' });
                 }
                 else {
                     console.log(v);
@@ -604,10 +604,10 @@
                         var c = v.circuits[i];
                         var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
                         if (c.circuit === -1)
-                            $('<div />').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
+                            $('<div></div>').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
                         else {
                             if (typeof hash['c' + c.circuit] !== 'undefined') {
-                                $('<div />').appendTo(dd).fieldTip({ message: 'Group circuits<br/>must be unique' });
+                                $('<div></div>').appendTo(dd).fieldTip({ message: 'Group circuits<br></br>must be unique' });
                             }
                             hash['c' + c.circuit] = c.circuit;
                         }
@@ -622,7 +622,7 @@
                     }
                 }
             });
-            var btnDelete = $('<div />').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash" />' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -642,23 +642,23 @@
             var self = this, o = self.options, el = self.element;
             var clist = el.find('div.picCircuitsList-list:first');
             var circuits = clist.find('div.picCircuitOption');
-            var line = $('<div class="picCircuitOption" />').appendTo(clist);
+            var line = $('<div class="picCircuitOption"></div>').appendTo(clist);
             var color = o.colors.find(elem => elem.val === circ.color);
             if (typeof color === 'undefined') color = o.colors.find(elem => elem.name === 'white');
             if(typeof color === 'undefined') color = { val: 0, name: 'white', desc: 'white' };
             var binding = 'circuits[' + circuits.length + '].';
-            $('<i class="fas fa-map-pin" style="color:green;padding-left:.5rem;padding-right:.5rem;cursor:pointer;" />').appendTo(line).attr('title', 'Drag to change the light position');
-            $('<div />').appendTo(line).pickList({ required: true,
+            $('<i class="fas fa-map-pin" style="color:green;padding-left:.5rem;padding-right:.5rem;cursor:pointer;"></i>').appendTo(line).attr('title', 'Drag to change the light position');
+            $('<div></div>').appendTo(line).pickList({ required: true,
                 labelText: 'Circuit', binding: binding + 'circuit', value: circ.circuit,
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
                 items: o.circuits, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display:'none' } }
             });
-            $('<div />').appendTo(line).colorPicker({ required: true,
+            $('<div></div>').appendTo(line).colorPicker({ required: true,
                 value: color.val, colors: o.colors, binding: binding + 'color',
                 inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight: '.15rem' } }
             });
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Delay', binding: binding + 'swimDelay', min: 0, max: 60, step: 1, units: 'sec', value: circ.swimDelay, inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem' } } });
-            $('<i class="fas fa-trash picRemoveOption" style="margin-left:.25rem" />').appendTo(line);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Delay', binding: binding + 'swimDelay', min: 0, max: 60, step: 1, units: 'sec', value: circ.swimDelay, inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem' } } });
+            $('<i class="fas fa-trash picRemoveOption" style="margin-left:.25rem"></i>').appendTo(line);
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

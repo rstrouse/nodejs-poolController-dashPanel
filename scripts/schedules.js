@@ -9,14 +9,14 @@
         _initSchedules: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"/>');
+            let div = $('<div class="picCircuitTitle"></div>');
             div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"/>');
+            let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Schedules');
             for (var i = 0; i < data.schedules.length; i++) {
                 // Create a new schedule for each installed schedule.
-                let divSched = $('<div class="picSchedule" />');
+                let divSched = $('<div class="picSchedule"></div>');
                 divSched.appendTo(el);
                 divSched.schedule(data.schedules[i]);
             }
@@ -26,7 +26,7 @@
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picSchedule[data-id=' + data.id + ']');
             if (pnl.length === 0) {
-                let div = $('<div class="picSchedule"/>');
+                let div = $('<div class="picSchedule"><div>');
                 div.appendTo(el);
                 div.schedule(data);
             }
@@ -66,9 +66,9 @@
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            $('<div class="picIndicator"/><label class="picScheduleName" data-bind="circuit.name" />').appendTo(el);
+            $('<div class="picIndicator"></div><label class="picScheduleName" data-bind="circuit.name"></label>').appendTo(el);
             el.attr('data-id', o.id);
-            $('<span class="picSchedTime picData"><span class="picStartTime" data-bind="startTime" data-fmttype="time" data-fmtmask="hh:mmtt" data=fmtempty="--:--" /> - <span class="picEndTime" data-bind="endTime" data-fmttype="time" data-fmtmask="hh:mmtt" data=fmtempty="--:--" /></span>').appendTo(el);
+            $('<span class="picSchedTime picData"><span class="picStartTime" data-bind="startTime" data-fmttype="time" data-fmtmask="hh:mmtt" data=fmtempty="--:--"></span> - <span class="picEndTime" data-bind="endTime" data-fmttype="time" data-fmtmask="hh:mmtt" data=fmtempty="--:--"></span></span>').appendTo(el);
             self._createDays(o).appendTo(el);
         },
         _isEveryDay: function (days) { return days.val === 127; },
@@ -109,11 +109,11 @@
                 else {
                     let tbl = $('<table class="picSchedDays"><tbody>' +
                         '<tr><td>S</td><td>M</td><td>T</td><td>W</td><td>T</td><td>F</td><td>S</td></tr>' +
-                        '<tr />' +
+                        '<tr></tr>' +
                         '</tbody></table>');
                     let row = tbl.find('tr:last');
                     for (var i = 0; i < 7; i++) {
-                        $('<td><i class="far fa-times-circle" /></td>').appendTo(row);
+                        $('<td><i class="far fa-times-circle"></i></td>').appendTo(row);
                     }
                     for (var k = 0; k < sched.scheduleDays.days.length; k++) {
                         let day = sched.scheduleDays.days[k];
@@ -122,7 +122,7 @@
                     return tbl;
                 }
             }
-            return $('<label class="picSchedDays" />');
+            return $('<label class="picSchedDays"></label>');
         }
 
     });

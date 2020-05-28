@@ -13,7 +13,7 @@
                 console.log(opts);
                 var bodies = opts.bodies;
                 for (var i = 0; i < bodies.length; i++) {
-                    $('<div />').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies })[0].dataBind(opts.bodies[i]);
+                    $('<div></div>').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies })[0].dataBind(opts.bodies[i]);
                 }
             });
         }
@@ -32,15 +32,15 @@
             el.empty();
             el.addClass('picConfigCategory cfgBody');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({ columns: [{ text: '', style: { width: '10rem' }, binding: 'name' }, { binding: 'capacity', text: '', style: { width: '10rem', textAlign: 'right' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: '', style: { width: '10rem' }, binding: 'name' }, { binding: 'capacity', text: '', style: { width: '10rem', textAlign: 'right' } }] });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-            $('<div />').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
-            $('<div />').appendTo(line).valueSpinner({ labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft:'1rem', marginRight:'.25rem' } } });
-            $('<div />').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div id="btnSaveBody" />').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save" />' });
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft:'1rem', marginRight:'.25rem' } } });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);

@@ -9,19 +9,19 @@
     },
     _buildControls: function () {
         var self = this, o = self.options, el = self.element;
-        var toggle = $('<div class="picFeatureToggle"/>');
+        var toggle = $('<div class="picFeatureToggle"></div>');
         toggle.appendTo(el);
         toggle.toggleButton();
         el.attr('data-groupid', o.id);
         el.attr('data-eqid', o.id);
 
-        var lbl = $('<label class="picFeatureLabel"/>');
+        var lbl = $('<label class="picFeatureLabel"></label>');
         lbl.appendTo(el);
         lbl.text(o.name);
-        var color = $('<i class="fas fa-palette picDropdownButton"/>');
+        var color = $('<i class="fas fa-palette picDropdownButton"></i>');
         color.appendTo(el);
 
-        var theme = $('<div class="picIBColor" data-color="none"/>');
+        var theme = $('<div class="picIBColor" data-color="none"></div>');
         theme.appendTo(el);
         if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
         self.setState(o);
@@ -34,11 +34,11 @@
             setTimeout(function () { self.resetState(); }, 2000);
         });
         el.on('click', 'i.picDropdownButton', function (evt) {
-            var divPopover = $('<div class="picIBThemes"/>');
+            var divPopover = $('<div class="picIBThemes"></div>');
             var btn = evt.currentTarget;
             divPopover.appendTo(el.parent());
             divPopover.on('initPopover', function (e) {
-                let divThemes = $('<div class="picLightSettings" data-bind="lightingTheme" />');
+                let divThemes = $('<div class="picLightSettings" data-bind="lightingTheme"></div>');
                 divThemes.appendTo(e.contents());
                 divThemes.attr('data-circuitid', el.attr('data-groupid'));
                 divThemes.lightGroupPanel({ id: el.attr('data-groupid') });
@@ -88,12 +88,12 @@ $.widget('pic.lightGroupPanel', {
         var tabObj = { id: 'tabColors', text: 'Colors' };
         var contents = el.find('div.picTabPanel:first')[0].addTab(tabObj);
         $('<div><span class="picInstructions">Drag each light into position, set the color, and delay.  When finished press the apply button to save your changes.</span></div>').appendTo(contents);
-        var circuits = $('<div class="picLightCircuits" />');
+        var circuits = $('<div class="picLightCircuits"></div>');
         circuits.appendTo(contents);
         for (var i = 0; i < group.circuits.length; i++) {
             var circuit = group.circuits[i];
             // Add in a row for each light group.
-            var divCircuit = $('<div class="picLightGroupCircuit"><span class="picLabel" style="cursor:ns-resize;" /><div class="picLightGroupCircuitColor picCSColor" /><div class="picValueSpinner picSwimDelay" /></div>');
+            var divCircuit = $('<div class="picLightGroupCircuit"><span class="picLabel" style="cursor:ns-resize;"></span><div class="picLightGroupCircuitColor picCSColor"></div><div class="picValueSpinner picSwimDelay"><div></div>');
             divCircuit.appendTo(circuits);
             divCircuit.attr('data-position', i);
             divCircuit.attr('data-circuitid', circuit.circuit.id);
@@ -103,16 +103,16 @@ $.widget('pic.lightGroupPanel', {
             divCircuit.find('div.picLightGroupCircuitColor').attr('data-val', circuit.color.val);
             divCircuit.find('div.picCSColor').on('click', function (evtCircuit) {
                 $.getApiService('config/intellibrite/colors', function (data, status, xhr) {
-                    var divPopover = $('<div class="picCSColors" />');
+                    var divPopover = $('<div class="picCSColors"></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
                         let curr = $(evtCircuit.currentTarget).attr('data-color');
-                        let divColors = $('<div class= "picLightColors" data-bind="color" />');
+                        let divColors = $('<div class= "picLightColors" data-bind="color"></div>');
                         divColors.appendTo(evt.contents());
                         divColors.attr('data-circuitid', circuit.id);
                         for (let i = 0; i < data.length; i++) {
                             let color = data[i];
-                            let div = $('<div class="picCSColor picCSColorSelector" data-color="' + color.name + '"><div class="picToggleButton"/><label class="picCSColorLabel" /></div>');
+                            let div = $('<div class="picCSColor picCSColorSelector" data-color="' + color.name + '"><div class="picToggleButton"></div><label class="picCSColorLabel"></label></div>');
                             div.appendTo(divColors);
                             div.attr('data-val', color.val);
                             div.attr('data-name', color.name);
@@ -143,11 +143,11 @@ $.widget('pic.lightGroupPanel', {
         }
         el.find('div.picLightCircuits').sortable({ axis: 'y', containment:'parent' });
         el.find('div.picLightCircuits').disableSelection();
-        var btnPnl = $('<div class="picBtnPanel" />');
+        var btnPnl = $('<div class="picBtnPanel"></div>');
         btnPnl.appendTo(contents);
-        var btnApply = $('<div />');
+        var btnApply = $('<div></div>');
         btnApply.appendTo(btnPnl);
-        btnApply.actionButton({ text: 'Apply', icon: '<i class="fas fa-save" />' });
+        btnApply.actionButton({ text: 'Apply', icon: '<i class="fas fa-save"></i>' });
         btnApply.on('click', function (e) {
             var obj = self.fromWindow();
             // Send this off to the server.
@@ -192,12 +192,12 @@ $.widget('pic.lightGroupPanel', {
             let cmd = circuitId === 0 ? 'config/intellibrite/themes' : '/config/circuit/' + circuitId + '/lightThemes';
             $.getApiService(cmd, function (data, status, xhr) {
                 let curr = group.lightingTheme.name;
-                let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme" />');
+                let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme"></div>');
                 divThemes.appendTo(contents);
                 divThemes.attr('data-circuitid', el.attr('data-circuitid'));
                 for (let i = 0; i < data.length; i++) {
                     let theme = data[i];
-                    let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"/><label class="picIBThemeLabel"></label></div>');
+                    let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"></div><label class="picIBThemeLabel"></label></div>');
                     div.appendTo(divThemes);
                     div.attr('data-val', theme.val);
                     div.attr('data-name', theme.name);
@@ -223,7 +223,7 @@ $.widget('pic.lightGroupPanel', {
         var self = this, o = self.options, el = self.element;
         el.attr('data-circuitid', o.id);
         // Tabs at the top.
-        var tabs = $('<div class="picTabPanel" />');
+        var tabs = $('<div class="picTabPanel"></div>');
         tabs.appendTo(el);
         tabs.tabBar();
         let circuitId = parseInt(el.attr('data-circuitid'), 10) || 0;
@@ -238,28 +238,28 @@ $.widget('pic.lightGroupPanel', {
             self._setProcessing(group.action);
 
         });
-        var actions = $('<div class="picBtnPanel" style="text-align:center" />');
+        var actions = $('<div class="picBtnPanel" style="text-align:center"></div>');
         
         actions.appendTo(el);
-        var btnSync = $('<div />');
+        var btnSync = $('<div></div>');
         btnSync.appendTo(actions);
-        btnSync.actionButton({ text: 'Sync', icon: '<i class="fas fa-sync" />' });
+        btnSync.actionButton({ text: 'Sync', icon: '<i class="fas fa-sync"></i>' });
         btnSync.on('click', function (evt) {
             $.putApiService(stateCmd + '/colorSync', obj, function (data, status, xhr) {
 
             });
         });
-        var btnSet = $('<div />');
+        var btnSet = $('<div></div>');
         btnSet.appendTo(actions);
-        btnSet.actionButton({ text: 'Set', icon: '<i class="fas fa-ellipsis-h" />' });
+        btnSet.actionButton({ text: 'Set', icon: '<i class="fas fa-ellipsis-h"></i>' });
         btnSet.on('click', function (evt) {
             $.putApiService(stateCmd + '/colorSet', obj, function (data, status, xhr) {
 
             });
         });
-        var btnSwim = $('<div />');
+        var btnSwim = $('<div></div>');
         btnSwim.appendTo(actions);
-        btnSwim.actionButton({ text: 'Swim', icon: '<i class="fas fa-swimmer" />' });
+        btnSwim.actionButton({ text: 'Swim', icon: '<i class="fas fa-swimmer"></i>' });
         btnSwim.on('click', function (evt) {
             $.putApiService(stateCmd + '/colorSwim', obj, function (data, status, xhr) {
 
@@ -274,7 +274,7 @@ $.widget('pic.lightGroupPanel', {
         else {
             let overlay = el.find('div.picIntelliBriteOverlay:first');
             if (overlay.length === 0) {
-                overlay = $('<div class="picIntelliBriteOverlay"><div /><div><span></span></div></div>');
+                overlay = $('<div class="picIntelliBriteOverlay"><div></div><div><span></span></div></div>');
                 overlay.appendTo(el);
             }
             overlay.find('span:first').text(action.desc + '... Please Wait!');

@@ -13,15 +13,15 @@
                 console.log(opts);
                 var pumps = opts.pumps;
                 for (var i = 0; i < pumps.length; i++) {
-                    $('<div />').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models })[0].dataBind(pumps[i]);
+                    $('<div></div>').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models })[0].dataBind(pumps[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-                var btnAdd = $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" />' });
+                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgPump');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div />').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models });
                     var pt = opts.pumpTypes[0];
                     pnl[0].dataBind({
                         id: -1, name: 'Pump ' + (groups.length + 1),
@@ -50,43 +50,43 @@
             el.empty();
             el.addClass('picConfigCategory cfgPump');
             var binding = '';
-            var acc = $('<div />').appendTo(el).accordian({
+            var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-cog', style: { width: '9rem' } },
                 { binding: 'type', style: { width: '9rem' } },
                 { binding: 'circuits', style: { width: '15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div />').appendTo(pnl);
-            $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'id').appendTo(line);
-            $('<div />').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'3.25rem' } } });
-            $('<div />').appendTo(line).pickList({
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'3.25rem' } } });
+            $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.pumpTypes, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             var addrs = [];
             for (var k = 0; k < o.maxPumps; k++) addrs.push({ val: k + 96, desc: k + 1 });
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Address', style: { whiteSpace: 'nowrap' } }],
                 items: addrs, inputAttrs: { style: { width: '2rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Body', binding: binding + 'body',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
                 items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
-            line = $('<div />').appendTo(pnl);
-            $('<div />').appendTo(line).pickList({
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Model', binding: binding + 'model',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Model', style: { whiteSpace: 'nowrap' } }],
                 items: [], inputAttrs: { style: { width: '11rem' } }, labelAttrs: { style: { width: '3.25rem', marginLeft: '0rem' } }
             });
 
 
-            line = $('<div class="picPumpDetails" />').appendTo(pnl);
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnSave = $('<div id="btnSavePump" />').appendTo(btnPnl).actionButton({ text: 'Save Pump', icon: '<i class="fas fa-save" />' });
+            line = $('<div class="picPumpDetails"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnSave = $('<div id="btnSavePump"></div>').appendTo(btnPnl).actionButton({ text: 'Save Pump', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -104,7 +104,7 @@
                                 var pump = opts.pumps[j];
                                 if (pump.id === v.id) continue;
                                 if (type.hasAddress && pump.address === v.address) {
-                                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=address]:first')).fieldTip({
+                                    $('<div></div>').appendTo(el.find('div.picPickList[data-bind$=address]:first')).fieldTip({
                                         message: 'Address conflicts with pump: ' + pump.name
                                     });
                                     
@@ -119,7 +119,7 @@
                                 var c = v.circuits[i];
                                 if (typeof hash['c' + c.circuit] !== 'undefined') {
                                     var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
-                                    $('<div />').appendTo(dd).fieldTip({ message: 'Pump circuits<br/>must be unique' });
+                                    $('<div></div>').appendTo(dd).fieldTip({ message: 'Pump circuits<br></br>must be unique' });
                                     valid = false;
                                 }
                                 hash['c' + c.circuit] = c.circuit;
@@ -147,7 +147,7 @@
                 }
             });
 
-            var btnDelete = $('<div />').appendTo(btnPnl).actionButton({ text: 'Delete Pump', icon: '<i class="fas fa-trash" />' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Pump', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -157,7 +157,7 @@
                     height: 'auto',
                     title: 'Confirm Delete Pump',
                     buttons: [{
-                        text: 'Yes', icon: '<i class="fas fa-trash" />',
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
                         click: function () {
                             $.pic.modalDialog.closeDialog(this);
                             if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
@@ -170,7 +170,7 @@
                         }
                     },
                     {
-                        text: 'No', icon: '<i class="far fa-window-close" />',
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
@@ -181,49 +181,49 @@
             var binding = '';
             var pnl = el.find('div.picPumpDetails:first');
             pnl.empty();
-            var line = $('<div />').appendTo(pnl);
+            var line = $('<div></div>').appendTo(pnl);
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
             if (typeof type.maxPrimeTime !== 'undefined') {
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimeTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimeTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             }
             else {
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'primingTime').appendTo(line);
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'primingSpeed').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingTime').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingSpeed').appendTo(line);
             }
-            line = $('<div />').appendTo(pnl);
+            line = $('<div></div>').appendTo(pnl);
             if (typeof type.minSpeed !== 'undefined') 
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'minSpeed').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minSpeed').appendTo(line);
             if (typeof type.maxSpeed !== 'undefined')
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'maxSpeed').appendTo(line);
-            line = $('<div />').appendTo(pnl);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxSpeed').appendTo(line);
+            line = $('<div></div>').appendTo(pnl);
             if (typeof type.minFlow !== 'undefined')
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'minFlow').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minFlow').appendTo(line);
             if (typeof type.maxFlow !== 'undefined')
-                $('<div />').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', 'maxFlow').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxFlow').appendTo(line);
 
 
 
-            var pnlCircuits = $('<div class="cfgPump-pnlCircuits" style="text-align:right;" />').appendTo(pnl);
-            $('<div><hr /></div>').appendTo(pnlCircuits);
-            line = $('<div class="picCircuitsList-btnPanel" />').appendTo(pnlCircuits);
+            var pnlCircuits = $('<div class="cfgPump-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
+            $('<div><hr></hr></div>').appendTo(pnlCircuits);
+            line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Pump Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel" />').appendTo(line);
-            var btnAddCircuit = $('<div />').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" />' });
+            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 var pmp = dataBinder.fromElement(el);
                 var type = o.pumpTypes.find(elem => elem.val === pmp.type);
                 self.addCircuit(type, { units: 0 });
             });
-            var clist = $('<div class="picCircuitsList-list" style="min-width:25rem;" />').appendTo(pnlCircuits);
+            var clist = $('<div class="picCircuitsList-list" style="min-width:25rem;"></div>').appendTo(pnlCircuits);
             clist.on('click', 'i.picRemoveOption', function (e) {
                 $(e.target).parents('div.picCircuitOption:first').remove();
                 var rgx = /\[[0-9]\]/g;
@@ -247,7 +247,7 @@
             var self = this, o = self.options, el = self.element;
             var clist = el.find('div.picCircuitsList-list:first');
             var circuits = clist.find('div.picCircuitOption');
-            var line = $('<div class="picCircuitOption" />').appendTo(clist);
+            var line = $('<div class="picCircuitOption"></div>').appendTo(clist);
             var binding = 'circuits[' + circuits.length + '].';
             var units = o.pumpUnits.find(elem => elem.val === circ.units);
             if (typeof units === 'undefined') units = typeof type.minSpeed !== 'undefined' ? o.pumpUnits.find(elem => elem.name === 'rpm') : o.pumpUnits.find(elem => elem.name === 'gpm');
@@ -278,7 +278,7 @@
             var unitsType = units.name === 'rpm' ? 'Speed' : 'Flow';
             var step = units.name === 'rpm' ? 10 : 1;
 
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 required: true,
                 labelText: 'Circuit', binding: binding + 'circuit', value: circ.circuit,
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
@@ -287,7 +287,7 @@
             });
             if (typeof type.maxFlow !== 'undefined' || typeof type.maxSpeed !== 'undefined') {
                 var val = typeof circ[unitsType.toLocaleLowerCase()] !== 'undefined' ? circ[unitsType.toLowerCase()] : type['max' + unitsType];
-                $('<div />').appendTo(line).valueSpinner({
+                $('<div></div>').appendTo(line).valueSpinner({
                     labelText: unitsType,
                     binding: binding + unitsType.toLowerCase(), min: type['min' + unitsType], max: type['max' + unitsType], step: step,
                     units: hasMultiUnits ? '' : units.name,
@@ -298,9 +298,9 @@
                 });
             }
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', binding + unitsType.toLowerCase()).val(units.val).appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', binding + unitsType.toLowerCase()).val(units.val).appendTo(line);
             if (hasMultiUnits) {
-                $('<div />').appendTo(line).pickList({
+                $('<div></div>').appendTo(line).pickList({
                     required: true,
                     bindColumn: 0, displayColumn:1,
                     labelText: 'Units', binding: binding + 'units', value: circ.units,
@@ -310,8 +310,8 @@
                 }).appendTo(line);
             }
             else
-                $('<input type="hidden" data-datatype="int" />').attr('data-bind', binding + 'units').val(units.val).appendTo(line);
-            $('<i class="fas fa-trash picRemoveOption" style="margin-left:.25rem" />').appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', binding + 'units').val(units.val).appendTo(line);
+            $('<i class="fas fa-trash picRemoveOption" style="margin-left:.25rem"></i>').appendTo(line);
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

@@ -440,25 +440,25 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             el.empty();
             var tblOuter = $('<table class="msgList-container"></table>').appendTo(el);
-            var tbody = $('<tbody />').appendTo(tblOuter);
-            var row = $('<tr />').appendTo(tbody);
-            var td = $('<td />').appendTo(row);
-            div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(td);
-            $('<span>Messages</span><div class="picStartLogs mmgrButton picIconRight" title="Start/Stop Log"><i class="far fa-list-alt" /></div>').appendTo(div);
-            $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack" /></div>').appendTo(div);
-            $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal" /></div>').appendTo(div);
-            $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom" /></div>').appendTo(div);
+            var tbody = $('<tbody></tbody>').appendTo(tblOuter);
+            var row = $('<tr></tr>').appendTo(tbody);
+            var td = $('<td></td>').appendTo(row);
+            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(td);
+            $('<span>Messages</span><div class="picStartLogs mmgrButton picIconRight" title="Start/Stop Log"><i class="far fa-list-alt"></i></div>').appendTo(div);
+            $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack"></i></div>').appendTo(div);
+            $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
+            $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom"></i></div>').appendTo(div);
 
 
-            row = $('<tr />').appendTo(tbody);
-            td = $('<td />').appendTo(row);
-            div = $('<div class="msgList-header" />').appendTo(td);
+            row = $('<tr></tr>').appendTo(tbody);
+            td = $('<td></td>').appendTo(row);
+            div = $('<div class="msgList-header"></div>').appendTo(td);
             $('<table class="msgList-header"><tbody><tr><td><td>Dir</td></td><td>Chg</td><td>Proto</td><td>Source</td><td>Dest</td><td>Action</td><td>Payload</td></tr></tbody></table>').appendTo(div);
 
-            row = $('<tr class="msgList-body" />').appendTo(tbody);
-            td = $('<td />').appendTo(row);
-            div = $('<div class="msgList-body" />').appendTo(td);
-            div = $('<div class="msgList-body-content" />').appendTo(div);
+            row = $('<tr class="msgList-body"></tr>').appendTo(tbody);
+            td = $('<td></td>').appendTo(row);
+            div = $('<div class="msgList-body"></div>').appendTo(td);
+            div = $('<div class="msgList-body-content"></div>').appendTo(div);
             $('<table class="msgList-body"><tbody></tbody></table>').appendTo(div);
 
             el.on('click', 'div.picStartLogs', function (evt) {
@@ -502,7 +502,7 @@ mhelper.init();
         addMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
             var body = el.find('table.msgList-body > tbody');
-            var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard" /></span></td></tr>').addClass('msgRow');
+            var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard"></i></span></td></tr>').addClass('msgRow');
             msg.key = msg.header.join('_');
             row.appendTo(body);
             self._bindMessage(row, msg);
@@ -536,18 +536,18 @@ mhelper.init();
         },
         _bindMessage(row, msg) {
             var self = this, o = self.options, el = self.element;
-            var inout = $('<span />').appendTo($('<td />').appendTo(row));
-            $('<i class="fas" />').appendTo(inout).addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
-            var spChg = $('<span class="changed" />').appendTo($('<td />').appendTo(row));
-            var chg = $('<i class="fas" />').appendTo(spChg);
+            var inout = $('<span></span>').appendTo($('<td></td>').appendTo(row));
+            $('<i class="fas"></i>').appendTo(inout).addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
+            var spChg = $('<span class="changed"></span>').appendTo($('<td></td>').appendTo(row));
+            var chg = $('<i class="fas"></i>').appendTo(spChg);
 
             row.attr('data-msgdir', msg.direction);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
-            $('<span />').text(msg.protocol).appendTo($('<td />').appendTo(row));
-            $('<span />').text(mhelper.mapSource(msg)).appendTo($('<td />').appendTo(row));
-            $('<span />').text(mhelper.mapDest(msg)).appendTo($('<td />').appendTo(row));
-            $('<span />').text(mhelper.mapAction(msg)).appendTo($('<td />').appendTo(row));
-            $('<span />').text(msg.payload.join(',')).appendTo($('<td />').appendTo(row));
+            $('<span></span>').text(msg.protocol).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(mhelper.mapSource(msg)).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(mhelper.mapDest(msg)).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(mhelper.mapAction(msg)).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(msg.payload.join(',')).appendTo($('<td></td>').appendTo(row));
             if (typeof msg.isValid !== 'undefined' && !msg.isValid) row.addClass('invalid');
             var prev = o.messageKeys[msg.key];
             var hasChanged = false;
@@ -601,32 +601,32 @@ mhelper.init();
         _initDetails: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
-            $('<span class="picMessageDirection" data-bind="direction" />Message Details</span>').appendTo(div);
-            $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up" /></div>').appendTo(div);
+            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
+            $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
+            $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div);
             //[255, 0, 255][165, 63, 15, 16, 2, 29][9, 47, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 2, 0, 80, 80, 0, 241, 85, 105, 24, 246, 0, 0, 0, 0, 0, 255, 0][255, 165]
-            div = $('<div class="msg-detail-panel" style="display:none;" />').appendTo(el);
-            var line = $('<div class="dataline" />').appendTo(div);
+            div = $('<div class="msg-detail-panel" style="display:none;"></div>').appendTo(el);
+            var line = $('<div class="dataline"><div>').appendTo(div);
             $('<label>Protocol:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'protocol');
-            $('<div class="msg-invalid-banner" />').appendTo(line).text('Invalid Message');
+            $('<span></span>').appendTo(line).attr('data-bind', 'protocol');
+            $('<div class="msg-invalid-banner"></div>').appendTo(line).text('Invalid Message');
 
-            line = $('<div class="dataline" />').appendTo(div);
+            line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Source/Dest:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'source');
-            $('<span />').appendTo(line).text(' => ');
-            $('<span />').appendTo(line).attr('data-bind', 'dest');
-            line = $('<div class="dataline" />').appendTo(div);
+            $('<span></span>').appendTo(line).attr('data-bind', 'source');
+            $('<span></span>').appendTo(line).text(' => ');
+            $('<span></span>').appendTo(line).attr('data-bind', 'dest');
+            line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Action:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'action');
-            line = $('<div class="dataline" />').appendTo(div);
+            $('<span></span>').appendTo(line).attr('data-bind', 'action');
+            line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Timestamp:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'timestamp');
-            line = $('<div class="dataline" />').appendTo(div);
+            $('<span></span>').appendTo(line).attr('data-bind', 'timestamp');
+            line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Data Length:</label>').appendTo(line);
-            $('<span />').appendTo(line).attr('data-bind', 'dataLen');
-            $('<div class="payloadBytes" />').appendTo(div);
-            $('<div class="msg-payload" />').appendTo(el);
+            $('<span></span>').appendTo(line).attr('data-bind', 'dataLen');
+            $('<div class="payloadBytes"></div>').appendTo(div);
+            $('<div class="msg-payload"></div>').appendTo(el);
             el.on('click', 'div.picAddToQueue', function (evt) {
                 if (typeof o.message !== 'undefined' && o.message) {
                     $('div.picSendMessageQueue')[0].addMessage(o.message);
@@ -686,38 +686,38 @@ mhelper.init();
         },
         _createByteDiff: function (bprev, bcurr) {
             var self = this, o = self.options, el = self.element;
-            var diff = $('<div class="msg-payload-bytediff" />');
-            var tbody = $('<tbody />').appendTo($('<table class="msg-payload-bytediff"></table>').appendTo(diff));
-            var rowHead = $('<tr />').addClass('bytediff-header').appendTo(tbody);
-            var rowPrev = $('<tr />').addClass('bytediff-prev').appendTo(tbody);
-            var rowCurr = $('<tr />').addClass('bytediff-curr').appendTo(tbody);
+            var diff = $('<div class="msg-payload-bytediff"></diff>');
+            var tbody = $('<tbody></tbody>').appendTo($('<table class="msg-payload-bytediff"></table>').appendTo(diff));
+            var rowHead = $('<tr></tr>').addClass('bytediff-header').appendTo(tbody);
+            var rowPrev = $('<tr></tr>').addClass('bytediff-prev').appendTo(tbody);
+            var rowCurr = $('<tr></tr>').addClass('bytediff-curr').appendTo(tbody);
             var makeBinaryTable = function (val) {
-                var tbl = $('<table />').addClass('bytediff-bit');
-                var tbody = $('<tbody />').appendTo(tbl);
-                var row = $('<tr />').appendTo(tbody);
+                var tbl = $('<table></table>').addClass('bytediff-bit');
+                var tbody = $('<tbody></tbody>').appendTo(tbl);
+                var row = $('<tr></tr>').appendTo(tbody);
                 if (typeof val === 'undefined') row.addClass('bydiff-bit-header');
                 for (var i = 7; i >= 0; i--) {
-                    $('<td />').appendTo(row).text(typeof val === 'undefined' ? i + 1 : (0xFF & val & (1 << i)) > 0 ? 1 : 0);
+                    $('<td></td>').appendTo(row).text(typeof val === 'undefined' ? i + 1 : (0xFF & val & (1 << i)) > 0 ? 1 : 0);
                 }
                 return tbl;
             };
-            $('<td />').addClass('bytediff-name').appendTo(rowHead);
-            $('<td />').addClass('bytediff-name').appendTo(rowPrev).text('Previous');
-            $('<td />').addClass('bytediff-name').appendTo(rowCurr).text('Current');
-            $('<td />').addClass('bytediff-dec').appendTo(rowHead).text('dec');
-            $('<td />').addClass('bytediff-dec').appendTo(rowPrev).text(bprev);
-            $('<td />').addClass('bytediff-dec').appendTo(rowCurr).text(bcurr);
-            $('<td />').addClass('bytediff-ascii').appendTo(rowHead).text('ascii');
-            $('<td />').addClass('bytediff-ascii').appendTo(rowPrev).text(mhelper.toAscii(bprev));
-            $('<td />').addClass('bytediff-ascii').appendTo(rowCurr).text(mhelper.toAscii(bcurr));
-            $('<td />').addClass('bytediff-hex').appendTo(rowHead).text('hex');
-            $('<td />').addClass('bytediff-hex').appendTo(rowPrev).text(mhelper.toHex(bprev));
-            $('<td />').addClass('bytediff-hex').appendTo(rowCurr).text(mhelper.toHex(bcurr));
+            $('<td></td>').addClass('bytediff-name').appendTo(rowHead);
+            $('<td></td>').addClass('bytediff-name').appendTo(rowPrev).text('Previous');
+            $('<td></td>').addClass('bytediff-name').appendTo(rowCurr).text('Current');
+            $('<td></td>').addClass('bytediff-dec').appendTo(rowHead).text('dec');
+            $('<td></td>').addClass('bytediff-dec').appendTo(rowPrev).text(bprev);
+            $('<td></td>').addClass('bytediff-dec').appendTo(rowCurr).text(bcurr);
+            $('<td></td>').addClass('bytediff-ascii').appendTo(rowHead).text('ascii');
+            $('<td></td>').addClass('bytediff-ascii').appendTo(rowPrev).text(mhelper.toAscii(bprev));
+            $('<td></td>').addClass('bytediff-ascii').appendTo(rowCurr).text(mhelper.toAscii(bcurr));
+            $('<td></td>').addClass('bytediff-hex').appendTo(rowHead).text('hex');
+            $('<td></td>').addClass('bytediff-hex').appendTo(rowPrev).text(mhelper.toHex(bprev));
+            $('<td></td>').addClass('bytediff-hex').appendTo(rowCurr).text(mhelper.toHex(bcurr));
 
-            var cellBinHead = $('<td />').addClass('bytediff-binary').appendTo(rowHead);
-            makeBinaryTable().appendTo($('<div />').appendTo(cellBinHead));
-            makeBinaryTable(bprev).appendTo($('<td />').appendTo(rowPrev));
-            makeBinaryTable(bcurr).appendTo($('<td />').appendTo(rowCurr));
+            var cellBinHead = $('<td></td>').addClass('bytediff-binary').appendTo(rowHead);
+            makeBinaryTable().appendTo($('<div></div>').appendTo(cellBinHead));
+            makeBinaryTable(bprev).appendTo($('<td></td>').appendTo(rowPrev));
+            makeBinaryTable(bcurr).appendTo($('<td></td>').appendTo(rowCurr));
             return diff;
         },
         bindPayload: function (msg, prev) {
@@ -725,11 +725,11 @@ mhelper.init();
             var div = el.find('div.msg-payload:first');
             div.empty();
             if (typeof msg === 'undefined') return;
-            var tbl = $('<table class="msg-payload"><tbody/></table>').appendTo(div);
-            var header = $('<tr class="msg-payload-header" />').appendTo(tbl.find('tbody:first'));
-            var decimal = $('<tr class="msg-payload-decimal" />').appendTo(tbl.find('tbody:first'));
-            var ascii = $('<tr class="msg-payload-ascii" />').appendTo(tbl.find('tbody:first'));
-            var hex = $('<tr class="msg-payload-hex" />').appendTo(tbl.find('tbody:first'));
+            var tbl = $('<table class="msg-payload"><tbody></tbody></table>').appendTo(div);
+            var header = $('<tr class="msg-payload-header"></tr>').appendTo(tbl.find('tbody:first'));
+            var decimal = $('<tr class="msg-payload-decimal"></tr>').appendTo(tbl.find('tbody:first'));
+            var ascii = $('<tr class="msg-payload-ascii"></tr>').appendTo(tbl.find('tbody:first'));
+            var hex = $('<tr class="msg-payload-hex"></tr>').appendTo(tbl.find('tbody:first'));
             var p = typeof prev !== 'undefined' && typeof prev.payload !== 'undefined' ? prev.payload : [];
             for (var i = 0; i < msg.payload.length; i++) {
                 var bdec = msg.payload[i];
@@ -737,15 +737,15 @@ mhelper.init();
                 var bascii = mhelper.toAscii(bdec);
                 var bhex = mhelper.toHex(bdec);
                 if (i % 20 === 0) {
-                    header = $('<tr class="msg-payload-header" />').appendTo(tbl.find('tbody:first'));
-                    decimal = $('<tr class="msg-payload-decimal" />').appendTo(tbl.find('tbody:first'));
-                    ascii = $('<tr class="msg-payload-ascii" />').appendTo(tbl.find('tbody:first'));
-                    hex = $('<tr class="msg-payload-hex" />').appendTo(tbl.find('tbody:first'));
+                    header = $('<tr class="msg-payload-header"><tr>').appendTo(tbl.find('tbody:first'));
+                    decimal = $('<tr class="msg-payload-decimal"></tr>').appendTo(tbl.find('tbody:first'));
+                    ascii = $('<tr class="msg-payload-ascii"></tr>').appendTo(tbl.find('tbody:first'));
+                    hex = $('<tr class="msg-payload-hex"></tr>').appendTo(tbl.find('tbody:first'));
                 }
-                var chead = $('<td />').appendTo(header).attr('data-payload-byte-index', i).text(i);
-                var cdec = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(decimal).text(bdec);
-                var cascii = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(ascii).text(bascii);
-                var chex = $('<td class="payload-byte" />').attr('data-payload-byte-index', i).appendTo(hex).text(bhex);
+                var chead = $('<td></td>').appendTo(header).attr('data-payload-byte-index', i).text(i);
+                var cdec = $('<td class="payload-byte"></td>').attr('data-payload-byte-index', i).appendTo(decimal).text(bdec);
+                var cascii = $('<td class="payload-byte"></td>').attr('data-payload-byte-index', i).appendTo(ascii).text(bascii);
+                var chex = $('<td class="payload-byte"></td>').attr('data-payload-byte-index', i).appendTo(hex).text(bhex);
                 if (typeof pdec !== 'undefined' && pdec !== bdec) {
                     chead.attr('data-prevbyte', pdec);
                     chead.attr('data-byte', bdec);
@@ -783,35 +783,35 @@ mhelper.init();
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picMessageListTitle picControlPanelTitle" />').appendTo(el);
+            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
             $('<span>Send Message Queue</span>').appendTo(div);
-            $('<div class="picLoadQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open" /></div>').appendTo(div);
-            $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue"><i class="far fa-save" /></div>').appendTo(div);
-            $('<div class="picEditQueue mmgrButton picIconRight" title="Edit Queue"><i class="fas fa-edit" /></div>').appendTo(div);
-            $('<div class="picClearQueue mmgrButton picIconRight" title="New Queue"><i class="fas fa-bahai" /></div>').appendTo(div);
-            div = $('<div class="queue-detail-panel" />').appendTo(el);
+            $('<div class="picLoadQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open"></i></div>').appendTo(div);
+            $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue"><i class="far fa-save"></i></div>').appendTo(div);
+            $('<div class="picEditQueue mmgrButton picIconRight" title="Edit Queue"><i class="fas fa-edit"></i></div>').appendTo(div);
+            $('<div class="picClearQueue mmgrButton picIconRight" title="New Queue"><i class="fas fa-bahai"></i></div>').appendTo(div);
+            div = $('<div class="queue-detail-panel"></div>').appendTo(el);
 
-            var line = $('<div class="dataline" />').appendTo(div);
+            var line = $('<div class="dataline"></div>').appendTo(div);
 
-            $('<input type="hidden" data-datatype="int" data-bind="id" />').appendTo(line);
+            $('<input type="hidden" data-datatype="int" data-bind="id"></input>').appendTo(line);
             $('<label>Name:</label>').appendTo(line);
-            $('<span data-bind="name" />').appendTo(line).attr('data-bind', 'name');
-            line = $('<div class="dataline" />').appendTo(div);
+            $('<span data-bind="name"></span>').appendTo(line).attr('data-bind', 'name');
+            line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Description:</label>').appendTo(line);
-            $('<span data-bind="description" />').appendTo(line).attr('data-bind', 'description');
+            $('<span data-bind="description"></span>').appendTo(line).attr('data-bind', 'description');
 
             // Header for the queue list.
-            div = $('<div class="queue-list-header" />').appendTo(el);
+            div = $('<div class="queue-list-header"></div>').appendTo(el);
             $('<table class="queue-list-header"><tbody><tr><td></td><td>Proto</td><td>Src/Dest</td><td>Action</td><td>Payload</td><td>Delay</td><td></td></tr></tbody></table>').appendTo(div);
-            div = $('<div class="queue-send-list" />').appendTo(el);
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" />' }).on('click', function (e) {
+            div = $('<div class="queue-send-list"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" ></i>' }).on('click', function (e) {
                 var controller = $(document.body).attr('data-controllertype') === 'intellicenter' ? 63 : 16;
                 var msg = { protocol: 'broadcast', payload: [], header: [165, controller, 15, 16, 0, 0], term: [], delay:0 };
-                var divPopover = $('<div />');
+                var divPopover = $('<div></div>');
                 divPopover.appendTo(el.parent().parent());
                 divPopover.on('initPopover', function (e) {
-                    $('<div />').appendTo(e.contents()).editMessage({ msgNdx: -1, message: msg });
+                    $('<div></div>').appendTo(e.contents()).editMessage({ msgNdx: -1, message: msg });
                     e.stopImmediatePropagation();
                 });
                 divPopover.popover({ autoClose: false, title: 'Add Message to Queue', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
@@ -819,10 +819,10 @@ mhelper.init();
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane" />' }).on('click', function (e) {
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 self.sendQueue();
             });
-            $('<div />').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;" />' }).on('click', function (e) {
+            $('<div></div>').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;"></i>' }).on('click', function (e) {
                 self.msgQueue.length = 0;                
             });
             
@@ -832,10 +832,10 @@ mhelper.init();
             });
             el.on('click', 'div.picLoadQueue', function (evt) {
                 var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
-                var divPopover = $('<div />');
+                var divPopover = $('<div></div>');
                 divPopover.appendTo(el.parent().parent());
                 divPopover.on('initPopover', function (e) {
-                    $('<div />').appendTo(e.contents()).loadQueue();
+                    $('<div></div>').appendTo(e.contents()).loadQueue();
                     e.stopImmediatePropagation();
                 });
                 divPopover.popover({ autoClose: false, title: 'Load Saved Queue', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
@@ -849,10 +849,10 @@ mhelper.init();
                 var row = $(evt.currentTarget).parents('div.queued-message:first');
                 var msg = row.data('message');
                 row.addClass('selected');
-                var divPopover = $('<div />');
+                var divPopover = $('<div></div>');
                 divPopover.appendTo(el.parent().parent());
                 divPopover.on('initPopover', function (e) {
-                    $('<div />').appendTo(e.contents()).editMessage({ msgNdx: row[0].rowIndex, message: msg });
+                    $('<div></div>').appendTo(e.contents()).editMessage({ msgNdx: row[0].rowIndex, message: msg });
                     e.stopImmediatePropagation();
                 });
                 divPopover.on('beforeClose', function (e) {
@@ -882,10 +882,10 @@ mhelper.init();
         _openEditQueue: function () {
             var self = this, o = self.options, el = self.element;
             var q = dataBinder.fromElement(el);
-            var divPopover = $('<div />');
+            var divPopover = $('<div></div>');
             divPopover.appendTo(el.parent().parent());
             divPopover.on('initPopover', function (e) {
-                $('<div />').appendTo(e.contents()).editQueue({ queue: q });
+                $('<div></div>').appendTo(e.contents()).editQueue({ queue: q });
                 e.stopImmediatePropagation();
             });
             divPopover.popover({ autoClose: false, title: 'Edit Queue', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
@@ -927,15 +927,15 @@ mhelper.init();
 
             var list = el.find('div.queue-send-list');
             var div = list.find('div.queued-message.selected');
-            if (div.length === 0) div = $('<div class="queued-message" />').appendTo(list);
+            if (div.length === 0) div = $('<div class="queued-message"></div>').appendTo(list);
             div.empty();
-            $('<div class="queued-message-edit mmgrButton"><i class="fas fa-edit" /></div>').appendTo(div);
-            $('<span />').appendTo(div).addClass('queued-message-proto').text(msg.protocol).appendTo(div);
-            $('<span />').appendTo(div).addClass('queued-message-srcdest').text(mhelper.mapSourceByte(msg) + ',' + mhelper.mapDestByte(msg)).appendTo(div);
-            $('<span />').appendTo(div).addClass('queued-message-action').text(mhelper.mapActionByte(msg)).appendTo(div);
-            $('<span />').appendTo(div).addClass('queued-message-payload').text(msg.payload.join(',')).appendTo(div);
-            $('<span />').appendTo(div).addClass('queued-message-delay').text(msg.delay || 0).appendTo(div);
-            $('<div class="queued-message-remove mmgrButton"><i class="fas fa-trash-alt" /></div>').appendTo(div);
+            $('<div class="queued-message-edit mmgrButton"><i class="fas fa-edit"></i></div>').appendTo(div);
+            $('<span></span>').appendTo(div).addClass('queued-message-proto').text(msg.protocol).appendTo(div);
+            $('<span></span>').appendTo(div).addClass('queued-message-srcdest').text(mhelper.mapSourceByte(msg) + ',' + mhelper.mapDestByte(msg)).appendTo(div);
+            $('<span></span>').appendTo(div).addClass('queued-message-action').text(mhelper.mapActionByte(msg)).appendTo(div);
+            $('<span></span>').appendTo(div).addClass('queued-message-payload').text(msg.payload.join(',')).appendTo(div);
+            $('<span></span>').appendTo(div).addClass('queued-message-delay').text(msg.delay || 0).appendTo(div);
+            $('<div class="queued-message-remove mmgrButton"><i class="fas fa-trash-alt"></i></div>').appendTo(div);
             div.data('message', msg);
         },
         loadQueue: function (id) {
@@ -983,7 +983,7 @@ mhelper.init();
                 el.find('div.queued-message').removeClass('sending').removeClass('sent');
                 el.removeClass('processing');
                 el.find('div.picMessageListTitle:first > span').text('Send Message Queue');
-                $('<div />').appendTo(el.find('div.picMessageListTitle:first > span')).fieldTip({
+                $('<div></div>').appendTo(el.find('div.picMessageListTitle:first > span')).fieldTip({
                     message: `${o.messagesSent} of ${o.messagesToSend} queued messages sent` });
             }
         }
@@ -1009,8 +1009,8 @@ mhelper.init();
             var controller = parseInt(m.controller || 0, 10);
             if (isNaN(controller) || controller < 0 || controller > 256) {
                 if (showError) {
-                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=controller]:first')).fieldTip({
-                        message: 'Invalid controller: ' + arrPayload[i] + '<br/>Values must be between 0 and 256'
+                    $('<div></div>').appendTo(el.find('div.picPickList[data-bind$=controller]:first')).fieldTip({
+                        message: 'Invalid controller: ' + arrPayload[i] + '<br></br>Values must be between 0 and 256'
                     });
                     return;
                 }
@@ -1018,8 +1018,8 @@ mhelper.init();
             }
             if (isNaN(action) || action < 0 || action > 256) {
                 if (showError) {
-                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=action]:first')).fieldTip({
-                        message: 'Invalid action: ' + arrPayload[i] + '<br/>Values must be between 0 and 256'
+                    $('<div></div>').appendTo(el.find('div.picPickList[data-bind$=action]:first')).fieldTip({
+                        message: 'Invalid action: ' + arrPayload[i] + '<br></br>Values must be between 0 and 256'
                     });
                     return;
                 }
@@ -1027,8 +1027,8 @@ mhelper.init();
             }
             if (isNaN(dest) || dest < 0 || dest > 256) {
                 if (showError) {
-                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=source]:first')).fieldTip({
-                        message: 'Invalid source: ' + arrPayload[i] + '<br/>Values must be between 0 and 256'
+                    $('<div></div>').appendTo(el.find('div.picPickList[data-bind$=source]:first')).fieldTip({
+                        message: 'Invalid source: ' + arrPayload[i] + '<br></br>Values must be between 0 and 256'
                     });
                     return;
                 }
@@ -1036,8 +1036,8 @@ mhelper.init();
             }
             if (isNaN(dest) || dest < 0 || dest > 256) {
                 if (showError) {
-                    $('<div />').appendTo(el.find('div.picPickList[data-bind$=dest]:first')).fieldTip({
-                        message: 'Invalid destination: ' + arrPayload[i] + '<br/>Values must be between 0 and 256'
+                    $('<div></div>').appendTo(el.find('div.picPickList[data-bind$=dest]:first')).fieldTip({
+                        message: 'Invalid destination: ' + arrPayload[i] + '<br></br>Values must be between 0 and 256'
                     });
                     return;
                 }
@@ -1049,8 +1049,8 @@ mhelper.init();
                     var byte = parseInt(arrPayload[i].trim(), 10);
                     if (isNaN(byte) || byte < 0 || byte > 256) {
                         if (showError) {
-                            $('<div />').appendTo(el.find('div.picInputField[data-bind$=payloadBytes]:first')).fieldTip({
-                                message: '<div style="width:270px">Invalid payload byte: ' + arrPayload[i] + '<br/>Values must be between 0 and 256</div>'
+                            $('<div></div>').appendTo(el.find('div.picInputField[data-bind$=payloadBytes]:first')).fieldTip({
+                                message: '<div style="width:270px">Invalid payload byte: ' + arrPayload[i] + '<br></br>Values must be between 0 and 256</div>'
                             });
                             return;
                         }
@@ -1074,9 +1074,9 @@ mhelper.init();
         },
         _initMessage: function () {
             var self = this, o = self.options, el = self.element;
-            var div = $('<div />').appendTo(el).addClass('edit-message-protocol');
-            var line = $('<div />').appendTo(div);
-            var proto = $('<div />').appendTo(line).pickList({
+            var div = $('<div></div>').appendTo(el).addClass('edit-message-protocol');
+            var line = $('<div></div>').appendTo(div);
+            var proto = $('<div></div>').appendTo(line).pickList({
                 labelText: 'Protocol', binding: 'protocol',
                 displayColumn: 1,
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Protocol', style: { whiteSpace: 'nowrap' } }],
@@ -1101,13 +1101,13 @@ mhelper.init();
                     self.bindMessage(msg);
                 }
             });
-            $('<div />').appendTo(line).inputField({ required: false, dataType:'int', labelText: 'Delay', binding: 'delay', inputAttrs: { maxlength: 7, style: { width: '4rem' } }, labelAttrs: { style: { width: '2.5rem', paddingLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).inputField({ required: false, dataType:'int', labelText: 'Delay', binding: 'delay', inputAttrs: { maxlength: 7, style: { width: '4rem' } }, labelAttrs: { style: { width: '2.5rem', paddingLeft: '.25rem' } } });
 
-            $('<div />').addClass('edit-message-panel').appendTo(el);
-            var pnlPayload = $('<div />').addClass('edit-message-payload').appendTo(el);
-            $('<div />').appendTo(pnlPayload).inputField({ required: false, labelText: 'Payload', binding: 'payloadBytes', inputAttrs: { maxlength: 50, style: { width: '44rem' } }, labelAttrs: { style: { width: '4rem' } } });
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Message', icon: '<i class="far fa-save" />' }).on('click', function (e) {
+            $('<div></div>').addClass('edit-message-panel').appendTo(el);
+            var pnlPayload = $('<div></div>').addClass('edit-message-payload').appendTo(el);
+            $('<div></div>').appendTo(pnlPayload).inputField({ required: false, labelText: 'Payload', binding: 'payloadBytes', inputAttrs: { maxlength: 50, style: { width: '44rem' } }, labelAttrs: { style: { width: '4rem' } } });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Message', icon: '<i class="far fa-save"></i>' }).on('click', function (e) {
                 var msg = self._fromWindow(true);
                 if (msg) {
                     $('div.picSendMessageQueue').each(function () {
@@ -1155,8 +1155,8 @@ mhelper.init();
             if (div.attr('data-paneltype') === 'chlorinator') return;
             div.attr('data-paneltype', 'chlorinator');
             div.empty();
-            var line = $('<div />').appendTo(div);
-            $('<div />').appendTo(line).pickList({
+            var line = $('<div></div>').appendTo(div);
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Dest', binding: 'dest',
@@ -1165,7 +1165,7 @@ mhelper.init();
                 items: mhelper.chlorAddrs,
                 inputAttrs: { maxlength: 3, style: { width: '2.25rem' } }, labelAttrs: { style: { width: '4rem' } }
             });
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Action', binding: 'action',
@@ -1182,8 +1182,8 @@ mhelper.init();
             if (div.attr('data-paneltype') === 'broadcast') return;
             div.attr('data-paneltype', 'broadcast');
             div.empty();
-            var line = $('<div />').appendTo(div);
-            $('<div />').appendTo(line).pickList({
+            var line = $('<div></div>').appendTo(div);
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Controller', binding: 'controller',
@@ -1192,8 +1192,8 @@ mhelper.init();
                 items: mhelper.controllerBytes,
                 inputAttrs: { maxlength: 3, style: { width: '2.25rem' } }, labelAttrs: { style: { width: '4rem' } }
             });
-            line = $('<div />').appendTo(div);
-            $('<div />').appendTo(line).pickList({
+            line = $('<div></div>').appendTo(div);
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Source', binding: 'source',
@@ -1203,7 +1203,7 @@ mhelper.init();
                 inputAttrs: { maxlength: 3, style: { width: '2.25rem' } }, labelAttrs: { style: { width: '4rem' } }
             });
 
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Dest', binding: 'dest',
@@ -1212,7 +1212,7 @@ mhelper.init();
                 items: [],
                 inputAttrs: { maxlength: 3, style: { width: '2.25rem' } }, labelAttrs: { style: { width: '2.7rem', paddingLeft: '.25rem' } }
             });
-            $('<div />').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 dataType: 'int',
                 labelText: 'Action', binding: 'action',
@@ -1291,15 +1291,15 @@ mhelper.init();
         },
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
-            var div = $('<div />').appendTo(el).addClass('edit-queue');
-            var line = $('<div />').appendTo(div);
-            $('<input type="hidden" data-datatype="int" data-bind="id" />').appendTo(line);
-            $('<div />').appendTo(line).inputField({ required: true, labelText: 'Name', binding: 'name', inputAttrs: { maxlength: 27, style: { width: '12rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
-            line = $('<div />').appendTo(div);
-            $('<div />').appendTo(line).inputField({ required: false, multiLine:true, labelText: 'Description', binding: 'description', inputAttrs: { maxlength: 100, style: { width: '19rem', height:'4rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
+            var div = $('<div></div>').appendTo(el).addClass('edit-queue');
+            var line = $('<div></div>').appendTo(div);
+            $('<input type="hidden" data-datatype="int" data-bind="id"></input>').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: 'name', inputAttrs: { maxlength: 27, style: { width: '12rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
+            line = $('<div></div>').appendTo(div);
+            $('<div></div>').appendTo(line).inputField({ required: false, multiLine:true, labelText: 'Description', binding: 'description', inputAttrs: { maxlength: 100, style: { width: '19rem', height:'4rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Save Queue', icon: '<i class="far fa-save" />' }).on('click', function (e) {
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Queue', icon: '<i class="far fa-save"></i>' }).on('click', function (e) {
                 var queue = self._fromWindow(true);
                 
                 if (queue) {
@@ -1334,11 +1334,11 @@ mhelper.init();
         },
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
-            var div = $('<div />').appendTo(el).addClass('edit-queue');
-            var line = $('<div />').css({ minWidth: '20rem' }).appendTo(div);
+            var div = $('<div></div>').appendTo(el).addClass('edit-queue');
+            var line = $('<div></div>').css({ minWidth: '20rem' }).appendTo(div);
             $.getJSON('/messages/queues', undefined, function (data, status, xhr) {
                 console.log(data);
-                $('<div />').appendTo(line).pickList({ required: true,
+                $('<div></div>').appendTo(line).pickList({ required: true,
                     labelText: 'Queue', binding: 'id',
                     displayColumn: 1,
                     columns: [{ binding: 'id', text: 'Id', hidden:true, style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap', width:'7rem' } }, { binding: 'description', text: 'Description', style: { whiteSpace: 'nowrap' } }],
@@ -1348,8 +1348,8 @@ mhelper.init();
                 });
             });
 
-            var btnPnl = $('<div class="picBtnPanel" />').appendTo(el);
-            $('<div />').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-dowload" />' }).on('click', function (e) {
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-dowload"></i>' }).on('click', function (e) {
                 console.log('Loading queue');
                 var queue = self._fromWindow(true);
 

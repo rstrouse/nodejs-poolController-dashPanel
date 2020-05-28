@@ -13,43 +13,43 @@
             switch (evt.newTab.id) {
                 case 'tabGeneral':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configGeneral();
+                    $('<div></div>').appendTo(evt.newTab.contents).configGeneral();
                     break;
                 case 'tabBodies':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configBodies();
+                    $('<div></div>').appendTo(evt.newTab.contents).configBodies();
                     break;
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
                 case 'tabAuxCircuits':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configAuxCircuits();
+                    $('<div></div>').appendTo(evt.newTab.contents).configAuxCircuits();
                     break;
                 case 'tabCircuitGroups':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configCircuitGroups();
+                    $('<div></div>').appendTo(evt.newTab.contents).configCircuitGroups();
                     break;
                 case 'tabFeatures':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configFeatures();
+                    $('<div></div>').appendTo(evt.newTab.contents).configFeatures();
                     break;
                 case 'tabCustomNames':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configCustomNames();
+                    $('<div></div>').appendTo(evt.newTab.contents).configCustomNames();
                     break;
 
                 case 'tabValves':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configValves();
+                    $('<div></div>').appendTo(evt.newTab.contents).configValves();
                     break;
                 case 'tabPumps':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configPumps();
+                    $('<div></div>').appendTo(evt.newTab.contents).configPumps();
                     break;
                 case 'tabLightGroups':
                     evt.newTab.contents.empty();
-                    $('<div />').appendTo(evt.newTab.contents).configLightGroups();
+                    $('<div></div>').appendTo(evt.newTab.contents).configLightGroups();
                     break;
                 case 'tabRemotes':
                     self._buildRemotesTab(evt.newTab.contents);
@@ -64,7 +64,7 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            var tabs = $('<div class="picTabPanel" />');
+            var tabs = $('<div class="picTabPanel"></div>');
             tabs.appendTo(el);
             tabs.tabBar();
             tabs.find('div.picTabContents').addClass('picConfigTabContents');
@@ -95,14 +95,14 @@
         },
         _addConfigTab: function (attrs, subTabs) {
             var self = this, o = self.options, el = self.element;
-            var divOuter = $('<div class="picConfigCategory" />');
+            var divOuter = $('<div class="picConfigCategory"></div>');
             el.find('div.picTabPanel:first').each(function () {
                 var contents = this.addTab(attrs);
                 if (attrs.cssClass) divOuter.addClass(attrs.cssClass);
                 divOuter.appendTo(contents);
                 if (typeof attrs.oncreate === 'function') attrs.oncreate(contents);
                 if (typeof subTabs !== 'undefined') {
-                    var tabs = $('<div class="picTabPanel" />');
+                    var tabs = $('<div class="picTabPanel"></div>');
                     tabs.appendTo(contents);
                     tabs.tabBar();
                     tabs.find('div.picTabContents').addClass('picConfigTabContents');
@@ -110,7 +110,7 @@
                     for (var i = 0; i < subTabs.length; i++) {
                         var t = subTabs[i];
                         var c = tabs[0].addTab(t);
-                        var d = $('<div class="picConfigCategory" />');
+                        var d = $('<div class="picConfigCategory"></div>');
                         if (t.cssClass) d.addClass(t.cssClass);
                         d.appendTo(c);
                     }
@@ -140,7 +140,7 @@
         _buildSchedulesTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             contents.empty();
-            var divOuter = $('<div class="picConfigCategory cfgSchedules" />').appendTo(contents);
+            var divOuter = $('<div class="picConfigCategory cfgSchedules"></div>').appendTo(contents);
             $.getApiService('/config/options/schedules', null, function (opts, status, xhr) {
                 console.log(opts);
                 var schedules = opts.schedules;
@@ -152,17 +152,17 @@
         _buildRemotesTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             contents.empty();
-            var divOuter = $('<div class="picConfigCategory cfgOther" />').appendTo(contents);
+            var divOuter = $('<div class="picConfigCategory cfgOther"></div>').appendTo(contents);
         },
         _buildHeatersTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             contents.empty();
-            var divOuter = $('<div class="picConfigCategory cfgHeaters" />').appendTo(contents);
+            var divOuter = $('<div class="picConfigCategory cfgHeaters"></div>').appendTo(contents);
         },
         _buildChemistryTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             contents.empty();
-            var divOuter = $('<div class="picConfigCategory cfgChemistry" />').appendTo(contents);
+            var divOuter = $('<div class="picConfigCategory cfgChemistry"></div>').appendTo(contents);
         },
         _getCircuitReferences(circuits, features, virtual, groups) {
             var self = this, o = self.options, el = self.element;
@@ -177,52 +177,52 @@
             }
             return arr;
         },
-        _buildLine: function () { return $('<div class="picOptionLine" />'); },
+        _buildLine: function () { return $('<div class="picOptionLine"></div>'); },
         _buildCircuitList: function (attrs) {
-            var div = $('<div class="picCircuitsList" />');
-            var pnl = $('<div class="picCircuitsList-btnPanel" />').appendTo(div);
+            var div = $('<div class="picCircuitsList"></div>');
+            var pnl = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(div);
             $('<div><label>' + attrs.labelText + '</label></div>').appendTo(pnl);
-            var btnCPnl = $('<div class="picBtnPanel" />').appendTo(pnl);
-            var btnAddCircuit = $('<div />').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" />' });
-            var list = $('<div class="picCircuitsList-list" />').appendTo(div);
+            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
+            var list = $('<div class="picCircuitsList-list"></div>').appendTo(div);
             return div;
         },
         _buildAccordian: function (cssClass, opts) {
-            var div = $('<div class="picAccordian" />').accordian(opts);
+            var div = $('<div class="picAccordian"></div>').accordian(opts);
             div.addClass(cssClass);
             return div;
         },
         _buildOptionDropdown: function (cssClass, ddAttrs) {
-            var div = $('<div class="picOptionDropdown" />');
+            var div = $('<div class="picOptionDropdown"></div>');
             if (cssClass) div.addClass(cssClass);
             div.attr('data-bind', ddAttrs.binding);
-            var dd = $('<div class="picPickList" />').appendTo(div).pickList(ddAttrs)[0];
+            var dd = $('<div class="picPickList"></div>').appendTo(div).pickList(ddAttrs)[0];
             return div;
         },
         _buildOptionField: function (cssClass, lblText, binding, text, fldAttrs, lblAttrs) {
-            var div = $('<div class="picOptionField" />');
+            var div = $('<div class="picOptionField"></div>');
             if (cssClass) div.addClass(cssClass);
             div.attr('data-bind', binding);
-            var fld = $('<div class="picInputField" />').appendTo(div);
+            var fld = $('<div class="picInputField"></div>').appendTo(div);
             fld.attr('data-bind', binding);
             fld.inputField({ labelText: lblText, value: text, inputAttrs: fldAttrs, labelAttrs: lblAttrs });
             return div;
         },
         _buildOptionCheckbox: function (cssClass, lblText, binding, text, fldAttrs, lblAttrs) {
-            var div = $('<div class="picOptionCheckbox" />');
+            var div = $('<div class="picOptionCheckbox"></div>');
             if (cssClass) div.addClass(cssClass);
-            var fld = $('<div class="picCheckbox" />').appendTo(div);
+            var fld = $('<div class="picCheckbox"></div>').appendTo(div);
             fld.attr('data-bind', binding);
             fld.checkbox({ labelText: lblText, value: text, inputAttrs: fldAttrs, labelAttrs: lblAttrs });
             return div;
 
             //var id = 'cfgField_' + binding.replace('.', '_').replace('[', '_').replace(']', '_');
-            //var fld = $('<input type="checkbox" />').appendTo(div);
+            //var fld = $('<input type="checkbox"></input>').appendTo(div);
             //fld.prop('id', id);
             //fld.val(text);
             //fld.attr('data-bind', binding);
             //if (makeBool(text)) fld.attr('checked', 'checked');
-            //var lbl = $('<label />').appendTo(div);
+            //var lbl = $('<label></label>').appendTo(div);
             //lbl.attr('for', id);
             //lbl.text(lblText);
             //div.attr('data-bind', binding);
@@ -246,9 +246,9 @@
             //return div;
         },
         _buildOptionSpinner: function (cssClass, lblText, binding, value, spinAttrs, lblAttrs) {
-            var div = $('<div class="picOptionField" />');
+            var div = $('<div class="picOptionField"></div>');
             if (cssClass) div.addClass(cssClass);
-            var fld = $('<div class="picValueSpinner" />').appendTo(div);
+            var fld = $('<div class="picValueSpinner"></div>').appendTo(div);
             fld.attr('data-bind', binding);
             fld.valueSpinner({ labelText: lblText, value: value, inputAttrs: spinAttrs, labelAttrs: lblAttrs });
             return div;
