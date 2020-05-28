@@ -2,9 +2,18 @@
   "name": "nodejs-poolcontrol_dashpanel",
   "version": "0.0.1",
   "description": "Dashboard Panel",
-  "main": "app.js",
+  "main": "dist/app.js",
   "author": {
     "name": "Robert Strouse"
+  },
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rstrouse/nodejs-poolControl.dashPanel.git"
+  },
+  "scripts": {
+    "start": "npm run build && node dist/app.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
