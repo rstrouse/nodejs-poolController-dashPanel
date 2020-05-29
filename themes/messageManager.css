@@ -258,6 +258,9 @@ tr.msg-payload-header {
   background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
   background-image: linear-gradient(top, #159FCF, #13647F); }
 
+td.payload-byte {
+  cursor: pointer; }
+
 td.payload-byte.payload-change {
   color: yellow;
   background-color: cornflowerblue;
@@ -308,17 +311,21 @@ tr.bytediff-prev > td {
   padding-left: 1px;
   padding-right: 1px; }
 
+tr.msg-payload-header > td.selected,
 tr.bytediff-header > td {
-  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-  background-image: -ms-linear-gradient(top, #159FCF, #13647F);
-  background-image: -moz-linear-gradient(top, #159FCF, #13647F);
-  background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
-  background-image: linear-gradient(top, #159FCF, #13647F);
-  color: white; }
+  background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
+  background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
+  color: black;
+  font-weight: bold; }
 
 tr.bytediff-header > td.bytediff-name {
   border: none;
-  background: none; }
+  background: none;
+  font-size: 10pt;
+  font-weight: bold;
+  text-align: center;
+  color: darkorange; }
 
 table.queue-list-header {
   box-sizing: border-box;
