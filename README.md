@@ -1,5 +1,5 @@
 ﻿# nodejs-poolController-dashPanel
-##What is nodejs-poolController-dashPanel?
+## What is nodejs-poolController-dashPanel?
 dashPanel is a controller designed to operate using a [nodejs-poolController](https://github.com/tagyoureit/nodejs-poolController/tree/next) server backend.  You will need to set up your nodejs-poolController server and have it communicating with your pool equipment prior to setting up this server.  Once you have done that you can set up the dashPanel to communicate with that server.
 
 While this project was originally developed using an IntelliCenter control panel it should operate equally well with an IntelliTouch or EasyTouch control panel.
