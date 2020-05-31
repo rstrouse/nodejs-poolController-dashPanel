@@ -58,7 +58,8 @@
                     self._buildHeatersTab(evt.newTab.contents);
                     break;
                 case 'tabSchedules':
-                    self._buildSchedulesTab(evt.newTab.contents);
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configSchedules();
                     break;
             }
         },

@@ -8,6 +8,7 @@ import * as https from "https";
 import { outQueues } from "./queues/outboundQueue";
 import * as extend from 'extend';
 import { ApiError } from './Errors';
+import { UploadRoute } from "./upload/upload";
 
 // This class serves data and pages for
 // external interfaces as well as an internal dashboard.
@@ -103,7 +104,9 @@ export class HttpServer extends ProtoServer {
             });
 
             // start our server on port
+            let self = this;
             this.server.listen(cfg.port, cfg.ip, function () {
+                //console.log(self);
                 logger.info('Server is now listening on %s:%s', cfg.ip, cfg.port);
             });
             this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
@@ -148,6 +151,7 @@ export class HttpServer extends ProtoServer {
                     next(err);
                 }
             });
+            UploadRoute.initRoutes(this.app);
 
             // This is last so that it is picked up when we have an error.
             this.app.use((error, req, res, next) => {

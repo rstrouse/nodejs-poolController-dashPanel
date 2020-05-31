@@ -138,8 +138,38 @@ Number.prototype.format = function (format, empty) {
     if (rd.length === 0 && rw.length === 0) return '';
     return pfx + rw + rd + sfx;
 };
+Number.prototype.formatTime = function (format, empty) {
+    // Formats the time in minutes from midnight.
+    if (isNaN(this) || this <= 0) return empty;
+    var hrs = Math.floor(this / 60);
+    var mins = this - (hrs * 60);
+    var secs = 0;
+    var tok = {
+        'hh': (hrs > 12 ? hrs - 12 : hrs).toString().padStart(2, '0'),
+        'h': (hrs > 12 ? hrs - 12 : hrs).toString(),
+        'HH': hrs.toString().padStart(2, '0'),
+        'H': hrs.toString(),
+        'mm': mins.toString().padStart(2, '0'),
+        'm': mins.toString(),
+        'ss': secs.toString().padStart(2, '0'),
+        's': secs.toString(),
+        'tt': hrs >= 12 ? 'pm' : 'am',
+        't': hrs >= 12 ? 'p' : 'a',
+        'TT': hrs >= 12 ? 'PM' : 'AM',
+        'T': hrs >= 12 ? 'P' : 'A'
+    };
+    //console.log(tok);
+    var formatted = format;
+    for (var t in tok) {
+        formatted = formatted.replace(t, tok[t]);
+    }
+    return formatted;
+};
+Date.prototype.isDateEmpty = function () {
+    return (isNaN(this.getTime()) || this.getFullYear() < 1970 || this.getFullYear() > 9999);
+}
 Date.prototype.isDateTimeEmpty = function () {
-    return (this.getFullYear() < 1970 || this.getFullYear() > 9999);
+    return (isNaN(this.getTime()) || this.getFullYear() < 1970 || this.getFullYear() > 9999);
 };
 Date.prototype.format = function (fmtMask, emptyMask) {
     if (fmtMask.match(/[hHmt]/g) !== null) {
@@ -946,6 +976,189 @@ $.ui.position.fieldTip = {
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
         }
     });
+    $.widget("pic.timeSpinner", {
+        options: {
+            lastChange: 0, ramp: 40, ramps: 0, fmtMask: 'hh:mmtt', fmtEmpty: '', step: 30, inputAttrs: {}, labelAttrs: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initValueSpinner();
+        },
+        _rampIncrement: function () {
+            var self = this, o = self.options, el = self.element;
+            if (o.timer) clearTimeout(o.timer);
+            self.increment();
+            o.timer = setTimeout(function () {
+                o.ramps++;
+                self._rampIncrement();
+            }, Math.max(400 - ((o.ramps + 1) * o.ramp), o.ramp));
+        },
+        _rampDecrement: function () {
+            var self = this, o = self.options, el = self.element;
+            if (o.timer) clearTimeout(o.timer);
+            self.decrement();
+            o.timer = setTimeout(function () {
+                o.ramps++;
+                self._rampDecrement();
+            }, Math.max(500 - ((o.ramps + 1) * o.ramp), o.ramp));
+        },
+        _fireValueChanged: function () {
+            var self = this, o = self.options, el = self.element;
+            var evt = $.Event('change');
+            evt.value = o.val;
+            el.trigger(evt);
+        },
+        _initValueSpinner: function () {
+            var self = this, o = self.options, el = self.element;
+            if (!el.hasClass) el.addClass('picSpinner');
+            el[0].increment = function () { return self.increment(); };
+            el[0].decrement = function () { return self.decrement(); };
+            el[0].val = function (val) { return self.val(val); };
+            el[0].options = function (opts) { return self.opts(opts); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            if (o.required === true) self.required(true);
+            $('<label class="picSpinner-label"></label><div class="picSpinner-down"><i class="fas fa-minus"></i></div><input type="text" class="picSpinner-value"></input><div class="picSpinner-up"><i class="fas fa-plus"></i></div><span class="picSpinner-units"></span>').appendTo(el);
+            if (typeof o.min === 'undefined') o.min = 0;
+            if (typeof o.val === 'undefined') o.val = o.min;
+            // format our time based upon minutes from midnight.
+            el.find('input.picSpinner-value').val(o.val.formatTime(o.fmtMask, o.fmtEmpty));
+            el.find('span.picSpinner-units').text(o.units);
+            self._applyStyles();
+            if (typeof o.value !== 'undefined') self.val(o.value);
+            if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);
+            if (o.labelText) el.find('label.picSpinner-label:first').html(o.labelText);
+            el.on('mousedown', 'div.picSpinner-down', function (evt) {
+                self._rampDecrement();
+                evt.preventDefault();
+                evt.stopPropagation();
+            });
+            el.on('mousedown', 'div.picSpinner-up', function (evt) {
+                self._rampIncrement();
+                evt.preventDefault();
+                evt.stopPropagation();
+            });
+            el.on('mouseup', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
+                o.ramps = 0;
+                clearTimeout(o.timer);
+                o.timer = null;
+                self._fireValueChanged();
+            });
+            el.on('mouseleave', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
+                o.ramps = 0;
+                if (!o.timer) return;
+                clearTimeout(o.timer);
+                o.timer = null;
+                self._fireValueChanged();
+            });
+            el.on('change', 'input.picSpinner-value', function (evt) {
+                self.val(self.parseTime($(evt.currentTarget).val()));
+            });
+        },
+        opts: function (opts) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof opts !== 'undefined') {
+                $.extend(o, opts);
+                if (typeof opts.val !== 'undefined') self.val(opts.val);
+            }
+            else
+                return o;
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picValueSpinner');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+            var fld = el.find('input.picSpinner-value:first');
+            var lbl = el.find('label.picSpinner-label:first');
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        break;
+                    default:
+                        if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
+                        break;
+
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
+        },
+        increment: function () {
+            var self = this, o = self.options, el = self.element;
+            o.val = Math.min(o.max, o.val + o.step);
+            el.find('input.picSpinner-value').val(o.val.formatTime(o.fmtMask, o.fmtEmpty));
+            o.lastChange = new Date().getTime();
+            return o.val;
+        },
+        decrement: function () {
+            var self = this, o = self.options, el = self.element;
+            o.val = Math.max(o.min, o.val - o.step);
+            el.find('input.picSpinner-value').val(o.val.formatTime(o.fmtMask, o.fmtEmpty));
+            o.lastChange = new Date().getTime();
+            return o.val;
+        },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return isNaN(self.val());
+        },
+        parseTime: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var indexOfAny = function (str, arrChars) {
+                for (var char in arrChars) {
+                    console.log(char);
+                    var ndx = str.indexOf(arrChars[char]);
+                    if (ndx !== -1) return ndx;
+                }
+                return -1;
+            };
+            var bAddHrs = false;
+            var hrs = 0;
+            var mins = 0;
+            var arr = val.split(':');
+            if (arr.length > 0) {
+                hrs = parseInt(arr[0].replace(/\D/g), 10);
+                bAddHrs = (indexOfAny(arr[0], ['P', 'p']) !== -1);
+            }
+            if (arr.length > 1) {
+                mins = parseInt(arr[1].replace(/\D/g), 10);
+                bAddHrs = (indexOfAny(arr[1], ['P', 'p']) !== -1);
+            }
+            if (isNaN(hrs)) hrs = 0;
+            if (isNaN(mins)) mins = 0;
+            if (bAddHrs && hrs <= 12) hrs += 12;
+            return (hrs * 60) + mins;
+
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return o.val;
+            if (val > o.max) val = o.max;
+            else if (val < o.min) val = o.min;
+            //console.log({ m: 'Setting time', val: val, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
+            o.val = Math.min(Math.max(o.min, val), o.max);
+            el.find('input.picSpinner-value').val(val.formatTime(o.fmtMask, o.fmtEmpty));
+        }
+    });
 })(jQuery); // Value Spinner
 (function ($) {
     $.widget("pic.selector", {
@@ -1656,6 +1869,161 @@ $.ui.position.fieldTip = {
         }
     });
 })(jQuery); // Input Field
+
+(function ($) {
+    $.widget("pic.dateField", {
+        options: {
+            inputAttrs: {},
+            labelAttrs: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initDateField();
+        },
+        _initDateField: function () {
+            var self = this, o = self.options, el = self.element;
+            if (o.bind) el.attr('data-bind', o.bind);
+            $('<label class="picPickList-label"></label>').appendTo(el).text(o.labelText);
+            if (o.canEdit)
+                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').appendTo(el);
+            else
+                $('<div class="picPickList-value"></div>').appendTo(el);
+            $('<input class="datepicker-hidden" type="text" style="display:none;"></input>').appendTo(el).datepicker();
+
+            $('<div class="picPickList-drop"><i class="fas fa-calendar-day"></i></div>').appendTo(el);
+            el.attr('data-bind', o.binding);
+            el[0].label = function () { return el.find('label.picPickList-label:first'); };
+            el[0].field = function () { return el.find('div.picPickList-value:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].val = function (val) { return self.val(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            el[0].required = function (val) { return self.required(val); };
+            el.attr('data-val', o.value);
+            if (o.required === true) self.required(true);
+            el.attr('data-datatype', o.dataType);
+            self._applyStyles();
+            el.find('div.picPickList-drop').on('click', function (evt) {
+                el.find('input.datepicker-hidden').datepicker('show');
+            });
+            el.on('change', 'input.datepicker-hidden', function (evt) {
+                var val = el.find('input.datepicker-hidden:first').val();
+                self.val(el.find('input.datepicker-hidden:first').val());
+            });
+            el.on('change', 'input.picPickList-value', function (evt) {
+                el.find('input.picPickList-value:first').val(self.val());
+            });
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picPickList');
+            var fld = el.find('div.picPickList-value:first');
+            var lbl = el.find('label.picPickList-label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
+                        if (o.canEdit) fld.attr('maxlength', o.inputAttrs[ia]);
+                        break;
+                    default:
+                        if (ia.startsWith('data')) lbl.attr(ia, o.inputAttrs[ia]);
+                        break;
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) el.addClass('disabled');
+                else el.removeClass('disabled');
+            }
+        },
+        text: function (text) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof text !== 'undefined') {
+                if (o.canEdit)
+                    el.find('input.picPickList-value').val(text);
+                else
+                    el.find('div.picPickList-value').html(text);
+            }
+            else
+                return o.canEdit ? el.find('input.picPickList-value').val : el.find('div.picPickList-value').text();
+        },
+        required: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return makeBool(el.attr('data-required'));
+            else el.attr('data-required', makeBool(val));
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            var val = (o.canEdit) ? el.find('input.picPickList-value:first').val() : el.find('div.picPickList-value:first').text();;
+            return val === null || typeof val === 'undefined';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var fld;
+            if (o.canEdit) {
+                fld = el.find('input.picPickList-value:first');
+                if (typeof val !== 'undefined') {
+                    if (typeof val.parseISO === 'function') {
+                        fld.val(val.format('MM/dd/yyy'));
+                    }
+                    else if (typeof val === 'string') {
+                        var dt;
+                        if (val.indexOf('T') !== -1)
+                            dt = Date.parseISO(val);
+                        else
+                            dt = new Date(Date.parse(val));
+                        fld.val(dt.format('MM/dd/yyyy', ''));
+                    }
+                    else fld.val(val);
+                    el.find('input.datepicker-hidden:first').val(fld.val());
+                }
+                else return fld.val();
+            }
+            else {
+                fld = el.find('div.picPickList-value:first');
+                if (typeof val !== 'undefined') {
+                    if (typeof val.parseISO === 'function') {
+                        fld.text(val.format('MM/dd/yyy'));
+                    }
+                    else if (typeof val === 'string') {
+                        var d = Date.parseISO(val);
+                        fld.text(d.format('MM/dd/yyyy', ''));
+                    }
+                    else fld.text(val);
+                    el.find('input.datepicker-hidden:first').val(fld.text());
+                }
+                else {
+                    //if (typeof o.value === 'undefined') console.log(o);
+                    return fld.text();
+                }
+            }
+        }
+    });
+})(jQuery); // Date Picker
+
+
 (function ($) {
     $.widget("pic.checkbox", {
         options: {

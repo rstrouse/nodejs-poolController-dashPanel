@@ -687,6 +687,16 @@ div.picValueSpinner > label {
     vertical-align:middle;
     display:inline-block;
 }
+div.picValueSpinner > input.picSpinner-value {
+    border-radius:0px;
+    margin:0px;
+    font-size:1.1rem;
+    padding-top:0px;
+    padding-bottom:0px;
+    vertical-align:middle;
+    border:solid 1px gray;
+    text-align:center;
+}
 div.picSpinner-value {
     font-size: 1.1rem;
 }
@@ -822,6 +832,7 @@ input.picPickList-value {
     border-bottom-left-radius: 4px;
     padding-left: .2em;
     padding-right: .2em;
+    padding-bottom:0px;
 }
 div.picPickList-options {
     position: absolute;

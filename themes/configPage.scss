@@ -1,4 +1,8 @@
-﻿div.picConfigTabContents {
+﻿div.inline-line {
+    display:inline-block;
+    vertical-align:top;
+}
+div.picConfigTabContents {
     background: -moz-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ff3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(222,222,222,1)), color-stop(18%, rgba(255,255,255,1)), color-stop(76%, rgba(255,255,255,1)), color-stop(85%, rgba(249,249,249,1)), color-stop(100%, rgba(240,240,240,1))); /* safari4+,chrome */
     background: -webkit-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* safari5.1+,chrome10+ */
@@ -61,5 +65,79 @@ div.picCircuitOption i.picRemoveOption {
 div.picCircuitOption i.picRemoveOption:hover {
     color: orange;
     text-shadow: 3px 3px 16px #272634;
+}
+div.pnl-scheduleDays {
+
+}
+div.pnl-scheduleDays div.table {
+    display:table;
+}
+div.pnl-scheduleDays div.table-body {
+    display:table-row-group;
+}
+div.pnl-scheduleDays div.table-row {
+    display:table-row;
+}
+div.pnl-scheduleDays div.table-cell {
+    display:table-cell;
+}
+div.pnl-scheduleDays > div.table {
+    border-collapse:collapse;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
+    display:inline-block;
+    margin:0px auto;
+
+}
+div.pnl-scheduleDays div.table-row.dayheader {
+    background: #fde4be;
+    background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
+    background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
+    color: black;
+    font-weight: bold;
+}
+div.pnl-scheduleDays div.table-caption {
+    display: table-caption;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: solid 1px gray;
+    text-align:center;
+    background: rgb(246,248,249); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
+}
+div.pnl-scheduleDays div.table-row.dayheader {
+    border-top-left-radius: 5px;
+    border-top-right-radius:5px;
+}
+div.pnl-scheduleDays div.table-cell.dayheader {
+    text-align: center;
+    border: solid 1px gray;
+    width: 2.4rem;
+    font-weight:bold;
+    color:white;
+}
+div.pnl-scheduleDays div.table-cell.day {
+    text-align: center;
+    font-size: 2rem;
+    border: solid 1px gainsboro;
+    cursor:pointer;
+}
+div.pnl-scheduleDays div.table-cell.day:hover {
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
+    background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+    background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+    background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
+    background-image: linear-gradient(top, #ffaf4b, #ff920a);
+}
+div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
+    color: white;
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+    background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+    background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+    background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+    background-image: linear-gradient(top, #159FCF, #13647F);
 }
 

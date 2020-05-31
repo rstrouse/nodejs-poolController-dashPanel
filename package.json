@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-poolcontrol_dashpanel",
+  "name": "nodejs-poolcontroller-dashpanel",
   "version": "0.0.1",
   "description": "Dashboard Panel",
   "main": "dist/app.js",
@@ -9,7 +9,7 @@
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rstrouse/nodejs-poolControl.dashPanel.git"
+    "url": "git+https://github.com/rstrouse/nodejs-poolController-dashPanel.git"
   },
   "scripts": {
     "start": "npm run build && node dist/app.js",
@@ -22,6 +22,7 @@
     "jquery-ui": "^1.12.1",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-touch-punch-c": "^1.4.0",
+    "multer": "^1.4.2",
     "socket.io": "^2.3.0",
     "winston": "^3.2.1"
   },
@@ -29,6 +30,7 @@
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@types/express": "^4.17.1",
     "@types/extend": "^3.0.1",
+    "@types/multer": "^1.4.3",
     "@types/node": "^11.13.22",
     "@types/socket.io": "^2.1.5",
     "ts-node": "^8.4.0",

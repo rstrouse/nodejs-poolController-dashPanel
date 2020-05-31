@@ -297,7 +297,7 @@
     pumpAddrs: [],
     chemAddrs: [],
     chlorAddrs: [{ val: 0, desc: 'Unspecified' }, { val: 80, desc: 'Chlorinator #1' }, { val: 81, desc: 'Chlorinator #2' }, { val: 82, desc: 'Chlorinator #3' }, { val: 83, desc: 'Chlorinator #4' }],
-    controllerBytes: [{ val: 0, desc: 'Unspecified' }, { val: 16, desc: '*Touch' }, { val: 63, desc: 'IntelliCenter' }],
+    controllerBytes: [{ val: 0, desc: 'Unspecified' }, { val: 23, desc: '*Touch' }, { val: 34, desc: 'ScreenLogic' }, { val: 63, desc: 'IntelliCenter' }],
     valveAddrs: [{ val: 12, desc: 'IntelliValve' }, { val: 15, desc: 'Broadcast' }, { val: 16, desc: 'Panel' }],
     broadcastAddrs: [{ val: 15, desc: 'Broadcast' }, { val: 16, desc: 'Panel' }],
     broadcastActions: [ {val: 2, desc: 'Status'}],
@@ -426,7 +426,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             el[0].initList = function (data) { self._initList(); };
             el[0].addMessage = function (msg) { self.addMessage(msg); };
-            el[0].receivingMessages = function (val) { self.receivingMessages(val); };
+            el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
             self._initList();
         },
         _resetHeight: function () {
@@ -434,7 +434,7 @@ mhelper.init();
             var rect = el[0].getBoundingClientRect();
             var docHeight = document.documentElement.clientHeight;
             var height = docHeight - rect.top - 70;
-            console.log({ docHeight: docHeight, rect: rect, pos: el.offset() });
+            //console.log({ docHeight: docHeight, rect: rect, pos: el.offset() });
             el.css({ height: height + 'px' });
         },
         _initList: function () {
@@ -589,6 +589,9 @@ mhelper.init();
                     el.find('div.picStartLogs').removeClass('selected');
 
                 }
+            }
+            else {
+                return o.receivingMessages;
             }
         }
     });

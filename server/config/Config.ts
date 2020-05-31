@@ -63,7 +63,7 @@ class Config {
             fs.mkdir(dir, (err) => {
                 // Logger will not be initialized by the time we reach here so we must
                 // simply log these to the console.
-                if (err) console.log(`Error creating directory: ${dir} - ${err.message}`);
+                if (err) console.log(`Error creating directory: ${dir} - ${err}`);
             });
         }
     }

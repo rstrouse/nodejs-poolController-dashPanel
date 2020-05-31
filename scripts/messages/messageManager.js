@@ -5,7 +5,7 @@
             var self = this, o = self.options, el = self.element;
             self._initLogs();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
-            el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); }
+            el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); };
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -60,9 +60,9 @@
                     this.setConnectionError({ status: { val: 255, name: 'error', desc: 'Connection Error' } });
                 });
                 el.find('div.picControlPanel').each(function () {
-                    $(this).addClass('picDisconnected');
+                    //$(this).addClass('picDisconnected');
                     $('div.picMessages').each(function () {
-                        this.receivingMessages(false);
+                        //this.receivingMessages(false);
                     });
                 });
 
@@ -88,7 +88,10 @@
                 el.find('div.picControlPanel').each(function () {
                     $(this).removeClass('picDisconnected');
                 });
-                self.receiveLogMessages(o.receiveLogMessages);
+                // Find out if we should be receiving messages and
+                // reconnect if so.
+                self.receiveLogMessages($('div.picMessages:first')[0].receivingMessages());
+                //self.receiveLogMessages(o.receiveLogMessages);
             });
             o.socket.on('close', function (sock) {
                 console.log({ msg: 'socket closed:', sock: sock });

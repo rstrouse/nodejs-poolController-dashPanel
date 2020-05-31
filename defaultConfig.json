@@ -4,7 +4,7 @@
       "http2": { "enabled": false },
       "http": {
         "enabled": true,
-        "ip": "127.0.0.1",
+        "ip": "0.0.0.0",
         "port": 5150,
         "httpsRedirect": false,
         "authentication": "none",
@@ -37,6 +37,11 @@
     "app": {
       "enabled": true,
       "level": "info"
+    }
+  },
+  "uploads": {
+    "logFile": {
+      "path":  "uploads/"
     }
   },
   "appVersion": "1.0.0"
