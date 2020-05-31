@@ -117,11 +117,14 @@
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
                 var p = el.find('div.schedule-heatsource');
+                console.log(evt);
                 if (evt.newItem.id === 6 || evt.newItem.id === 1) {
+                    p.show();
                     p.find('div.picPickList[data-bind=heatSource]').show()[0].required(true);
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
                 }
                 else {
+                    p.hide();
                     p.find('div.picPickList[data-bind=heatSource]').hide()[0].required(false);
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').hide()[0].required(false);
                 }
