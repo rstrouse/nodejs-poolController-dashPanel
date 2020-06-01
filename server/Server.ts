@@ -73,9 +73,6 @@ export class HttpServer extends ProtoServer {
                     return res.redirect('https://' + host + req.url);
                 });
             }
-            else {
-
-            }
             this.app.use((req, res, next) => {
                 res.header('Access-Control-Allow-Origin', '*');
                 res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -96,8 +93,8 @@ export class HttpServer extends ProtoServer {
                 if (value instanceof Error) {
                     var err = {};
                     Object.getOwnPropertyNames(value).forEach((prop) => { err[prop] = value[prop]; });
-                    console.log('We have an error');
-                    console.log(err);
+                    //console.log('We have an error');
+                    //console.log(err);
                     return err;
                 }
                 return value;

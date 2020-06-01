@@ -270,7 +270,7 @@
                 var day = o.days[i];
                 $('<div></div>').addClass('table-cell').appendTo(rowHeader).addClass('dayheader').text(day.desc.substring(0, 3));
                 var td = $('<div></div>').addClass('table-cell').appendTo(rowDays).addClass('day');
-                $('<i></i>').addClass('far').addClass('fa-times-circle').appendTo(td);
+                $('<i></i>').addClass('far').addClass('fa-circle').appendTo(td);
                 td.attr('data-bitval', 1 << (day.val - 1));
                 td.attr('data-selected', false);
             }
@@ -278,11 +278,15 @@
                 var cell = $(evt.currentTarget);
                 var bsel = makeBool(cell.attr('data-selected'));
                 if (bsel) {
-                    cell.find('i').removeClass('fas').addClass('far');
+                    cell.find('i')
+                        .removeClass('fas').addClass('far')
+                        .removeClass('fa-times-circle').addClass('fa-circle');
                     cell.attr('data-selected', false);
                 }
                 else {
-                    cell.find('i').removeClass('far').addClass('fas');
+                    cell.find('i')
+                        .removeClass('far').addClass('fas')
+                        .removeClass('fa-circle').addClass('fa-times-circle');
                     cell.attr('data-selected', true);
                 }
                 // Recalculate the value.
@@ -301,11 +305,15 @@
                     var cell = $(this);
                     var bitVal = parseInt(cell.attr('data-bitval'), 10);
                     if ((bitVal & val & 0xFF) === bitVal) {
-                        cell.find('i').removeClass('far').addClass('fas');
+                        cell.find('i')
+                            .removeClass('far').addClass('fas')
+                            .removeClass('fa-circle').addClass('fa-times-circle');
                         cell.attr('data-selected', true);
                     }
                     else {
-                        cell.find('i').removeClass('fas').addClass('far');
+                        cell.find('i')
+                            .removeClass('fas').addClass('far')
+                            .removeClass('fa-times-circle').addClass('fa-circle');
                         cell.attr('data-selected', false);
                     }
                 });

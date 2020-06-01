@@ -168,4 +168,153 @@
             self._buildPopover();
         }
     });
+    $.widget('pic.chemcontroller', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+        },
+        setEquipmentData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            try {
+                el.attr('data-saltrequired', data.saltRequired);
+                if (!data.isActive === false) el.hide();
+                else el.show();
+                //data.state = data.currentOutput > 0 ? 'on' : 'off';
+                el.find('div.picChlorinatorState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
+                dataBinder.bind(el, data);
+                let sc = el.find('div.picSuperChlor');
+                if (data.superChlor) {
+                    sc.show();
+                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    if (data.superChlorRemaining > 0) {
+                        o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
+                        el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
+                    }
+                }
+                else {
+                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    o.superChlorTimer = null;
+                    sc.hide();
+                    el.find('div.picSuperChlorBtn label.picSuperChlor').text('Super Chlorinate');
+                    el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'off');
+                }
+                if (typeof data.status !== 'object' || data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
+                else el.find('div.picSuperChlorBtn').show();
+                el.data('remaining', data.superChlorRemaining);
+                el.attr('data-status', data.status.name);
+            }
+            catch (err) { console.log({ m: 'Error setting chlorinator data', err: err, chlor: data }); }
+        },
+        countdownSuperChlor: function () {
+            var self = this, o = self.options, el = self.element;
+            let rem = Math.max(el.data('remaining') - 1);
+            el.find('span.picSuperChlorRemaining').each(function () {
+                $(this).text(dataBinder.formatDuration(rem));
+            });
+            el.data('remaining', rem);
+        },
+        putPoolSetpoint: function (setPoint) {
+            var self = this, o = self.options, el = self.element;
+            $.putApiService('state/chlorinator/poolSetpoint', { id: parseInt(el.attr('data-id'), 10), setPoint: setPoint }, function () { });
+
+        },
+        putSpaSetpoint: function (setPoint) {
+            var self = this, o = self.options, el = self.element;
+            $.putApiService('state/chlorinator/spaSetpoint', { id: parseInt(el.attr('data-id'), 10), setPoint: setPoint }, function () { });
+
+        },
+        putSuperChlorHours: function (hours) {
+            var self = this, o = self.options, el = self.element;
+            $.putApiService('state/chlorinator/superChlorHours', { id: parseInt(el.attr('data-id'), 10), hours: hours }, function () { });
+
+        },
+        putSuperChlorinate: function (bSet) {
+            var self = this, o = self.options, el = self.element;
+            if (!bSet) el.find('label.picSuperChlor').text('Cancelling...');
+            else el.find('label.picSuperChlor').text('Initializing...');
+            el.find('div.picToggleSuperChlor > div.picIndicator').attr('data-status', 'pending');
+            $.putApiService('state/chlorinator/superChlorinate', { id: parseInt(el.attr('data-id'), 10), superChlorinate: bSet }, function () { });
+
+        },
+        _buildPopover: function () {
+            var self = this, o = self.options, el = self.element;
+            el.on('click', function (evt) {
+                $.getApiService('/state/chlorinator/' + el.attr('data-id'), function (data, status, xhr) {
+                    console.log(data);
+                    var divPopover = $('<div class="picChlorSettings"></div>');
+                    divPopover.appendTo(el);
+                    divPopover.on('initPopover', function (evt) {
+                        let saltReqd = parseFloat(el.attr('data-saltrequired'));
+                        if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"></i><span> Add ' + (saltReqd / 40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
+                        if (data.body.val === 32 || data.body.val === 0) {
+                            let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"></div></div>');
+                            divSetpoint.appendTo(evt.contents());
+                            divSetpoint.find('div.picValueSpinner').each(function () {
+                                $(this).valueSpinner({ val: data.poolSetpoint, min: 0, max: 100, step: 1 });
+                                $(this).on('change', function (e) { self.putPoolSetpoint(e.value); });
+                            });
+                        }
+                        if (data.body.val === 32 || data.body.val === 1) {
+                            // Add in the spa setpoint.
+                            let divSetpoint = $('<div class="picSpaSetpoint picSetpoint"><label class="picInline-label picSetpointText">Spa Set Point</label><div class="picValueSpinner" data-bind="spaSetpoint"></div></div>');
+                            divSetpoint.appendTo(evt.contents());
+                            divSetpoint.find('div.picValueSpinner').each(function () {
+                                $(this).valueSpinner({ val: data.spaSetpoint, min: 0, max: 100, step: 1 });
+                                $(this).on('change', function (e) { self.putSpaSetpoint(e.value); });
+                            });
+                        }
+                        let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
+                        divSuperChlorHours.appendTo(evt.contents());
+                        divSuperChlorHours.find('div.picValueSpinner').each(function () {
+                            $(this).valueSpinner({ val: data.superChlorHours, min: 1, max: 96, step: 1 });
+                            $(this).on('change', function (e) { self.putSuperChlorHours(e.value); });
+                        });
+
+                        // Add in the super chlorinate button.
+                        let btn = $('<div class="picSuperChlorBtn"></div>');
+                        btn.appendTo(evt.contents());
+
+                        let toggle = $('<div class="picToggleSuperChlor"></div>');
+                        toggle.appendTo(btn);
+                        toggle.toggleButton();
+                        let lbl = $('<div><div><label class="picSuperChlor">Super Chlorinate</label></div><div class="picSuperChlorRemaining"><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div></div>');
+                        lbl.appendTo(btn);
+                        btn.on('click', function (e) {
+                            e.preventDefault();
+                            let bSet = makeBool(btn.find('div.picIndicator').attr('data-status') !== 'on');
+                            self.putSuperChlorinate(bSet);
+                        });
+                        if (data.status.val === 128) btn.hide();
+                        self.setEquipmentData(data);
+                    });
+                    divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
+                    divPopover.popover({ title: 'Chlorinator Settings', popoverStyle: 'modal', placement: { target: evt.target } });
+                    divPopover[0].show(evt.target);
+                });
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+            });
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            var div = $('<div class="picChlorinatorState picIndicator"></div>');
+            el.attr('data-id', o.id);
+            div.appendTo(el);
+            div.attr('data-ison', o.currentOutput > 0);
+            div.attr('data-status', o.currentOutput > 0 ? 'on' : 'off');
+
+            $('<label class="picChlorinatorName" data-bind="name"></label>').appendTo(el);
+            $('<span class="picSaltLevel picData"><label class="picInline-label">Salt</label><span class="picSaltLevel" data-bind="saltLevel" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="----"></span><label class="picUnits">ppm</label></span>').appendTo(el);
+            $('<span class="picCurrentOutput picData"><label class="picInline-label">Output</label><span class="picCurrentOutput" data-bind="currentOutput"></span><label class="picUnits">%</label></span>').appendTo(el);
+
+            $('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc"></span></div>').appendTo(el);
+            $('<div class="picSuperChlor picData"><label class="picInline-label">Super Chlor:</label><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div>').appendTo(el);
+            self.setEquipmentData(o);
+            self._buildPopover();
+        }
+    });
+
 })(jQuery);

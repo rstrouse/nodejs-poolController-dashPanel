@@ -311,9 +311,15 @@
                     let $divMods = $('<div class="picModules"></div>').appendTo($(this));
                     let $hdr = $('<table><tbody><tr><td><label>Panel</label></td><td><label>Module</label></td></tr></tbody></table>').appendTo($divMods);
                     let $tbody = $divMods.find('table:first > tbody');
-                    for (let i = 0; i < data.equipment.modules.length; i++) {
-                        let mod = data.equipment.modules[i];
-                        let $row = $('<tr><td><span>Master</span></td><td><div>' + mod.desc + '</div><div>P/N: ' + mod.part + '</div></td></tr>').appendTo($tbody);
+                    if (data.equipment.modules === 'undefined') {
+                        $divMods.hide();
+                    }
+                    else {
+                        $divMods.show();
+                        for (let i = 0; i < data.equipment.modules.length; i++) {
+                            let mod = data.equipment.modules[i];
+                            let $row = $('<tr><td><span>Master</span></td><td><div>' + mod.desc + '</div><div>P/N: ' + mod.part + '</div></td></tr>').appendTo($tbody);
+                        }
                     }
                     let btn = el.find('div[id$=btnReloadConfig]');
                     let status = parseInt($('div.picController').attr('data-status'), 10);

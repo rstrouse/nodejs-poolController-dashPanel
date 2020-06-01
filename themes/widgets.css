@@ -576,6 +576,10 @@ label.picSchedDays {
 }
 span.picSchedTime {
     font-size:.9em;
+    width:9em;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    display:inline-block;
 }
 
 div.picSuperChlorBtn:hover {
@@ -823,6 +827,9 @@ div.picPickList-value {
     text-overflow:ellipsis;
     overflow:hidden;
 }
+div.picPickList-value.editable {
+    padding:0px;
+}
 input.picPickList-value {
     border: none;
     border-width: 0px;
@@ -833,6 +840,12 @@ input.picPickList-value {
     padding-left: .2em;
     padding-right: .2em;
     padding-bottom:0px;
+    margin-bottom:0px;
+    margin-top:0px;
+    width:100%;
+    height:100%;
+    margin:0px;
+    display:block;
 }
 div.picPickList-options {
     position: absolute;

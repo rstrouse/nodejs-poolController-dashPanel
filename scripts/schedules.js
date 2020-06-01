@@ -26,9 +26,12 @@
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picSchedule[data-id=' + data.id + ']');
             if (pnl.length === 0) {
-                let div = $('<div class="picSchedule"><div>');
-                div.appendTo(el);
-                div.schedule(data);
+                if (data.isActive === false) $(this).remove();
+                else {
+                    let div = $('<div class="picSchedule"><div>');
+                    div.appendTo(el);
+                    div.schedule(data);
+                }
             }
             else {
                 pnl.each(function () {
@@ -115,7 +118,10 @@
         },
         _createDays: function (sched) {
             var self = this, o = self.options, el = self.element;
-            if (sched.scheduleType.name === 'runonce') return $('<label class="picSchedDays"></label>').text(Date.parseISO(sched.startDate).format('MM/dd/yyyy'));
+            if (typeof sched === 'undefined') return $('<label class="picSchedDays"></label>');
+            else if (typeof sched.scheduleType === 'undefined') return $('<label class="picSchedDays"></label>');
+            
+            if (sched.scheduleType.name === 'runonce' && typeof sched.startDate !== 'undefined') return $('<label class="picSchedDays"></label>').text(Date.parseISO(sched.startDate).format('MM/dd/yyyy'));
             else if (self._isEveryDay(sched.scheduleDays)) return $('<label class="picSchedDays">Every Day</label>');
             else if (self._isWeekends(sched.scheduleDays)) return $('<label class="picSchedDays">Weekends</label>');
             else if (self._isWeekdays(sched.scheduleDays)) return $('<label class="picSchedDays">Weekdays</label>');
@@ -126,11 +132,14 @@
                     '</tbody></table>');
                 let row = tbl.find('tr:last');
                 for (var i = 0; i < 7; i++) {
-                    $('<td><i class="far fa-times-circle"></i></td>').appendTo(row);
+                    $('<td><i class="far fa-circle"></i></td>').appendTo(row);
                 }
                 for (var k = 0; k < sched.scheduleDays.days.length; k++) {
                     let day = sched.scheduleDays.days[k];
-                    row.find('td:nth-child(' + (day.dow + 1) + ')').find('i:first').removeClass('far').addClass('fas');
+                    row.find('td:nth-child(' + (day.dow + 1) + ')')
+                        .find('i:first')
+                        .removeClass('far').addClass('fas')
+                        .removeClass('fa-circle').addClass('fa-times-circle');
                 }
                 return tbl;
             }

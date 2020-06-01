@@ -1464,7 +1464,7 @@ $.ui.position.fieldTip = {
             $('<label class="picPickList-label"></label>').appendTo(el).text(o.labelText);
             var itm = self._getItem(o.value);
             if (o.canEdit)
-                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').appendTo(el);
+                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
             else
                 $('<div class="picPickList-value"></div>').appendTo(el);
             var col = self._getColumn(o.displayColumn);
@@ -1885,7 +1885,7 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             $('<label class="picPickList-label"></label>').appendTo(el).text(o.labelText);
             if (o.canEdit)
-                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').appendTo(el);
+                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
             else
                 $('<div class="picPickList-value"></div>').appendTo(el);
             $('<input class="datepicker-hidden" type="text" style="display:none;"></input>').appendTo(el).datepicker();
