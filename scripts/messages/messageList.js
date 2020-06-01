@@ -1129,7 +1129,7 @@ mhelper.init();
 
             $('<div></div>').addClass('edit-message-panel').appendTo(el);
             var pnlPayload = $('<div></div>').addClass('edit-message-payload').appendTo(el);
-            $('<div></div>').appendTo(pnlPayload).inputField({ required: false, labelText: 'Payload', binding: 'payloadBytes', inputAttrs: { maxlength: 50, style: { width: '44rem' } }, labelAttrs: { style: { width: '4rem' } } });
+            $('<div></div>').appendTo(pnlPayload).inputField({ required: false, labelText: 'Payload', binding: 'payloadBytes', inputAttrs: { style: { width: '44rem' } }, labelAttrs: { style: { width: '4rem' } } });
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Message', icon: '<i class="far fa-save"></i>' }).on('click', function (e) {
                 var msg = self._fromWindow(true);

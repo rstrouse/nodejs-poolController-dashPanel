@@ -114,8 +114,9 @@ export class HttpServer extends ProtoServer {
             this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
             this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
-            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '60d' }));
-            this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '60d' }));
+            
+            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
+            this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
             this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
             this.app.put('/config/:section', (req, res) => {
                 return res.status(200).send(config.getSection(req.params.section));
