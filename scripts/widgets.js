@@ -1,4 +1,5 @@
 ﻿var _uniqueId = 1;
+var _screenLayer = 100;
 
 if (typeof String.prototype.startsWith !== 'function') {
     String.prototype.startsWith = function (str) {
@@ -224,6 +225,19 @@ Date.prototype.format = function (fmtMask, emptyMask) {
 Date.prototype.addMinutes = function (nMins) {
     this.setTime(this.getTime() + (nMins * 60000));
     return this;
+};
+Date.format = function (date, fmtMask, emptyMask) {
+    var dt;
+    if (typeof date === 'string') {
+        if (date.indexOf('T') !== -1)
+            dt = Date.parseISO(date);
+        else
+            dt = new Date(date);
+    }
+    else if (typeof date === 'number') dt = new Date(date);
+    else if (typeof date.format === 'function') dt = date;
+    if (typeof dt.format !== 'function' || isNaN(dt.getTime())) return emptyMask;
+    return dt.format(fmtMask, emptyMask);
 };
 function makeBool(val) {
     if (typeof (val) === 'boolean') return val;
@@ -1342,6 +1356,10 @@ $.ui.position.fieldTip = {
             //el.on('click', function (evt) { evt.preventDefault(); });
             var evt = $.Event('initPopover');
             evt.contents = function () { return el.find('div.picPopoverBody'); };
+            if (o.popoverStyle === 'modal') {
+                o.screenLayer = _screenLayer;
+                el.css({ zIndex: _screenLayer++ });
+            }
             el.trigger(evt);
         },
         interactive: function (val) {
@@ -1362,8 +1380,10 @@ $.ui.position.fieldTip = {
         },
         close: function () {
             var self = this, o = self.options, el = self.element;
+            if (o.popoverStyle === 'modal') _screenLayer = o.screenLayer;
             if (!self.isInDOM()) return;
             var evt = $.Event('beforeClose');
+            
             el.trigger(evt);
             if (evt.isDefaultPrevented() || !self.isInDOM()) return;
             $('div.ui-widget-overlay[data-popoverid=' + o.id + ']').remove();
@@ -1380,6 +1400,7 @@ $.ui.position.fieldTip = {
             if (o.popoverStyle === 'modal') {
                 o.overlay = $('<div class="ui-widget-overlay ui-front"></div>');
                 o.overlay.attr('data-popoverid', o.id);
+                o.overlay.css({ zIndex: o.screenLayer - 1 });
                 if (o.autoClose) {
                     o.overlay.one('click', function () {
                         el.remove();
@@ -1571,6 +1592,7 @@ $.ui.position.fieldTip = {
                 }
             }
             div.appendTo(el);
+            if(o.dropdownStyle) div.css(o.dropdownStyle);
             el.parents('body').one('click', function (evt) { div.remove(); });
             var cols = tblOuter.find('table.optHeader > tbody > tr:first > td');
             var firstRow = tblOuter.find('table.optBody > tbody > tr:first > td');
@@ -2042,7 +2064,12 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             if (typeof o.id === 'undefined') o.id = 'cb_' + _uniqueId++;
             el.addClass('picCheckbox');
-            $('<input type="checkbox" class="picCheckbox-value"></input>').appendTo(el).attr('id', o.id);
+            $('<input type="checkbox" class="picCheckbox-value"></input>').appendTo(el).attr('id', o.id).on('change', function (evt) {
+                evt = $.Event('changed');
+                evt.newVal = $(evt.currentTarget).is(':checked');
+                evt.oldVal = !evt.newVal;
+                el.trigger(evt);
+            });
             $('<label></label>').attr('for', o.id).appendTo(el).text(o.labelText);
             self.val(o.value);
             el.attr('data-bind', o.binding);
@@ -2274,7 +2301,7 @@ $.ui.position.fieldTip = {
 (function ($) {
     $.widget("pic.modalDialog", $.ui.dialog, {
         options: {
-
+            screenLayer: 0
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -2284,6 +2311,8 @@ $.ui.position.fieldTip = {
             o.buttons = [];
             this._super('_create');
             if (typeof btns !== 'undefined') setTimeout(function () { self._buildButtons(btns); }, 0);
+            o.screenLayer = _screenLayer;
+            el.css({ zIndex: _screenLayer++ });
         },
         _buildButtons: function (btns) {
             var self = this, o = self.options, el = self.element;
@@ -2313,6 +2342,8 @@ $.ui.position.fieldTip = {
         },
         close: function (event, ui) {
             var self = this, o = self.options, el = self.element;
+            _screenLayer = o.screenLayer;
+            // Close all others that are greater than this one.
             this._super('_close');
             this._destroy();
         }

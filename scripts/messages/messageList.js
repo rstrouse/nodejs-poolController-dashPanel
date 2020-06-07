@@ -421,12 +421,17 @@ mhelper.init();
 
 (function ($) {
     $.widget("pic.messageList", {
-        options: { receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {} },
+        options: {
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {} },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initList = function (data) { self._initList(); };
-            el[0].addMessage = function (msg) { self.addMessage(msg); };
+            el[0].addMessage = function (msg, autoSelect) { self.addMessage(msg, autoSelect); };
+            el[0].addBulkMessage = function (msg) { self.addBulkMessage(msg); };
+            el[0].commitBulkMessages = function () { self.commitBulkMessages(); };
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
+            el[0].cancelBulkMessages = function () { o.bulkBody = undefined; };
+            el[0].clear = function () { el.find('table.msgList-body > tbody').empty(); };
             self._initList();
         },
         _resetHeight: function () {
@@ -449,6 +454,7 @@ mhelper.init();
             $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack"></i></div>').appendTo(div);
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
             $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom"></i></div>').appendTo(div);
+            $('<div class="picUploadLog mmgrButton picIconRight" title="Upload a Log File"><i class="fas fa-upload"></i></div>').appendTo(div);
 
 
             row = $('<tr></tr>').appendTo(tbody);
@@ -492,6 +498,20 @@ mhelper.init();
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
                 mhelper.copyToClipboard(row.data('message'));
             });
+            el.on('click', 'div.picUploadLog', function (evt) {
+                var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
+                var divPopover = $('<div></div>');
+                divPopover.appendTo(el.parent().parent());
+                divPopover.on('initPopover', function (e) {
+                    $('<div></div>').appendTo(e.contents()).uploadLog();
+                    e.stopImmediatePropagation();
+                });
+                divPopover.popover({ autoClose: false, title: 'Upload Log File', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
+                divPopover[0].show($('div.picMessageListTitle:first'));
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+
+            });
             el.on('click', 'tr.msgRow', function (evt) {
                 self._selectRow($(evt.currentTarget));
             });
@@ -500,13 +520,30 @@ mhelper.init();
                 self._resetHeight();
             });
         },
-        addMessage: function (msg) {
+        addMessage: function (msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
             var body = el.find('table.msgList-body > tbody');
             var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard"></i></span></td></tr>').addClass('msgRow');
             msg.key = msg.header.join('_');
             row.appendTo(body);
-            self._bindMessage(row, msg);
+            self._bindMessage(row, msg, autoSelect);
+        },
+        addBulkMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            var body = o.bulkBody ? o.bulkBody : o.bulkBody = $('<tbody></tbody>');
+            var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard"></i></span></td></tr>').addClass('msgRow');
+            msg.key = msg.header.join('_');
+            self._bindMessage(row, msg, false);
+            row.appendTo(body);
+        },
+        commitBulkMessages: function () {
+            var self = this, o = self.options, el = self.element;
+            var body = o.bulkBody ? o.bulkBody : $('<tbody></tbody>');
+            var tbl = el.find('table.msgList-body');
+            var oldBody = tbl.find('tbody:first');
+            oldBody.replaceWith(body);
+            o.bulkBody = undefined;
+            //console.log({ m: 'Replaced body', body: body, oldBody: oldBody });
         },
         _scrollToRow: function (row) {
             var self = this, o = self.options, el = self.element;
@@ -516,63 +553,67 @@ mhelper.init();
             //console.log({ pos: pos, height: height, rect: rect, row: row });
             div.scrollTop(Math.max(pos.top + row.height() - height + 2, 0));
         },
-        _selectRow: function (row) {
+        _selectRow: function (row, prev, ctx) {
             var self = this, o = self.options, el = self.element;
             var tbl = el.find('table.msgList-body');
             tbl.find('tr.msgRow').removeClass('selected');
             row.addClass('selected');
             var msg = row.data('message');
-            var prev;
             var ndx = row[0].rowIndex;
             var key = row.attr('data-msgkey');
-            for (var i = ndx - 1; i > 0; i--) {
-                var r = $(tbl[0].rows[i]);
-                if (r.attr('data-msgkey') === key) {
-                    prev = r.data('message');
-                    break;
+            var docKey = row.attr('data-dockey');
+            if (typeof prev === 'undefined') {
+                for (var i = ndx - 1; i >= 0; i--) {
+                    var r = $(tbl[0].rows[i]);
+                    if (r.attr('data-msgkey') === key) {
+                        prev = r.data('message');
+                        break;
+                    }
                 }
             }
-
-            $('div.picMessageDetail')[0].bindMessage(msg, prev);
+            $('div.picMessageDetail')[0].bindMessage(msg, prev, ctx || o.contexts[docKey]);
         },
-        _bindMessage(row, msg) {
+        _bindMessage(row, msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
             var inout = $('<span></span>').appendTo($('<td></td>').appendTo(row));
             $('<i class="fas"></i>').appendTo(inout).addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
             var spChg = $('<span class="changed"></span>').appendTo($('<td></td>').appendTo(row));
             var chg = $('<i class="fas"></i>').appendTo(spChg);
+            var ctx = msgManager.getListContext(msg);
+            o.contexts[ctx.docKey] = ctx;
 
             row.attr('data-msgdir', msg.direction);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
-            $('<span></span>').text(msg.protocol).appendTo($('<td></td>').appendTo(row));
-            $('<span></span>').text(mhelper.mapSource(msg)).appendTo($('<td></td>').appendTo(row));
-            $('<span></span>').text(mhelper.mapDest(msg)).appendTo($('<td></td>').appendTo(row));
-            $('<span></span>').text(mhelper.mapAction(msg)).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(ctx.protocol.name).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(ctx.sourceAddr.name).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(ctx.destAddr.name).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(ctx.actionName).appendTo($('<td></td>').appendTo(row));
             $('<span></span>').text(msg.payload.join(',')).appendTo($('<td></td>').appendTo(row));
             if (typeof msg.isValid !== 'undefined' && !msg.isValid) row.addClass('invalid');
-            var prev = o.messageKeys[msg.key];
+            var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;
             if (typeof prev === 'undefined')
                 hasChanged = true;
-            else if (mhelper.isMessageDiff(prev, msg))
+            else if (msgManager.isMessageDiff(msg, prev, ctx))
                 hasChanged = true;
 
             if (hasChanged) {
                 row.addClass('changed');
-                (typeof prev === 'undefined') ? spChg.addClass('new') : spChg.addClass('changed');
+                typeof prev === 'undefined' ? spChg.addClass('new') : spChg.addClass('changed');
                 chg.addClass('fa-dot-circle');
             }
             else
                 row.addClass('nochange');
             row.addClass('changed');
 
-            o.messageKeys[msg.key] = msg;
-            row.attr('data-msgkey', msg.key);
+            o.messageKeys[ctx.messageKey] = msg;
+            row.attr('data-msgkey', ctx.messageKey);
+            row.attr('data-dockey', ctx.docKey);
             row.data('message', msg);
-            if (!o.pinScrolling) {
+            if (!o.pinScrolling && autoSelect !== false) {
                 if (!o.changesOnly || (o.changesOnly && hasChanged)) {
                     self._scrollToRow(row);
-                    self._selectRow(row);
+                    self._selectRow(row, prev, ctx);
                 }
             }
         },
@@ -599,38 +640,70 @@ mhelper.init();
         options: { message: null },
         _create: function () {
             var self = this, o = self.options, el = self.element;
-            el[0].bindMessage = function (msg, prev) { self.bindMessage(msg, prev); };
+            el[0].bindMessage = function (msg, prev, ctx) { self.bindMessage(msg, prev, ctx); };
             self._initDetails();
         },
         _initDetails: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
+            var div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
             $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
-            $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div);
+            $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div).hide();
+            $('<div class="picDocumentSignature mmgrButton picIconRight" title="Document this Message Signature"><i class="fas fa-file-signature"></i></div>').appendTo(div).hide();
+
             //[255, 0, 255][165, 63, 15, 16, 2, 29][9, 47, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 2, 0, 80, 80, 0, 241, 85, 105, 24, 246, 0, 0, 0, 0, 0, 255, 0][255, 165]
-            div = $('<div class="msg-detail-panel" style="display:none;"></div>').appendTo(el);
+            var divOuter = $('<div class="msg-detail-panel" style="display:none;"></div>').appendTo(el);
+
+            div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section').addClass('details');
             var line = $('<div class="dataline"><div>').appendTo(div);
             $('<label>Protocol:</label>').appendTo(line);
             $('<span></span>').appendTo(line).attr('data-bind', 'protocol');
-            $('<div class="msg-invalid-banner"></div>').appendTo(line).text('Invalid Message');
 
             line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Source/Dest:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).text('[');
+            $('<span></span>').appendTo(line).addClass('msg-detail-byte').attr('data-bind', 'sourceByte');
+            $('<span></span>').appendTo(line).text('] ');
             $('<span></span>').appendTo(line).attr('data-bind', 'source');
-            $('<span></span>').appendTo(line).text(' => ');
+            $('<i></i>').appendTo(line).addClass('fas').addClass('fa-arrow-right').addClass('msg-detail-fromto');
+            $('<span></span>').appendTo(line).text('[');
+            $('<span></span>').appendTo(line).addClass('msg-detail-byte').attr('data-bind', 'destByte');
+            $('<span></span>').appendTo(line).text('] ');
             $('<span></span>').appendTo(line).attr('data-bind', 'dest');
+
+
             line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Action:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).text('[');
+            $('<span></span>').appendTo(line).addClass('msg-detail-byte').attr('data-bind', 'actionByte');
+            $('<span></span>').appendTo(line).text('] ');
             $('<span></span>').appendTo(line).attr('data-bind', 'action');
+
             line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Timestamp:</label>').appendTo(line);
             $('<span></span>').appendTo(line).attr('data-bind', 'timestamp');
             line = $('<div class="dataline"></div>').appendTo(div);
             $('<label>Data Length:</label>').appendTo(line);
             $('<span></span>').appendTo(line).attr('data-bind', 'dataLen');
+
+            div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section').addClass('bytearrays');
+            line = $('<div class="dataline"></div>').appendTo(div).css({ textAlign: 'center' });
+            $('<div class="msg-invalid-banner"></div>').appendTo(line).text('Invalid Message');
+
+            line = $('<div class="dataline"></div>').appendTo(div);
+            $('<label>Padding:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'padding');
+            line = $('<div class="dataline"></div>').appendTo(div);
+            $('<label>Header:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'header');
+            line = $('<div class="dataline"></div>').appendTo(div);
+            $('<label>Term:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'term');
+
+
             $('<div class="payloadBytes"></div>').appendTo(div);
             $('<div class="msg-payload"></div>').appendTo(el);
+            div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section');
             el.on('click', 'div.picAddToQueue', function (evt) {
                 if (typeof o.message !== 'undefined' && o.message) {
                     $('div.picSendMessageQueue')[0].addMessage(o.message);
@@ -641,14 +714,32 @@ mhelper.init();
                 evt.stopImmediatePropagation();
                 evt.preventDefault();
             });
+            el.on('click', 'div.picDocumentSignature', function (evt) {
+                console.log('Opening doc signature');
+                $.getJSON('/messages/docs/' + o.context.docKey, undefined, function (docs, status, xhr) {
+                    console.log(docs);
+                    var docMsg = msgManager.toDocMessage(o.message, docs, o.context);
+                    console.log(docMsg);
+                    var divPopover = $('<div></div>');
+                    divPopover.appendTo(el.parent().parent());
+                    divPopover.on('initPopover', function (e) {
+                        var doc = $('<div></div>').appendTo(e.contents()).messageDoc({ message: o.message })[0].bindMessage(docMsg);
+                        e.stopImmediatePropagation();
+                    });
+                    divPopover.popover({ autoClose: false, title: 'Edit Message Documentation', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
+                    divPopover[0].show($('div.picMessageListTitle:first'));
+                });
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+
+            });
             el.on('click', function (evt) {
                 el.find('tr.msg-payload-header > td.selected').removeClass('selected');
                 el.find('div.msg-payload-bytediff').remove();
             });
         },
-        bindMessage: function (msg, prev) {
+        bindMessage: function (msg, prev, ctx) {
             var self = this, o = self.options, el = self.element;
-            console.log(prev);
             var obj = {
                 protocol: '',
                 source: '',
@@ -662,18 +753,36 @@ mhelper.init();
                 el.find('div.msg-detail-panel').hide();
             else {
                 el.find('div.msg-detail-panel').show();
+                if (typeof ctx === 'undefined') ctx = msgManager.getListContext(msg);
+                o.context = ctx;
                 obj = {
-                    protocol: msg.protocol,
-                    source: mhelper.mapSource(msg) + ' - [' + mhelper.extractByte(msg.header, 3) + ']',
-                    dest: mhelper.mapDest(msg) + ' - [' + mhelper.extractByte(msg.header, 2) + ']',
-                    action: mhelper.mapAction(msg) + ' - [' + mhelper.getActionByte(msg) + ']',
+                    protocol: ctx.protocol.desc,
+                    source: ctx.sourceAddr.name,
+                    sourceByte: ctx.sourceByte,
+                    dest: ctx.destAddr.name,
+                    destByte: ctx.destByte,
+                    action: ctx.actionName,
+                    actionByte: ctx.actionByte,
                     timestamp: msg.timestamp,
                     dataLen: msg.payload.length,
-                    direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound '
+                    direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound ',
+                    header: msg.header.join(','),
+                    padding: msg.padding.join(','),
+                    term: msg.term.join(',')
                 };
             }
-            (msg.isValid === false) ? el.addClass('invalid') : el.removeClass('invalid');
+            if (msg.isValid === false) {
+                el.addClass('invalid');
+                el.find('div.picDocumentSignature').hide();
+            }
+            else {
+                el.find('div.picDocumentSignature').show();
+                el.removeClass('invalid');
+            }
+            el.find('div.picAddToQueue').show();
+            
             o.message = msg;
+            
             dataBinder.bind(el, obj);
             self.bindPayload(msg, prev);
         },
@@ -830,7 +939,7 @@ mhelper.init();
             div = $('<div class="queue-send-list"></div>').appendTo(el);
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" ></i>' }).on('click', function (e) {
-                var controller = $(document.body).attr('data-controllertype') === 'intellicenter' ? 63 : 16;
+                var controller = $(document.body).attr('data-controllertype') === 'intellicenter' ? 63 : 34;
                 var msg = { protocol: 'broadcast', payload: [], header: [165, controller, 15, 16, 0, 0], term: [], delay:0 };
                 var divPopover = $('<div></div>');
                 divPopover.appendTo(el.parent().parent());
@@ -1373,7 +1482,7 @@ mhelper.init();
             });
 
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
-            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-dowload"></i>' }).on('click', function (e) {
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-download"></i>' }).on('click', function (e) {
                 console.log('Loading queue');
                 var queue = self._fromWindow(true);
 
@@ -1393,4 +1502,156 @@ mhelper.init();
 
         }
     });
+    $.widget("pic.uploadLog", {
+        options: { isBinding: false },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initUpload();
+        },
+        _initUpload: function () {
+            var self = this, o = self.options, el = self.element;
+            var div = $('<div></div>').appendTo(el).addClass('upload-logfile');
+            var line = $('<div></div>').css({ minWidth: '30rem' }).appendTo(div);
+            $('<div></div>').appendTo(line).fileUpload({ binding: 'logFile' });
+            line = $('<div></div>').appendTo(div);
+            $('<hr></hr>').appendTo(line);
+            line = $('<div></div>').appendTo(div);
+            var fset = $('<fieldset></fieldset>').appendTo(line);
+            $('<legend></legend>').appendTo(fset).text('Options');
+            line = $('<div></div>').appendTo(fset);
+            $('<div></div>').appendTo(line).pickList({
+                displayColumn:0,
+                labelText: 'Playback To', binding: 'playbackTo',
+                columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Playback Destination', style: { width:'450px' } }],
+                items: [{ name: 'Message List', desc: 'Plays the log file back to the message list' },
+                    { name: 'Pool Controller', desc: 'Plays the log file back to the poolController Instance' } ],
+                inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: {} }, dropdownStyle: {width:'450px'}
+            });
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Begin Processing File', icon: '<i class="fas fa-upload"></i>' }).on('click', function (e) {
+                self._uploadLogFile();
+            });
+        },
+        _uploadLogFile: function () {
+            var self = this, o = self.options, el = self.element;
+            var divPopover = $('<div></div>');
+            divPopover.appendTo(document.body);
+            divPopover.on('initPopover', function (e) {
+                var progress = $('<div></div>').appendTo(e.contents()).uploadProgress();
+                e.stopImmediatePropagation();
+                var opts = dataBinder.fromElement(el);
+                var uploader = $('div[data-bind=logFile]');
+                uploader[0].upload({
+                    url: 'upload/logFile',
+                    params: { preserveFile: false },
+                    progress: function (xhr, evt, prog) {
+                        //console.log(xhr, evt, prog);
+                        progress[0].setUploadProgress(prog.loaded, prog.total);
+                    },
+                    complete: function (data, status, xhr) {
+                        //console.log(data);
+                        // Play the file back to the message list.
+                        var msgList = $('div.picMessages:first')[0];
+                        progress[0].setProcessProgress(0, data.length);
+                        if (progress[0].isCancelled()) {
+                            msgList.cancelBulkMessages();
+                            divPopover[0].close();
+                        }
+                        else {
+                            self._processNextMessage(msgList, progress[0], data);
+                            msgList.clear();
+                        }
+                    }
+                });
+                //console.log(opts);
+
+            });
+            divPopover.popover({ autoClose: false, title: 'Uploading Log File', popoverStyle: 'modal', placement: { my: 'center center', at: '50% 50%', of: document.body } });
+            divPopover[0].show($('div.picMessageListTitle:first'));
+        },
+        _processNextMessage(msgList, prog, arr) {
+            var self = this, o = self.options, el = self.element;
+            var msg = arr.shift();
+            if (prog.isCancelled()) {
+                msgList.cancelBulkMessages();
+                $(prog).parents('div.picPopover:first')[0].close();
+                return;
+            }
+            prog.incrementProcessProgress();
+            if (typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
+                msgList.addBulkMessage({
+                    protocol: msg.proto,
+                    direction: msg.dir,
+                    padding: msg.pkt[0],
+                    preamble: msg.pkt[1],
+                    header: msg.pkt[2],
+                    payload: msg.pkt[3],
+                    term: msg.pkt[4],
+                    timestamp: msg.ts
+                });
+            }
+            if (arr.length > 0) setTimeout(function () { self._processNextMessage(msgList, prog, arr); }, 0);
+            else {
+                msgList.commitBulkMessages();
+                $(prog).parents('div.picPopover:first')[0].close();
+                el.parents('div.picPopover:first')[0].close();
+
+            }
+        }
+    });
+    $.widget("pic.uploadProgress", {
+        options: { procTotal: 0, procProcessed:0, uploadTotal:0, uploadProcessed:0 },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initProgress();
+            el[0].setUploadProgress = function (processed, total) { self.setUploadProgress(processed, total); };
+            el[0].setProcessProgress = function (processed, total) { self.setProcessedProgress(processed, total); };
+            el[0].incrementProcessProgress = function (total) { self.incrementProcessProgress(total); };
+            el[0].isCancelled = function () { return o.isCancelled || false; };
+        },
+        _initProgress: function () {
+            var self = this, o = self.options, el = self.element;
+            var div = $('<div></div>').appendTo(el).addClass('upload-progress');
+            var line = $('<div></div>').css({ minWidth: '30rem' }).appendTo(div);
+            $('<div></div>').appendTo(el).addClass('upload-file-label').text('File Upload Progress');
+            var fileProg = $('<div></div>').appendTo(el).addClass('upload-file-progress').progressbar();
+            $('<div></div>').appendTo(el).addClass('upload-process-label').text('Log Processing Progress');
+            var procProg = $('<div></div>').appendTo(el).addClass('upload-process-progress').progressbar();
+            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Cancel Upload', icon: '<i class="fas fa-plane-slash"></i>' }).on('click', function (e) {
+                o.isCancelled = true;
+            });
+        },
+        incrementProcessProgress: function (total) {
+            var self = this, o = self.options, el = self.element;
+            var label = el.find('div.upload-process-label:first');
+            var prog = el.find('div.upload-process-progress:first');
+            if (typeof total !== 'undefined') o.procTotal = total;
+            var pct = o.procTotal !== 0 ? ++o.procProcessed / o.procTotal : 1;
+            prog.progressbar('value', pct * 100);
+            label.text('Log Processing Progress: ' + o.procProcessed + ' of ' + o.procTotal);
+        },
+        setUploadProgress: function (processed, total) {
+            var self = this, o = self.options, el = self.element;
+            var label = el.find('div.upload-file-label:first');
+            var prog = el.find('div.upload-file-progress:first');
+            var pct = total !== 0 ? processed / total : 1;
+            prog.progressbar('value', pct * 100);
+            o.uploadTotal = total;
+            o.uploadProcessed = processed;
+            label.text('File Upload Progress: ' + o.uploadProcessed + ' of ' + o.uploadTotal + ' bytes');
+        },
+        setProcessedProgress: function (processed, total) {
+            var self = this, o = self.options, el = self.element;
+            var label = el.find('div.upload-process-label:first');
+            var prog = el.find('div.upload-process-progress:first');
+            var pct = total !== 0 ? processed / total : 1;
+            prog.progressbar('value', pct * 100);
+            o.procTotal = total;
+            o.procProcessed = processed;
+            label.text('Log Processing Progress: ' + o.procProcessed + ' of ' + o.procTotal);
+
+        }
+    });
+
 })(jQuery);

@@ -22,6 +22,9 @@
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
+                case 'tabEquipment':
+                    self._buildEquipmentTab(evt.newTab.contents);
+                    break;
                 case 'tabAuxCircuits':
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configAuxCircuits();
@@ -38,7 +41,6 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configCustomNames();
                     break;
-
                 case 'tabValves':
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configValves();
@@ -60,6 +62,11 @@
                 case 'tabSchedules':
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configSchedules();
+                    break;
+                case 'tabDashboard':
+                case 'tabInterfaces':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents);
                     break;
             }
         },
@@ -84,12 +91,24 @@
                     { id: 'tabLightGroups', text: 'Light Groups', cssClass: 'cfgLightGroups' }]);
                 if (data.equipment.maxCustomNames > 0)
                     tab.parent().find('div.picTabBar:first')[0].addTab({ id: 'tabCustomNames', text: 'Custom Names', cssClass: 'cfgCustomNames' });
+                //tab = self._addConfigTab({ id: 'tabEquipment', text: 'Equipment', cssClass: 'cfgCircuits' },
+                //    [{ id: 'tabPumps', text: 'Pumps', cssClass: 'cfgPumps' },
+                //    { id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' },
+                //    { id: 'tabChemistry', text: 'Chemistry', cssClass: 'cfgChemistry' },
+                //    { id: 'tabHeaters', text: 'Heaters', cssClass: 'cfgHeaters' },
+                //    { id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' }]);
+
                 tab = self._addConfigTab({ id: 'tabPumps', text: 'Pumps', cssClass: 'cfgPumps' });
                 tab = self._addConfigTab({ id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' });
                 tab = self._addConfigTab({ id: 'tabChemistry', text: 'Chemistry', cssClass: 'cfgChemistry' });
                 tab = self._addConfigTab({ id: 'tabHeaters', text: 'Heaters', cssClass: 'cfgHeaters' });
                 tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
+
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
+
+                //tab = self._addConfigTab({ id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' });
+                //tab = self._addConfigTab({ id: 'tabDashboard', text: 'Dashboard', cssClass: 'cfgDashboard' });
+
                 tabs[0].selectTabById('tabGeneral');
                 el.trigger(evt);
             });
@@ -138,6 +157,26 @@
                     break;
             }
         },
+        _buildEquipmentTab: function (contents) {
+            var self = this, o = self.options, el = self.element;
+            // Find the currently selected tab.  We want to reload it.
+            var tabs = contents.find('div.picTabBar:first')[0];
+            var tabId = tabs.selectedTabId();
+            console.log({ msg: 'Building Equipment Tab', tabId: tabId });
+            switch (tabId) {
+                case 'tabValves':
+                case 'tabPumps':
+                case 'tabChemistry':
+                case 'tabHeaters':
+                case 'tabRemotes':
+                    //tabs.selectedTabId(tabId);
+                    break;
+                default:
+                    tabs.selectTabById('tabValves');
+                    break;
+            }
+        },
+
         _buildSchedulesTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             contents.empty();

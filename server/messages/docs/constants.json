@@ -1,0 +1,650 @@
+﻿{
+  "protocols": [
+    {
+      "name": "broadcast",
+      "desc": "Broadcast",
+      "actions": {
+        "all": [
+          {
+            "val": 2,
+            "desc": "Equipment Status",
+            "defaultType": "Broadcast"
+          }
+        ],
+        "touch": [
+          {
+            "val": 5,
+            "desc": "Response Date/Time Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 8,
+            "desc": "Response Heat/Temperature Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 10,
+            "desc": "Response Custom Names",
+            "defaultType": "Response"
+          },
+          {
+            "val": 11,
+            "desc": "Response Circuits Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 17,
+            "desc": "Response Schedules Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 22,
+            "desc": "Response Enabled Remotes Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 24,
+            "desc": "Response Pumps Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 29,
+            "desc": "Response Valves Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 30,
+            "desc": "Response Hi-Speed Circuits Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 32,
+            "desc": "Response is4/10 Remotes Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 33,
+            "desc": "Response Installed Pumps/Remotes Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 34,
+            "desc": "Response Solar/Heat Pump Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 35,
+            "desc": "Response Delays Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 39,
+            "desc": "Response Light Positions Config",
+            "defaultType": "Response"
+          },
+          {
+            "val": 40,
+            "desc": "Request Settings Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 197,
+            "desc": "Request Date/Time Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 200,
+            "desc": "Request Heat/Temperature Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 202,
+            "desc": "Request Custom Names",
+            "defaultType": "Request"
+          },
+          {
+            "val": 203,
+            "desc": "Request Circuits Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 209,
+            "desc": "Request Schedules Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 214,
+            "desc": "Request Enabled Remotes Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 216,
+            "desc": "Request Pumps Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 221,
+            "desc": "Request Valves Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 222,
+            "desc": "Request Hi-Speed Circuits Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 224,
+            "desc": "Request is4/10 Remotes Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 225,
+            "desc": "Request Installed Pumps/Remotes Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 226,
+            "desc": "Request Solar/Heat Pump Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 227,
+            "desc": "Request Delays Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 231,
+            "desc": "Request Light Positions Config",
+            "defaultType": "Request"
+          },
+          {
+            "val": 232,
+            "desc": "Request Settings Config",
+            "defaultType": "Request"
+          }
+        ],
+        "center": [
+          {
+            "val": 30,
+            "desc": "Config Item Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 164,
+            "desc": "Config Version Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 168,
+            "desc": "Set Config Item",
+            "defaultType": "Request"
+          },
+          {
+            "val": 222,
+            "desc": "Request Config Item",
+            "defaultType": "Request"
+          },
+          {
+            "val": 222,
+            "desc": "Request Config Versions",
+            "defaultType": "Request"
+          },
+          {
+            "val": 204,
+            "desc": "Comms Status",
+            "defaultType": "Broadcast"
+          }
+        ]
+      },
+      "length": false,
+      "keyFormat":  "165_<controller>_<dest>_<source>_<action>"
+    },
+    {
+      "name": "chlorinator",
+      "desc": "Chlorinator",
+      "actions": {
+        "all": [
+          {
+            "val": 0,
+            "desc": "Unknown"
+          },
+          {
+            "val": 1,
+            "desc": "Request Status",
+            "defaultType": "Request"
+          },
+          {
+            "val": 3,
+            "desc": "Model Name",
+            "defaultType": "Response"
+          },
+          {
+            "val": 17,
+            "desc": "Current Output Percentage",
+            "defaultType": "Response"
+          },
+          {
+            "val": 18,
+            "desc": "Current Salt Level/Status",
+            "defaultType": "Response"
+          },
+          {
+            "val": 20,
+            "desc": "Request Name",
+            "defaultType": "Request"
+          },
+          {
+            "val": 21,
+            "desc": "Set Output Percentage",
+            "defaultType": "Request"
+          }
+        ]
+      },
+      "source": false,
+      "controller": false,
+      "keyFormat": "16_3_<action>"
+    },
+    {
+      "name": "pump",
+      "desc": "Pump",
+      "actions": {
+        "all": [
+          {
+            "val": 1,
+            "desc": "Set Pump Speed/Flow",
+            "defaultType": "Request"
+          },
+          {
+            "val": 4,
+            "desc": "Set Run State",
+            "defaultType": "Request"
+          },
+          {
+            "val": 6,
+            "desc": "Run State Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 7,
+            "desc": "Pump Status",
+            "defaultType": "Response"
+          }
+        ]
+      },
+      "controller": false,
+      "length": false,
+      "keyFormat": "165_P_<dest>_<source>_<action>"
+    },
+    {
+      "name": "intellivalve",
+      "desc": "IntelliValve",
+      "actions": {
+        "all": [
+          {
+            "val": 82,
+            "desc": "Hail Address",
+            "defaultType": "Broadcast"
+          }
+        ]
+      },
+      "controller": false,
+      "length": false,
+      "keyFormat": "165_P_<dest>_<source>_<action>"
+    },
+    {
+      "name": "intellichem",
+      "desc": "IntelliChem",
+      "actions": {
+        "all": [
+          {
+            "val": 210,
+            "desc": "Request Status",
+            "defaultType": "Request"
+          }
+        ]
+      },
+      "controller": false,
+      "length": false,
+      "keyFormat": "165_P_<dest>_<source>_<action>"
+    }
+  ],
+  "controllers": [
+    {
+      "val": 0,
+      "name": "unspecified",
+      "desc": "Unspecified",
+      "class": "all"
+    },
+    {
+      "val": 23,
+      "name": "touch",
+      "desc": "IntelliTouch and EasyTouch",
+      "class": "touch"
+    },
+    {
+      "val": 34,
+      "name": "screenlogic",
+      "desc": "ScreenLogic",
+      "class": "touch"
+    },
+    {
+      "val": 63,
+      "name": "intellicenter",
+      "desc": "IntelliCenter",
+      "class": "center"
+    }
+  ],
+  "dataTypes": [
+    {
+      "name": "byte",
+      "desc": "Single byte of data",
+      "len": 1
+    },
+    {
+      "name": "i2",
+      "desc": "Two byte signed integer",
+      "len": 2
+    },
+    {
+      "name": "u2",
+      "desc": "Two byte unsigned integer",
+      "len": 2
+    }
+  ],
+  "messageTypes": [
+    {
+      "name": "Request",
+      "desc": "A request from a source"
+    },
+    {
+      "name": "Response",
+      "desc": "A response as the result of a request"
+    },
+    {
+      "name": "Broadcast",
+      "desc": "The source is broadcasting information"
+    }
+  ],
+  "addresses": [
+    {
+      "val": 12,
+      "name": "Valve",
+      "desc": "IntelliValve",
+      "protocol": "intellivalve",
+      "key": "V"
+    },
+    {
+      "val": 15,
+      "desc": "OCP (Outdoor Control Panel)",
+      "name": "OCP",
+      "protocol": "!chlorinator,any",
+      "key": 15
+    },
+    {
+      "val": 33,
+      "name": "Plugin",
+      "desc": "To whom it may concern",
+      "protocol": "!chlorinator,any",
+      "key": 33
+    },
+    {
+      "val": 16,
+      "name": "Broadcast",
+      "desc": "To whom it may concern",
+      "protocol": "!chlorinator,any",
+      "key": 16
+    },
+    {
+      "val": 80,
+      "name": "Chlor[1]",
+      "desc": "Chlorinator #1",
+      "protocol": "chlorinator",
+      "key": "C"
+    },
+    {
+      "val": 81,
+      "name": "Chlor[2]",
+      "desc": "Chlorinator #2",
+      "protocol": "chlorinator",
+      "key": "C"
+    },
+    {
+      "val": 82,
+      "name": "Chlor[3]",
+      "desc": "Chlorinator #3",
+      "protocol": "chlorinator",
+      "key": "C"
+    },
+    {
+      "val": 83,
+      "name": "Chlor[4]",
+      "desc": "Chlorinator #4",
+      "protocol": "chlorinator",
+      "key": "C"
+    },
+    {
+      "val": 96,
+      "name": "Pump[1]",
+      "desc": "Pump #1",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 97,
+      "name": "Pump[2]",
+      "desc": "Pump #2",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 98,
+      "name": "Pump[3]",
+      "desc": "Pump #3",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 99,
+      "name": "Pump[4]",
+      "desc": "Pump #4",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 100,
+      "name": "Pump[5]",
+      "desc": "Pump #5",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 101,
+      "name": "Pump[6]",
+      "desc": "Pump #6",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 102,
+      "name": "Pump[7]",
+      "desc": "Pump #7",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 103,
+      "name": "Pump[8]",
+      "desc": "Pump #8",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 104,
+      "name": "Pump[9]",
+      "desc": "Pump #9",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 105,
+      "name": "Pump[10]",
+      "desc": "Pump #10",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 106,
+      "name": "Pump[11]",
+      "desc": "Pump #11",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 107,
+      "name": "Pump[12]",
+      "desc": "Pump #12",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 108,
+      "name": "Pump[13]",
+      "desc": "Pump #13",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 109,
+      "name": "Pump[14]",
+      "desc": "Pump #14",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 110,
+      "name": "Pump[15]",
+      "desc": "Pump #15",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 111,
+      "name": "Pump[16]",
+      "desc": "Pump #16",
+      "protocol": "pump",
+      "key": "P"
+    },
+    {
+      "val": 144,
+      "name": "Chem[1]",
+      "desc": "IntelliChem #1",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 145,
+      "name": "Chem[2]",
+      "desc": "IntelliChem #2",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 146,
+      "name": "Chem[3]",
+      "desc": "IntelliChem #3",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 147,
+      "name": "Chem[4]",
+      "desc": "IntelliChem #4",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 148,
+      "name": "Chem[5]",
+      "desc": "IntelliChem #5",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 149,
+      "name": "Chem[6]",
+      "desc": "IntelliChem #6",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 150,
+      "name": "Chem[7]",
+      "desc": "IntelliChem #7",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 151,
+      "name": "Chem[8]",
+      "desc": "IntelliChem #8",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 152,
+      "name": "Chem[9]",
+      "desc": "IntelliChem #9",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 153,
+      "name": "Chem[10]",
+      "desc": "IntelliChem #10",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 154,
+      "name": "Chem[11]",
+      "desc": "IntelliChem #11",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 155,
+      "name": "Chem[12]",
+      "desc": "IntelliChem #12",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 156,
+      "name": "Chem[13]",
+      "desc": "IntelliChem #13",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 157,
+      "name": "Chem[14]",
+      "desc": "IntelliChem #14",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 158,
+      "name": "Chem[15]",
+      "desc": "IntelliChem #15",
+      "protocol": "intellichem",
+      "key": "C"
+    },
+    {
+      "val": 159,
+      "name": "Chem[16]",
+      "desc": "IntelliChem #16",
+      "protocol": "intellichem",
+      "key": "C"
+    }
+  ]
+}

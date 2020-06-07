@@ -244,20 +244,51 @@ tr.msgRow.outbound i.fa-arrow-circle-left {
 tr.msgRow.inbound i.fa-arrow-circle-right {
     color: gray;
 }
-
-div.queue-detail-panel > div.dataline > label,
-div.msg-detail-panel > div.dataline > label {
+span.msg-detail-byte {
+    color:salmon;
+    font-weight:bold;
+}
+i.msg-detail-fromto {
+    padding-left:3px;
+    padding-right:3px;
+}
+div.msg-detail-section {
     display:inline-block;
-    width: 74px;
+    vertical-align:top;
+}
+div.msg-detail-section.bytearrays {
+    padding-left: 10px;
+}
+span.msg-detail-bytearray {
+    display:inline-block;
+    white-space:nowrap;
+    max-width:167px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+}
+span.msg-detail-bytearray::before {
+    content: "[";
+}
+span.msg-detail-bytearray::after {
+    content:"]";
+}
+div.msg-detail-section.bytearrays > div.dataline > label {
+    display: inline-block;
+    width: 47px;
+    font-weight: bold;
+}
+div.queue-detail-panel > div.dataline > label,
+div.msg-detail-section.details > div.dataline > label {
+    display:inline-block;
+    width: 70px;
     font-weight:bold;
 }
 div.msg-invalid-banner {
     border: solid 1px gray;
     border-radius: 5px;
     padding: 4px;
-    float: right;
-    margin-top: 1rem;
-    margin-right: 1rem;
+    text-align:center;
+    display:inline-block;
     box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
     -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
@@ -464,11 +495,14 @@ span.queued-message-proto {
 span.queued-message-payload {
     width:242px;
 }
+div.edit-message-doc,
 div.edit-message-panel,
 div.edit-message-protocol,
 div.edit-message-payload {
     font-size:10pt;
 }
+div.edit-message-doc textarea,
+div.edit-message-doc input[type=text],
 div.edit-message-panel input[type=text],
 div.edit-message-protocol input[type=text],
 div.edit-message-payload input[type=text] {

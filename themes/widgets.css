@@ -1026,11 +1026,12 @@ div.picInputField {
         font-size:inherit;
         font-family:inherit;
         resize:none;
+        line-height:1.4em;
     }
     div.picInputField > textarea,
     div.picInputField > input {
         border: solid 1px gray;
-        line-height: 1.4rem;
+        line-height: 1.4em;
         border-radius: 5px;
         padding-left: .15rem;
         padding-right: .15rem;
@@ -1041,14 +1042,14 @@ div.picCheckbox {
     display:inline-block;
 }
 div.picCheckbox input[type=checkbox] {
-    height: 1.25rem;
-    width: 1.25rem;
+    height: 1.25em;
+    width: 1.25em;
     vertical-align: middle;
-    margin-right: .25rem;
-    margin-left: .4rem;
+    margin-right: .25em;
+    margin-left: .4em;
     margin-top:0px;
     margin-bottom:0px;
-    line-height:1.4rem;
+    line-height:1.4em;
 }
 div.picColorPicker,
 div.picColorPicker-label,

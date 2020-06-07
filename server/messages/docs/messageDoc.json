@@ -1,0 +1,588 @@
+﻿{
+  "165_63_15_16_2": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "broadcast",
+    "shortName": "Status",
+    "name": "Equipment Status",
+    "desc": "Reflects the current state of circuits, features, bodies, and equipment attached to the OCP.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Panel Time",
+        "desc": "Current time hours reported from the OCP.",
+        "values": "1-24"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Panel Time",
+        "desc": "Current time minutes reported from the OCP.",
+        "values": "0-59"
+      },
+      {
+        "start": 2,
+        "length": 6,
+        "name": "Circuit States",
+        "dataType": "bits",
+        "desc": "Bit flags for up to 40 aux circuits"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "dataType": "bits",
+        "name": "Feature States",
+        "desc": "Upper 4 bits contain the first 4 feature states.  Lower 4 bits are undefined."
+      },
+      {
+        "start": 8,
+        "length": 1,
+        "name": "Unknown"
+      }
+
+    ]
+  },
+  "165_63_15_16_168": {
+    "proto": "broadcast",
+    "keyBytes": [ 0, 1 ],
+    "ocpSpecific": true,
+    "messageType": "request",
+    "shortName": "Set[item]",
+    "name": "Set Config Item",
+    "desc": "Set a configuration item on the OCP",
+    "payloadKeys": {
+      "0_0": {
+        "shortName": "Set[options]",
+        "name": "Set Options Config",
+        "desc": "Request to set the options configuration.",
+        "payload": []
+      },
+      "3_0": {
+        "shortName": "Set[schedule]",
+        "name": "Config Options",
+        "desc": "Request to set the configuration options",
+        "payload": []
+
+      }
+    }
+  },
+
+  "165_63_15_16_222": {
+    "proto": "broadcast",
+    "keyBytes": [ 0, 1 ],
+    "ocpSpecific": true,
+    "messageType": "request",
+    "name": "Request Config Item",
+    "shortName": "Ask[item]",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Config Category",
+        "desc": "The configuration category for the item.",
+        "values": {
+          "0": "Options",
+          "1": "Circuits",
+          "2": "Features",
+          "3": "Schedules",
+          "4": "Pumps",
+          "5": "Remotes",
+          "6": "Circuit/Light Groups",
+          "7": "Chlorinator",
+          "8": "Chem Controller",
+          "9": "Valves",
+          "10": "Heaters",
+          "11": "Security",
+          "12": "General",
+          "13": "Intalled Equipment",
+          "14": "Covers",
+          "15": "System State"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Category Item",
+        "desc": "The underlying item requested from the OCP",
+        "values": "Depends on the config item"
+      }
+    ],
+    "payloadKeys": {
+      "0_0": {
+        "shortName": "Ask[opts]",
+        "name": "Request Advanced Options",
+        "desc": "Request the options from the server",
+        "response": "165_63_16_15_30:0_0",
+        "payload": [
+          {
+            "start": 0,
+            "length": 1,
+            "name": "Config Category Options",
+            "desc": "When set to 0 the options will be requested from the server",
+            "values": {
+              "0": "Identifies this as a request for options settings."
+            }
+          },
+          {
+            "start": 1,
+            "length": 0,
+            "name": "Advanced options",
+            "desc": "Signifies that we are requesting the advanced options from the server",
+            "values": {
+              "0": "The configuration item is advanced options."
+            }
+          }
+        ]
+      },
+      "0_1": {
+        "shortName": "Ask[opts]",
+        "name": "Request Options Extension",
+        "desc": "Requests the unknown extension from the server",
+        "response": "165_63_16_15_30:0_1",
+        "payload": [
+          {
+            "start": 0,
+            "length": 1,
+            "name": "Config Category Options",
+            "desc": "When set to 0 the options will be requested from the server",
+            "values": {
+              "0": "Identifies this as a request for options settings."
+            }
+          },
+          {
+            "start": 1,
+            "length": 0,
+            "name": "Advanced options",
+            "desc": "Signifies that we are requesting the advanced options from the server",
+            "values": {
+              "1": "The configuration item is extended options"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "165_63_15_16_30": {
+    "proto": "broadcast",
+    "keyBytes": [ 0, 1 ],
+    "ocpSpecific": true,
+    "messageType": "Response",
+    "shortName": "Cfg[item]",
+    "name": "Config Item Response",
+    "desc": "Response to a configuration request.",
+    "payloadKeys": {
+      "0_0": {
+        "shortName": "Cfg[options]",
+        "name": "Config Options",
+        "desc": "Response to the configuration options",
+        "payload": [
+          {
+            "start": 0,
+            "length": 1,
+            "name": "Response Key",
+            "desc": "Identifies the mesaage as containing the advanced options data.",
+            "values": "0"
+          },
+          {
+            "start": 1,
+            "length": 1,
+            "name": "Water Sensor #2 Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 2,
+            "length": 1,
+            "name": "Water Sensor #1 Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 3,
+            "length": 1,
+            "name": "Solar Sensor #1 Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 4,
+            "length": 1,
+            "name": "Solar Sensor #1 Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 5,
+            "length": 1,
+            "name": "Air Sensor Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 6,
+            "length": 1,
+            "name": "Solar Sensor #2 Adjustment",
+            "desc": "When bit 8 is set then this is a negative value.",
+            "values": "+= 127 degrees of offset"
+          },
+          {
+            "start": 7,
+            "length": 6,
+            "name": "Unknown",
+            "values": "0,0,0,0,0,0"
+          },
+          {
+            "start": 13,
+            "length": 1,
+            "name": "Time Settings",
+            "desc": "The time settings on the OCP.",
+            "dataType": "bits",
+            "values": {
+              "1": "Unknown",
+              "2": "Unknown",
+              "3": "Unknown",
+              "4": "Unknown",
+              "5": "Units 0=Metric 1=Standard",
+              "6": "Clock Source 0=Manual 1=Internet",
+              "7": "Clock Mode 0=12Hour 1=24Hour",
+              "8": "Adjust DST 0=Off 1=On"
+            }
+          },
+          {
+            "start": 14,
+            "length": 1,
+            "name": "Unknown",
+            "values": "235"
+          },
+          {
+            "start": 15,
+            "length": 1,
+            "name": "Unknown",
+            "values": "27"
+          },
+          {
+            "start": 16,
+            "length": 1,
+            "name": "Unknown",
+            "values": "167"
+          },
+          {
+            "start": 17,
+            "length": 1,
+            "name": "Unknown",
+            "values": "1"
+          },
+          {
+            "start": 18,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 19,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 20,
+            "length": 1,
+            "name": "Body #1 Setpoint",
+            "desc": "The heat setpoint for the first body."
+          },
+          {
+            "start": 21,
+            "length": 1,
+            "name": "Body #3 Setpoint",
+            "desc": "The heat setpoint for the third body."
+          },
+          {
+            "start": 22,
+            "length": 1,
+            "name": "Body #2 Setpoint",
+            "desc": "The heat setpoint for the first body."
+          },
+          {
+            "start": 23,
+            "length": 1,
+            "name": "Body #4 Setpoint",
+            "desc": "The heat setpoint for the fourth body."
+          },
+          {
+            "start": 24,
+            "length": 1,
+            "name": "Body #1 Heat Mode",
+            "desc": "The heat mode for the first body.",
+            "values": {
+              "0": "Off",
+              "3": "Heater",
+              "5": "Solar Only",
+              "21": "Solar Preferred"
+
+            }
+          },
+          {
+            "start": 25,
+            "length": 1,
+            "name": "Body #2 Heat Mode",
+            "desc": "The heat mode for the second body.",
+            "values": {
+              "0": "Off",
+              "3": "Heater",
+              "5": "Solar Only",
+              "21": "Solar Preferred"
+            }
+          },
+          {
+            "start": 26,
+            "length": 1,
+            "name": "Body #3 Heat Mode",
+            "desc": "The heat mode for the third body.",
+            "values": {
+              "0": "Off",
+              "3": "Heater",
+              "5": "Solar Only",
+              "21": "Solar Preferred"
+            }
+          },
+          {
+            "start": 27,
+            "length": 1,
+            "name": "Body #4 Heat Mode",
+            "desc": "The heat mode for the fourth body.",
+            "values": {
+              "0": "Off",
+              "3": "Heater",
+              "5": "Solar Only",
+              "21": "Solar Preferred"
+            }
+          },
+          {
+            "start": 28,
+            "length": 1,
+            "name": "Unknown"
+          },
+          {
+            "start": 29,
+            "length": 1,
+            "name": "Pump Delay",
+            "desc": "Indicates what option will be chosen when valve",
+            "values": {
+              "0": "Off - No delay",
+              "1": "On - Pump off during valve action"
+            }
+          },
+          {
+            "start": 30,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 31,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 32,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 33,
+            "length": 1,
+            "name": "Unknown",
+            "values": "100"
+          },
+          {
+            "start": 34,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 35,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 36,
+            "length": 1,
+            "name": "Unknown",
+            "values": "0"
+          },
+          {
+            "start": 37,
+            "length": 1,
+            "name": "Heater Cooldown",
+            "desc": "Heater cooldown delay that controls what action the pump should perform during a cooldown cycle.",
+            "values": {
+              "0": "Pump off during heater cooldown",
+              "1": "Pump on during heater cooldown"
+            }
+          },
+          {
+            "start": 38,
+            "length": 1,
+            "name": "Manual Op Priority",
+            "desc": "Manual operations override scheduled operation.",
+            "values": {
+              "0": "Scheduled operation priority",
+              "1": "Manual operation priority"
+            }
+          },
+          {
+            "start": 39,
+            "length": 1,
+            "name": "Manual Heat",
+            "desc": "Manual heat for spa operation",
+            "values": {
+              "0": "Manual heat off",
+              "1": "Manual heat on"
+            }
+          }
+
+
+
+
+
+
+
+        ]
+      },
+      "0_1": {
+        "shortName": "Cfg[options]",
+        "name": "Config Options",
+        "desc": "Response to the configuration options request",
+        "payload": []
+
+      }
+    }
+  },
+  "165_P_16_V_82": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Req[address]",
+    "name": "Ping OCP for an address",
+    "desc": "The valve will ping the OCP for an address when it is on the bus."
+  },
+  "16_3_0": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[control]",
+    "name": "Set Chlorinator Control",
+    "desc": "Sets the chlorinator control to the OCP.  This message is required to maintain the control of the chlorinator."
+  },
+  "16_3_1": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Ack[control]",
+    "name": "Control Acknowlegement",
+    "desc": "Indicates that the chlorinator is now being controlled by the OCP."
+  },
+  "16_3_3": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Resp[model]",
+    "name": "Control Acknowlegement",
+    "desc": "Indicates that the chlorinator is now being controlled by the OCP."
+  },
+  "16_3_17": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[output]",
+    "name": "Set the output on the chlorinator",
+    "desc": "Sets the chlorinator's output based upon the values in the payload"
+  },
+  "16_3_18": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Status",
+    "name": "Status Response",
+    "desc": "Response from the chloriator indicating the current status an salt level."
+  },
+  "16_3_20": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[model]",
+    "name": "Get chlorinator model",
+    "desc": "Request from the OCP to get the model of the chlorinator."
+  },
+  "165_P_P_16_1": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[speed/flow]",
+    "name": "Set pump drive speed and flow",
+    "desc": "Sets the rpm and/or flow of the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_16_P_1": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[speed/flow]",
+    "name": "Response to setting the speed or flow.",
+    "desc": "This message is in response to the pump speed or flow being set."
+  },
+
+  "165_P_P_16_4": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[runstate]",
+    "name": "Set pump run state",
+    "desc": "Sets the run state pf the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_16_P_4": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[runstate]",
+    "name": "Response to setting the run state.",
+    "desc": "This message is in response to the pump run state being set.  A return of 255 indicates that the local control panel on the drive has been disabled."
+  },
+  "165_P_P_16_6": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[drivestate]",
+    "name": "Set pump drive state",
+    "desc": "Sets the run state pf the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_16_P_6": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[drivestate]",
+    "name": "Response to setting the drive state.",
+    "desc": "This message is in response to the pump drive state being set."
+  },
+  "165_P_P_16_7": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[status]",
+    "name": "Get pump status",
+    "desc": "Broadcast request to get the current running status of the pump."
+  },
+  "165_P_16_P_7": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[status]",
+    "name": "Pump status response",
+    "desc": "Broadcast request to get the current running status of the pump."
+  }
+
+}

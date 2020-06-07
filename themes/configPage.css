@@ -1,4 +1,7 @@
-﻿div.inline-line {
+﻿div.configContainer {
+  min-width: 627px; }
+
+div.inline-line {
   display: inline-block;
   vertical-align: top; }
 

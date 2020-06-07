@@ -9,6 +9,7 @@ import { outQueues } from "./queues/outboundQueue";
 import * as extend from 'extend';
 import { ApiError } from './Errors';
 import { UploadRoute } from "./upload/upload";
+import { MessageDocs } from "./messages/messages";
 
 // This class serves data and pages for
 // external interfaces as well as an internal dashboard.
@@ -144,6 +145,31 @@ export class HttpServer extends ProtoServer {
                 try {
                     console.log(`request:  ${JSON.stringify(req.body)}...`);
                     return res.status(200).send(outQueues);
+                }
+                catch (err) {
+                    next(err);
+                }
+            });
+            this.app.get('/messages/docs/constants', (req, res, next) => {
+                try {
+                    return res.status(200).send(MessageDocs.getConstants());
+                }
+                catch (err) {
+                    next(err);
+                }
+
+            });
+            this.app.get('/messages/docs/keyBytes', (req, res, next) => {
+                try {
+                    return res.status(200).send(MessageDocs.getKeyBytes());
+                }
+                catch (err) {
+                    next(err);
+                }
+            });
+            this.app.get('/messages/docs/:key', (req, res, next) => {
+                try {
+                    return res.status(200).send(MessageDocs.findMessageByKey(req.params.key) || { docKey: req.params.key });
                 }
                 catch (err) {
                     next(err);

@@ -14,22 +14,35 @@
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Schedules');
-            for (var i = 0; i < data.schedules.length; i++) {
-                // Create a new schedule for each installed schedule.
-                let divSched = $('<div class="picSchedule"></div>');
-                divSched.appendTo(el);
-                divSched.schedule(data.schedules[i]);
+            if (typeof data.schedules !== 'undefined') {
+                var schedules = data.schedules.sort((a, b) => a.id - b.id);
+                for (var i = 0; i < schedules.length; i++) {
+                    // Create a new schedule for each installed schedule.
+                    let divSched = $('<div class="picSchedule"></div>');
+                    divSched.appendTo(el);
+                    divSched.schedule(data.schedules[i]);
+                }
             }
         },
-      
         setScheduleData: function (data) {
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picSchedule[data-id=' + data.id + ']');
             if (pnl.length === 0) {
                 if (data.isActive === false) $(this).remove();
                 else {
-                    let div = $('<div class="picSchedule"><div>');
-                    div.appendTo(el);
+                    var scheds = el.find('div.picSchedule');
+                    var div = $('<div class="picSchedule"><div>');
+                    var add = true;
+                    // Insert it in the right place.
+                    scheds.each(function () {
+                        var id = parseInt($(this).attr('data-id'), 10);
+                        if (id > data.id) {
+                            div.insertBefore($(this));
+                            add = false;
+                        }
+                        return add;
+                    });
+                    if (add) div.appendTo(el);
                     div.schedule(data);
                 }
             }

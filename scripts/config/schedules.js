@@ -8,10 +8,10 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
-            el.addClass('cfgBodies');
+            el.addClass('cfgSchedules');
             $.getApiService('/config/options/schedules', null, function (opts, status, xhr) {
                 console.log(opts);
-                var schedules = opts.schedules;
+                var schedules = opts.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     $('<div></div>').appendTo(el).pnlScheduleConfig({
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
@@ -23,8 +23,6 @@
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Schedule', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgSchedule');
-                    //$(this).addClass('disabled');
-                    //$(this).find('i').addClass('burst-animated');
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlScheduleConfig({
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
                         scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
@@ -57,7 +55,7 @@
             el.addClass('picConfigCategory cfgSchedule');
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
-                columns: [{ binding: 'circuit', glyph: 'far fa-calendar-alt', style: { width: '9rem' } }, { binding: 'timespan', style: { width: '10rem', textAlign: 'center', whiteSpace: 'nowrap' } }, { binding: 'days', style: { width: '16rem', whiteSpace: 'nowrap', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign:'middle' } }]
+                columns: [{ binding: 'circuit', glyph: 'far fa-calendar-alt', style: { width: '9rem' } }, { binding: 'timespan', style: { width: '10rem', textAlign: 'center', whiteSpace: 'nowrap' } }, { binding: 'days', style: { width: '16rem', whiteSpace: 'nowrap', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             // Figure out our formats.
@@ -83,12 +81,12 @@
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Heat Source', binding: binding + 'heatSource',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heat Source', style: { whiteSpace: 'nowrap' } }],
-                items: o.heatSources, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { width:'5.75rem', marginLeft: '.25rem' } }
+                items: o.heatSources, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { width: '5.75rem', marginLeft: '.25rem' } }
             });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { width: '3rem' } } });
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
 
-            line = $('<div></div>').addClass('schedule-time').appendTo(inline);
+            line = $('<div></div>').addClass('schedule-time').addClass('start-time').appendTo(inline);
             $('<label></label>').appendTo(line).text('Start Time').css({ marginLeft: '.25rem', width: '5.75rem', display: 'inline-block' });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'startTimeType',
@@ -97,7 +95,7 @@
             }).css({ marginRight: '.25rem' });
             $('<div></div>').appendTo(line).timeSpinner({ labelText: '', binding: binding + 'startTime', min: 0, max: 1440, step: 30, fmtMask: o.fmtTime, emptyMask: o.fmtTimeEmpty, inputAttrs: { maxlength: 7 }, labelAttrs: {} });
 
-            line = $('<div></div>').addClass('schedule-time').appendTo(inline);
+            line = $('<div></div>').addClass('schedule-time').addClass('end-time').appendTo(inline);
             $('<label></label>').appendTo(line).text('End Time').css({ marginLeft: '.25rem', width: '5.75rem', display: 'inline-block' });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'endTimeType',
@@ -107,17 +105,16 @@
             $('<div></div>').appendTo(line).timeSpinner({ labelText: '', binding: binding + 'endTime', min: 0, max: 1440, step: 30, fmtMask: o.fmtTime, emptyMask: o.fmtTimeEmpty, inputAttrs: { maxlength: 7 }, labelAttrs: {} });
 
             inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
-            $('<div></div>').appendTo(inline).pnlScheduleDays({ days: o.scheduleDays, binding: binding + 'scheduleDays' }).css({ paddingLeft: '.25rem' });
+            $('<div></div>').appendTo(inline).pnlScheduleDays({ singleSelect: false, days: o.scheduleDays, binding: binding + 'scheduleDays' }).css({ paddingLeft: '.25rem' });
             line = $('<div></div>').appendTo(inline);
             $('<div></div>').appendTo(line).dateField({
                 labelText: 'Schedule Date', binding: binding + 'startDate', canEdit: true,
-                labelAttrs: { }, inputAttrs: { maxlength: 15, style: { width: '7rem' } }
+                labelAttrs: {}, inputAttrs: { maxlength: 15, style: { width: '7rem' } }
             });
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
                 var p = el.find('div.schedule-heatsource');
-                console.log(evt);
                 if (evt.newItem.id === 6 || evt.newItem.id === 1) {
                     p.show();
                     p.find('div.picPickList[data-bind=heatSource]').show()[0].required(true);
@@ -141,16 +138,7 @@
                     spin[0].required(true);
                 }
             });
-            el.on('selchanged', 'div.picPickList[data-bind=scheduleType]', function (evt) {
-                if (evt.newItem.name === 'runonce') {
-                    el.find('div.pnl-scheduleDays').hide();
-                    el.find('div.picPickList[data-bind=startDate]').show()[0].required(true);
-                }
-                else {
-                    el.find('div.pnl-scheduleDays').show();
-                    el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
-                }
-            });
+            el.on('selchanged', 'div.picPickList[data-bind=scheduleType]', function (evt) { self._setScheduleType(evt.newItem.val); });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -194,12 +182,36 @@
                 });
             });
         },
+        _setScheduleType: function (scheduleType) {
+            var self = this, o = self.options, el = self.element;
+            var schedType = $.extend(true,
+                { name: 'repeat', desc: 'Repeats', startDate: false, startTime: true, endTime: true, days: 'multi' },
+                o.scheduleTypes.find(elem => scheduleType === elem.val));
+            schedType.startDate ? el.find('div.picPickList[data-bind=startDate]').show()[0].required(true) : el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
+            schedType.startTime ? el.find('div.schedule-time.start-time').show().find('div.picValueSpinner[data-bind=startTime]')[0].required(true) : el.find('div.schedule-time.start-time').hide().find('div.picValueSpinner[data-bind=startTime]')[0].required(false);
+            schedType.endTime ? el.find('div.schedule-time.end-time').show().find('div.picValueSpinner[data-bind=endTime]')[0].required(true) : el.find('div.schedule-time.end-time').hide().find('div.picValueSpinner[data-bind=endTime]')[0].required(false);
+            el.find('div.pnl-scheduleDays').each(function () {
+                switch (schedType.days) {
+                    case 'single':
+                        $(this).show();
+                        this.singleSelect(true);
+                        break;
+                    case 'multi':
+                        $(this).show();
+                        this.singleSelect(false);
+                        break;
+                    default:
+                        $(this).hide();
+                        break;
+                }
+            });
+            return schedType;
+        },
         getScheduleDays: function (bits, days) {
             var arr = [];
             for (var i = 0; i < days.length; i++) {
                 var day = days[i];
                 var hasDay = (0xFF & bits & (1 << (day.val - 1))) > 0;
-                //console.log({ hasDay:hasDay, val: day.val, bit: 0xFF & bits & (1 << (day.val - 1)), day: day });
                 if (hasDay) arr.push(day);
             }
             return arr.sort((a, b) => a.val - b.val);
@@ -209,36 +221,40 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             var circuit = o.circuits.find(elem => obj.circuit === elem.id) || { id: 0, name: '' };
-            cols[0].elText().text(circuit.name);
-            var time = '';
-            var startTimeType = o.scheduleTimeTypes.find(elem => obj.startTimeType === elem.val) || { val: 0, name: 'manual', desc: 'Manual' };
-            if (startTimeType.name !== 'manual') time = startTimeType.desc + ' - ';
-            else time = (obj.startTime || 0).formatTime(o.fmtTime, '--:--') + ' - ';
-            var endTimeType = o.scheduleTimeTypes.find(elem => obj.endTimeType === elem.val) || { val: 0, name: 'manual', desc: 'Manual' };
-            if (endTimeType.name !== 'manual') time += endTimeType.desc;
-            else time += (obj.endTime || 0).formatTime(o.fmtTime, '--:--');
-            cols[1].elText().text(time);
-            var schedType = o.scheduleTypes.find(elem => obj.scheduleType === elem.val) || { val: 0, name: 'repeat', desc: 'Repeats' };
-            var days = self.getScheduleDays(schedType.name !== 'runonce' ? obj.scheduleDays : obj.runOnce, o.scheduleDays);
-            if (schedType.name === 'runonce') {
-                el.find('div.pnl-scheduleDays').hide();
-                el.find('div.picPickList[data-bind=startDate]').show()[0].required(true);
-            }
-            else {
-                el.find('div.pnl-scheduleDays').show();
-                el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
-            }
-            var daysTitle = '';
-            if (days.length !== 7) {
-                for (var iday = 0; iday < days.length; iday++) {
-                    if (iday > 0) daysTitle += ', ';
-                    daysTitle += days[iday].desc.substring(0, 3);
-                }
-            }
-            else daysTitle = 'Every Day';
 
+            cols[0].elText().text(circuit.name);
+            var schedType = self._setScheduleType(obj.scheduleType);
+
+            var startTimeType = $.extend(true, { val: 0, name: 'manual', desc: 'Manual' }, o.scheduleTimeTypes.find(elem => obj.startTimeType === elem.val));
+            var endTimeType = $.extend(true, { val: 0, name: 'manual', desc: 'Manual' }, o.scheduleTimeTypes.find(elem => obj.endTimeType === elem.val));
+            var time = '';
+            if (schedType.startTime) {
+                if (startTimeType.name !== 'manual') time = startTimeType.desc + ' - ';
+                else time = (obj.startTime || 0).formatTime(o.fmtTime, '--:--');
+            }
+            if (schedType.endTime) {
+                if (time.length > 0) time += ' - ';
+                if (endTimeType.name !== 'manual') time += endTimeType.desc;
+                else time += (obj.endTime || 0).formatTime(o.fmtTime, '--:--');
+            }
+            cols[1].elText().text(time);
+            var days = [];
+            var daysTitle = '';
+            // Get the days to show on the header.
+            if (schedType.days !== false) {
+                days = self.getScheduleDays(obj.scheduleDays, o.scheduleDays);
+                if (days.length != 7) {
+                    for (var iday = 0; iday < days.length; iday++) {
+                        if (iday > 0) daysTitle += ', ';
+                        daysTitle += days[iday].desc.substring(0, 3);
+                    }
+                }
+                else daysTitle = 'Every Day';
+            }
+            else if (schedType.startDate) {
+                daysTitle = Date.format(obj.startDate, 'MM/dd/yyyy', '--/--/----');
+            }
             cols[2].elText().text(daysTitle);
-            //cols[1].elText().text(capacity.format('#,##0') + ' gallons');
             console.log(obj);
             dataBinder.bind(el, obj);
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);
@@ -249,9 +265,9 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             o.days = o.days.sort((a, b) => a.dow - b.dow);
-            console.log(o.days);
             self._buildControls();
             el[0].selected = function () { };
+            el[0].singleSelect = function (val) { return self.singleSelect(val); };
             el[0].val = function (val) { return self.val(val); };
             el.attr('data-bind', o.binding);
         },
@@ -260,7 +276,7 @@
             el.empty();
             el.addClass('pnl-scheduleDays');
             var tbl = $('<div></div>').addClass('table').appendTo(el);
-            $('<div></div>').addClass('table-caption').appendTo(tbl).text('Days to Run');
+            $('<div></div>').addClass('table-caption').appendTo(tbl).text(o.singleSelect ? 'Day to Run' : 'Days to Run');
             var tbody = $('<div></div>').addClass('table-body').appendTo(tbl);
             var rowHeader = $('<div></div>').addClass('table-row').appendTo(tbody).addClass('dayheader');
             var rowDays = $('<div></div>').addClass('table-row').appendTo(tbody).addClass('days');
@@ -277,6 +293,16 @@
             el.on('click', 'div.table-cell.day', function (evt) {
                 var cell = $(evt.currentTarget);
                 var bsel = makeBool(cell.attr('data-selected'));
+                if (o.singleSelect) {
+                    if (!bsel) {
+                        // Unselect all the other days.
+                        el.find('div.table-cell.day[data-selected=true]').each(function () {
+                            $(this).find('i').removeClass('fas').addClass('far').removeClass('fa-times-circle').addClass('fa-circle');
+                            $(this).attr('data-selected', false);
+                        });
+                    }
+                    else bsel = false;
+                }
                 if (bsel) {
                     cell.find('i')
                         .removeClass('fas').addClass('far')
@@ -289,6 +315,7 @@
                         .removeClass('fa-circle').addClass('fa-times-circle');
                     cell.attr('data-selected', true);
                 }
+
                 // Recalculate the value.
                 var newval = 0;
                 el.find('div.table-cell.day[data-selected=true]').each(function () {
@@ -297,18 +324,35 @@
                 o.val = newval;
             });
         },
+        singleSelect: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                if (o.singleSelect !== makeBool(val)) {
+                    o.singleSelect = makeBool(val);
+                    if (o.singleSelect) {
+                        el.find('div.table-caption').text('Day to Run');
+                    }
+                    else {
+                        el.find('div.table-caption').text('Days to Run');
+                    }
+                }
+            }
+        },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val !== 'undefined') {
                 // Select the values based upon the incoming value.
+                var hasSelection = false;
                 el.find('div.table-cell.day').each(function () {
                     var cell = $(this);
                     var bitVal = parseInt(cell.attr('data-bitval'), 10);
-                    if ((bitVal & val & 0xFF) === bitVal) {
+                    if ((bitVal & val & 0xFF) === bitVal
+                        && (!o.singleSelect || !hasSelection)) { // If we are a single selection only allow one.
                         cell.find('i')
                             .removeClass('far').addClass('fas')
                             .removeClass('fa-circle').addClass('fa-times-circle');
                         cell.attr('data-selected', true);
+                        hasSelection = true;
                     }
                     else {
                         cell.find('i')
