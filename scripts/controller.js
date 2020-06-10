@@ -194,7 +194,7 @@
                 btn.find('i').on('click', function (evt) {
                     var opt = $(evt.currentTarget);
                     var divPopover = $('<div></div>');
-                    divPopover.appendTo(el.parent().parent());
+                    divPopover.appendTo(document.body);
                     divPopover.on('initPopover', function (e) {
                         let divActions = $('<div class="picActionSettings"></div>');
                         divActions.appendTo(e.contents());
@@ -372,21 +372,21 @@
             el.find('div.picTabPanel:first').each(function () {
                 var tabObj = { id: 'tab' + ucase, text: ucase };
                 var contents = this.addTab(tabObj);
-                var divOuter = $('<div class="picMessageActions"></div>');
+                var divOuter = $('<div class="picMessageActions"></div>').css({ width: '14.5rem' });
                 divOuter.appendTo(contents);
-                var btn = $('<div></div>');
-                btn.appendTo(contents);
+                var btn = $('<div></div>').css({ width: '14rem' });
+                btn.appendTo(divOuter);
                 btn.optionButton({ text: op === 'exclude' ? 'Exclude None' : 'Include All' });
                 btn.attr('data-actionid', 'all');
                 for (var i = 0; i < actions.length; i++) {
                     var act = actions[i];
                     // Create an option for each one of the messages.
-                    btn = $('<div></div>');
-                    btn.appendTo(contents);
+                    btn = $('<div></div>').css({ width: '14rem' });
+                    btn.appendTo(divOuter);
                     btn.optionButton({ text: '[' + act.val + '] ' + act.desc });
                     btn.attr('data-actionid', act.val);
                 }
-                contents.on('click', 'div.picOptionButton', function (e) {
+                divOuter.on('click', 'div.picOptionButton', function (e) {
                     e.stopImmediatePropagation();
                     var actid = $(e.currentTarget).attr('data-actionid');
                     var arr = [];
@@ -394,7 +394,7 @@
                     var obj = { packet: {} };
                     obj.packet[o.protocol] = {};
                     
-                    console.log({ actid: actid, b: b });
+                    //console.log({ actid: actid, b: b });
                     if (actid === 'all') {
                         // Deselect/select everything else.
                         contents.find('div.picOptionButton').each(function () {
@@ -402,13 +402,13 @@
                             if (actid !== 'all') this.val(!b);
                         });
                     }
-                    contents.find('div.picOptionButton').each(function () {
+                    divOuter.find('div.picOptionButton').each(function () {
                         actid = $(this).attr('data-actionid');
                         if (actid !== 'all' && makeBool(this.val()))
                             arr.push(parseInt(actid, 10));
                     });
-                    contents.find('div.picOptionButton[data-actionid=all]')[0].val(arr.length === 0);
-                    console.log(arr);
+                    divOuter.find('div.picOptionButton[data-actionid=all]')[0].val(arr.length === 0);
+                    //console.log(arr);
                     obj.packet[o.protocol][op + 'Actions'] = arr;
                     console.log(obj);
                     $.putApiService('app/logger/setOptions', obj);
