@@ -46,10 +46,10 @@
             self.setEquipmentData(o);
             el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
         },
-        setCircuitRate: function (circuitId, rate) {
+        setCircuitRate: function (circuitId, rate, units) {
             var self = this, o = self.options, el = self.element;
             let pumpId = parseInt(el.attr('data-id'), 10);
-            $.putApiService('/config/pump/' + pumpId + '/pumpCircuit/' + circuitId, { rate: rate });
+            $.putApiService('/config/pump/' + pumpId + '/pumpCircuit/' + circuitId, { rate: rate, units: units });
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -153,7 +153,7 @@
                             }
                             if (circuit.units.val === 0) spin.attr('data-bind', 'speed');
                             else spin.attr('data-bind', 'flow');
-                            
+                            spin.attr('data-units', circuit.units.val);
                             spin.valueSpinner({
                                 val: circuit.units.val === 0 ? circuit.speed : circuit.flow,
                                 min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
@@ -164,8 +164,9 @@
                             spin.find('div.picSpinner-value').css({ width: '4.5rem' });
                             spin.on('change', function (e) {
                                 let id = $(e.target).attr('data-id');
+                                let units = parseInt($(e.target).attr('data-units'), 10);
                                 //console.log(id);
-                                self.setCircuitRate(id, e.value);
+                                self.setCircuitRate(id, e.value, units);
                             });
                         }
                     });

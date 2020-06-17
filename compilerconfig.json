@@ -15,6 +15,10 @@
     "outputFile": "themes/messageManager.css",
     "inputFile": "themes/messageManager.scss"
 
+  },
+  {
+    "outputFile": "themes/vlist.css",
+    "inputFile": "themes/vlist.scss"
   }
 
 ]

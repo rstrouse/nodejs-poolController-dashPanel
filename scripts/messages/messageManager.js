@@ -47,7 +47,7 @@
             });
 
             o.socket.on('logMessage', function (data) {
-                console.log({ evt: 'logMessage', data: data });
+                //console.log({ evt: 'logMessage', data: data });
                 $('div.picMessages').each(function () {
                     this.addMessage(data);
                 });

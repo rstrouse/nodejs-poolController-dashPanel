@@ -126,12 +126,15 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (typeof data.heatStatus === 'undefined') data.heatStatus = { val: 0, name: 'off', desc: 'Unknown' };
+            if (typeof data.heatMode === 'undefined') data.heatMode = { val: 0, name: 'off', desc: 'Unknown' };
             dataBinder.bind(el, data);
             try {
                 el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-ison', data.isOn);
                 el.attr('data-setpoint', data.setPoint);
+
                 el.attr('data-heatmode', data.heatMode.val);
                 switch (data.heatStatus.name) {
                     case 'solar':

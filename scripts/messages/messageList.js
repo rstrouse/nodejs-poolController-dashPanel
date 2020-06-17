@@ -422,7 +422,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {} },
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {} },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initList = function (data) { self._initList(); };
@@ -431,7 +431,31 @@ mhelper.init();
             el[0].commitBulkMessages = function () { self.commitBulkMessages(); };
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
             el[0].cancelBulkMessages = function () { o.bulkBody = undefined; };
-            el[0].clear = function () { el.find('table.msgList-body > tbody').empty(); };
+            el[0].clear = function () { self.clear(); };
+            el[0].pinSelection = function (val) {
+                if (typeof val !== 'undefined') {
+                    var pin = el.find('div.picScrolling:first');
+                    if (makeBool(val)) {
+                        if (!pin.hasClass('selected')) pin.addClass('selected');
+                    }
+                    else pin.removeClass('selected');
+                    o.pinScrolling = val;
+                }
+                return o.pinScrolling;
+            };
+            el[0].logMessages = function (val) {
+                if (typeof val !== 'undefined') {
+                    var btn = el.find('div.picStartLogs:first');
+                    if (makeBool(val)) {
+                        if (!btn.hasClass('selected')) btn.addClass('selected');
+                    }
+                    else btn.removeClass('selected');
+                    var mm = $('div.picMessageManager')[0];
+                    //o.receivingMessages = val;
+                    mm.receiveLogMessages(val);
+                }
+                return o.receivingMessages;
+            };
             self._initList();
         },
         _resetHeight: function () {
@@ -445,6 +469,7 @@ mhelper.init();
         _initList: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
+
             var tblOuter = $('<table class="msgList-container"></table>').appendTo(el);
             var tbody = $('<tbody></tbody>').appendTo(tblOuter);
             var row = $('<tr></tr>').appendTo(tbody);
@@ -457,17 +482,39 @@ mhelper.init();
             $('<div class="picUploadLog mmgrButton picIconRight" title="Upload a Log File"><i class="fas fa-upload"></i></div>').appendTo(div);
 
 
-            row = $('<tr></tr>').appendTo(tbody);
-            td = $('<td></td>').appendTo(row);
-            div = $('<div class="msgList-header"></div>').appendTo(td);
-            $('<table class="msgList-header"><tbody><tr><td><td>Dir</td></td><td>Chg</td><td>Proto</td><td>Source</td><td>Dest</td><td>Action</td><td>Payload</td></tr></tbody></table>').appendTo(div);
-
-            row = $('<tr class="msgList-body"></tr>').appendTo(tbody);
-            td = $('<td></td>').appendTo(row);
-            div = $('<div class="msgList-body"></div>').appendTo(td);
-            div = $('<div class="msgList-body-content"></div>').appendTo(div);
-            $('<table class="msgList-body"><tbody></tbody></table>').appendTo(div);
-
+            row = $('<tr></tr>').addClass('msgList-body').appendTo(tbody);
+            td = $('<td></td>').addClass('msgList-body').appendTo(row);
+            var vlist = $('<div></div>').css({ width: '100%', height: '100%'}).appendTo(td).virtualList({
+                selectionType: 'single',
+                columns: [
+                    { width: '18px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                    { width: '18px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
+                    { width: '18px', header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
+                    { width: '57px', header: { label: 'Proto' } },
+                    { width: '57px', header: { label: 'Source' } },
+                    { width: '57px', header: { label: 'Dest' } },
+                    { width: '70px', header: { label: 'Action' } },
+                    { header: { style: { textAlign: 'center' }, label: 'Payload' } }
+                ]
+            });
+            vlist.on('bindrow', function (evt) { self._bindVListRow(evt.row, evt.rowData); });
+            vlist.on('selchanged', function (evt) {
+                var pnlDetail = $('div.picMessageDetail');
+                var msg = o.messages['m' + evt.newRow.attr('data-rowid')];
+                var ndx = parseInt(evt.newRow.attr('data-rowid'), 10);
+                var msgKey = evt.newRow.attr('data-msgkey');
+                var docKey = evt.newRow.attr('data-dockey');
+                var prev;
+                for (var i = ndx - 1; i >= 0; i--) {
+                    var p = $(evt.allRows[i]);
+                    if (p.attr('data-msgkey') === msgKey) {
+                        prev = o.messages['m' + p.attr('data-rowid')];
+                        console.log({ msg: 'Found Prev', prev });
+                        break;
+                    }
+                }
+                pnlDetail[0].bindMessage(msg, prev, o.contexts[docKey]);
+            });
             el.on('click', 'div.picStartLogs', function (evt) {
                 var mm = $('div.picMessageManager')[0];
                 mm.receiveLogMessages(!o.receivingMessages);
@@ -482,21 +529,21 @@ mhelper.init();
                 o.changesOnly = !o.changesOnly;
                 if (o.changesOnly) {
                     $(evt.currentTarget).addClass('selected');
-                    el.find('table.msgList-body:first').addClass('changesOnly');
+                    el.addClass('changesOnly');
+                    vlist[0].applyFilter(function (obj) {
+                        obj.hidden = !obj.hasChanged;
+                    });
                 }
                 else {
                     $(evt.currentTarget).removeClass('selected');
-                    el.find('table.msgList-body:first').removeClass('changesOnly');
+                    el.removeClass('changesOnly');
+                    vlist[0].clearFilter();
                 }
             });
-            el.on('click', 'div.picClearMessages', function (evt) {
-                el.find('table.msgList-body > tbody > tr.msgRow').remove();
-                o.messageKeys = {};
-            });
-
+            el.on('click', 'div.picClearMessages', function (evt) { self.clear(); });
             el.on('click', 'i.fa-clipboard', function (evt) {
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
-                mhelper.copyToClipboard(row.data('message'));
+                mhelper.copyToClipboard(o.messages['m' + row.attr('data-rowid')]);
             });
             el.on('click', 'div.picUploadLog', function (evt) {
                 var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
@@ -512,66 +559,90 @@ mhelper.init();
                 evt.stopImmediatePropagation();
 
             });
-            el.on('click', 'tr.msgRow', function (evt) {
-                self._selectRow($(evt.currentTarget));
-            });
+            //el.on('click', 'tr.msgRow', function (evt) {
+            //    self._selectRow($(evt.currentTarget));
+            //});
             self._resetHeight();
             $(window).on('resize', function (evt) {
                 self._resetHeight();
             });
         },
-        addMessage: function (msg, autoSelect) {
+        clear: function () {
             var self = this, o = self.options, el = self.element;
-            var body = el.find('table.msgList-body > tbody');
-            var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard"></i></span></td></tr>').addClass('msgRow');
-            msg.key = msg.header.join('_');
-            row.appendTo(body);
-            self._bindMessage(row, msg, autoSelect);
+            el.find('div.picVirtualList')[0].clear();
+            o.messageKeys = {};
+        },
+        addMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picVirtualList')[0].addRow(msg);
         },
         addBulkMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
-            var body = o.bulkBody ? o.bulkBody : o.bulkBody = $('<tbody></tbody>');
-            var row = $('<tr><td title="Copy to Clipboard"><span><i class="far fa-clipboard"></i></span></td></tr>').addClass('msgRow');
-            msg.key = msg.header.join('_');
-            self._bindMessage(row, msg, false);
-            row.appendTo(body);
+            el.find('div.picVirtualList:first')[0].addRows([msg]);
         },
         commitBulkMessages: function () {
             var self = this, o = self.options, el = self.element;
-            var body = o.bulkBody ? o.bulkBody : $('<tbody></tbody>');
-            var tbl = el.find('table.msgList-body');
-            var oldBody = tbl.find('tbody:first');
-            oldBody.replaceWith(body);
-            o.bulkBody = undefined;
-            //console.log({ m: 'Replaced body', body: body, oldBody: oldBody });
+            el.find('div.picVirtualList:first')[0].render(true);
         },
         _scrollToRow: function (row) {
             var self = this, o = self.options, el = self.element;
-            var pos = row.position();
-            var div = el.find('div.msgList-body-content');
-            var height = div[0].clientHeight;
-            //console.log({ pos: pos, height: height, rect: rect, row: row });
-            div.scrollTop(Math.max(pos.top + row.height() - height + 2, 0));
+            //var pos = row.position();
         },
         _selectRow: function (row, prev, ctx) {
             var self = this, o = self.options, el = self.element;
-            var tbl = el.find('table.msgList-body');
-            tbl.find('tr.msgRow').removeClass('selected');
-            row.addClass('selected');
-            var msg = row.data('message');
-            var ndx = row[0].rowIndex;
-            var key = row.attr('data-msgkey');
-            var docKey = row.attr('data-dockey');
-            if (typeof prev === 'undefined') {
-                for (var i = ndx - 1; i >= 0; i--) {
-                    var r = $(tbl[0].rows[i]);
-                    if (r.attr('data-msgkey') === key) {
-                        prev = r.data('message');
-                        break;
-                    }
+            //$('div.picMessageDetail')[0].bindMessage(msg, prev, ctx || o.contexts[docKey]);
+        },
+        _bindVListRow(obj, msg, autoSelect) {
+            var self = this, o = self.options, el = self.element;
+            var row = obj.row;
+            var r = row[0];
+            row.attr('data-msgdir', msg.direction);
+            row.addClass('msgRow');
+            var ctx = msgManager.getListContext(msg);
+            o.contexts[ctx.docKey] = ctx;
+            if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
+            var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
+            $('<span></span>').append(dir).appendTo(r.cells[1]);
+            var spChg = $('<span class="changed"></span>').appendTo(r.cells[2]);
+            var chg = $('<i class="fas"></i>').appendTo(spChg);
+            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[3]);
+            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[4]);
+            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[5]);
+            $('<span></span>').text(ctx.actionName).appendTo(r.cells[6]);
+            $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[7]);
+            var prev = o.messageKeys[ctx.messageKey];
+            var hasChanged = false;
+            if (typeof prev === 'undefined')
+                hasChanged = true;
+            else if (msgManager.isMessageDiff(msg, prev, ctx))
+                hasChanged = true;
+            if (hasChanged) {
+                row.addClass('changed');
+                typeof prev === 'undefined' ? spChg.addClass('new') : spChg.addClass('changed');
+                chg.addClass('fa-dot-circle');
+            }
+            else
+                row.addClass('nochange');
+            if (o.changesOnly && !hasChanged) obj.hidden = true;
+
+            o.messageKeys[ctx.messageKey] = msg;
+            //row.data('message', msg); Can't store jquery data. Create our own message cache.
+            o.messages['m' + obj.rowId] = msg;
+            row.attr('data-msgkey', ctx.messageKey);
+            row.attr('data-dockey', ctx.docKey);
+            obj.hasChanged = hasChanged;
+            if (!o.pinScrolling) {
+                if (!o.changesOnly || (o.changesOnly && hasChanged)) {
+                    self.selectRowByIndex(obj.rowId, true);
                 }
             }
-            $('div.picMessageDetail')[0].bindMessage(msg, prev, ctx || o.contexts[docKey]);
+        },
+        selectRowByIndex: function (ndx, scroll) {
+            var self = this, o = self.options, el = self.element;
+            if (o.selectTimeout) clearTimeout(o.selectTimeout);
+            o.selectTimeout = setTimeout(function () {
+                el.find('div.picVirtualList:first')[0].selectedIndex(ndx, scroll);
+            }, 1);
         },
         _bindMessage(row, msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
@@ -581,7 +652,6 @@ mhelper.init();
             var chg = $('<i class="fas"></i>').appendTo(spChg);
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.docKey] = ctx;
-
             row.attr('data-msgdir', msg.direction);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
             $('<span></span>').text(ctx.protocol.name).appendTo($('<td></td>').appendTo(row));
@@ -646,6 +716,7 @@ mhelper.init();
         _initDetails: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
+
             var div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
             $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
             $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div).hide();
@@ -756,6 +827,7 @@ mhelper.init();
                 if (typeof ctx === 'undefined') ctx = msgManager.getListContext(msg);
                 o.context = ctx;
                 obj = {
+                    isValid: msg.valid || msg.isValid,
                     protocol: ctx.protocol.desc,
                     source: ctx.sourceAddr.name,
                     sourceByte: ctx.sourceByte,
@@ -1519,14 +1591,14 @@ mhelper.init();
             var fset = $('<fieldset></fieldset>').appendTo(line);
             $('<legend></legend>').appendTo(fset).text('Options');
             line = $('<div></div>').appendTo(fset);
-            $('<div></div>').appendTo(line).pickList({
-                displayColumn:0,
-                labelText: 'Playback To', binding: 'playbackTo',
-                columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Playback Destination', style: { width:'450px' } }],
-                items: [{ name: 'Message List', desc: 'Plays the log file back to the message list' },
-                    { name: 'Pool Controller', desc: 'Plays the log file back to the poolController Instance' } ],
-                inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: {} }, dropdownStyle: {width:'450px'}
-            });
+            //$('<div></div>').appendTo(line).pickList({
+            //    displayColumn:0,
+            //    labelText: 'Playback To', binding: 'playbackTo',
+            //    columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Playback Destination', style: { width:'450px' } }],
+            //    items: [{ name: 'Message List', desc: 'Plays the log file back to the message list' },
+            //        { name: 'Pool Controller', desc: 'Plays the log file back to the poolController Instance' } ],
+            //    inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: {} }, dropdownStyle: {width:'450px'}
+            //});
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Begin Processing File', icon: '<i class="fas fa-upload"></i>' }).on('click', function (e) {
                 self._uploadLogFile();
@@ -1552,14 +1624,16 @@ mhelper.init();
                         //console.log(data);
                         // Play the file back to the message list.
                         var msgList = $('div.picMessages:first')[0];
+                        msgList.pinSelection(true);
+                        msgList.logMessages(false);
                         progress[0].setProcessProgress(0, data.length);
                         if (progress[0].isCancelled()) {
                             msgList.cancelBulkMessages();
                             divPopover[0].close();
                         }
                         else {
-                            self._processNextMessage(msgList, progress[0], data);
                             msgList.clear();
+                            self._processNextMessage(msgList, progress[0], data);
                         }
                     }
                 });
@@ -1580,6 +1654,7 @@ mhelper.init();
             prog.incrementProcessProgress();
             if (typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
                 msgList.addBulkMessage({
+                    isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
                     protocol: msg.proto,
                     direction: msg.dir,
                     padding: msg.pkt[0],

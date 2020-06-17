@@ -444,6 +444,79 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         });
     };
 });
+jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
+    jQuery[method + 'FileApiService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
+        if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
+            method = method || successCallback;
+            completeCallback = errorCallback;
+            errorCallback = successCallback;
+            successCallback = data;
+            data = undefined;
+        }
+        if (typeof message === 'function') {
+            // Shift all the parameters because we aren't calling the service with a status message.
+            completeCallback = errorCallback;
+            errorCallback = successCallback;
+            successCallback = message;
+            message = undefined;
+        }
+        var msg;
+        var overlay;
+        if (typeof message !== 'undefined') {
+            console.log('Showing message: ' + message);
+            // We are displaying a message while the service is underway.
+            msg = $('<div style="visibility:hidden;"></div>').addClass('picServiceStatusMsg').appendTo(document.body);
+            overlay = $('<div style="background-color:lavender;opacity:.15"></div>').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            if (message instanceof jQuery) message.appendTo(msg);
+            else
+                $('<div></div>').html(message).appendTo(msg);
+            msg.css({
+                visibility: '',
+                left: ($(document).width() - msg.width()) / 2,
+                top: ($(document).height() - msg.height()) / 2
+            });
+
+        }
+        // Set up the callbacks.
+        var cbComplete = function (jqXHR, status) {
+            if (typeof msg !== 'undefined') {
+                msg.fadeOut(300, function () {
+                    msg.remove();
+                    if (typeof overlay !== 'undefined') overlay.remove();
+                });
+            }
+        };
+        var cbShowError = function (jqXHR, status, error) {
+            var err = { httpCode: jqXHR.status, status: status, error:error };
+            console.log(err);
+            if (err.httpCode >= 299) {
+                $.pic.modalDialog.createApiError(err);
+            }
+        };
+        var cbShowSuccess = function (data, status, jqXHR) { };
+        var serviceUrl = $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+
+
+        // Set up the callbacks.
+        successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
+        errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
+        completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
+        console.log({ method: method, url: url, data: typeof data === 'string' ? data : JSON.stringify(data) });
+        return jQuery.ajax({
+            url: serviceUrl,
+            type: method,
+            dataType: 'binary',
+            processData: false,
+            contentType: 'application/json; charset=utf-8',
+            data: typeof data === 'string' ? data : JSON.stringify(data),
+            cache: false,
+            xhrFields: { responseType: 'blob' },
+            error: errorCallback,
+            success: successCallback,
+            complete: completeCallback
+        });
+    };
+});
 
 
 var dataBinder = {
@@ -729,8 +802,6 @@ $.ui.position.fieldTip = {
             el.on('click', function (evt) { el.remove(); evt.preventDefault(); evt.stopPropagation(); });
         }
     });
-})(jQuery); // Field Tip
-(function ($) {
     $.widget("pic.toggleButton", {
         options: {},
         _create: function () {
@@ -753,8 +824,6 @@ $.ui.position.fieldTip = {
                 return el.find('div.picIndicator').attr('data-status');
         }
     });
-})(jQuery); // Toggle Button
-(function ($) {
     $.widget("pic.actionButton", {
         options: {},
         _create: function () {
@@ -772,14 +841,17 @@ $.ui.position.fieldTip = {
             if (o.text) text.text(o.text);
             el[0].buttonText = function (val) { return self.buttonText(val); };
             if (o.bind) el.attr('data-bind', o.bind);
+            el[0].buttonIcon = function (val) { return self.buttonIcon(val); };
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
             return el.find('span.picButtonText').text(val);
+        },
+        buttonIcon: function (val) {
+            var self = this, o = self.options, el = self.element;
+            el.find('span.picButtonIcon').html(val);
         }
     });
-})(jQuery); // Action Button
-(function ($) {
     $.widget("pic.optionButton", {
         options: {},
         _create: function () {
@@ -789,6 +861,7 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
+            el[0].disabled = function (val) { return self.disabled(val); };
             self._initOptionButton();
         },
         _initOptionButton: function () {
@@ -836,11 +909,17 @@ $.ui.position.fieldTip = {
                 el.find('div.picIndicator').attr('data-status', val);
             else
                 return el.find('div.picIndicator').attr('data-status');
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) el.addClass('disabled');
+                else el.removeClass('disabled');
+            }
         }
-       
     });
-})(jQuery); // Option Button
-(function ($) {
     $.widget("pic.valueSpinner", {
         options: {
             lastChange: 0, ramp: 40, ramps: 0, fmtMask: '#,##0.####', fmtEmpty: '', step: 1, inputAttrs: {}, labelAttrs: {} },
@@ -883,8 +962,8 @@ $.ui.position.fieldTip = {
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
             $('<label class="picSpinner-label"></label><div class="picSpinner-down"><i class="fas fa-minus"></i></div><div class="picSpinner-value"></div><div class="picSpinner-up"><i class="fas fa-plus"></i></div><span class="picSpinner-units"></span>').appendTo(el);
-            if (typeof o.min === 'undefined') o.min = 0;
-            if (typeof o.val === 'undefined') o.val = o.min;
+            if (typeof o.min === 'undefined' || o.min === null) o.min = 0;
+            if (typeof o.val === 'undefined' || o.val === null) o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
             el.find('span.picSpinner-units').text(o.units);
             self._applyStyles();
@@ -1173,8 +1252,6 @@ $.ui.position.fieldTip = {
             el.find('input.picSpinner-value').val(val.formatTime(o.fmtMask, o.fmtEmpty));
         }
     });
-})(jQuery); // Value Spinner
-(function ($) {
     $.widget("pic.selector", {
         options: {},
         _create: function () {
@@ -1227,8 +1304,6 @@ $.ui.position.fieldTip = {
         }
 
     });
-})(jQuery); // Selector
-(function ($) {
     $.widget("pic.tabBar", {
         options: {
             isInteractive: true,
@@ -1305,8 +1380,6 @@ $.ui.position.fieldTip = {
         }
 
     });
-})(jQuery); // Tab Bar
-(function ($) {
     $.widget("pic.popover", {
         options: {
             id: _uniqueId,
@@ -1463,8 +1536,6 @@ $.ui.position.fieldTip = {
         }
 
     });
-})(jQuery); // Popover
-(function ($) {
     $.widget("pic.pickList", {
         options: {
             items: [],
@@ -1777,8 +1848,6 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // PickList
-(function ($) {
     $.widget("pic.inputField", {
         options: {
             inputAttrs: {},
@@ -1890,9 +1959,6 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // Input Field
-
-(function ($) {
     $.widget("pic.dateField", {
         options: {
             inputAttrs: {},
@@ -2043,10 +2109,6 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // Date Picker
-
-
-(function ($) {
     $.widget("pic.checkbox", {
         options: {
             inputStyle: {},
@@ -2098,8 +2160,6 @@ $.ui.position.fieldTip = {
             else return cb.is(':checked');
         }
     });
-})(jQuery); // Checkbox
-(function ($) {
     $.widget("pic.accordian", {
         options: {
             columns: []
@@ -2182,8 +2242,6 @@ $.ui.position.fieldTip = {
             else return exp;
         }
     });
-})(jQuery); // Accordian
-(function ($) {
     $.widget("pic.colorPicker", {
         options: { labelText: '', binding: ''},
         _create: function () {
@@ -2297,8 +2355,6 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // Color Picker
-(function ($) {
     $.widget("pic.modalDialog", $.ui.dialog, {
         options: {
             screenLayer: 0
@@ -2348,8 +2404,6 @@ $.ui.position.fieldTip = {
             this._destroy();
         }
     });
-})(jQuery); // Modal Dialog
-(function ($) {
     $.widget("pic.errorPanel", {
         options: {
 
@@ -2392,8 +2446,313 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // Error Panel
+    $.widget("pic.virtualList", {
+        options: {
+            selectionType: 'none',
+            columns: [],
+            rows: [],
+            rowHeight: 16,
+            rowsPerBlock: 50,
+            blocksPerCluster: 4,
+            selectedIndex: -1,
+            resizeDebounce: null,
+            scrollDebounce: null,
+            data: [],
+            blockHeight: 0,
+            rowsPerCluster: 0,
+            currentBlock: { length: 0 },
+            scrollTop: 0,
+            lastCluster: 0,
+            lastBlock: 0,
+            hiddenRows: 0,
+            blocks: {},
+            isRendering: false
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].addRows = function (data) { return self.addRows(data); };
+            el[0].addRow = function (data) { return self.addRow(data); };
+            el[0].select = function (row) { return self.selectRow(row); };
+            el[0].selectedIndex = function (ndx, scrollTo) { return typeof ndx === 'undefined' ? o.selectedIndex : self.selectRow($(o.rows[ndx].row), scrollTo); };
+            el[0].clear = function () { self.clear(); };
+            el[0].render = function (recalc) { if (recalc) self._calculateBlocks(); self.render(); };
+            el[0].applyFilter = function (cb) { self.applyFilter(cb); self._calculateBlocks(); self.render(); };
+            el[0].clearFilter = function () { o.hiddenRows = 0; self._calculateBlocks(true); self.render(); };
+            el[0].scrollTo = function (ndx) { self.scrollTo(ndx); };
 
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picVirtualList');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(el).addClass('vlist-outer')).addClass('vlist-outer');
+            $('<tr></tr>').appendTo(tbody).addClass('vlist-header-outer');
+            self._addHeaderColumns();
+            var body = $('<tr></tr>').appendTo(tbody).addClass('vlist-body-outer');
+            var tdbody = $('<td></td>').appendTo(body).addClass('vlist-body-outer');
+            var divBody = $('<div></div>').appendTo(tdbody).addClass('vlist-body-outer');
+            divBody = $('<div></div>').appendTo(divBody).addClass('vlist-body');
+            //$('<div></div>').addClass('vlist-space').addClass('vlist-parity').appendTo(divBody);
+            var divTop = $('<div></div>').addClass('vlist-space').addClass('vlist-top').appendTo(divBody);
+            tbody = $('<tbody></tbody>').appendTo($('<table></table>').addClass('vlist-body').appendTo(divBody)).addClass('vlist-body');
+            var divBottom = $('<div></div>').addClass('vlist-space').addClass('vlist-bottom').appendTo(divBody);
+            o.blockHeight = o.rowHeight * o.rowsPerBlock;
+            o.rowsPerCluster = o.blocksPerCluster * o.rowsPerBlock;
+            o.clusterHeight = o.blocksPerCluster * o.blockHeight;
+            divBody.on('scroll', function (evt) {
+                if (o.scrollDebounce) clearTimeout(o.scrollDebounce);
+                o.pointerSet = true;
+                var startBlock = self._getStartingBlock();
+                if (o.currentBlock !== startBlock) {
+                    //o.scrollDebounce = setTimeout(function () {
+                    o.scrollTop = divBody.scrollTop();
+                    self.render(startBlock);
+                    o.currentBlock = startBlock;
+                    //}, 20);
+                }
+            });
+            el.on('click', 'tr.vlist-data', function (e) { self.selectRow($(e.currentTarget)); });
+        },
+        _calculateBlocks: function (clearFilter) {
+            var self = this, o = self.options, el = self.element;
+            var block = { start: 0, end: 0, above: 0, count: 0 };
+            var above = 0;
+            var id = 0;
+            var count = 0;
+            var rowId = -1;
+            o.blocks = { '0': block };
+            for (var k = 0; k < o.rows.length; k++) {
+                var r = o.rows[k];
+                if (clearFilter) r.hidden = false;
+                if (!r.hidden) {
+                    if (count === 0) {
+                        block.start = r.rowId;
+                        o.blocks[id.toString()] = block;
+                    }
+                    count++;
+                    rowId = r.rowId;
+                }
+                if (count && count % o.rowsPerBlock === 0) {
+                    block.end = r.rowId;
+                    block.count = count;
+                    block.above = above;
+                    above += count;
+                    count = 0;
+                    id++;
+                    block = { start: 0, end: 0, above: above, count: 0 };
+                }
+            }
+            if (count > 0) {
+                block.count = count;
+                block.end = rowId;
+                block.above = above;
+                o.blocks[id.toString()] = block;
+            }
+        },
+        _calculate: function (startBlock) {  // This is the same as the generate function.
+            var self = this, o = self.options, el = self.element;
+            startBlock = startBlock || self._getStartingBlock();
+            var cluster = self._getBlockCluster(startBlock);
+            var offTop = cluster.offTop;
+            var itmStart = cluster.startItem;
+            var minRows = cluster.count;
+            var rows = [];
+            for (var i = itmStart; rows.length <= minRows && i < o.rows.length; i++) {
+                var r = o.rows[i];
+                if (typeof r !== 'undefined' && !r.hidden) rows.push(r.row);
+            }
+            var offBottom = ((o.rows.length - o.hiddenRows) * o.rowHeight) - offTop - (rows.length * o.rowHeight);
+            return { offset: { top: offTop, bottom: offBottom }, rows: rows };
+        },
+
+        render(startBlock) { // This is the same as the insertToDom method
+            var self = this, o = self.options, el = self.element;
+            var body = el.find('div.vlist-body');
+            var attrs = self._calculate(startBlock);
+            var html = '<div class="vlist-space vlist-top" style="height:' + attrs.offset.top + 'px;"></div>'
+                + '<table class="vlist-body"><tbody class="vlist-body">' + attrs.rows.join('') + '</tbody></table>'
+                + '<div class="vlist-space vlist-bottom" style="height:' + attrs.offset.bottom + 'px;"></div>';
+            body[0].innerHTML = html;
+        },
+        _getCurrentCluster: function () {
+            var self = this, o = self.options, el = self.element;
+            o.scrollTop = el.find('div.vlist-body').scrollTop();
+            //console.log({ cyCluster: o.clusterHeight, cyBlock: o.blockHeight, top: o.scrollTop });
+            return Math.floor(o.scrollTop / (o.clusterHeight - o.blockHeight)) || 0;
+        },
+        _getBlockCluster: function (blockNumber) {
+            var self = this, o = self.options, el = self.element;
+            var curr = o.blocks[blockNumber.toString()];
+            if (typeof curr === 'undefined') {
+                curr = o.blocks["0"];
+                blockNumber = 0;
+            }
+            var prev = o.blocks[(blockNumber - 1).toString()];
+            var next = o.blocks[(blockNumber + 1).toString()];
+            return {
+                currentBlock: blockNumber,
+                offTop: typeof prev !== 'undefined' ? prev.above * o.rowHeight : curr.above * o.rowHeight,
+                startItem: typeof prev !== 'undefined' ? prev.start : curr.start,
+                count: (typeof prev !== 'undefined' ? prev.count : 0) + curr.count + (typeof next !== 'undefined' ? next.count + 0 : 0)
+            };
+        },
+        _getStartingBlock: function () {
+            var self = this, o = self.options, el = self.element;
+            o.scrollTop = el.find('div.vlist-body').scrollTop();
+            //console.log({ cyCluster: o.clusterHeight, cyBlock: o.blockHeight, top: o.scrollTop });
+            return Math.floor(o.scrollTop / o.blockHeight) || 0;
+        },
+
+        _getRowsHeight: function () {
+            var self = this, o = self.options, el = self.element;
+            o.blockHeight = o.rowHeight * o.rowsPerBlock;
+            o.rowsPerCluster = o.blocksPerCluster * o.rowsPerBlock;
+            o.clusterHeight = o.blocksPerCluster * o.blockHeight;
+            return o.rows.length * o.rowHeight;
+        },
+        _addHeaderColumns: function () {
+            var self = this, o = self.options, el = self.element;
+            var trHeader = el.find('tr.vlist-header-outer');
+            trHeader.empty();
+            var tdHeader = $('<td></td>').appendTo(trHeader).addClass('vlist-header');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(tdHeader).addClass('vlist-header')).addClass('vlist-header');
+            var tr = $('<tr></tr>').appendTo(tbody).addClass('vlist-header');
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = o.columns[i];
+                var td = $('<td></td>').appendTo(tr).addClass('vlist-header-col');
+                if (typeof col.header.style !== 'undefined') td.css(col.header.style);
+                if (typeof col.header.label !== 'undefined') {
+                    if (col.header.label instanceof jQuery) col.header.label.appendTo(td);
+                    else if (typeof col.header.label === 'string') td.html(col.header.label);
+                    else if (typeof col.header.label.nodeType !== 'undefined') $(col.header.label).appendTo(td);
+                }
+                if (typeof col.header.attrs !== 'undefined') {
+                    for (var s in col.header.attrs) td.attr(s, col.header.attrs[s]);
+                }
+                if (typeof col.width !== 'undefined') td.css({ width: col.width });
+            }
+        },
+        applyFilter: function (cb) {
+            var self = this, o = self.options, el = self.element;
+            o.hiddenRows = 0;
+            for (var i = 0; i < o.rows.length; i++) {
+                var r = o.rows[i];
+                cb(r);
+                if (r.hidden) {
+                    o.hiddenRows++;
+                }
+            }
+        },
+        createDataRow: function () {
+            var self = this, o = self.options, el = self.element;
+            var tr = $('<tr></tr>').addClass('vlist-data');
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = o.columns[i];
+                var td = $('<td></td>').appendTo(tr).addClass('vlist-data');
+                if (typeof col.data !== 'undefined') {
+                    if (typeof col.data.style !== 'undefined') td.css(col.data.style);
+                    if (typeof col.data.elem !== 'undefined') {
+                        if (col.data.elem instanceof jQuery) col.data.elem.clone().appendTo(td);
+                        else if (typeof col.data.elem === 'string') col.html(col.data.elem);
+                        else if (typeof col.data.elem.nodeType !== 'undefined') $(col.data.elem).appendTo(td);
+                    }
+                    if (col.data.attrs !== 'undefined')
+                        for (var s in col.data.attrs) td.attr(s, col.data.attrs[s]);
+                }
+                if (typeof col.width !== 'undefined') td.css({ width: col.width });
+            }
+            return tr;
+        },
+        addRows: function (arrData) {
+            var self = this, o = self.options, el = self.element;
+            var added = [];
+            for (var i = 0; i < arrData.length; i++) {
+                var row = self.createDataRow();
+                var data = arrData[i];
+                row.attr('data-rowid', o.rows.length);
+                var evt = $.Event('bindrow');
+                evt.row = { hidden: false, rowId: o.rows.length, row: row };
+                evt.rowData = data;
+                el.trigger(evt);
+                evt.row.row = row[0].outerHTML;
+                if (evt.row.hidden) o.hiddenRows++;
+                o.rows.push(evt.row);
+                added.push(evt.row);
+            }
+            return added;
+        },
+        addRow: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var rc = self.addRows([data]);
+            if (!rc[0].hidden) {
+                self._calculateBlocks();
+                self.render();
+            }
+            return rc;
+        },
+        selectRow: function (row, scrollTo) {
+            var self = this, o = self.options, el = self.element;
+            var ndx = typeof row !== 'undefined' ? parseInt(row.attr('data-rowid'), 10) : -1;
+            if (o.selectedIndex !== ndx && o.selectionType === 'single') {
+                var evt = $.Event('selchanged');
+                evt.oldRow = o.selectedIndex !== -1 && o.selectedIndex < o.rows.length ? $(o.rows[o.selectedIndex].row).removeClass('selected') : undefined;
+                evt.newRow = row;
+                evt.allRows = o.rows;
+                if (evt.oldRow) {
+                    evt.oldRow.removeClass('selected');
+                    el.find('tr.vlist-data.selected').removeClass('selected');
+                    o.rows[o.selectedIndex].row = evt.oldRow[0].outerHTML;
+                }
+                o.selectedIndex = ndx;
+                if (typeof row !== 'undefined') {
+                    el.find('tr.vlist-data[data-rowid=' + ndx + ']').addClass('selected');
+                    if(!row.hasClass) row.addClass('selected');
+                    o.rows[ndx].row = row[0].outerHTML;
+                }
+                else o.selectedIndex = -1;
+                el.trigger(evt);
+                if (scrollTo) {
+                    self.scrollTo(ndx);
+                }
+            }
+        },
+        clear: function () {
+            var self = this, o = self.options, el = self.element;
+            o.rows = [];
+            self._calculateBlocks();
+            el.find('div.vlist-body').scrollTop(0);
+            o.selectedIndex = -1;
+            self.render();
+        },
+        scrollTo: function (ndx) {
+            var self = this, o = self.options, el = self.element;
+            if (ndx < o.rows.length) {
+                el.find('div.vlist-body').scrollTop(ndx * o.rowHeight);
+            }
+        }
+    });
+})(jQuery); // Virtual List
+$.pic.modalDialog.createDialog = function (id, options) {
+    var opt = typeof options !== 'undefined' && options !== null ? options : {
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true,
+        message: '',
+        buttons: {
+            Cancel: function () { dlg.modalDialog("close"); }
+        }
+    };
+    opt.modal = true;
+    if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
+    var dlg = $('div#' + id);
+    if (dlg.length === 0) {
+        dlg = $('<div id="' + id + '" style="display:block;position:relative;padding:4px;"></div>');
+        dlg.modalDialog(opt);
+    }
+    dlg.modalDialog('open');
+    return dlg;
+};
 $.pic.modalDialog.createConfirm = function (id, options) {
     var opt = typeof options !== 'undefined' && options !== null ? options : {
         autoOpen: false,

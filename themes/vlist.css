@@ -1,0 +1,64 @@
+﻿table.vlist-body {
+  box-sizing: border-box;
+  font-size: 8pt;
+  width: 100%;
+  table-layout: auto;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  margin: 0px;
+  table-layout: fixed; }
+
+table.vlist-outer {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  table-layout: fixed; }
+
+table.vlist-header {
+  box-sizing: border-box;
+  font-size: 8pt;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  table-layout: auto;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+  background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+  background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+  background-image: linear-gradient(top, #159FCF, #13647F); }
+
+td.vlist-header {
+  padding: 0px; }
+
+td.vlist-data {
+  border: solid 1px gray;
+  padding: 0px; }
+
+tr.vlist-body-outer {
+  height: 100%;
+  overflow: hidden; }
+
+td.vlist-body-outer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0px; }
+
+div.vlist-body-outer {
+  position: relative;
+  overflow: hidden;
+  vertical-align: top;
+  width: 100%;
+  height: 100%; }
+
+div.vlist-body {
+  position: absolute;
+  overflow: auto;
+  vertical-align: top;
+  width: 100%;
+  height: 100%;
+  padding-right: 1px; }

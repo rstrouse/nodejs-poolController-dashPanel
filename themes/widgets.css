@@ -22,6 +22,8 @@ div.picOptionButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
     margin-left: .2rem;
+    line-height:1rem;
+    vertical-align:middle;
 }
 div.picFeatures > div.picCircuit[data-showinfeatures=false] {
     display:none;
@@ -41,10 +43,7 @@ div.picOptionButton {
     border: solid 1px gray;
     border-radius: 5px;
     display: inline-block;
-    padding-top: .1rem;
-    padding-bottom: .1rem;
-    padding-right: .2rem;
-    padding-left: .2rem;
+    padding:.2rem;
     min-width: 5.4rem;
     margin: .1rem;
     /*
@@ -64,6 +63,7 @@ div.picOptionButton {
 }
 div.picOptionButton > i {
     margin-left:.4rem;
+    vertical-align:middle;
 }
 div.picActionButton {
     user-select:none;
@@ -434,11 +434,12 @@ div.picFeature {
     div.picActionButton > div.picOptionToggle,
     div.picOptionButton > div.picOptionToggle {
         display: inline-block;
+        line-height:1rem;
+        vertical-align:middle;
     }
 div.picFeature > div.picToggleButton, div.picVirtualCircuit > div.picToggleButton {
     margin-right:.2em;
     vertical-align:middle;
-
 }
 div.picBodies {
     max-width: 40rem;

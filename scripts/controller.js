@@ -80,6 +80,7 @@
         },
         setConnectionError: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (typeof data.status === 'undefined') data.status = { val: 3, name: 'unknown', desc: 'Unknown Status' };
             el.find('span.picControllerTime').each(function () {
                 $(this).text('--/--/---- --:--');
             });
@@ -148,6 +149,7 @@
         },
         _buildLoggingTab: function () {
             var self = this, o = self.options, el = self.element;
+           
             el.find('div.picTabPanel:first').each(function () {
                 var tabObj = { id: 'tabLogging', text: 'Logging' };
                 var contents = this.addTab(tabObj);
@@ -160,17 +162,39 @@
                 var leg = $('<legend></legend>').appendTo(grp);
                 var btn = $('<div class="logger"></div>').appendTo(leg).optionButton({ text: 'Application', bind: 'app.enabled' });
 
-                var divLine = $('<div class="picAppLogging"><label>Level</label></div>');
+                var divLine = $('<div class="picAppLogging"></div>');
                 divLine.appendTo(grp);
-                var selApp = $('<select data-bind="app.level"></select>');
-                selApp.appendTo(divLine);
-                $('<option value="info">Info</option>').appendTo(selApp);
-                $('<option value="debug">Debug</option>').appendTo(selApp);
-                $('<option value="warn">Warn</option>').appendTo(selApp);
-                $('<option value="verbose">Verbose</option>').appendTo(selApp);
-                $('<option value="error">Error</option>').appendTo(selApp);
-                $('<option value="silly">Silly</option>').appendTo(selApp);
-                $('').appendTo(divLine);
+                
+                $('<div></div>').appendTo(divLine).pickList({
+                    bindColumn: 0, displayColumn: 1, labelText: 'Level', binding: 'app.level',
+                    columns: [{ binding: 'val', hidden: true, text: 'Val', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Log Level', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                    items: [
+                        { val: 'error', name: 'Error', desc: 'Only errors are logged' },
+                        { val: 'warn', name: 'Warn', desc: 'Errors and warnings are logged' },
+                        { val: 'info', name: 'Info', desc: 'Informational events, warnings, and errors are logged' },
+                        { val: 'verbose', name: 'Verbose', desc: 'A high level of events are logged' },
+                        { val: 'debug', name: 'Debug', desc: 'Includes additional debugging information' },
+                        { val: 'silly', name: 'Silly', desc: 'A silly amount of information is logged' }
+                    ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '4rem' } }
+                }).on('selchanged', function (evt) {
+                    if (typeof evt.oldItem !== 'undefined') {
+                        var opt = $(evt.currentTarget);
+                        var obj = dataBinder.fromElement(opt);
+                        $.putApiService('app/logger/setOptions', obj);
+                    }
+                });
+
+
+
+                //var selApp = $('<select data-bind="app.level"></select>');
+                //selApp.appendTo(divLine);
+                //$('<option value="info">Info</option>').appendTo(selApp);
+                //$('<option value="debug">Debug</option>').appendTo(selApp);
+                //$('<option value="warn">Warn</option>').appendTo(selApp);
+                //$('<option value="verbose">Verbose</option>').appendTo(selApp);
+                //$('<option value="error">Error</option>').appendTo(selApp);
+                //$('<option value="silly">Silly</option>').appendTo(selApp);
+                //$('').appendTo(divLine);
 
                 grp = $('<fieldset></fieldset>');
                 leg = $('<legend></legend>').appendTo(grp);
@@ -218,7 +242,7 @@
                 btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Invalid', bind: 'packet.invalid' });
                 divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
 
-                btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Replay', bind: 'packet.replay' });
+                //btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Replay', bind: 'packet.replay' });
 
                 contents.on('click', 'div.picOptionButton.logger', function (evt) {
                     var opt = $(evt.currentTarget);
@@ -227,6 +251,70 @@
                 });
                 var btnPnl = $('<div class="picBtnPanel"></div>');
                 btnPnl.appendTo(grp);
+
+                var btnStartCapture = $('<div></div>');
+                btnStartCapture.appendTo(btnPnl).actionButton({ text: 'Capture Replay', icon: '<i class="fas fa-bug"></i>' });
+                btnStartCapture.on('click', function (e) {
+                    if (makeBool(btnStartCapture.attr('data-iscapturing'))) {
+                        $.getFileApiService('/app/config/stopPacketCapture', function (data, result, xhr) {
+                            var url = window.URL.createObjectURL(new Blob([data]));
+                            var link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', 'replay.zip');
+                            document.body.appendChild(link);
+                            link.click();
+                            $(link).remove();
+                        });
+                        btnStartCapture[0].buttonText('Capture Replay');
+                        divOuter.find('div.picOptionButton').each(function () { this.disabled(false); });
+                        divOuter.find('div.picPickList').each(function () { this.disabled(false); });
+                        btnStartCapture.attr('data-iscapturing', false);
+                        btnStartCapture.show();
+                        btnClearLog.show();
+                    }
+                    else {
+                        var dlg = $.pic.modalDialog.createDialog('dlgSelectCaptureMethod', {
+                            message: 'Select a capture method',
+                            width: '400px',
+                            height: 'auto',
+                            title: 'Select Capture Options',
+                            buttons: [{
+                                text: 'Begin Capture', icon: '<i class="fas fa-bug"></i>',
+                                click: function () {
+                                    $.pic.modalDialog.closeDialog(this);
+                                    var opts = dataBinder.fromElement(dlg);
+                                    console.log(opts);
+                                    if (opts.reload) $.getApiService('/app/config/startPacketCapture');
+                                    else $.getApiService('/app/config/startPacketCaptureWithoutReset');
+                                    btnStartCapture[0].buttonText('Cancel Capture');
+                                    divOuter.find('div.picOptionButton').each(function () { this.disabled(true); });
+                                    divOuter.find('div.picPickList').each(function () { this.disabled(true); });
+                                    btnStartCapture.show();
+                                    btnClearLog.hide();
+                                    btnStartCapture.attr('data-iscapturing', true);
+                                }
+                            },
+                            {
+                                text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                                click: function () { $.pic.modalDialog.closeDialog(this); }
+                            }]
+                        });
+                        var line = $('<div></div>').appendTo(dlg);
+                        $('<div></div>').appendTo(line).checkbox({ labelText: 'Capture Configuation Reload', binding: 'reload'})[0].val(true);
+
+
+                        //$.getApiService('/app/config/startPacketCaptureWithoutReset');
+                        //btnStartCapture[0].buttonText('Cancel Capture');
+                        //divOuter.find('div.picOptionButton').each(function () { this.disabled(true); });
+                        //divOuter.find('div.picPickList').each(function () { this.disabled(true); });
+                        //btnStartCapture.show();
+                        //btnClearLog.hide();
+                        //btnStartCapture.attr('data-iscapturing', true);
+
+                    }
+                }).hide();
+
+
                 var btnClearLog = $('<div></div>');
                 btnClearLog.appendTo(btnPnl);
                 btnClearLog.actionButton({ text: 'Clear Messages', icon: '<i class="fas fa-broom"></i>' });
@@ -238,15 +326,24 @@
                 });
 
 
-                contents.on('change', 'select', function (evt) {
-                    var opt = $(evt.currentTarget);
-                    var obj = dataBinder.fromElement(opt);
-                    $.putApiService('app/logger/setOptions', obj);
-                });
 
                 $.getApiService('app/config/log', undefined, function (data, status, xhr) {
                     console.log(data);
                     dataBinder.bind(contents, data);
+                    if (data.app.captureForReplay === true) {
+                        btnStartCapture[0].buttonText('Cancel Capture');
+                        grp.find('div.picOptionButton').each(function () { this.disabled(true); });
+                        btnStartCapture.show();
+                        btnClearLog.hide();
+                        btnStartCapture.attr('data-iscapturing', true);
+                    }
+                    else {
+                        btnStartCapture[0].buttonText('Capture Replay');
+                        grp.find('div.picOptionButton').each(function () { this.disabled(false); });
+                        btnStartCapture.attr('data-iscapturing', false);
+                        btnStartCapture.show();
+                        btnClearLog.show();
+                    }
                 });
 
             });
@@ -343,11 +440,13 @@
             tabs.tabBar();
             $.getJSON('/config/web', null, function (configData, status, xhr) {
                 console.log(configData);
+                o.initializing = true;
                 self._buildConnectionsTab(configData);
                 self._buildLoggingTab();
                 self._buildFirmwareTab(configData);
                 tabs[0].selectTabById('tabConnections');
                 var evt = $.Event('loaded');
+                o.initializing = false;
                 el.trigger(evt);
 
             });
@@ -410,7 +509,7 @@
                     divOuter.find('div.picOptionButton[data-actionid=all]')[0].val(arr.length === 0);
                     //console.log(arr);
                     obj.packet[o.protocol][op + 'Actions'] = arr;
-                    console.log(obj);
+                    //console.log(obj);
                     $.putApiService('app/logger/setOptions', obj);
 
                 });
