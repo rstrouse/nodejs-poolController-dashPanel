@@ -1,4 +1,25 @@
-﻿var mhelper = {
+﻿var valveMessages = {
+    cancelled: false,
+    msg: { "direction": "out", "protocol": "intellivalve", "padding": [], "preamble": [255, 0, 255], "header": [165, 1, 12, 16, 81, 8], "payload": [0, 128, 216, 128, 57, 64, 25, 166], "term": [4, 44], "key": "165_1_16_12_82_8", "delay": 1000 },
+    processNextMessage: function () {
+        var self = this;
+        self.msg.payload[0]++;
+        if (self.cancelled) return;
+        if (self.msg.payload[0] <= 256) {
+            var mm = $('div.picMessageManager')[0];
+            setTimeout(function () {
+                mm.sendOutboundMessage(self.msg);
+                self.processNextMessage();
+            }, (self.msg.delay || 0));
+        }
+    },
+    receiveMessages: function (msg, prev) {
+
+    }
+};
+
+
+var mhelper = {
     extractByte: function (arr, ndx, def) { return arr.length > ndx ? arr[ndx] : def; },
     mapAddress: function (byte) {
         if (byte >= 144 && byte <= 158) return 'Chem[' + (byte - 143) + ']';
@@ -422,7 +443,8 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {} },
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}
+        },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initList = function (data) { self._initList(); };
@@ -484,16 +506,17 @@ mhelper.init();
 
             row = $('<tr></tr>').addClass('msgList-body').appendTo(tbody);
             td = $('<td></td>').addClass('msgList-body').appendTo(row);
-            var vlist = $('<div></div>').css({ width: '100%', height: '100%'}).appendTo(td).virtualList({
+            var vlist = $('<div></div>').css({ width: '100%', height: '100%' }).appendTo(td).virtualList({
                 selectionType: 'single',
                 columns: [
                     { width: '18px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                    { width: '37px', header: { label: 'Id', style: { textAlign: 'center' } }, data: { style: { textAlign: 'right' } } },
                     { width: '18px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
                     { width: '18px', header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
                     { width: '57px', header: { label: 'Proto' } },
                     { width: '57px', header: { label: 'Source' } },
                     { width: '57px', header: { label: 'Dest' } },
-                    { width: '70px', header: { label: 'Action' } },
+                    { width: '47px', header: { label: 'Action' } },
                     { header: { style: { textAlign: 'center' }, label: 'Payload' } }
                 ]
             });
@@ -505,8 +528,9 @@ mhelper.init();
                 var msgKey = evt.newRow.attr('data-msgkey');
                 var docKey = evt.newRow.attr('data-dockey');
                 var prev;
+
                 for (var i = ndx - 1; i >= 0; i--) {
-                    var p = $(evt.allRows[i]);
+                    var p = $(evt.allRows[i].row);
                     if (p.attr('data-msgkey') === msgKey) {
                         prev = o.messages['m' + p.attr('data-rowid')];
                         console.log({ msg: 'Found Prev', prev });
@@ -601,15 +625,18 @@ mhelper.init();
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.docKey] = ctx;
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
+
+            $('<span></span>').text(msg._id).appendTo(r.cells[1]);
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
-            $('<span></span>').append(dir).appendTo(r.cells[1]);
-            var spChg = $('<span class="changed"></span>').appendTo(r.cells[2]);
+            $('<span></span>').append(dir).appendTo(r.cells[2]);
+            var spChg = $('<span class="changed"></span>').appendTo(r.cells[3]);
             var chg = $('<i class="fas"></i>').appendTo(spChg);
-            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[3]);
-            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[4]);
-            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[5]);
-            $('<span></span>').text(ctx.actionName).appendTo(r.cells[6]);
-            $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[7]);
+            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[4]);
+            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[5]);
+            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[6]);
+            $('<span></span>').text(ctx.actionByte).appendTo(r.cells[7]);
+            $(r.cells[7]).attr('title', ctx.actionName).addClass('msg-action');
+            $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[8]);
             var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;
             if (typeof prev === 'undefined')
@@ -626,11 +653,14 @@ mhelper.init();
             if (o.changesOnly && !hasChanged) obj.hidden = true;
 
             o.messageKeys[ctx.messageKey] = msg;
+            msg.rowId = obj.rowId;
             //row.data('message', msg); Can't store jquery data. Create our own message cache.
             o.messages['m' + obj.rowId] = msg;
             row.attr('data-msgkey', ctx.messageKey);
             row.attr('data-dockey', ctx.docKey);
+            row.attr('data-msgid', msg._id);
             obj.hasChanged = hasChanged;
+            if (typeof prev !== 'undefined') obj.prevId = prev.rowId;
             if (!o.pinScrolling) {
                 if (!o.changesOnly || (o.changesOnly && hasChanged)) {
                     self.selectRowByIndex(obj.rowId, true);
@@ -771,7 +801,9 @@ mhelper.init();
             $('<label>Term:</label>').appendTo(line);
             $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'term');
 
-
+            line = $('<div class="dataline msg-detail-response"></div>').appendTo(div);
+            $('<label title="Response For">Resp For:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'responseFor');
             $('<div class="payloadBytes"></div>').appendTo(div);
             $('<div class="msg-payload"></div>').appendTo(el);
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section');
@@ -840,8 +872,20 @@ mhelper.init();
                     direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound ',
                     header: msg.header.join(','),
                     padding: msg.padding.join(','),
-                    term: msg.term.join(',')
+                    term: msg.term.join(','),
+                    responseFor: ''
                 };
+                obj.responseFor = typeof msg.responseFor !== 'undefined' && msg.responseFor.length ? msg.responseFor.join(',') : '';
+                // Delete all the dynamic styles for selection.
+                var styleResp = $('#responseStyles');
+                var sheet = styleResp[0].sheet;
+                for (var rule = sheet.cssRules.length - 1; rule >= 0; rule--) sheet.deleteRule(rule);
+                // Add in all the rules where the reference is valid.
+                for (var n = 0; n < msg.responseFor.length; n++) {
+                    sheet.addRule('tr.msgRow[data-msgid="' + (msg.responseFor[n]) + '"] > td.msg-action', 'background-color:yellow;font-weight:bold;');
+                }
+                //console.log(sheet);
+                
             }
             if (msg.isValid === false) {
                 el.addClass('invalid');
@@ -1027,8 +1071,16 @@ mhelper.init();
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 self.sendQueue();
             });
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Send IntelliValve', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
+                el.addClass('processing');
+                valveMessages.cancelled = false;
+                valveMessages.processNextMessage();
+            }).hide();
+
             $('<div></div>').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;"></i>' }).on('click', function (e) {
-                self.msgQueue.length = 0;                
+                self.msgQueue.length = 0;
+                el.removeClass('processing');
+                valveMessages.cancelled = true;
             });
             
             el.on('click', 'div.queued-message-remove', function (evt) {

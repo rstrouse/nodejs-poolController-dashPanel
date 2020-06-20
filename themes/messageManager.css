@@ -11,7 +11,7 @@ body {
   width: 100%;
   height: 100%;
   margin: 0px;
-  background-image: url(images/waterdropbackground.jpg);
+  background-image: url(images/WaterDropBackground.jpg);
   box-sizing: border-box; }
 
 div.mmgrOuter {
@@ -73,30 +73,35 @@ td.msgList-body {
   vertical-align: top;
   overflow: hidden; }
 
-tr.msgRow > td:nth-child(-n+3) {
+tr.msgRow > td:nth-child(1),
+tr.msgRow > td:nth-child(3),
+tr.msgRow > td:nth-child(4) {
   text-align: center; }
 
-tr.msgRow > td:nth-child(n+4) > span {
+tr.msgRow > td:nth-child(n+5) > span {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: normal;
   display: inline-block; }
 
-tr.msgRow > td:nth-child(4) > span,
 tr.msgRow > td:nth-child(5) > span,
-tr.msgRow > td:nth-child(6) > span {
+tr.msgRow > td:nth-child(6) > span,
+tr.msgRow > td:nth-child(7) > span {
   max-width: 55px; }
 
-tr.msgRow > td:nth-child(7) > span {
-  max-width: 68px; }
+tr.msgRow > td:nth-child(8) {
+  text-align: center; }
+
+tr.msgRow > td:nth-child(8) > span {
+  max-width: 37px; }
 
 tr.msgRow > td:last-child > span {
-  max-width: 457px; }
+  max-width: 427px; }
 
-tr.msgRow.changed > td:nth-child(3) > span.changed {
+tr.msgRow.changed > td:nth-child(4) > span.changed {
   color: #6495ed; }
 
-tr.msgRow > td:nth-child(3) > span.changed.new {
+tr.msgRow > td:nth-child(4) > span.changed.new {
   color: mediumvioletred; }
 
 @media screen and (max-width: 1277px) {
@@ -191,7 +196,7 @@ span.msg-detail-bytearray::after {
 
 div.msg-detail-section.bytearrays > div.dataline > label {
   display: inline-block;
-  width: 47px;
+  width: 57px;
   font-weight: bold; }
 
 div.queue-detail-panel > div.dataline > label,
