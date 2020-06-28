@@ -38,14 +38,11 @@
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Feature', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var features = el.find('div.picConfigCategory.cfgFeatures');
-                    //$(this).addClass('disabled');
-                    //$(this).find('i').addClass('burst-animated');
+                    var newId = el.find('div.cfgFeature input[data-bind=id]').length + 1;
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions });
-                    pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (opts.features.length + 1), type: 0, showInFeatures: true });
+                    pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (newId), type: 0, showInFeatures: true });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
-
-
             });
         }
     });
@@ -467,11 +464,6 @@
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
-
-
-
-
-
             });
         },
         addCircuit: function (circ) {
@@ -626,8 +618,29 @@
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                if (v.id <= 0) p.parents('div.picConfigCategory.cfgLightGroup:first').remove();
-
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteFeature', {
+                    message: 'Are you sure you want to delete light group ' + v.name + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Light Group',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            console.log(v);
+                            if (v.id <= 0) p.parents('div.picConfigCategory.cfgCircuitGroup:first').remove();
+                            else {
+                                $.deleteApiService('/config/lightGroup', v, 'Deleting Light Group...', function (data, status, xhr) {
+                                    p.parents('div.picConfigCategory.cfgLightGroup:first').remove();
+                                });
+                            }
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
             });
         },
         _validate: function () {

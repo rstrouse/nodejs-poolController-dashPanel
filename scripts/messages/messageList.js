@@ -567,7 +567,7 @@ mhelper.init();
             el.on('click', 'div.picClearMessages', function (evt) { self.clear(); });
             el.on('click', 'i.fa-clipboard', function (evt) {
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
-                mhelper.copyToClipboard(o.messages['m' + row.attr('data-rowid')]);
+                msgManager.copyToClipboard(o.messages['m' + row.attr('data-rowid')]);
             });
             el.on('click', 'div.picUploadLog', function (evt) {
                 var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
@@ -880,9 +880,11 @@ mhelper.init();
                 var styleResp = $('#responseStyles');
                 var sheet = styleResp[0].sheet;
                 for (var rule = sheet.cssRules.length - 1; rule >= 0; rule--) sheet.deleteRule(rule);
-                // Add in all the rules where the reference is valid.
-                for (var n = 0; n < msg.responseFor.length; n++) {
-                    sheet.addRule('tr.msgRow[data-msgid="' + (msg.responseFor[n]) + '"] > td.msg-action', 'background-color:yellow;font-weight:bold;');
+                if (typeof msg.responseFor !== 'undefined') {
+                    // Add in all the rules where the reference is valid.
+                    for (var n = 0; n < msg.responseFor.length; n++) {
+                        sheet.addRule('tr.msgRow[data-msgid="' + (msg.responseFor[n]) + '"] > td.msg-action', 'background-color:yellow;font-weight:bold;');
+                    }
                 }
                 //console.log(sheet);
                 
@@ -954,9 +956,9 @@ mhelper.init();
             $('<td></td>').addClass('bytediff-dec').appendTo(rowHead).text('dec');
             $('<td></td>').addClass('bytediff-dec').appendTo(rowCurr).text(bcurr);
             $('<td></td>').addClass('bytediff-ascii').appendTo(rowHead).text('ascii');
-            $('<td></td>').addClass('bytediff-ascii').appendTo(rowCurr).text(mhelper.toAscii(bcurr));
+            $('<td></td>').addClass('bytediff-ascii').appendTo(rowCurr).text(msgManager.toAscii(bcurr));
             $('<td></td>').addClass('bytediff-hex').appendTo(rowHead).text('hex');
-            $('<td></td>').addClass('bytediff-hex').appendTo(rowCurr).text(mhelper.toHex(bcurr));
+            $('<td></td>').addClass('bytediff-hex').appendTo(rowCurr).text(msgManager.toHex(bcurr));
             var cellBinHead = $('<td></td>').addClass('bytediff-binary').appendTo(rowHead);
             makeBinaryTable().appendTo($('<div></div>').appendTo(cellBinHead));
             makeBinaryTable(bcurr).appendTo($('<td></td>').appendTo(rowCurr));
@@ -964,8 +966,8 @@ mhelper.init();
                 var rowPrev = $('<tr></tr>').addClass('bytediff-prev').appendTo(tbody);
                 $('<td></td>').addClass('bytediff-name').appendTo(rowPrev).text('Previous');
                 $('<td></td>').addClass('bytediff-dec').appendTo(rowPrev).text(bprev);
-                $('<td></td>').addClass('bytediff-ascii').appendTo(rowPrev).text(mhelper.toAscii(bprev));
-                $('<td></td>').addClass('bytediff-hex').appendTo(rowPrev).text(mhelper.toHex(bprev));
+                $('<td></td>').addClass('bytediff-ascii').appendTo(rowPrev).text(msgManager.toAscii(bprev));
+                $('<td></td>').addClass('bytediff-hex').appendTo(rowPrev).text(msgManager.toHex(bprev));
                 makeBinaryTable(bprev).appendTo($('<td></td>').appendTo(rowPrev));
             }
             return diff;
@@ -983,9 +985,9 @@ mhelper.init();
             var p = typeof prev !== 'undefined' && typeof prev.payload !== 'undefined' ? prev.payload : [];
             for (var i = 0; i < msg.payload.length; i++) {
                 var bdec = msg.payload[i];
-                var pdec = mhelper.extractByte(p, i);
-                var bascii = mhelper.toAscii(bdec);
-                var bhex = mhelper.toHex(bdec);
+                var pdec = msgManager.extractByte(p, i);
+                var bascii = msgManager.toAscii(bdec);
+                var bhex = msgManager.toHex(bdec);
                 if (i % 20 === 0 && i > 0) {
                     header = $('<tr class="msg-payload-header"></tr>').appendTo(tbl.find('tbody:first'));
                     decimal = $('<tr class="msg-payload-decimal"></tr>').appendTo(tbl.find('tbody:first'));
@@ -1000,8 +1002,8 @@ mhelper.init();
                 if (typeof pdec !== 'undefined' && pdec !== bdec) {
                     chead.attr('data-prevbyte', pdec);
                     cdec.addClass('payload-change');//.attr('title', 'prev: ' + pdec);
-                    chex.addClass('payload-change');//.attr('title', 'prev: ' +  mhelper.toHex(pdec));
-                    cascii.addClass('payload-change');//.attr('title', 'prev: ' + mhelper.toAscii(pdec));
+                    chex.addClass('payload-change');//.attr('title', 'prev: ' +  msgManager.toHex(pdec));
+                    cascii.addClass('payload-change');//.attr('title', 'prev: ' + msgManager.toAscii(pdec));
                 }
             }
         }
@@ -1054,7 +1056,7 @@ mhelper.init();
             $('<table class="queue-list-header"><tbody><tr><td></td><td>Proto</td><td>Src/Dest</td><td>Action</td><td>Payload</td><td>Delay</td><td></td></tr></tbody></table>').appendTo(div);
             div = $('<div class="queue-send-list"></div>').appendTo(el);
             var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
-            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" ></i>' }).on('click', function (e) {
+            $('<div></div>').attr('id', 'btnAddMessage').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" ></i>' }).on('click', function (e) {
                 var controller = $(document.body).attr('data-controllertype') === 'intellicenter' ? 63 : 34;
                 var msg = { protocol: 'broadcast', payload: [], header: [165, controller, 15, 16, 0, 0], term: [], delay:0 };
                 var divPopover = $('<div></div>');
@@ -1068,19 +1070,18 @@ mhelper.init();
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
-            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
+            $('<div></div>').attr('id', 'btnSendQueue').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 self.sendQueue();
             });
-            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Send IntelliValve', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
+            $('<div></div>').attr('id', 'btnRunTests').appendTo(btnPnl).actionButton({ text: 'Run Script', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 el.addClass('processing');
-                valveMessages.cancelled = false;
-                valveMessages.processNextMessage();
+                outModule.begin();
             }).hide();
 
             $('<div></div>').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;"></i>' }).on('click', function (e) {
                 self.msgQueue.length = 0;
                 el.removeClass('processing');
-                valveMessages.cancelled = true;
+                outModule.cancel();
             });
             
             el.on('click', 'div.queued-message-remove', function (evt) {
@@ -1159,6 +1160,42 @@ mhelper.init();
                     self.addMessage(queue.messages[i]);
                 }
             }
+            if (queue.type === 'testModule') {
+                el.find('div.queue-list-header').hide();
+                el.find('div.queue-send-list').hide();
+                el.find('#btnRunTests').hide();
+                el.find('#btnAddMessage').hide();
+                el.find('#btnSendQueue').hide();
+                el.find('div.picEditQueue').hide();
+                el.find('div.picSaveQueue').hide();
+                //$('script#scriptTestModule').remove();
+                if (typeof outModule !== 'undefined') delete typeof outModule;
+                $.getScript('scripts/messages/testModules/' + queue._fileName, // + '?ver=' + new Date().getTime(),
+                    function (data, status, xhr) {
+                    console.log({ outModule: outModule, data: data, status: status, xhr: xhr });
+                    el.find('#btnRunTests').show();
+                });
+                //var script = $('<script></script>')
+                //    .attr('id', 'scriptTestModule')
+                //    .attr('src', 'scripts/messages/testModules/' + queue._fileName)
+                //    .attr('type', 'text/javascript');
+                //script.on('load', function (evt) {
+                //    console.log(evt);
+                //    el.find('#btnRunTests').show();
+                //});
+                //script.appendTo(document.head);
+            }
+            else {
+                //$('script#scriptTestModule').remove();
+                if (typeof outModule !== 'undefined') delete typeof outModule;
+                el.find('div.queue-list-header').show();
+                el.find('div.queue-send-list').show();
+                el.find('#btnRunTests').hide();
+                el.find('#btnAddMessage').show();
+                el.find('#btnSendQueue').show();
+                el.find('div.picEditQueue').show();
+                el.find('div.picSaveQueue').show();
+            }
         },
         saveQueue: function () {
             var self = this, o = self.options, el = self.element;
@@ -1214,8 +1251,6 @@ mhelper.init();
             el.find('div.picMessageListTitle:first > span').text('Sending Messages...');
 
             self.processNextMessage();
-            
-
         },
         processNextMessage: function () {
             var self = this, o = self.options, el = self.element;
@@ -1573,7 +1608,6 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             if (typeof queue.id !== 'number' || queue.id <= 0) el.parents('div.picPopover:first')[0].titleText('Create Queue');
             dataBinder.bind(el, queue);
-
         }
     });
     $.widget("pic.loadQueue", {

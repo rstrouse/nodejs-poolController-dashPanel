@@ -1,13 +1,15 @@
 ﻿import { logger } from "./server/logger/Logger";
 import { config } from "./server/config/Config";
 import { webApp } from "./server/Server";
+import { outQueues } from "./server/queues/outboundQueue";
 import * as readline from 'readline';
 
 export function initAsync() {
     return Promise.resolve()
         .then(function () { config.init(); })
         .then(function () { logger.init(); })
-        .then(function () { webApp.init(); });
+        .then(function () { webApp.init(); })
+        .then(function () { outQueues.init(); })
 }
 export function stopAsync(): Promise<void> {
     return Promise.resolve()

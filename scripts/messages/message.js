@@ -84,13 +84,18 @@ var msgManager = {
         let context = this.createKeyContext(msg);
         return $.extend(true, {}, context, this.makeMessageKey(msg, context));
     },
-    isMessageDiff(msg1, msg2, context) {
+    isMessageDiff: function(msg1, msg2, context) {
         context = context || this.createKeyContext(msg1);
         var keyBytes = context.keyBytes !== 'undefined' ? context.keyBytes || [] : [];
         for (var i = 0; i < Math.max(msg1.payload.length, msg2.payload.length); i++) {
             if (keyBytes.includes(i)) continue;
             if (this.extractByte(msg1.payload, i, -1) !== this.extractByte(msg2.payload, i, -1)) return true;
         }
+        return false;
+    },
+    isArrayDiff: function (arr1, arr2) {
+        if (arr1.length !== arr2.length) return true;
+        for (var i = 0; i < arr1.length; i++) { if(arr1[i] !== arr2[i]) return true; }
         return false;
     },
     toDocMessage: function (msg, sig, ctx) {
@@ -142,6 +147,47 @@ var msgManager = {
         return val >= 80 ? val : 15;
     },
     extractControllerByte: function (msg) { return msg.protocol === 'chlorinator' ? 0 : this.extractByte(msg.header, 1); },
-    extractByte: function (arr, ndx, def) { return arr.length > ndx ? arr[ndx] : def; }
+    extractByte: function (arr, ndx, def) { return arr.length > ndx ? arr[ndx] : def; },
+    toAscii: function (byte) { return (byte < 127 && byte > 31) ? String.fromCharCode(byte) : '.'; },
+    toHex: function (byte, pad) {
+        var hex = byte.toString(16);
+        pad = typeof pad === 'undefined' || pad === null ? 2 : pad;
+        while (hex.length < pad) hex = '0' + hex;
+        return hex.toUpperCase();
+    },
+    sumArray: function (arr) {
+        var sum = 0;
+        for (var i = 0; i < arr.length; i++) sum += arr[i];
+        return sum;
+    },
+    calcChecksum: function (msg) {
+        if (msg.protocol !== 'chlorinator') {
+            msg.header[5] = msg.payload.length;
+            var checksum = this.sumArray(msg.header) + this.sumArray(msg.payload);
+            msg.term = [Math.floor(checksum / 256), checksum - (Math.floor(checksum / 256) * 256)];
+        }
+    },
+    copyToClipboard: msg => {
+        var str = '[' + msg.preamble.join(', ') + '][' + msg.header.join(', ') + '][' + msg.payload.join(', ') + '][' + msg.term.join(', ') + ']';
+        var el = document.createElement('textarea');  // Create a <textarea> element
+        el.value = str;                                 // Set its value to the string that you want copied
+        el.setAttribute('readonly', '');                // Make it readonly to be tamper-proof
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';                      // Move outside the screen to make it invisible
+        document.body.appendChild(el);                  // Append the <textarea> element to the HTML document
+        var selected =
+            document.getSelection().rangeCount > 0        // Check if there is any content selected previously
+                ? document.getSelection().getRangeAt(0)     // Store selection if found
+                : false;                                    // Mark as false to know no selection existed before
+        el.select();                                    // Select the <textarea> content
+        document.execCommand('copy');                   // Copy - only works as a result of a user action (e.g. click events)
+        document.body.removeChild(el);                  // Remove the <textarea> element
+        if (selected) {                                 // If a selection existed before copying
+            document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
+            document.getSelection().addRange(selected);   // Restore the original selection
+        }
+    }
+
+
 };
 $(document).ready(function () { msgManager.init(); });

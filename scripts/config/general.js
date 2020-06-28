@@ -158,6 +158,7 @@
                 var v = dataBinder.fromElement(p);
                 console.log(v);
                 $.putApiService('/config/general', v, 'Saving Delays...', function (data, status, xhr) {
+                    console.log(data);
                     self.dataBind(data);
                 });
             });

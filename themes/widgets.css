@@ -611,10 +611,19 @@ label.picUnits, span.picUnits {
     padding-right:.1em;
     font-size:.8em;
 }
-div.picPump, div.picChlorinator, div.picSchedule {
+div.picPump, div.picChlorinator, div.picSchedule, div.picChemController {
     font-size:.9rem;
     cursor:pointer;
 }
+    div.picChlorinator > label.picChlorinatorName,
+    div.picChemController > label.picControllerName {
+        display: inline-block;
+        width: 5.9rem;
+        text-overflow: ellipsis;
+    }
+    div.picChemController div.picIndicator,
+    div.picChlorinator div.picIndicator {
+    }
 div.picIndicator {
     display: inline-block;
     border: solid 1px gray;

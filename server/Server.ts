@@ -143,6 +143,7 @@ export class HttpServer extends ProtoServer {
             });
             this.app.get('/messages/queues', async (req, res, next) => {
                 try {
+                    outQueues.loadDescriptors();
                     console.log(`request:  ${JSON.stringify(req.body)}...`);
                     return res.status(200).send(outQueues);
                 }

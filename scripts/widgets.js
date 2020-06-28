@@ -842,6 +842,7 @@ $.ui.position.fieldTip = {
             el[0].buttonText = function (val) { return self.buttonText(val); };
             if (o.bind) el.attr('data-bind', o.bind);
             el[0].buttonIcon = function (val) { return self.buttonIcon(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -850,6 +851,15 @@ $.ui.position.fieldTip = {
         buttonIcon: function (val) {
             var self = this, o = self.options, el = self.element;
             el.find('span.picButtonIcon').html(val);
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) el.addClass('disabled');
+                else el.removeClass('disabled');
+            }
         }
     });
     $.widget("pic.optionButton", {
@@ -965,7 +975,7 @@ $.ui.position.fieldTip = {
             if (typeof o.min === 'undefined' || o.min === null) o.min = 0;
             if (typeof o.val === 'undefined' || o.val === null) o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
-            el.find('span.picSpinner-units').text(o.units);
+            el.find('span.picSpinner-units').html(o.units);
             self._applyStyles();
             if (typeof o.value !== 'undefined') self.val(o.value);
             if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);

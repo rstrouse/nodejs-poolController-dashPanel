@@ -45,13 +45,14 @@
                     this.setEquipmentState(data);
                 });
             });
-
             o.socket.on('logMessage', function (data) {
-                //console.log({ evt: 'logMessage', data: data });
+                console.log({ evt: 'logMessage', data: data });
                 $('div.picMessages').each(function () {
                     this.addMessage(data);
                 });
-
+                var evt = $.Event('messageReceived');
+                evt.message = data;
+                el.trigger(evt);
             });
             o.socket.on('connect_error', function (data) {
                 console.log('connection error:' + data);

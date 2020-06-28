@@ -49,6 +49,11 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configPumps();
                     break;
+                case 'tabChemistry':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configChemistry();
+                    break;
+
                 case 'tabLightGroups':
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configLightGroups();

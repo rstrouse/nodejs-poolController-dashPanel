@@ -1,7 +1,7 @@
 ﻿import * as path from 'path';
 import * as fs from 'fs';
 import * as extend from 'extend';
-import { logger } from '../logger/Logger';
+import { logger } from '../../server/logger/Logger';
 class outboundQueueCollection extends Array<outboundQueue> {
     private _queuePath: string;
     private _isInitialized: boolean = false;
@@ -9,9 +9,9 @@ class outboundQueueCollection extends Array<outboundQueue> {
         super(...items);
         this._queuePath = path.posix.join(process.cwd(), '/data/outQueues/');
         this._isInitialized = true;
-        this.loadDescriptors();
     }
-    private loadDescriptors() {
+    public loadDescriptors() {
+        this.length = 0; // Truncate the current list.
         let data = [];
         if (fs.existsSync(this.queuePath + 'outQueues.json')) {
             try {
@@ -43,10 +43,31 @@ class outboundQueueCollection extends Array<outboundQueue> {
             });
         }
         catch (err) {
-
+            logger.error(err);
         }
         // We should have the descriptors matched up with the queues.  Now sort them by name.
-        this.sort((a, b) => { return a.name.localeCompare(b.name); })
+        this.sort((a, b) => { return a.name.localeCompare(b.name); });
+
+        // Now lets load up all the .js modules int the testmodules directory. 
+        try {
+            fs.readdirSync(path.posix.join(process.cwd(), '/scripts/messages/testModules')).forEach(file => {
+                if (path.extname(file) === '.js') {
+                    let name = path.parse(file).name;
+                    let q = this.find(elem => { return elem.fileName === name });
+                    if (typeof q === 'undefined') {
+                        let d = {
+                            fileName: name + path.extname(file),
+                            name: name.replace('_', ' '),
+                            type: 'testModule',
+                            id: nextId++,
+                            description: `Test module for generating outbound messages`
+                        }
+                        this.push(Object.assign(new outboundQueue(), d));
+                    }
+                }
+            });
+        }
+        catch (err) { logger.error(err); }
     }
     public get queuePath(): string { return this._queuePath; }
     public getNextId(): number {
@@ -110,14 +131,17 @@ class outboundQueueCollection extends Array<outboundQueue> {
         });
     }
     public makeFileName(name: string) { return name.replace(/[&\/\\#,+$~%.'":*?<>{}]/g, '_') + '.out'; }
+    public init() {
+        this.loadDescriptors();
+    }
 }
 class outboundQueue {
     private _fileName: string;
-    constructor() {
-    }
+    constructor() { }
     public id: number;
     public name: string;
     public description: string;
+    public type: string = 'messageList';
     public messages: any[];
     public get fileName(): string { return typeof this._fileName === 'undefined' ? this.name.replace(' ', '_') + '.out' : this.fileName; }
     public set fileName(val: string) { this._fileName = val; }
