@@ -15,7 +15,7 @@
                     $('<div></div>').appendTo(el).pnlChlorinatorConfig(opts)[0].dataBind(opts.chlorinators[i]);
                 }
             });
-            $.getApiService('/config/options/chemController', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/chemControllers', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(el).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
