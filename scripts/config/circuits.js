@@ -166,7 +166,7 @@
             el.addClass('picConfigCategory cfgAuxCircuit');
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
-                columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '9rem' } },
+                columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '10.5rem' } },
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
                 { binding: 'feature', style: { width: '8rem' } },
@@ -252,7 +252,7 @@
             el.addClass('picConfigCategory cfgFeature');
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
-                columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '9rem' } },
+                columns: [{ binding: 'name', glyph: 'fas fa-code-branch', style: { width: '10.5rem' } },
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
                 { binding: 'feature', style: { width: '8rem' } },
@@ -363,7 +363,7 @@
             el.addClass('picConfigCategory cfgCircuitGroup');
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
-                columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '9rem' } },
+                columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
                     { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
@@ -530,7 +530,7 @@
             el.addClass('picConfigCategory cfgLightGroup');
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
-                columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '9rem' } },
+                columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
                 { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } },
                 { binding: 'eggTimer', style: { width: '5rem' } }]
             });
