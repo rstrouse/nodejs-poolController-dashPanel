@@ -603,7 +603,12 @@ div.picSuperChlorBtn:active {
 
 label.picPumpName, label.picScheduleName {
     display:inline-block;
-    min-width:5.9rem;
+    min-width:6.7rem;
+    white-space:nowrap;
+    overflow:hidden;
+    vertical-align:middle;
+    text-overflow:ellipsis;
+    width:6.7rem;
 }
 label.picUnits, span.picUnits {
     color:gray;
