@@ -64,11 +64,10 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                if (data.circuit <= 0) {
+                if (data.circuit <= 0 || data.isActive === false) {
                     el.remove();
                     return;
                 }
-
                 dataBinder.bind(el, data);
                 el.css({ display: '' });
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
