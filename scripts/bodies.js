@@ -9,9 +9,9 @@
         _initBodies: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picAmbientTemp"></div>');
+            var div = $('<div class="picAmbientTemp"></div>');
             div.appendTo(el);
-            let d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            var d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
             d = $('<div><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);

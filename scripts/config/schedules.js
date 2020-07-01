@@ -144,7 +144,7 @@
                 var v = dataBinder.fromElement(p);
                 if (dataBinder.checkRequired(el, true)) {
                     console.log(v);
-                    $.putApiService('/config/schedule', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
+                    $.putApiService('/config/schedule', v, 'Saving Schedule...', function (data, status, xhr) {
                         console.log({ data: data, status: status, xhr: xhr });
                         self.dataBind(data);
                     });
