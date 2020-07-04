@@ -1739,24 +1739,29 @@ mhelper.init();
             }
             prog.incrementProcessProgress();
             if (typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
-                msgList.addBulkMessage({
-                    isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
-                    protocol: msg.proto,
-                    direction: msg.dir,
-                    padding: msg.pkt[0],
-                    preamble: msg.pkt[1],
-                    header: msg.pkt[2],
-                    payload: msg.pkt[3],
-                    term: msg.pkt[4],
-                    timestamp: msg.ts
-                });
+                //if (msg.proto !== 'chlorinator' && msg.proto !== 'pump') {
+                    msgList.addBulkMessage({
+                        isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
+                        _id: msg.id,
+                        responseFor: msg.for,
+                        protocol: msg.proto,
+                        direction: msg.dir,
+                        padding: msg.pkt[0],
+                        preamble: msg.pkt[1],
+                        header: msg.pkt[2],
+                        payload: msg.pkt[3],
+                        term: msg.pkt[4],
+                        timestamp: msg.ts
+                    });
+                //}
             }
             if (arr.length > 0) setTimeout(function () { self._processNextMessage(msgList, prog, arr); }, 0);
             else {
                 msgList.commitBulkMessages();
                 $(prog).parents('div.picPopover:first')[0].close();
                 el.parents('div.picPopover:first')[0].close();
-
+                let byte = 2;
+                console.log({ msg: 'Testing', on1: ((byte & (1 << (1))) >> 1), on4: ((byte & (1 << (4))) >> 4), on5: ((byte & (1 << (5))) >> 5) });
             }
         }
     });

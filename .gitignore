@@ -268,5 +268,5 @@ __pycache__/
 data/
 # ignore dist, it is for production files created by npm scripts
 dist/
-
+uploads/
 

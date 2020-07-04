@@ -300,7 +300,7 @@
                             }]
                         });
                         var line = $('<div></div>').appendTo(dlg);
-                        $('<div></div>').appendTo(line).checkbox({ labelText: 'Capture Configuation Reload', binding: 'reload'})[0].val(true);
+                        $('<div></div>').appendTo(line).checkbox({ labelText: 'Capture Configuration Reload', binding: 'reload'})[0].val(true);
 
 
                         //$.getApiService('/app/config/startPacketCaptureWithoutReset');

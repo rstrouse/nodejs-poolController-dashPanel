@@ -2741,7 +2741,106 @@ $.ui.position.fieldTip = {
             }
         }
     });
-})(jQuery); // Virtual List
+    $.widget("pic.chemTank", {
+        options: { labelText: '', binding: '' },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initChemTank();
+        },
+        _initChemTank: function () {
+            var self = this, o = self.options, el = self.element;
+            el.attr('data-datatype', 'int');
+            el[0].val = function (val) { return self.val(val); };
+            el[0].isEmpty = function (val) { return self.isEmpty(); };
+            $('<div></div>').addClass('chemTank-level-top').appendTo(el);
+            $('<div></div>').addClass('chemTank-level').appendTo(el);
+            $('<div></div>').addClass('chemTank-scale').appendTo(el);
+            // Create all the ticks for the scale by starting at the top and drawing down.
+            var tickpos = 100 / 7;
+            el.attr('data-chemtype', o.chemType);
+            for (var i = 1; i <= 5; i++) {
+                $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 25px)' }).appendTo(el);
+            }
+            $('<label></label>').addClass('chemTank-label').text(o.labelText).appendTo(el);
+
+
+            if (o.required === true) self.required(true);
+            if (o.binding) el.attr('data-bind', o.binding);
+            self.val(o.value);
+            self._applyStyles();
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picChemTank');
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return self.val() === 'undefined';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var color = self._getColor(val);
+                el.find('div.picColorPicker-value:first').attr('data-color', typeof color !== 'undefined' ? color.name : 'white').attr('data-val', val);
+            }
+            else {
+                return el.find('div.picColorPicker-value:first').attr('data-val');
+            }
+        }
+    });
+    $.widget("pic.chemLevel", {
+        options: { labelText: '', binding: '', scales:[] },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initChemLevel();
+        },
+        _initChemLevel: function () {
+            var self = this, o = self.options, el = self.element;
+            el.attr('data-datatype', 'int');
+            el[0].val = function (val) { return self.val(val); };
+            el[0].isEmpty = function (val) { return self.isEmpty(); };
+            $('<label></label>').text(o.labelText).addClass('chemLevel-label').appendTo(el);
+            $('<div></div>').addClass('chemLevel-level').appendTo(el);
+            el.attr('data-chemtype', o.chemType);
+            if (o.required === true) self.required(true);
+            if (o.binding) el.attr('data-bind', o.binding);
+            self.val(o.value);
+            self._applyStyles();
+            if(typeof o.scales !== 'undefined') self._createScales();
+        },
+        _createScales: function () {
+            var self = this, o = self.options, el = self.element;
+            var lvl = el.find('div.chemLevel-level');
+            var maxWidth = lvl.width();
+            var tot = o.max - o.min;
+            for (var i = 0; i < o.scales.length; i++) {
+                var scale = o.scales[i];
+                var d = $('<div></div>').addClass('chemLevel-scale').appendTo(lvl);
+                if (i === 0) d.css({ 'border-top-left-radius': '5px', 'border-bottom-left-radius': '5px'});
+                else if (i === o.scales.length - 1) d.css({ 'border-top-right-radius': '5px', 'border-bottom-right-radius': '5px' });
+                d.addClass(scale.class);
+                // Calculate the positions
+                //var left = ((scale.min - o.min) !== 0) ? tot / (scale.min - o.min) : 0;
+                var width = ((scale.max - scale.min) / tot ) * 100;
+                d.css({ width: width + '%' });
+                var lbl = $('<label></label>').addClass('chemLevel-scale-label').text(scale.labelEnd).appendTo(lvl);
+
+            }
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picChemLevel');
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return self.val() === 'undefined';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+        }
+    });
+
+})(jQuery);
 $.pic.modalDialog.createDialog = function (id, options) {
     var opt = typeof options !== 'undefined' && options !== null ? options : {
         autoOpen: false,

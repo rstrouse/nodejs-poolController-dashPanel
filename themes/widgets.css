@@ -28,7 +28,6 @@ div.picActionButton > span {
 div.picFeatures > div.picCircuit[data-showinfeatures=false] {
     display:none;
 }
-
 select, input[type=text], fieldset {
     font-size:1rem;
     border-radius:4px;
@@ -1157,7 +1156,200 @@ span.errorMessage {
     vertical-align:middle;
     max-width:20rem;
 }
-
+div.picChemTank {
+    position: relative;
+    display:inline-block;
+    height: 100%;
+    padding-top: 50px;
+    margin: 0 auto;
+    background: rgb(246,248,249); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
+    box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='silver',strength=3);
+    border-radius: 100%/25px;
+    border: solid 1px gray;
+    text-align: center;
+    z-index: 1;
+    border-top:none;
+    border-top-left-radius:100%/15px;
+    border-top-right-radius:100%/15px;
+    margin-left:24px;
+}
+.chemTank-level {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20%;
+    z-index: -1;
+    border: solid 1px gray;
+}
+.chemTank-level {
+    background: #fefdf5;
+    background: -webkit-linear-gradient(-90deg, #fefdf5 0%, #F1DA36 65%);
+    background: linear-gradient(180deg, #fefdf5 0%, #F1DA36 65%);
+    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='silver',strength=3);
+    height: calc(50% + 12.5px);
+    top: calc(50% - 12.5px);
+    border: solid 1px gray;
+    border-radius: 100%/25px;
+    border-top:none;
+}
+.chemTank-level-top {
+    content: '';
+    position: absolute;
+    top: calc(50% - 12.5px);
+    left: 0px;
+    width: 100%;
+    height: 25px;
+    border: solid 1px gray;
+    border-radius: 100%; /*makes circle on level*/
+    background: #fefdf5;
+    background: -webkit-linear-gradient(-90deg, #fefdf5 0%, #F1DA36 65%);
+    background: linear-gradient(180deg, #fefdf5 0%, #F1DA36 65%);
+    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='silver',strength=3);
+}
+    .chemTank-level1:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -1px;
+        width: 100%;
+        height: 15px;
+        z-index: -1;
+        height: 20%;
+        border: solid 1px gray;
+        border-radius: 100%; /*makes circle on level*/
+        background: #fefdf5;
+        background: -webkit-linear-gradient(-90deg, #fefdf5 0%, #F1DA36 65%);
+        background: linear-gradient(180deg, #fefdf5 0%, #F1DA36 65%);
+        filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='silver',strength=3);
+    }
+div.picChemTank:before {
+    content: '';
+    width: 100%;
+    height: 25px;
+    border: solid 1px gray;
+    border-radius: 100%; /*makes circle at top*/
+    position: absolute;
+    top: 0;
+    left:-1px;
+}
+.chemTank-scale {
+    border:solid 1px gray;
+    width:2px;
+    position: absolute;
+    margin:0px auto;
+    top: 30px;
+    left: calc(50% - 1px);
+    height: calc(100% - 35px);
+}
+.chemTank-scale-tick {
+    border:solid 1px gray;
+    width: 8px;
+    position:absolute;
+    left: calc(50% - 4px);
+    height: 2px;
+}
+div.picChemTank[data-chemtype=acid] > div.chemTank-level {
+    background: #f8ffe8; /* Old browsers */
+    background: -moz-linear-gradient(top, #f8ffe8 0%, #e3f5ab 33%, #b7df2d 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8ffe8', endColorstr='#b7df2d',GradientType=0 ); /* IE6-9 */
+}
+div.picChemTank[data-chemtype=acid] > div.chemTank-level-top {
+    background: #f8ffe8; /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover, #f8ffe8 0%, #e3f5ab 33%, #b7df2d 100%); /* FF3.6-15 */
+    background: -webkit-radial-gradient(center, ellipse cover, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* Chrome10-25,Safari5.1-6 */
+    background: radial-gradient(ellipse at center, #f8ffe8 0%,#e3f5ab 33%,#b7df2d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8ffe8', endColorstr='#b7df2d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+div.picChemTank[data-chemtype=orp] > div.chemTank-level {
+    background: rgba(248,80,50,1);
+    background: -moz-linear-gradient(left, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(248,80,50,1)), color-stop(53%, rgba(241,111,92,1)), color-stop(100%, rgba(231,56,39,1)));
+    background: -webkit-linear-gradient(left, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -o-linear-gradient(left, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -ms-linear-gradient(left, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: linear-gradient(to right, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+}
+div.picChemTank[data-chemtype=orp] > div.chemTank-level-top {
+    background: rgba(248,80,50,1);
+    background: -moz-radial-gradient(center, ellipse cover, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(248,80,50,1)), color-stop(53%, rgba(241,111,92,1)), color-stop(100%, rgba(231,56,39,1)));
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    background: radial-gradient(ellipse at center, rgba(248,80,50,1) 0%, rgba(241,111,92,1) 53%, rgba(231,56,39,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
+}
+label.chemTank-label {
+    transform:rotate(-90deg);
+    position:absolute;
+    width:100%;
+    display:block;
+    left:-60%;
+}
+div.chem-balance-value {
+    color:crimson;
+    font-size:44pt;
+    font-weight:bold;
+    text-align:center;
+}
+div.picChemLevel {
+    margin-top:1rem;
+    margin-bottom:1rem;
+}
+label.chemLevel-label {
+    display:inline-block;
+    width:37px;
+}
+div.chemLevel-level {
+    border:solid 1px gray;
+    border-radius:5px;
+    display:inline-block;
+    width: calc(100% - 37px);
+    height: 1rem;
+}
+div.chemLevel-scale {
+    position:relative;
+    display:inline-block;
+    height:1rem;
+    border:solid 1px gray;
+    margin-top:-1px;
+}
+div.chemLevel-lred {
+    background-color:orangered;
+}
+div.chemLevel-lyellow {
+    background-color:yellow;
+}
+div.chemLevel-green {
+    background-color:lawngreen;
+}
+div.chemLevel-ryellow {
+    background-color:yellow;
+}
+div.chemLevel-rred {
+    background-color: orangered;
+}
+label.chemLevel-scale-label {
+    position:absolute;
+    margin-top:1rem;
+    font-size:.7rem;
+    display:inline-block;
+    width:40px;
+    margin-left:-20px;
+    text-align:center;
+}
 
 div.xxxx {
     background: rgb(246,248,249); /* Old browsers */
