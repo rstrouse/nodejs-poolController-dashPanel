@@ -450,9 +450,10 @@ mhelper.init();
             el[0].initList = function (data) { self._initList(); };
             el[0].addMessage = function (msg, autoSelect) { self.addMessage(msg, autoSelect); };
             el[0].addBulkMessage = function (msg) { self.addBulkMessage(msg); };
+            el[0].addBulkApiCall = function (call) { self.addBulkApiCall(call); };
             el[0].commitBulkMessages = function () { self.commitBulkMessages(); };
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
-            el[0].cancelBulkMessages = function () { o.bulkBody = undefined; };
+            el[0].cancelBulkMessages = function () {};
             el[0].clear = function () { self.clear(); };
             el[0].pinSelection = function (val) {
                 if (typeof val !== 'undefined') {
@@ -600,9 +601,17 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList')[0].addRow(msg);
         },
+        addApiCall: function (call) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picVirtualList')[0].addRow(call);
+        },
         addBulkMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList:first')[0].addRows([msg]);
+        },
+        addBulkApiCall: function (call) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picVirtualList:first')[0].addRows([call]);
         },
         commitBulkMessages: function () {
             var self = this, o = self.options, el = self.element;
@@ -616,7 +625,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             //$('div.picMessageDetail')[0].bindMessage(msg, prev, ctx || o.contexts[docKey]);
         },
-        _bindVListRow(obj, msg, autoSelect) {
+        _bindVListMessageRow(obj, msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
             var row = obj.row;
             var r = row[0];
@@ -666,6 +675,37 @@ mhelper.init();
                     self.selectRowByIndex(obj.rowId, true);
                 }
             }
+        },
+        _bindVListApiRow(obj, msg, autoSelect) {
+            var self = this, o = self.options, el = self.element;
+            var row = obj.row;
+            var r = row[0];
+            row.attr('data-msgdir', msg.direction);
+            row.addClass('msgApiRow');
+            $('<span></span>').text('').appendTo(r.cells[1]);
+            var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
+            $('<span></span>').append(dir).appendTo(r.cells[2]);
+            var spChg = $('<span class="changed"></span>').append('<i class="fas fa-poo"></i>').appendTo(r.cells[3]).css({ color: 'brown' });
+            $(r.cells[4]).attr('colspan', 4).text(`${msg.requestor}${msg.path}`);
+            $(r.cells[7]).remove();
+            $(r.cells[6]).remove();
+            $(r.cells[5]).remove();
+            $('<span></span>').text(JSON.stringify(msg.body)).appendTo(r.cells[5]);
+            if (!o.pinScrolling) {
+                if (!o.changesOnly || (o.changesOnly && hasChanged)) {
+                    self.selectRowByIndex(obj.rowId, true);
+                }
+            }
+            row.attr('data-msgid', msg._id);
+            o.messages['m' + obj.rowId] = msg;
+
+        },
+        _bindVListRow(obj, msg, autoSelect) {
+            var self = this, o = self.options, el = self.element;
+            var row = obj.row;
+            var r = row[0];
+            if (msg.protocol === 'api') self._bindVListApiRow(obj, msg, autoSelect);
+            else self._bindVListMessageRow(obj, msg, autoSelect);
         },
         selectRowByIndex: function (ndx, scroll) {
             var self = this, o = self.options, el = self.element;
@@ -741,19 +781,39 @@ mhelper.init();
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].bindMessage = function (msg, prev, ctx) { self.bindMessage(msg, prev, ctx); };
-            self._initDetails();
+            self._initHeader();
+            self._initMessageDetails();
+            self._initApiCallDetails();
         },
-        _initDetails: function () {
+        _initHeader: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-
             var div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
             $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
             $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div).hide();
             $('<div class="picDocumentSignature mmgrButton picIconRight" title="Document this Message Signature"><i class="fas fa-file-signature"></i></div>').appendTo(div).hide();
 
+        },
+        _initApiCallDetails: function () {
+            var self = this, o = self.options, el = self.element;
+            var divOuter = $('<div class="api-detail-info" style="display:none;"></div>').appendTo(el);
+            div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section').addClass('apiDetails');
+            var line = $('<div class="dataline"><div>').appendTo(div);
+            $('<label>Requestor:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).attr('data-bind', 'requestor');
+            line = $('<div class="dataline"></div>').appendTo(div);
+            $('<label>Method:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).attr('data-bind', 'method');
+            line = $('<div class="dataline"></div>').appendTo(div);
+            $('<label>Path:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).attr('data-bind', 'path');
+            $('<div></div>').appendTo(div).addClass('api-callbody');
+        },
+        _initMessageDetails: function () {
+            var self = this, o = self.options, el = self.element;
             //[255, 0, 255][165, 63, 15, 16, 2, 29][9, 47, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 2, 0, 80, 80, 0, 241, 85, 105, 24, 246, 0, 0, 0, 0, 0, 255, 0][255, 165]
-            var divOuter = $('<div class="msg-detail-panel" style="display:none;"></div>').appendTo(el);
+            var msgDiv = $('<div class="msg-detail-info"></div>').appendTo(el);
+            var divOuter = $('<div class="msg-detail-panel" style="display:none;"></div>').appendTo(msgDiv);
 
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section').addClass('details');
             var line = $('<div class="dataline"><div>').appendTo(div);
@@ -805,7 +865,7 @@ mhelper.init();
             $('<label title="Response For">Resp For:</label>').appendTo(line);
             $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'responseFor');
             $('<div class="payloadBytes"></div>').appendTo(div);
-            $('<div class="msg-payload"></div>').appendTo(el);
+            $('<div class="msg-payload"></div>').appendTo(msgDiv);
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section');
             el.on('click', 'div.picAddToQueue', function (evt) {
                 if (typeof o.message !== 'undefined' && o.message) {
@@ -841,10 +901,38 @@ mhelper.init();
                 el.find('div.msg-payload-bytediff').remove();
             });
         },
-        bindMessage: function (msg, prev, ctx) {
+        _bindCallBody: function (level, obj, divObj) {
             var self = this, o = self.options, el = self.element;
+            for (var s in obj) {
+                console.log(divObj);
+                var divVal = $('<div></div>').appendTo(divObj).addClass('callbody-value-outer');
+                var val = obj[s];
+                if (typeof val === 'number' || typeof val === 'boolean') {
+                    $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
+                    $('<span></span>').appendTo(divVal).addClass('callbody-value').text(`${val}`);
+                    divVal.attr('data-expanded', true);
+                }
+                else if (typeof val === 'string') {
+                    $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
+                    $('<span></span>').appendTo(divVal).addClass('callbody-value').text(`"${val}"`);
+                    divVal.attr('data-expanded', true);
+                }
+                else if (typeof val === 'object') {
+                    $('<i class="fas fa-caret-right"></i>').appendTo(divVal).addClass('callbody-expand');
+                    $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
+                    divVal.attr('data-expanded', level === 0);
+                    self._bindCallBody(level + 1, val, divVal);
+                   
+               }
+            }
+        },
+        _bindMessage: function (msg, prev, ctx) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.msg-detail-info').show();
+            el.find('div.api-detail-info').hide();
             var obj = {
                 protocol: '',
+                title: '',
                 source: '',
                 dest: '',
                 action: '',
@@ -887,7 +975,6 @@ mhelper.init();
                     }
                 }
                 //console.log(sheet);
-                
             }
             if (msg.isValid === false) {
                 el.addClass('invalid');
@@ -898,11 +985,31 @@ mhelper.init();
                 el.removeClass('invalid');
             }
             el.find('div.picAddToQueue').show();
-            
+
             o.message = msg;
-            
+
             dataBinder.bind(el, obj);
             self.bindPayload(msg, prev);
+        },
+        _bindApiCall: function (call) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picAddToQueue').hide();
+            el.find('div.msg-detail-info').hide();
+            el.find('div.api-detail-info').show();
+            dataBinder.bind(el, call);
+            var divBody = el.find('div.api-callbody');
+            divBody.empty();
+            self._bindCallBody(0, call.body, divBody);
+        },
+        bindMessage: function (msg, prev, ctx) {
+            var self = this, o = self.options, el = self.element;
+            console.log(msg);
+            if (msg.protocol === 'api') {
+                self._bindApiCall(msg, prev, ctx);
+            }
+            else {
+                self._bindMessage(msg, prev, ctx);
+            }
         },
         showByteDiff: function (cell) {
             var self = this, o = self.options, el = self.element;
@@ -1734,34 +1841,47 @@ mhelper.init();
             var msg = arr.shift();
             if (prog.isCancelled()) {
                 msgList.cancelBulkMessages();
+                msgList.commitBulkMessages();
                 $(prog).parents('div.picPopover:first')[0].close();
                 return;
             }
             prog.incrementProcessProgress();
             if (typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
                 //if (msg.proto !== 'chlorinator' && msg.proto !== 'pump') {
-                    msgList.addBulkMessage({
-                        isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
-                        _id: msg.id,
-                        responseFor: msg.for,
-                        protocol: msg.proto,
-                        direction: msg.dir,
-                        padding: msg.pkt[0],
-                        preamble: msg.pkt[1],
-                        header: msg.pkt[2],
-                        payload: msg.pkt[3],
-                        term: msg.pkt[4],
-                        timestamp: msg.ts
-                    });
+                msgList.addBulkMessage({
+                    isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
+                    _id: msg.id,
+                    responseFor: msg.for,
+                    protocol: msg.proto,
+                    direction: msg.dir,
+                    padding: msg.pkt[0],
+                    preamble: msg.pkt[1],
+                    header: msg.pkt[2],
+                    payload: msg.pkt[3],
+                    term: msg.pkt[4],
+                    timestamp: msg.ts
+                });
                 //}
+            }
+            else if (typeof msg.proto !== 'undefined' && msg.proto === 'api') {
+                // We are now going to add the api call to the message list.
+                msgList.addBulkApiCall({
+                    direction: msg.dir,
+                    protocol: msg.proto,
+                    requestor: msg.requestor,
+                    method: msg.method,
+                    path: msg.path,
+                    body: msg.body,
+                    timestamp: msg.ts
+                });
             }
             if (arr.length > 0) setTimeout(function () { self._processNextMessage(msgList, prog, arr); }, 0);
             else {
                 msgList.commitBulkMessages();
                 $(prog).parents('div.picPopover:first')[0].close();
                 el.parents('div.picPopover:first')[0].close();
-                let byte = 2;
-                console.log({ msg: 'Testing', on1: ((byte & (1 << (1))) >> 1), on4: ((byte & (1 << (4))) >> 4), on5: ((byte & (1 << (5))) >> 5) });
+                //let byte = 2;
+                //console.log({ msg: 'Testing', on1: ((byte & (1 << (1))) >> 1), on4: ((byte & (1 << (4))) >> 4), on5: ((byte & (1 << (5))) >> 5) });
             }
         }
     });
