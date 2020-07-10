@@ -263,10 +263,19 @@ div.callbody-value-outer {
 }
 label.callbody-name {
     color:mediumpurple;
+    padding-right:4px;
 }
 span.callbody-value {
     color:blue;
 }
+span.callbody-value[data-type$=string] {
+    color:tomato;
+}
+span.callbody-value[data-type$=null] {
+    color:darkgray;
+    font-style:italic;
+}
+
 div.msg-invalid-banner {
     border: solid 1px gray;
     border-radius: 5px;

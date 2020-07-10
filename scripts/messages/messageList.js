@@ -907,22 +907,33 @@ mhelper.init();
                 console.log(divObj);
                 var divVal = $('<div></div>').appendTo(divObj).addClass('callbody-value-outer');
                 var val = obj[s];
-                if (typeof val === 'number' || typeof val === 'boolean') {
+                if (val === null) {
                     $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
-                    $('<span></span>').appendTo(divVal).addClass('callbody-value').text(`${val}`);
+                    $('<span></span>').appendTo(divVal).attr('data-type', 'null').addClass('callbody-value').text(`${val}`);
+                    divVal.attr('data-expanded', true);
+                }
+                else if (typeof val === 'number' || typeof val === 'boolean') {
+                    $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
+                    $('<span></span>').appendTo(divVal).attr('data-type', typeof val).addClass('callbody-value').text(`${val}`);
                     divVal.attr('data-expanded', true);
                 }
                 else if (typeof val === 'string') {
                     $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
-                    $('<span></span>').appendTo(divVal).addClass('callbody-value').text(`"${val}"`);
+                    $('<span></span>').appendTo(divVal).attr('data-type', typeof val).addClass('callbody-value').text(`"${val}"`);
                     divVal.attr('data-expanded', true);
+                }
+                else if (typeof val === 'object' && Array.isArray(val)) {
+                    $('<i class="fas fa-caret-right"></i>').appendTo(divVal).addClass('callbody-expand');
+                    $('<label></label>').appendTo(divVal).attr('data-type', typeof val).addClass('callbody-name').text(s + ':');
+                    divVal.attr('data-expanded', level === 0);
+
+                    self._bindCallBody(level + 1, val, divVal);
                 }
                 else if (typeof val === 'object') {
                     $('<i class="fas fa-caret-right"></i>').appendTo(divVal).addClass('callbody-expand');
-                    $('<label></label>').appendTo(divVal).addClass('callbody-name').text(s + ':');
+                    $('<label></label>').appendTo(divVal).attr('data-type', typeof val).addClass('callbody-name').text(s + ':');
                     divVal.attr('data-expanded', level === 0);
                     self._bindCallBody(level + 1, val, divVal);
-                   
                }
             }
         },
@@ -1114,7 +1125,6 @@ mhelper.init();
                 }
             }
         }
-
     });
     $.widget("pic.sendMessageQueue", {
         options: {},

@@ -13,7 +13,7 @@
             div.appendTo(el);
             var d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
-            d = $('<div><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            d = $('<div class="picSolarTempField"><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
             for (let i = 0; i < data.temps.bodies.length; i++) {
                 $('<div></div>').appendTo(el).body(data.temps.bodies[i]);
@@ -28,15 +28,19 @@
         },
         setTemps: function (data) {
             var self = this, o = self.options, el = self.element;
+            var nSolar = 0;
             el.find('span.picAirTemp').text(data.air);
             el.find('span.picSolarTemp').text(data.solar);
             el.find('span.picUnits').text(data.units.name);
             for (let i = 0; i < data.bodies.length; i++) {
                 let body = data.bodies[i];
                 el.find('div.picBody[data-id=' + body.id + ']').each(function () {
+                    if (typeof body.heaterOptions !== 'undefined') nSolar += ((body.heaterOptions.solar || 0) + (body.heaterOptions.heatPump || 0));
                     this.setEquipmentData(body);
                 });
             }
+            if (nSolar === 0) el.find('div.picSolarTempField').hide();
+            else el.find('div.picSolarTempField').show();
         }
     });
     $.widget('pic.body', {
@@ -134,7 +138,9 @@
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-ison', data.isOn);
                 el.attr('data-setpoint', data.setPoint);
-
+                console.log(data.heaterOptions);
+                if (typeof data.heaterOptions === 'undefined' || data.heaterOptions.total < 1) el.find('div.picBodySetPoints').hide();
+                else el.find('div.picBodySetPoints').show();
                 el.attr('data-heatmode', data.heatMode.val);
                 switch (data.heatStatus.name) {
                     case 'solar':
