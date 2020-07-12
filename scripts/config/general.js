@@ -10,6 +10,7 @@
             el.addClass('picConfigCategory');
             el.addClass('cfgGeneral');
             $.getApiService('/config/options/general', null, function (opts, status, xhr) {
+                console.log(opts);
                 $('<div></div>').appendTo(el).pnlPersonalInfo({ countries: opts.countries })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlTimeDate({ timeZones: opts.timeZones, clockModes: opts.clockModes, clockSources: opts.clockSources })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlDelays()[0].dataBind(opts.pool);
@@ -185,11 +186,13 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<span style="margin-left:8.5rem"></span><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;"></span><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
+            console.log(o);
+            var tempUnits = o.tempUnits.find(elem => elem.val === 0) || { val: 0, name: "F", desc: "Fahrenheit" };
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
                 $('<input type="hidden"></input>').appendTo(line).attr('data-bind', 'options.' + sensor.binding + '_curr').val(sensor.temp);
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'options.' + sensor.binding + '_adj', value: sensor.temp + sensor.tempAdj, min: -50, max: 120, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'options.' + sensor.binding + '_adj', value: sensor.temp + sensor.tempAdj, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
                 $('<span style="width:4.5rem;display:inline-block"></span><span style="display:inline-block;width:7rem;text-align:center">' + sensor.temp + '</span>').appendTo(line);
             }
 

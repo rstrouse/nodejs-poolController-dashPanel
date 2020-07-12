@@ -138,7 +138,6 @@
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-ison', data.isOn);
                 el.attr('data-setpoint', data.setPoint);
-                console.log(data.heaterOptions);
                 if (typeof data.heaterOptions === 'undefined' || data.heaterOptions.total < 1) el.find('div.picBodySetPoints').hide();
                 else el.find('div.picBodySetPoints').show();
                 el.attr('data-heatmode', data.heatMode.val);
