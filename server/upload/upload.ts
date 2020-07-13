@@ -6,7 +6,7 @@ import * as fs from 'fs';
 
 import { config } from '../../server/config/Config';
 import { logger } from '../../server/logger/Logger';
-
+import { Message } from '../../server/messages/messages';
 export class UploadRoute {
     public static initRoutes(app: express.Application) {
         app.post('/upload/logfile', (req, res, next) => {
@@ -66,18 +66,60 @@ export class LogUpload {
     public preserveFile: boolean = false;
     public get upload() { return this._multer; }
     public static logFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(log)$/)) {
+        if (!file.originalname.match(/\.(log|)$/)) {
             return cb(new Error('Only .log files are allowed!'), false);
         }
         cb(null, true);
     }
+    public static parsePacket(msg) {
+        let m: Message = new Message();
+        m.parseV5(msg);
+        return m;
+    }
+    public static fromVer5(msg) {
+        if (msg.type === 'packet') {
+            return LogUpload.parsePacket(msg);
+        }
+        else if (msg.type === 'url') {
+            return {
+                id: ++Message._messageId,
+                proto: 'api',
+                dir: msg.direction === 'inbound' ? 'in' : 'out',
+                requestor: '',
+                method: '',
+                path: msg.url,
+                body: undefined,
+                ts: msg.timestamp
+            };
+        }
+    }
     public static readLogFile(filePath) {
         let lines = fs.readFileSync(filePath, "utf8").split(/[\n\r]/).filter(Boolean);
         let arr = [];
+        Message._messageId = 0;
+        let cmsg = null;
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
             if (line.indexOf('][') !== -1) line = line.replace(/\]\[/g, '],[');
-            arr.push(JSON.parse(line));
+            try {
+                let msg = JSON.parse(line);
+                if (typeof msg.level !== 'undefined') {
+                    if (cmsg !== null && cmsg.valid && !cmsg._complete)
+                        cmsg.mergeBytes(msg.packet);
+                    else
+                        cmsg = LogUpload.fromVer5(msg);
+                    if (cmsg._complete || cmsg.proto === 'api') {
+                        if(cmsg.proto !== 'api') arr.push(cmsg); // Kill these for now as they really don't tell us anything.
+                        cmsg = null;
+                    }
+                }
+                else
+                    arr.push(msg);
+            }
+            catch (err) {
+                logger.error(err);
+                logger.error(line);
+            }
         }
         return arr;
     }

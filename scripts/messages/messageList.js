@@ -1856,35 +1856,41 @@ mhelper.init();
                 return;
             }
             prog.incrementProcessProgress();
-            if (typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
-                //if (msg.proto !== 'chlorinator' && msg.proto !== 'pump') {
-                msgList.addBulkMessage({
-                    isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
-                    _id: msg.id,
-                    responseFor: msg.for,
-                    protocol: msg.proto,
-                    direction: msg.dir,
-                    padding: msg.pkt[0],
-                    preamble: msg.pkt[1],
-                    header: msg.pkt[2],
-                    payload: msg.pkt[3],
-                    term: msg.pkt[4],
-                    timestamp: msg.ts
-                });
-                //}
+            if (typeof msg !== 'undefined' && msg !== null) {
+                if (typeof msg !== 'undefined' && typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
+                    //if (msg.proto !== 'chlorinator' && msg.proto !== 'pump') {
+                    msgList.addBulkMessage({
+                        isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
+                        _id: msg.id,
+                        responseFor: msg.for,
+                        protocol: msg.proto,
+                        direction: msg.dir,
+                        padding: msg.pkt[0],
+                        preamble: msg.pkt[1],
+                        header: msg.pkt[2],
+                        payload: msg.pkt[3],
+                        term: msg.pkt[4],
+                        timestamp: msg.ts
+                    });
+                    //}
+                }
+                else if (typeof msg !== 'undefined' && typeof msg.proto !== 'undefined' && msg.proto === 'api') {
+                    // We are now going to add the api call to the message list.
+                    msgList.addBulkApiCall({
+                        direction: msg.dir,
+                        protocol: msg.proto,
+                        requestor: msg.requestor,
+                        method: msg.method,
+                        path: msg.path,
+                        body: msg.body,
+                        timestamp: msg.ts
+                    });
+                }
+                else {
+                    console.log(msg);
+                }
             }
-            else if (typeof msg.proto !== 'undefined' && msg.proto === 'api') {
-                // We are now going to add the api call to the message list.
-                msgList.addBulkApiCall({
-                    direction: msg.dir,
-                    protocol: msg.proto,
-                    requestor: msg.requestor,
-                    method: msg.method,
-                    path: msg.path,
-                    body: msg.body,
-                    timestamp: msg.ts
-                });
-            }
+            else { console.log(msg); }
             if (arr.length > 0) setTimeout(function () { self._processNextMessage(msgList, prog, arr); }, 0);
             else {
                 msgList.commitBulkMessages();
