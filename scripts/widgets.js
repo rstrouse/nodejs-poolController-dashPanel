@@ -1797,6 +1797,7 @@ $.ui.position.fieldTip = {
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
+            var itm, oldItem;
             if (o.canEdit) {
                 var fld = el.find('input.picPickList-value:first');
                 if (typeof val !== 'undefined') {
@@ -1810,12 +1811,12 @@ $.ui.position.fieldTip = {
                     evt = $.Event('changed');
                     evt.oldVal = o.value;
                     evt.newVal = val;
-                    var itm = self._getItem(evt.newVal);
+                    itm = self._getItem(evt.newVal);
                     o.value = evt.newVal;
                     if (evt.oldVal !== evt.newVal) {
                         fld.val(val);
                         // Trigger a selection changed.
-                        var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
+                        oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
                         evt.oldItem = oldItem;
                         evt.newItem = itm;
                         el.trigger(evt);
@@ -1825,13 +1826,13 @@ $.ui.position.fieldTip = {
             }
             else {
                 if (typeof val !== 'undefined') {
-                    var itm = self._getItem(val);
+                    itm = self._getItem(val);
                     var colVal = self._getColumn(o.bindColumn);
                     if (typeof itm !== 'undefined') {
                         if (itm[colVal.binding] !== o.value) {
                             var colText = self._getColumn(o.displayColumn);
                             // Trigger a selection changed.
-                            var oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
+                            oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
                             var evt = $.Event('beforeselchange');
                             evt.oldItem = oldItem;
                             evt.newItem = itm;
@@ -2742,7 +2743,7 @@ $.ui.position.fieldTip = {
         }
     });
     $.widget("pic.chemTank", {
-        options: { labelText: '', binding: '' },
+        options: { labelText: '', binding: '', min: 0, max: 6 },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initChemTank();
@@ -2752,14 +2753,16 @@ $.ui.position.fieldTip = {
             el.attr('data-datatype', 'int');
             el[0].val = function (val) { return self.val(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
-            $('<div></div>').addClass('chemTank-level-top').appendTo(el);
-            $('<div></div>').addClass('chemTank-level').appendTo(el);
-            $('<div></div>').addClass('chemTank-scale').appendTo(el);
+            var liquid = $('<div></div>').addClass('chemTank-liquid').appendTo(el);
+            $('<div></div>').addClass('chemTank-level-top').appendTo(liquid);
+            $('<div></div>').addClass('chemTank-level').appendTo(liquid);
+            $('<div></div>').addClass('chemTank-scale').appendTo(liquid);
+
             // Create all the ticks for the scale by starting at the top and drawing down.
             var tickpos = 100 / 7;
             el.attr('data-chemtype', o.chemType);
             for (var i = 1; i <= 5; i++) {
-                $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 25px)' }).appendTo(el);
+                $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 14.5px)' }).appendTo(liquid);
             }
             $('<label></label>').addClass('chemTank-label').text(o.labelText).appendTo(el);
 
@@ -2780,11 +2783,17 @@ $.ui.position.fieldTip = {
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val !== 'undefined') {
-                var color = self._getColor(val);
-                el.find('div.picColorPicker-value:first').attr('data-color', typeof color !== 'undefined' ? color.name : 'white').attr('data-val', val);
+                var tot = o.max - o.min;
+                // Calculate the left value.
+                var pct = Math.max(0, Math.min(100, ((val - o.min) / (tot)) * 100));
+                var liquid = el.find('div.chemTank-liquid');
+                //console.log(liquid);
+                liquid.find('div.chemTank-level-top').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)' });
+                liquid.find('div.chemTank-level').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)', height: 'calc(' + pct + '% + 25px)' });
+                o.value = val;
             }
             else {
-                return el.find('div.picColorPicker-value:first').attr('data-val');
+                return o.value;
             }
         }
     });
@@ -2799,6 +2808,7 @@ $.ui.position.fieldTip = {
             el.attr('data-datatype', 'int');
             el[0].val = function (val) { return self.val(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
+            el[0].target = function (val) { return self.target(val); };
             $('<label></label>').text(o.labelText).addClass('chemLevel-label').appendTo(el);
             $('<div></div>').addClass('chemLevel-level').appendTo(el);
             el.attr('data-chemtype', o.chemType);
@@ -2837,6 +2847,46 @@ $.ui.position.fieldTip = {
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var lvl = el.find('div.chemLevel-level');
+                // Find the target div.
+                var pin = lvl.find('div.chemLevel-value');
+                if (pin.length === 0) {
+                    pin = $('<div></div>').addClass('chemLevel-value').appendTo(lvl);
+                    $('<div></div>').addClass('chemLevel-value-label').appendTo(pin);
+                    pin.append('<i class="fas fa-map-marker-alt"></i>');
+                }
+                var maxWidth = lvl.width();
+                var tot = o.max - o.min;
+                var minval = o.scales[0].min;
+                var maxval = o.scales[o.scales.length - 1].max;
+                // Calculate the left value.
+                var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
+                console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
+                pin.css({ left: left + '%' });
+                pin.find('div.chemLevel-value-label').text(val.format(o.format));
+                o.value = val;
+            }
+            else return o.value;
+        },
+        target: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var lvl = el.find('div.chemLevel-level');
+                // Find the target div.
+                var tgt = lvl.find('div.chemLevel-target');
+                if (tgt.length === 0) tgt = $('<div></div>').addClass('chemLevel-target').appendTo(lvl).append('<i class="fas fa-crosshairs"></i>');
+                var maxWidth = lvl.width();
+                var tot = o.max - o.min;
+                var minval = o.scales[0].min;
+                var maxval = o.scales[o.scales.length - 1].max;
+                // Calculate the left value.
+                var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
+                console.log({ val: val, minval: minval, maxval: maxval, tot:tot, left: left });
+                tgt.css({ left: left + '%' });
+                o.target = val;
+            }
+            else return o.target;
         }
     });
 

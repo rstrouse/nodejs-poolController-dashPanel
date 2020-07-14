@@ -186,6 +186,7 @@
                 el.find('div.picChemControllerState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
                 dataBinder.bind(el, data);
                 el.attr('data-status', data.status.name);
+
             }
             catch (err) { console.log({ m: 'Error setting chem controller data', err: err, chlor: data }); }
         },
@@ -197,61 +198,93 @@
                     var divPopover = $('<div class="picChemControllerSettings"></div>');
                     divPopover.appendTo(el);
                     divPopover.on('initPopover', function (evt) {
-                        var divSettings = $('<div></div>').appendTo(evt.contents()).css({ display: 'inline-block', verticalAlign: 'top', width:'347px' });
-                        var divLine = $('<div></div>').appendTo(divSettings);
-                        var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(divLine);
-                        $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
-                        divLine = $('<div></div>').appendTo(grpSetpoints);
-                        $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'pH', binding: 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } });
-                        $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'ORP', binding: 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft:'2rem' } } });
+                        var divSettings = $('<div></div>').appendTo(evt.contents()).css({ display: 'inline-block', verticalAlign: 'top', width:'347px' }).chemControllerSettings(data);
+                        //var divLine = $('<div></div>').appendTo(divSettings);
+                        //var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(divLine);
+                        //$('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
+                        //divLine = $('<div></div>').appendTo(grpSetpoints);
+                        //$('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
+                        //$('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'pH', binding: 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
+                        //    .on('change', function (e) {
+                        //        el.find('div.picChemLevel[data-chemtype=pH').each(function () {
+                        //            this.target(e.value);
+                        //        });
+                        //    });
 
-                        divLine = $('<div></div>').appendTo(evt.contents());
-                        var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(divLine);
-                        $('<legend></legend>').text('Index Values').appendTo(grpIndex);
-                        divLine = $('<div></div>').appendTo(grpIndex);
-                        $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Total Alkalinity', binding: 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-                        divLine = $('<div></div>').appendTo(grpIndex);
-                        $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-                        divLine = $('<div></div>').appendTo(grpIndex);
-                        $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+                        //$('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'ORP', binding: 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '2rem' } } })
+                        //    .on('change', function (e) {
+                        //        el.find('div.picChemLevel[data-chemtype=ORP').each(function () {
+                        //            this.target(e.value);
+                        //        });
+                        //    });
 
-                        var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(evt.contents());
-                        $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
-                        divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign:'top' }).appendTo(grpLevels);
-                        var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
-                        $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
-                        $('<div></div>').addClass('chem-balance-value').text(data.saturationIndex.format('#,##0.0')).appendTo(divVal);
-                        // A good balanced saturationIndex is between +- 0.3
+                        //divLine = $('<div></div>').appendTo(evt.contents());
+                        //var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(divLine);
+                        //$('<legend></legend>').text('Index Values').appendTo(grpIndex);
+                        //divLine = $('<div></div>').appendTo(grpIndex);
+                        //$('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Total Alkalinity', binding: 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+                        //divLine = $('<div></div>').appendTo(grpIndex);
+                        //$('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+                        //divLine = $('<div></div>').appendTo(grpIndex);
+                        //$('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
 
-                        divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
-                        $('<div></div>').chemTank({ chemType: 'acid', labelText: 'Acid Tank' }).css({ width: '80px', height: '120px' }).appendTo(divLine);
-                        $('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank' }).css({ width: '80px', height: '120px' }).appendTo(divLine);
-                        divLine = $('<div></div>').appendTo(grpLevels);
-                        $('<div></div>').chemLevel({
-                            labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
-                            scales: [
-                                { class: 'chemLevel-lred', min: 6.7, max: 7.0, labelEnd: '7.0' },
-                                { class: 'chemLevel-lyellow', min: 7.0, max: 7.2, labelEnd: '7.2' },
-                                { class: 'chemLevel-green', min: 7.2, max: 7.6, labelEnd: '7.6' },
-                                { class: 'chemLevel-ryellow', min: 7.6, max: 7.8, labelEnd: '7.8' },
-                                { class: 'chemLevel-rred', min: 7.8, max: 8.1, labelEnd: ''}
-                            ]
-                        }).appendTo(divLine);
-                        divLine = $('<div></div>').appendTo(grpLevels);
-                        $('<div></div>').chemLevel({
-                            labelText: 'ORP', chemType: 'ORP', min: 400, max: 1000,
-                            scales: [
-                                { class: 'chemLevel-lred', min: 400, max: 500, labelEnd: '500' },
-                                { class: 'chemLevel-lyellow', min: 500, max: 650, labelEnd: '650' },
-                                { class: 'chemLevel-green', min: 650, max: 800, labelEnd: '800' },
-                                { class: 'chemLevel-ryellow', min: 800, max: 900, labelEnd: '900' },
-                                { class: 'chemLevel-rred', min: 900, max: 1000, labelEnd: '' }
-                            ]
-                        }).appendTo(divLine);
+                        //var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width:'100%' }).appendTo(evt.contents());
+                        //$('<legend></legend>').text('Current Levels').appendTo(grpLevels);
+                        //divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign:'top' }).appendTo(grpLevels);
+                        //var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
+                        //$('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
+                        //$('<div></div>').addClass('chem-balance-value').text(data.saturationIndex.format('#,##0.0')).appendTo(divVal);
+                        //// A good balanced saturationIndex is between +- 0.3
 
+                        //divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
+                        //$('<div></div>').chemTank({ chemType: 'acid', labelText: 'Acid Tank' }).css({ width: '80px', height: '120px' }).appendTo(divLine)[0].val(data.acidTankLevel + 1);
+                        //$('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank' }).css({ width: '80px', height: '120px' }).appendTo(divLine);
+                        //divLine = $('<div></div>').appendTo(grpLevels);
+                        //pHLvl = $('<div></div>').chemLevel({
+                        //    labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
+                        //    format: '#,##0.0',
+                        //    scales: [
+                        //        { class: 'chemLevel-lred', min: 6.7, max: 7.0, labelEnd: '7.0' },
+                        //        { class: 'chemLevel-lyellow', min: 7.0, max: 7.2, labelEnd: '7.2' },
+                        //        { class: 'chemLevel-green', min: 7.2, max: 7.6, labelEnd: '7.6' },
+                        //        { class: 'chemLevel-ryellow', min: 7.6, max: 7.8, labelEnd: '7.8' },
+                        //        { class: 'chemLevel-rred', min: 7.8, max: 8.1, labelEnd: '' }
+                        //    ]
+                        //}).appendTo(divLine);
+                        //pHLvl[0].target(data.pHSetpoint);
+                        //pHLvl[0].val(data.pHLevel);
 
-
-                        self.setEquipmentData(data);
+                        //divLine = $('<div></div>').appendTo(grpLevels);
+                        //orpLvl = $('<div></div>').chemLevel({
+                        //    labelText: 'ORP', chemType: 'ORP', min: 400, max: 1000,
+                        //    format:'#,##0',
+                        //    scales: [
+                        //        { class: 'chemLevel-lred', min: 400, max: 500, labelEnd: '500' },
+                        //        { class: 'chemLevel-lyellow', min: 500, max: 650, labelEnd: '650' },
+                        //        { class: 'chemLevel-green', min: 650, max: 800, labelEnd: '800' },
+                        //        { class: 'chemLevel-ryellow', min: 800, max: 900, labelEnd: '900' },
+                        //        { class: 'chemLevel-rred', min: 900, max: 1000, labelEnd: '' }
+                        //    ]
+                        //}).appendTo(divLine);
+                        //orpLvl[0].target(data.orpSetpoint);
+                        //orpLvl[0].val(data.orpLevel);
+                        //self.setEquipmentData(data);
+                        ////var v = 0;
+                        ////var fnAnimate = function () {
+                        ////    el.find('div.picChemTank').each(function () {
+                        ////        v++;
+                        ////        if (v > 6) v = 0;
+                        ////        this.val(v);
+                        ////    });
+                        ////    setTimeout(function () { fnAnimate(); }, 1000);
+                        ////};
+                        ////fnAnimate();
+                        //el.on('change', 'div.picValueSpinner', function () {
+                        //    var cont = dataBinder.fromElement(divPopover);
+                        //    $.putApiService('/state/chemController', cont, function (c, status, xhr) {
+                        //        self.setEquipmentData(c);
+                        //    });
+                        //});
                     });
                     divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
                     divPopover.popover({ title: 'Chemistry Settings', popoverStyle: 'modal', placement: { target: evt.target } });
@@ -277,6 +310,102 @@
             //$('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc"></span></div>').appendTo(el);
             self.setEquipmentData(o);
             self._buildPopover();
+        }
+    });
+    $.widget('pic.chemControllerSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+        },
+        setEquipmentData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            self.dataBind(data);
+        },
+        dataBind: function (data) {
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, data);
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            var divLine = $('<div></div>').appendTo(el);
+            var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
+            var data = o;
+            $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
+            divLine = $('<div></div>').appendTo(grpSetpoints);
+            $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'pH', binding: 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
+                .on('change', function (e) {
+                    el.find('div.picChemLevel[data-chemtype=pH').each(function () {
+                        this.target(e.value);
+                    });
+                });
+
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'ORP', binding: 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '2rem' } } })
+                .on('change', function (e) {
+                    el.find('div.picChemLevel[data-chemtype=ORP').each(function () {
+                        this.target(e.value);
+                    });
+                });
+
+            divLine = $('<div></div>').appendTo(el);
+            var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
+            $('<legend></legend>').text('Index Values').appendTo(grpIndex);
+            divLine = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Total Alkalinity', binding: 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            divLine = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            divLine = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+
+            var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(el);
+            $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
+            divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
+            var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
+            $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
+            $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-format', '#,##0.0').attr('data-datatype', 'number').appendTo(divVal);
+            // A good balanced saturationIndex is between +- 0.3
+
+            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
+            $('<div></div>').chemTank({ chemType: 'acid', labelText: 'Acid Tank' }).css({ width: '80px', height: '120px' }).attr('data-bind', 'acidTankLevel').attr('data-datatype', 'int').appendTo(divLine);
+            $('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank' }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orpTankLevel').attr('data-datatype', 'int').appendTo(divLine);
+            divLine = $('<div></div>').appendTo(grpLevels);
+            pHLvl = $('<div></div>').chemLevel({
+                labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
+                format: '#,##0.0',
+                scales: [
+                    { class: 'chemLevel-lred', min: 6.7, max: 7.0, labelEnd: '7.0' },
+                    { class: 'chemLevel-lyellow', min: 7.0, max: 7.2, labelEnd: '7.2' },
+                    { class: 'chemLevel-green', min: 7.2, max: 7.6, labelEnd: '7.6' },
+                    { class: 'chemLevel-ryellow', min: 7.6, max: 7.8, labelEnd: '7.8' },
+                    { class: 'chemLevel-rred', min: 7.8, max: 8.1, labelEnd: '' }
+                ]
+            }).appendTo(divLine);
+            pHLvl[0].target(data.pHSetpoint);
+            pHLvl[0].val(data.pHLevel);
+
+            divLine = $('<div></div>').appendTo(grpLevels);
+            orpLvl = $('<div></div>').chemLevel({
+                labelText: 'ORP', chemType: 'ORP', min: 400, max: 1000,
+                format: '#,##0',
+                scales: [
+                    { class: 'chemLevel-lred', min: 400, max: 500, labelEnd: '500' },
+                    { class: 'chemLevel-lyellow', min: 500, max: 650, labelEnd: '650' },
+                    { class: 'chemLevel-green', min: 650, max: 800, labelEnd: '800' },
+                    { class: 'chemLevel-ryellow', min: 800, max: 900, labelEnd: '900' },
+                    { class: 'chemLevel-rred', min: 900, max: 1000, labelEnd: '' }
+                ]
+            }).appendTo(divLine);
+            orpLvl[0].target(data.orpSetpoint);
+            orpLvl[0].val(data.orpLevel);
+            self.setEquipmentData(data);
+            el.on('change', 'div.picValueSpinner', function () {
+                var cont = dataBinder.fromElement(el);
+                $.putApiService('/state/chemController', cont, function (c, status, xhr) {
+                    self.setEquipmentData(c);
+                });
+            });
         }
     });
 

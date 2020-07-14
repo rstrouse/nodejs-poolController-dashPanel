@@ -100,7 +100,7 @@
         _isEveryDay: function (days) { return typeof days !== 'undefined' && days.val === 127; },
         _isWeekends: function (days) {
             let arr = [];
-            if (typeof days === 'undefined') return false;
+            if (typeof days === 'undefined' || typeof days.days === 'undefined') return false;
             for (let i = 0; i < days.days.length; i++) {
                 switch (days.days[i].dow) {
                     case 0:
@@ -115,7 +115,7 @@
         },
         _isWeekdays: function (days) {
             let arr = [];
-            if (typeof days === 'undefined') return false;
+            if (typeof days === 'undefined' || typeof days.days === 'undefined') return false;
             for (let i = 0; i < days.days.length; i++) {
                 switch (days.days[i].dow) {
                     case 0:
@@ -137,7 +137,7 @@
             else if (self._isEveryDay(sched.scheduleDays)) return $('<label class="picSchedDays">Every Day</label>');
             else if (self._isWeekends(sched.scheduleDays)) return $('<label class="picSchedDays">Weekends</label>');
             else if (self._isWeekdays(sched.scheduleDays)) return $('<label class="picSchedDays">Weekdays</label>');
-            else if (sched.scheduleDays !== 'undefined') {
+            else if (typeof sched.scheduleDays !== 'undefined') {
                 let tbl = $('<table class="picSchedDays"><tbody>' +
                     '<tr><td>S</td><td>M</td><td>T</td><td>W</td><td>T</td><td>F</td><td>S</td></tr>' +
                     '<tr></tr>' +
@@ -146,12 +146,14 @@
                 for (var i = 0; i < 7; i++) {
                     $('<td><i class="far fa-circle"></i></td>').appendTo(row);
                 }
-                for (var k = 0; k < sched.scheduleDays.days.length; k++) {
-                    let day = sched.scheduleDays.days[k];
-                    row.find('td:nth-child(' + (day.dow + 1) + ')')
-                        .find('i:first')
-                        .removeClass('far').addClass('fas')
-                        .removeClass('fa-circle').addClass('fa-times-circle');
+                if (typeof sched.scheduleDays.days !== 'undefined') {
+                    for (var k = 0; k < sched.scheduleDays.days.length; k++) {
+                        let day = sched.scheduleDays.days[k];
+                        row.find('td:nth-child(' + (day.dow + 1) + ')')
+                            .find('i:first')
+                            .removeClass('far').addClass('fas')
+                            .removeClass('fa-circle').addClass('fa-times-circle');
+                    }
                 }
                 return tbl;
             }
