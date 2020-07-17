@@ -64,7 +64,7 @@ div.picOptionButton > i {
     margin-left:.4rem;
     vertical-align:middle;
 }
-div.picActionButton {
+div.picActionButton, div.picButton {
     user-select:none;
     text-align:left;
     white-space: nowrap;
@@ -92,22 +92,23 @@ div.picActionButton {
     cursor: pointer;
 }
 div.picOptionButton:not(.disabled):hover,
-div.picActionButton:not(.disabled):hover {
+div.picActionButton:not(.disabled):hover, div.picButton:not(.disabled):hover {
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
     background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: linear-gradient(top, #ffaf4b, #ff920a);
 }
-div.picOptionButton:not(.disabled):active,
-div.picActionButton:not(.disabled):active {
-    color: white;
-    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-    background-image: -ms-linear-gradient(top, #159FCF, #13647F);
-    background-image: -moz-linear-gradient(top, #159FCF, #13647F);
-    background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
-    background-image: linear-gradient(top, #159FCF, #13647F);
-}
+    div.picButton:not(.disabled):active,
+    div.picOptionButton:not(.disabled):active,
+    div.picActionButton:not(.disabled):active {
+        color: white;
+        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+        background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+        background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+        background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
+        background-image: linear-gradient(top, #159FCF, #13647F);
+    }
 div.picIconRight {
     display: inline-block;
     float: right;

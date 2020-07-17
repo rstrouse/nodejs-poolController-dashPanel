@@ -9,28 +9,63 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgChemControllers');
+            var chlorOpts;
+            var chemOpts;
             $.getApiService('/config/options/chlorinators', null, function (opts, status, xhr) {
                 console.log(opts);
+                chlorOpts = opts;
                 for (var i = 0; i < opts.chlorinators.length; i++) {
                     $('<div></div>').appendTo(el).pnlChlorinatorConfig(opts)[0].dataBind(opts.chlorinators[i]);
                 }
             });
             $.getApiService('/config/options/chemControllers', null, function (opts, status, xhr) {
                 console.log(opts);
+                chemOpts = opts;
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(el).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Controller', icon: '<i class="fas fa-plus" ></i>' });
-                btnAdd[0].disabled(true);
+                //btnAdd[0].disabled(true);
                 btnAdd.on('click', function (e) {
-                    return;
+                    //return;
                     //var features = el.find('div.picConfigCategory.cfgChemControllers');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
                     //var pnl = $('<div></div>').insertBefore(btnPnl).pnlChemControllerConfig(opts);
                     //pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (opts.features.length + 1), type: 0, showInFeatures: true });
                     //pnl.find('div.picAccordian:first')[0].expanded(true);
+                    var dlg = $.pic.modalDialog.createDialog('dlgSelectCaptureMethod', {
+                        message: 'Select a Controller Type',
+                        width: '400px',
+                        height: 'auto',
+                        title: 'New Controller Type',
+                        buttons: [{
+                            text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                    var line = $('<div></div>').appendTo(dlg);
+                    $('<div></div>').appendTo(line).css({ padding: '.5rem' }).text('Select the type of chemistry equipment you would like to add.  If selecting a chemistry controller like IntelliChem select a sub-type from the dropdown.');
+                    line = $('<div></div>').appendTo(dlg);
+                    $('<hr></hr>').appendTo(line);
+                    line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+                    var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').css({ width: '177px', height: '97px', verticalAlign:'middle' }).appendTo(line);
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
+                    if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) divSelection.addClass('disabled');
+
+
+                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line);
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-flask" style="font-size:30pt;"></i>');
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chem Controller');
+                    $('<div></div>').appendTo(divSelection).pickList({
+                        required: true,
+                        bindColumn: 0, displayColumn: 2, labelText: '', binding: 'type',
+                        columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
+                        items: chemOpts.types, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft: '1.15rem' } } });
+                    dlg.css({ overflow: 'visible' });
+
                 });
             });
         }

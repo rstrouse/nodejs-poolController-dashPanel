@@ -141,15 +141,15 @@
             el.attr('data-type', 'feature');
             toggle.appendTo(el);
             toggle.toggleButton();
-            var lbl = $('<label class="picFeatureLabel"></label>');
+            var lbl = $('<label class="picFeatureLabel" data-bind="name"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
             el.on('click', function () {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-featureid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-
+                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-featureid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                    self.setState(data);
                 });
                 setTimeout(function () { self.resetState(); }, 3000);
             });
@@ -192,7 +192,8 @@
             self.setState(o);
             el.on('click', function () {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
+                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                    self.setState(data);
                 });
                 setTimeout(function () { self.resetState(); }, 3000);
             });
@@ -332,7 +333,8 @@
             el.on('click', function (evt) {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 evt.stopPropagation();
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
+                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                    self.setState(data);
                 });
                 setTimeout(function () { self.resetState(); }, 2000);
             });
@@ -554,7 +556,7 @@
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
-            var lbl = $('<label class="picFeatureLabel"></label>');
+            var lbl = $('<label class="picFeatureLabel" data-bind="name"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
             var color = $('<i class="fas fa-palette picDropdownButton"></i>');
@@ -567,7 +569,8 @@
             el.on('click', function (evt) {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 evt.stopPropagation();
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
+                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                    self.setState(data);
                 });
                 setTimeout(function () { self.resetState(); }, 2000);
             });

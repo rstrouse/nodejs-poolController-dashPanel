@@ -1595,8 +1595,13 @@ $.ui.position.fieldTip = {
                     $('div.picPickList-options:first').remove();
                     if (!el.hasClass('disabled'))
                         self._buildOptionList();
-                    evt.stopPropagation();
                 }
+                evt.stopPropagation();
+                evt.preventDefault();
+            });
+            el.find('div.picPickList-drop').on('mousedown', function (evt) {
+                evt.stopImmediatePropagation();
+               
             });
             el.on('change', 'input.picPickList-value', function (evt) {
                 self.val(el.find('input.picPickList-value:first').val());

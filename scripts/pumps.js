@@ -46,10 +46,20 @@
             self.setEquipmentData(o);
             el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
         },
-        setCircuitRate: function (circuitId, rate, units) {
+        setCircuitRates: function (elPump) {
             var self = this, o = self.options, el = self.element;
-            let pumpId = parseInt(el.attr('data-id'), 10);
-            $.putApiService('/config/pump/' + pumpId + '/pumpCircuit/' + circuitId, { rate: rate, units: units });
+            var pump = { id: parseInt(elPump.attr('data-id'), 10), circuits: [] };
+            elPump.find('div.picPumpCircuit').each(function () {
+                var $circ = $(this);
+                var circ = dataBinder.fromElement($circ);
+                delete circ.name; // Remove the name so we don't confuse anyone trying to replicate the interface although it won't matter.
+                circ.id = parseInt($circ.attr('data-id'), 10);
+                circ.circuit = parseInt($circ.attr('data-eqid'), 10);
+                pump.circuits.push(circ);
+            });
+            $.putApiService('/config/pump', pump, function (data, status, xhr) {
+                console.log(data);
+            });
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -104,7 +114,6 @@
                 }
             } catch (err) { console.error({ m: 'Error setting pump data', err: err, pump: data }); }
         },
-        
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;
             el.empty();
@@ -137,17 +146,21 @@
                             spin.appendTo(div);
                             div.appendTo(evt.contents());
                             $('<label class="picUnits"></label>').appendTo(div).text(circuit.units.name);
+                            $('<input type="hidden" data-datatype="int" data-bind="units"></input>').appendTo(div).val(circuit.units.val);
                             if (circuit.circuit.equipmentType === 'feature') {
                                 div.attr('data-featureid', circuit.circuit.id);
+                                div.attr('data-eqid', circuit.circuit.id);
                                 btn.feature(circuit.circuit);
                                 btn.addClass('picFeature');
                             }
                             else if (circuit.circuit.equipmentType === 'virtualCircuit') {
                                 div.attr('data-circuitid', circuit.circuit.id);
+                                div.attr('data-eqid', circuit.circuit.id);
                                 btn.virtualCircuit(circuit.circuit);
                             }
                             else {
                                 div.attr('data-circuitid', circuit.circuit.id);
+                                div.attr('data-eqid', circuit.circuit.id);
                                 btn.circuit(circuit.circuit);
                                 btn.addClass('picFeature');
                             }
@@ -162,12 +175,7 @@
                             });
                             spin.attr('data-id', i + 1);
                             spin.find('div.picSpinner-value').css({ width: '4.5rem' });
-                            spin.on('change', function (e) {
-                                let id = $(e.target).attr('data-id');
-                                let units = parseInt($(e.target).attr('data-units'), 10);
-                                //console.log(id);
-                                self.setCircuitRate(id, e.value, units);
-                            });
+                            spin.on('change', function (e) { self.setCircuitRates(divPopover); });
                         }
                     });
                     divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
