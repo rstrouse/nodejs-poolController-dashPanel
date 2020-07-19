@@ -100,7 +100,12 @@
             try {
                 let dt = new Date.parseISO(data.time);
                 el.find('span.picControllerTime').each(function () {
-                    $(this).text(self.formatDate(dt));
+                    if (typeof data.clockMode !== 'undefined' && data.clockMode.val === 24) {
+                        $(this).text(dt.format('MM/dd/yyyy HH:mm'));
+                    }
+                    else
+                        $(this).text(dt.format('MM/dd/yyyy h:mmtt'));
+                    //$(this).text(self.formatDate(dt));
                 });
                 el.find('div.picControllerStatus').each(function () {
                     let ln = $(this);

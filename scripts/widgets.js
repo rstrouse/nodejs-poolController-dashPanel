@@ -584,7 +584,7 @@ var dataBinder = {
                             }
                             break;
                         case 'number':
-                            if (typeof (tval) !== 'number') tval = parseFloat(tval);
+                            if (typeof tval !== 'number') tval = parseFloat(tval);
                             tval = tval.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
                             break;
                         case 'duration':
@@ -1587,6 +1587,8 @@ $.ui.position.fieldTip = {
             self._applyStyles();
             el.find('div.picPickList-drop').on('click', function (evt) {
                 var div = el.find('div.picPickList-options:first');
+                evt.stopImmediatePropagation();
+                evt.preventDefault();
                 if (div.length > 0) {
                     div.remove();
                     return;
@@ -1596,8 +1598,6 @@ $.ui.position.fieldTip = {
                     if (!el.hasClass('disabled'))
                         self._buildOptionList();
                 }
-                evt.stopPropagation();
-                evt.preventDefault();
             });
             el.find('div.picPickList-drop').on('mousedown', function (evt) {
                 evt.stopImmediatePropagation();
@@ -1678,7 +1678,7 @@ $.ui.position.fieldTip = {
                 }
             }
             div.appendTo(el);
-            if(o.dropdownStyle) div.css(o.dropdownStyle);
+            if (o.dropdownStyle) div.css(o.dropdownStyle);
             el.parents('body').one('click', function (evt) { div.remove(); });
             var cols = tblOuter.find('table.optHeader > tbody > tr:first > td');
             var firstRow = tblOuter.find('table.optBody > tbody > tr:first > td');
@@ -1702,7 +1702,9 @@ $.ui.position.fieldTip = {
 
             self._positionPickList(div);
             div.on('click', 'table.optBody > tbody > tr', function (evt) {
+                evt.stopImmediatePropagation();
                 self.val($(evt.currentTarget).attr('data-value'));
+                setTimeout(function () { div.remove(); }, 0);
             });
         },
         _getOffset: function (el) {

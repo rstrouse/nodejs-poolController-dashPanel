@@ -229,7 +229,7 @@
             var endTimeType = $.extend(true, { val: 0, name: 'manual', desc: 'Manual' }, o.scheduleTimeTypes.find(elem => obj.endTimeType === elem.val));
             var time = '';
             if (schedType.startTime) {
-                if (startTimeType.name !== 'manual') time = startTimeType.desc + ' - ';
+                if (startTimeType.name !== 'manual') time = startTimeType.desc;
                 else time = (obj.startTime || 0).formatTime(o.fmtTime, '--:--');
             }
             if (schedType.endTime) {
@@ -243,7 +243,7 @@
             // Get the days to show on the header.
             if (schedType.days !== false) {
                 days = self.getScheduleDays(obj.scheduleDays, o.scheduleDays);
-                if (days.length != 7) {
+                if (days.length !== 7) {
                     for (var iday = 0; iday < days.length; iday++) {
                         if (iday > 0) daysTitle += ', ';
                         daysTitle += days[iday].desc.substring(0, 3);

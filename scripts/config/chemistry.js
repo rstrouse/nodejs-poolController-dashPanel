@@ -35,7 +35,7 @@
                     //var pnl = $('<div></div>').insertBefore(btnPnl).pnlChemControllerConfig(opts);
                     //pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (opts.features.length + 1), type: 0, showInFeatures: true });
                     //pnl.find('div.picAccordian:first')[0].expanded(true);
-                    var dlg = $.pic.modalDialog.createDialog('dlgSelectCaptureMethod', {
+                    var dlg = $.pic.modalDialog.createDialog('dlgSelectControllerType', {
                         message: 'Select a Controller Type',
                         width: '400px',
                         height: 'auto',
@@ -53,17 +53,68 @@
                     var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').css({ width: '177px', height: '97px', verticalAlign:'middle' }).appendTo(line);
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
-                    if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) divSelection.addClass('disabled');
+                    if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) {
+                        divSelection.addClass('disabled');
+                        $('<div></div>').css({ textAlign: 'center', fontSize: '8pt' }).appendTo(divSelection).text('Max Chlorinators Added');
+                    }
+                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line)
+                        .on('mouseover', function (e) {
+                            $(e.currentTarget).addClass('button-hover');
+                        })
+                        .on('mouseout', function (e) {
+                            $(e.target).removeClass('button-hover');
+                        })
+                        .on('mousedown', function (e) {
+                            $(e.currentTarget).addClass('button-active');
+                        })
+                        .on('mouseup', function (e) {
+                            $(e.currentTarget).removeClass('button-active');
+                        })
+                        .on('click', function (e) {
+                            var btn = $(e.currentTarget);
+                            if (dataBinder.checkRequired(btn)) {
+                                var data = dataBinder.fromElement(btn);
+                                var type = chemOpts.types.find(elem => elem.val === data.type);
+                                var cm = el.find('div.cfgChemController[data-controllertype=' + type.val + ']');
+                                console.log(cm);
+                                switch (type.name) {
+                                    case 'intellichem':
+                                        if (el.find('div.cfgChemController[data-controllertype=' + type.val + ']').length >= chemOpts.maxChemControllers) {
+                                            $('<div></div>').appendTo(btn.find('div.picPickList')).fieldTip({
+                                                message: '<div>Only' + chemOpts.maxChemControllers + ' IntelliChem controller(s)</div><div>are supported by your Panel.</div>' });
+                                            return;
+                                        }
+                                        break;
+                                }
+                            }
 
-
-                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line);
+                        });
+                    var chemTypes = [];
+                    for (var i = 0; i < chemOpts.types.length; i++) {
+                        console.log(chemOpts.types[i].name);
+                        switch (chemOpts.types[i].name) {
+                            case 'none':
+                            case 'unknown':
+                                break;
+                            default:
+                                chemTypes.push(chemOpts.types[i]);
+                                break;
+                        }
+                    }
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-flask" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chem Controller');
                     $('<div></div>').appendTo(divSelection).pickList({
                         required: true,
-                        bindColumn: 0, displayColumn: 2, labelText: '', binding: 'type',
+                        bindColumn: 0, displayColumn: 2, labelText: 'Chem Controller Type<br/>', binding: 'type',
                         columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                        items: chemOpts.types, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft: '1.15rem' } } });
+                        items: chemTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
+                    }).on('mouseover', function (e) {
+                        divSelection.removeClass('button-hover');
+                        e.stopPropagation();
+                        }).on('mousedown', function (e) {
+                            e.stopImmediatePropagation();
+
+                    });
                     dlg.css({ overflow: 'visible' });
 
                 });
@@ -171,17 +222,24 @@
                 columns: [{ binding: 'name', glyph: 'fas fa-flask', style: { width: '14rem' } },
                     { binding: 'type', glyph: '', style: { width: '5rem' } }]
             });
-            
+           
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '4rem' } } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: o.types, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                items: o.types, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            }).hide();
+            $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
+                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
+
             var addresses = [];
             for (var i = 1; i <= 16; i++) addresses.push({ val: i + 143, desc: i });
             $('<div></div>').appendTo(line).pickList({
@@ -191,13 +249,7 @@
                 items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
 
-            line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).pickList({
-                required: true,
-                bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
-                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
-                items: o.bodies, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width:'4rem' } }
-            });
+            //line = $('<div></div>').appendTo(pnl);
 
             $('<hr></hr>').appendTo(pnl);
             var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
@@ -262,7 +314,9 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             cols[0].elText().text(obj.name);
-            cols[1].elText().text('IntelliChem');
+            var type = o.types.find(elem => elem.val === obj.type);
+            cols[1].elText().text(typeof type !== 'undefined' ? type.desc : 'Controller');
+            el.attr('data-controllertype', obj.type);
             dataBinder.bind(el, obj);
         }
     });

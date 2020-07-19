@@ -92,14 +92,15 @@ div.picActionButton, div.picButton {
     cursor: pointer;
 }
 div.picOptionButton:not(.disabled):hover,
-div.picActionButton:not(.disabled):hover, div.picButton:not(.disabled):hover {
+div.picActionButton:not(.disabled):hover, 
+div.picButton:not(.disabled).button-hover {
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
     background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
     background-image: linear-gradient(top, #ffaf4b, #ff920a);
 }
-    div.picButton:not(.disabled):active,
+    div.picButton:not(.disabled).button-active,
     div.picOptionButton:not(.disabled):active,
     div.picActionButton:not(.disabled):active {
         color: white;
