@@ -57,7 +57,7 @@
         initFeatures: function (data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"></div>');
+            let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
@@ -65,19 +65,19 @@
             for (let i = 0; i < data.circuits.length; i++) {
                 // Create a new feature for each of the circuits.  We will hide them if they
                 // are not to be shown in the features menu.
-                let div = $('<div class="picFeature picCircuit"></div>');
+                let div = $('<div class="picFeature picCircuit btn"></div>');
                 let circuit = data.circuits[i];
                 div.appendTo(el);
                 div.circuit(data.circuits[i]);
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
-                let div = $('<div class="picFeature picCircuit"></div>');
+                let div = $('<div class="picFeature picCircuit btn"></div>');
                 div.appendTo(el);
                 div.feature(data.features[i]);
             }
             for (let i = 0; i < data.circuitGroups.length; i++) {
-                let div = $('<div class="picFeature picCircuitGroup"></div>');
+                let div = $('<div class="picFeature picCircuitGroup btn"></div>');
                 div.appendTo(el);
                 div.circuitGroup(data.circuitGroups[i]);
             }
@@ -135,6 +135,7 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
+            if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
             el.attr('data-featureid', o.id);
             el.attr('data-eqid', o.id);
@@ -179,6 +180,7 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
+            if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
             el.attr('data-groupid', o.id);
             el.attr('data-eqid', o.id);
@@ -223,6 +225,9 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             if (!el.hasClass('picVirtualCircuit')) el.addClass('picVirtualCircuit');
+            if (!el.hasClass('btn')) el.addClass('btn');
+            if (!el.hasClass('btn-stateonly')) el.addClass('btn-stateonly');
+
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
@@ -320,6 +325,8 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             if (!el.hasClass('picCircuit')) el.addClass('picCircuit');
+            if (!el.hasClass('btn')) el.addClass('btn');
+
             var toggle = $('<div class="picFeatureToggle"></div>');
 
             toggle.appendTo(el);
@@ -426,7 +433,7 @@
         },
         _buildControls: function (data) {
             var self = this, o = self.options, el = self.element;
-            let div = $('<div class="picCircuitTitle"><div>');
+            let div = $('<div class="picCircuitTitle control-panel-title"><div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
@@ -462,7 +469,7 @@
                         case 'samlight':
                         case 'sallight':
                         case 'photongen':
-                            let div = $('<div class="picLight picFeature picCircuit"></div>');
+                            let div = $('<div class="picLight picFeature picCircuit btn"></div>');
                             div.appendTo(el);
                             if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
                             div.circuit(data.circuits[i]);
@@ -471,7 +478,7 @@
                 } catch (err) { console.error(err); }
             }
             for (let i = 0; i < data.lightGroups.length; i++) {
-                let div = $('<div class="picLight picFeature picLightGroup"></div>');
+                let div = $('<div class="picLight picFeature picLightGroup btn"></div>');
                 div.appendTo(el);
                 div.lightGroup(data.lightGroups[i]);
                 
@@ -507,7 +514,7 @@
                 var id = parseInt(data.id, 10);
                 el.children('div.picLight').each(function () {
                     if (this.equipmentId() > id) {
-                        div = $('<div class="picLight picFeature"></div>').insertBefore($(this));
+                        div = $('<div class="picLight picFeature btn"></div>').insertBefore($(this));
                         bAdded = true;
                         return false;
                     }

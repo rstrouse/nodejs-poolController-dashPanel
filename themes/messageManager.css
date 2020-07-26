@@ -1,7 +1,9 @@
 ﻿html {
   width: 100%;
   height: 100%;
-  margin: 0px;
+  margin: 0px; }
+
+* {
   box-sizing: border-box; }
 
 * {
@@ -10,9 +12,43 @@
 body {
   width: 100%;
   height: 100%;
-  margin: 0px;
-  background-image: url(Images/WaterDropBackground.jpg);
-  box-sizing: border-box; }
+  margin: 0px; }
+
+.header {
+  display: block;
+  opacity: 1;
+  grid-area: header;
+  background-color: #ffd800;
+  border: solid 1px green; }
+
+[tabindex="-1"]:focus {
+  outline: none !important; }
+
+.text-instructions {
+  font-size: .8rem;
+  font-style: italic; }
+
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none; }
+
+.btn-panel {
+  padding: .2rem;
+  margin-top: .2rem; }
+
+.btn {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: pointer; }
+
+.btn > * {
+  cursor: pointer; }
+
+.btn-stateonly {
+  pointer-events: none;
+  cursor: no-drop; }
 
 div.mmgrOuter {
   width: 100%;
@@ -473,6 +509,10 @@ div.edit-message-protocol input[type=text],
 div.edit-message-payload input[type=text] {
   font-size: 10pt; }
 
+span.picPercentData {
+  padding-left: 2px;
+  padding-right: 2px; }
+
 div.picControllerTitle {
   display: table;
   width: 100%; }
@@ -609,3 +649,15 @@ div.picOptionField > label {
   white-space: nowrap;
   vertical-align: middle;
   overflow: hidden; }
+
+div.picAmbientTemp > div {
+  display: inline-block; }
+
+div.picAmbientTemp > div:nth-child(2) {
+  float: right; }
+
+div.picAmbientTemp label {
+  color: gray; }
+
+div.picBodyTemp > div:nth-child(2) {
+  font-size: 2em; }

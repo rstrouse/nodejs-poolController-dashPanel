@@ -12,7 +12,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
 
-            let row = $('<div class="picHeaderRow picControllerTitle"></div>').appendTo(el);
+            let row = $('<div class="picHeaderRow picControllerTitle control-panel-title"></div>').appendTo(el);
             $('<div class= "picModel"><i class="fas fa-bars"></i><span class="picModelData"></span></div>').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"></span></div>').appendTo(row);
             if ($('div.dashOuter').length)
@@ -154,7 +154,7 @@
         },
         _buildLoggingTab: function () {
             var self = this, o = self.options, el = self.element;
-           
+
             el.find('div.picTabPanel:first').each(function () {
                 var tabObj = { id: 'tabLogging', text: 'Logging' };
                 var contents = this.addTab(tabObj);
@@ -169,7 +169,7 @@
 
                 var divLine = $('<div class="picAppLogging"></div>');
                 divLine.appendTo(grp);
-                
+
                 $('<div></div>').appendTo(divLine).pickList({
                     bindColumn: 0, displayColumn: 1, labelText: 'Level', binding: 'app.level',
                     columns: [{ binding: 'val', hidden: true, text: 'Val', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Log Level', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
@@ -217,7 +217,7 @@
 
                 divLine = $('<div class="picPacketLogging"><label>Include</label></div>');
                 divLine.appendTo(grp);
-                
+
 
                 btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ id: 'btnBroadcast', text: 'Broadcast', bind: 'packet.broadcast.enabled', dropdownButton: $('<i class="fas fa-filter"></i>') });
                 btn.find('i').on('click', function (evt) {
@@ -254,7 +254,7 @@
                     var obj = dataBinder.fromElement(opt);
                     $.putApiService('app/logger/setOptions', obj);
                 });
-                var btnPnl = $('<div class="picBtnPanel"></div>');
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(grp);
 
                 var btnStartCapture = $('<div></div>');
@@ -305,7 +305,7 @@
                             }]
                         });
                         var line = $('<div></div>').appendTo(dlg);
-                        $('<div></div>').appendTo(line).checkbox({ labelText: 'Capture Configuration Reload', binding: 'reload'})[0].val(true);
+                        $('<div></div>').appendTo(line).checkbox({ labelText: 'Capture Configuration Reload', binding: 'reload' })[0].val(true);
 
 
                         //$.getApiService('/app/config/startPacketCaptureWithoutReset');
@@ -354,6 +354,41 @@
             });
 
         },
+        _buildAppearanceTab: function (settings) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picTabPanel:first').each(function () {
+                var tabObj = { id: 'tabAppearance', text: 'Appearance' };
+                var contents = this.addTab(tabObj);
+                var divOuter = $('<div class="picAppearance"></div>');
+
+                divOuter.appendTo(contents);
+                var line = $('<div></div>').appendTo(divOuter);
+                $('<div></div>').appendTo(line).pickList({
+                    binding: 'theme.name',
+                    bindColumn: 0, displayColumn: 1, labelText: 'Theme',
+                    columns: [{ binding: 'code', hidden: true, text: 'code', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                    items: [
+                        { code: 'default', name: 'Default', desc: 'The default theme for the dashPanel' },
+                        { code: 'sketchy', name: 'Sketchy', desc: 'A whimsical display that looks like it is hand drawn' }
+                    ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '4rem' } }
+                }).on('selchanged', function (evt) {
+                    console.log(evt.newItem);
+                    setCookie('dashTheme', evt.newItem.code);
+                    var ss = $(document).find('link[id="cssref_theme"]');
+                    if (ss.length > 0) {
+                        if (ss[0].href !== 'themes/' + evt.newItem.code + '/theme.css') { // Don't change the theme if it isn't changing.
+                            ss[0].sheet.disabled = true;
+                            ss[0].href = 'themes/' + evt.newItem.code + '/theme.css';
+                            ss[0].sheet.disabled = false;
+                        }
+                    }
+                    else
+                        $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head'));
+
+
+                })[0].val(getCookie('dashTheme', 'default'));
+            });
+        },
         _buildConnectionsTab: function (settings) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picTabPanel:first').each(function () {
@@ -362,7 +397,7 @@
                 var divOuter = $('<div class="picConnections"></div>');
                 divOuter.appendTo(contents);
                 $('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
-                var btnPnl = $('<div class="picBtnPanel"></div>');
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
                 var btnApply = $('<div></div>');
                 btnApply.appendTo(btnPnl);
@@ -380,7 +415,7 @@
                 var contents = this.addTab(tabObj);
                 var divOuter = $('<div class="picSystem"></div>');
                 divOuter.appendTo(contents);
-                var btnPnl = $('<div class="picBtnPanel"></div>');
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
                 var btnApply = $('<div id="btnReloadConfig"></div>');
                 btnApply.appendTo(btnPnl);
@@ -446,10 +481,11 @@
             $.getJSON('/config/web', null, function (configData, status, xhr) {
                 console.log(configData);
                 o.initializing = true;
+                self._buildAppearanceTab(configData);
                 self._buildConnectionsTab(configData);
                 self._buildLoggingTab();
                 self._buildFirmwareTab(configData);
-                tabs[0].selectTabById('tabConnections');
+                tabs[0].selectTabById('tabAppearance');
                 var evt = $.Event('loaded');
                 o.initializing = false;
                 el.trigger(evt);

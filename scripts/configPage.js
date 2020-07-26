@@ -227,7 +227,7 @@
             var div = $('<div class="picCircuitsList"></div>');
             var pnl = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(div);
             $('<div><label>' + attrs.labelText + '</label></div>').appendTo(pnl);
-            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             var list = $('<div class="picCircuitsList-list"></div>').appendTo(div);
             return div;

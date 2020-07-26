@@ -53,7 +53,7 @@
             });
 
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveValve"></div>').appendTo(btnPnl).actionButton({ text: 'Save Valve', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');

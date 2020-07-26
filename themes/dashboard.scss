@@ -1,46 +1,42 @@
-﻿html {
-    width:100%;
-    height:100%;
-    margin:0px;
-}
-.tester {
-    width:25px;
-}
-* { box-sizing:border-box; }
-body {
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-    background-image: url(Images/WaterDropBackground.jpg);
-}
+﻿@import 'default.scss';
+@import 'controller.scss';
 div.dashOuter {
     width: 100%;
     display: grid;
     justify-content: center;
     box-sizing: border-box;
-    grid-auto-rows:auto;
-    grid-row-gap:0px;
+    grid-auto-rows: auto;
+    grid-row-gap: 0px;
 }
+
 div.dashContainer {
     display: inline-grid;
     grid-template-columns: 377px 377px;
 }
+
 div.dashOuter[data-panel=dashboard] > div.configContainer {
-    display:none;
-}
-div.dashOuter[data-panel=configuration] > div.dashContainer {
     display: none;
 }
 
-.header {
-    display:block;
-    opacity:1;
-    grid-area:header;
-    background-color:#ffd800;
-    border:solid 1px green;
+div.dashOuter[data-panel=configuration] > div.dashContainer {
+    display: none;
 }
-span.picPercentData {
-    padding-left:2px;
-    padding-right:2px;
+div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes=true] div.picLight i.picDropdownButton.fa-palette {
+    display: none;
 }
-@import 'controller.scss';
+
+div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
+    display: none;
+}
+.control-panel {
+    vertical-align: top;
+    display: inline-block;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.control-panel-title {
+    white-space:nowrap;
+}

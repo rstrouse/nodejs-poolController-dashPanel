@@ -1,11 +1,15 @@
 ﻿var outModule = {
+    isCancelled: false,
     msgToSend: null,
     msgInitial: null,
+    messagesSent: 0,
+    knownAddresses: [12, 15, 16],
+    knownActions:[2, 30, 168, 164, 204, 222, 228],
     options: {
         stopOnInboundChange: true,
         waitForFirstInbound: true,
         sendOnResponse: false,
-        delay:300
+        delay:500
     },
     logParams:  {
         packet: {
@@ -46,25 +50,35 @@
     begin: function () {
         var self = this;
         var mmgr = $('div.picMessageManager');
+        self.isCancelled = false;
+        // Calculate out the know addresses.  We don't want to send these.
+        this.knownAddresses.push();
+        for (let b = 32; b <= 35; b++) this.knownAddresses.push(b);  // Control panels
+        for (let b = 80; b <= 84; b++) this.knownAddresses.push(b); // Pumps
+        for (let b = 96; b <= 111; b++) this.knownAddresses.push(b); // Pumps
+        for (let b = 113; b <= 128; b++) this.knownAddresses.push(b); // Heaters
+        for (let b = 144; b <= 159; b++) this.knownAddresses.push(b); // Chem controllers
+        
         // Set up the logging.
         $.putApiService('app/logger/setOptions', this.logParams, function (data, status, xhr) {
             // Subscribe to the events.
             mmgr[0].receiveLogMessages(true);
-            mmgr.on('messageReceived', function (evt) { self.messageReceived(evt); });
-            if (!self.options.sendOnResponse) {
+            mmgr.on('messageReceived.valveMessage', function (evt) { self.messageReceived(evt); });
+            if (!self.options.sendOnResponse && !self.waitForFirstInbound) {
                 setTimeout(function () { self.sendNextMessage(); }, 50);
             }
         });
     },
     cancel: function () {
-        var mmgr = $('div.picMessageManager')[0];
-        mmgr.receiveLogMessages(false);
+        var mmgr = $('div.picMessageManager');
+        mmgr.off('messageReceived.valveMessage');
+        mmgr[0].receiveLogMessages(false);
+        this.isCancelled = true;
     },
     messageReceived: function (evt) {
         var msg = evt.message;
         if (msg.dir === 'out') {
             // See if this is the message we sent.
-            if (this.options.waitForFirstInbound && !this.msgInitial) return;
             if (msgManager.isArrayDiff(this.msgToSend.header, msg.header) ||
                 msgManager.isArrayDiff(this.msgToEnd.payload, msg.payload)) return;
             else {
@@ -73,8 +87,10 @@
         }
         else if (msg.isValid === true) {
             // We have an inbound message
-            if (options.waitForFirstInbound || !this.msgInitial) {
+            if (this.options.waitForFirstInbound && !this.msgInitial) {
                 this.msgInitial = msg;
+                console.log({ text: 'A message was received', msg: msg, opt: this.options, init: this.msgInitial, t:this });
+                this.sendNextMessage();
                 return;
             }
             else {
@@ -84,10 +100,20 @@
                     if (!this.options.stopOnInboundChange)
                         this.sendNextMessage();
                 }
-                else
-                    this.sendNextMessage();
+                //else
+                //    this.sendNextMessage();
             }
         }
+    },
+    getNextDest: function (curr) {
+        curr++;
+        while (this.knownAddresses.indexOf(curr) !== -1) curr++;
+        return curr;
+    },
+    getNextAction: function (curr) {
+        curr++;
+        while (this.knownActions.indexOf(curr) !== -1) curr++;
+        return curr;
     },
     sendNextMessage: function () {
         var self = this;
@@ -123,6 +149,11 @@
         // 3. IChlor also uses address 12 to broadcast some sort of hail [255, 0, 255][166, 1, 176, 12, 103, 1][0][1, 203]
         //      a. This means that 12 is not a specific IntelliValve address but more likely a hail channel where equipment
         //         publish their existence on the bus.
+
+
+        // The following has yielded no results.
+        // 1. Return the entire message to destinations on every possible address.
+
         if (!this.msgToSend) {
             if (!this.options.waitForFirstInbound) {
                 this.msgInitial = {
@@ -133,27 +164,38 @@
                     term: [4, 44]
                 };
             }
+            else if (!this.msgInitial) return;
             this.msgToSend = {
                 protocol: 'intellivalve',
                 preamble: [255, 0, 255],
-                header: [165, 1, 12, 16, 80, 0],
+                header: [165, 1, 50, 16, 240, 0],
                 payload: this.msgInitial.payload.slice(),
                 term: [0, 0]
             };
+            this.msgToSend.payload[0] = 1;
             msgManager.calcChecksum(this.msgToSend);
         }
         else {
-            this.msgToSend.header[4] = this.msgToSend.header[4] + 1;
-            if (this.msgToSend.header[4] > 255) {
-                this.msgToSend.header[4] = 1;
-                this.msgToSend.payload[0] = this.msgToSend.payload[0]++;
-                this.msgToSend.payload[1] = 128;
+            this.msgToSend.header[2] = this.getNextDest(this.msgToSend.header[2]);
+            if (this.msgToSend.header[2] > 255) {
+                mm.clearOutbound();
+                this.msgToSend.header[2] = 17;
+                this.msgToSend.header[4] = this.getNextAction(this.msgToSend.header[4]);
+                if (this.msgToSend.header[4] === 256) {
+                    this.msgToSend.header[4] = 3;
+                    this.msgToSend.payload[0] = this.msgToSend.payload[0] + 1;
+                    
+                }
+
             }
             msgManager.calcChecksum(this.msgToSend);
         }
-        mm.sendOutboundMessage(this.msgToSend);
-        if (!this.options.sendOnResponse) {
-            setTimeout(function () { self.sendNextMessage(); }, this.options.delay);
+        if (!this.isCancelled) {
+            mm.sendOutboundMessage(this.msgToSend);
+            //console.log({ text: 'Sending Message', msg: this.msgToSend });
+            if (!this.options.sendOnResponse) {
+                setTimeout(function () { self.sendNextMessage(); }, this.options.delay);
+            }
         }
     }
 };

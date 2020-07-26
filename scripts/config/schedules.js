@@ -19,7 +19,7 @@
                         tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode
                     })[0].dataBind(opts.schedules[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Schedule', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgSchedule');
@@ -111,7 +111,7 @@
                 labelText: 'Schedule Date', binding: binding + 'startDate', canEdit: true,
                 labelAttrs: {}, inputAttrs: { maxlength: 15, style: { width: '7rem' } }
             });
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
                 var p = el.find('div.schedule-heatsource');

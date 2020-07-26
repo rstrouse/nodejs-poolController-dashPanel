@@ -20,22 +20,27 @@
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.theme.css" />
     <link rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
     <link rel="stylesheet" type="text/css" href="themes/widgets.css" />
-    <link rel="stylesheet" type="text/css" href="themes/vlist.css"/>
-    <link rel="stylesheet" type="text/css" href="themes/messageManager.min.css" />
-    <style id="responseStyles" type="text/css"></style>
+    <link rel="stylesheet" type="text/css" href="themes/vlist.css" />
+    <link rel="stylesheet" type="text/css" href="themes/messageManager.css" />
+    <script type="text/javascript">
+        // Add in the current theme for the pool controller.
+        var theme = getCookie('dashTheme', 'default');
+        $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head'));
+    </script>
+
 </head>
 <body>
     <div class="mmgrOuter picMessageManager" data-panel="messages">
         <header>
-            <div class="picController picControlPanel" style="display:block;"></div>
+            <div class="picController picControlPanel control-panel" style="display:block;"></div>
         </header>
         <div class="messageContainer">
             <div>
-                <div class="picMessages picControlPanel" style="display:block;"></div>
+                <div class="picMessages picControlPanel control-panel" style="display:block;"></div>
             </div>
             <div>
-                <div class="picSendMessageQueue picControlPanel" style="display:block;"></div>
-                <div class="picMessageDetail picControlPanel" style="display:block;"></div>
+                <div class="picSendMessageQueue picControlPanel control-panel" style="display:block;"></div>
+                <div class="picMessageDetail picControlPanel control-panel" style="display:block;"></div>
             </div>
         </div>
     </div>

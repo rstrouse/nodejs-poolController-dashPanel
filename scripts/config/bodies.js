@@ -39,7 +39,7 @@
             $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft:'1rem', marginRight:'.25rem' } } });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');

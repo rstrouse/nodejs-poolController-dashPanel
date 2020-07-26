@@ -1,4 +1,8 @@
-﻿div.picControllerTitle {
+﻿span.picPercentData {
+  padding-left: 2px;
+  padding-right: 2px; }
+
+div.picControllerTitle {
   display: table;
   width: 100%; }
 
@@ -134,3 +138,15 @@ div.picOptionField > label {
   white-space: nowrap;
   vertical-align: middle;
   overflow: hidden; }
+
+div.picAmbientTemp > div {
+  display: inline-block; }
+
+div.picAmbientTemp > div:nth-child(2) {
+  float: right; }
+
+div.picAmbientTemp label {
+  color: gray; }
+
+div.picBodyTemp > div:nth-child(2) {
+  font-size: 2em; }

@@ -34,7 +34,7 @@
                 for (var i = 0; i < opts.features.length; i++) {
                     $('<div></div>').appendTo(el).pnlFeatureConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.features[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Feature', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var features = el.find('div.picConfigCategory.cfgFeatures');
@@ -63,7 +63,7 @@
                 for (var i = 0; i < opts.circuitGroups.length; i++) {
                     $('<div></div>').appendTo(el).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups })[0].dataBind(opts.circuitGroups[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgCircuitGroup');
@@ -93,7 +93,7 @@
                 for (var i = 0; i < opts.lightGroups.length; i++) {
                     $('<div></div>').appendTo(el).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes })[0].dataBind(opts.lightGroups[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgLightGroup');
@@ -134,7 +134,7 @@
                 }
             });
            
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             var btnSave = $('<div id="btnSaveNames"></div>').appendTo(btnPnl).actionButton({ text: 'Save Custom Names', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var names = [];
@@ -198,7 +198,7 @@
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: {marginLeft: '4rem', marginRight:'.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Circuit', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -284,7 +284,7 @@
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Feature', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -387,7 +387,7 @@
             var pnlCircuits = $('<div class="cfgCircuitGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
             line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Group Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(line);
             var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1 });
@@ -395,7 +395,7 @@
             $('<div class="picCircuitsList-list" style="min-width:14rem;"></div>').appendTo(pnlCircuits);
 
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -554,7 +554,7 @@
             var pnlCircuits = $('<div class="cfgLightGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
             line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Group Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(line);
             var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 self.addCircuit({ circuit: -1, color: 0, swimDelay:0 });
@@ -575,7 +575,7 @@
                 }
             });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Group', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');

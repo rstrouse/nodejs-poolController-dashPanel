@@ -31,8 +31,8 @@ var msgManager = {
         var dest = msg.dest || this.extractDestByte(msg) || 0;
         var controller = msg.controller || this.extractControllerByte(msg) || 0;
         var action = msg.action || this.extractActionByte(msg) || 0;
-        var addrSource = this.constants.addresses.find(elem => elem.val === source) || { val: source || 0, key: source || 0 };
-        var addrDest = this.constants.addresses.find(elem => elem.val === dest) || { val: dest || 0, key: dest || 0 };
+        var addrSource = this.constants.addresses.find(elem => elem.val === source) || { val: source || 0, key: source || 0, name: 'unk[' + source + ']' };
+        var addrDest = this.constants.addresses.find(elem => elem.val === dest) || { val: dest || 0, key: dest || 0, name:'unk[' + dest + ']' };
         //var addrSource = { val: source, key: source };
         //var addrDest = { val: dest, key: dest };
         var length = msg.payloadLength;

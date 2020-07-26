@@ -56,7 +56,7 @@
             $('<div></div>').appendTo(line).inputField({ labelText: 'City', binding: 'location.city', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: 'State', binding: 'location.state', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginLeft: '.7rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: 'Zip', binding: 'location.zip', inputAttrs: { maxlength: 10 }, labelAttrs: { style: { marginLeft: '.7rem' } } });
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSavePersonal"></div>').appendTo(btnPnl).actionButton({ text: 'Save Personal', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
@@ -108,7 +108,7 @@
                     items: o.clockSources, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
                 });
             }
-            btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveTimeDate"></div>').appendTo(btnPnl).actionButton({ text: 'Save Time & Date', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -150,7 +150,7 @@
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay' });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Cooldown Delay', binding: 'options.cooldownDelay' });
-            btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveDelays"></div>').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -196,7 +196,7 @@
                 $('<span style="width:4.5rem;display:inline-block"></span><span style="display:inline-block;width:7rem;text-align:center">' + sensor.temp + '</span>').appendTo(line);
             }
 
-            btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveCalibration"></div>').appendTo(btnPnl).actionButton({ text: 'Save Calibration', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
@@ -246,7 +246,7 @@
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Alerts', glyph: 'far fa-bell', style: { width: '20rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveAlerts"></div>').appendTo(btnPnl).actionButton({ text: 'Save Alerts', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 $(this).addClass('disabled');
@@ -277,7 +277,7 @@
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Security', glyph: 'fas fa-user-secret', style: { width: '20rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveSecurity"></div>').appendTo(btnPnl).actionButton({ text: 'Save Security', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 $(this).addClass('disabled');

@@ -87,7 +87,7 @@ $.widget('pic.lightGroupPanel', {
         var self = this, o = self.options, el = self.element;
         var tabObj = { id: 'tabColors', text: 'Colors' };
         var contents = el.find('div.picTabPanel:first')[0].addTab(tabObj);
-        $('<div><span class="picInstructions">Drag each light into position, set the color, and delay.  When finished press the apply button to save your changes.</span></div>').appendTo(contents);
+        $('<div><span class="picInstructions text-instructions">Drag each light into position, set the color, and delay.  When finished press the apply button to save your changes.</span></div>').appendTo(contents);
         var circuits = $('<div class="picLightCircuits"></div>');
         circuits.appendTo(contents);
         for (var i = 0; i < group.circuits.length; i++) {
@@ -143,7 +143,7 @@ $.widget('pic.lightGroupPanel', {
         }
         el.find('div.picLightCircuits').sortable({ axis: 'y', containment:'parent' });
         el.find('div.picLightCircuits').disableSelection();
-        var btnPnl = $('<div class="picBtnPanel"></div>');
+        var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
         btnPnl.appendTo(contents);
         var btnApply = $('<div></div>');
         btnApply.appendTo(btnPnl);
@@ -238,7 +238,7 @@ $.widget('pic.lightGroupPanel', {
             self._setProcessing(group.action);
 
         });
-        var actions = $('<div class="picBtnPanel" style="text-align:center"></div>');
+        var actions = $('<div class="picBtnPanel btn-panel" style="text-align:center"></div>');
         
         actions.appendTo(el);
         var btnSync = $('<div></div>');

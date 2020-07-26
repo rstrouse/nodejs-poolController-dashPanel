@@ -517,6 +517,25 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         });
     };
 });
+function getCookie(name, def ) {
+    var cooks = document.cookie.split(';');
+    for (var i = 0; i < cooks.length; i++) {
+        var cook = cooks[i];
+        while (cook.charAt(0) === ' ') cook = cook.substring(1, cook.length);
+        if (cook.indexOf(name + '=') === 0) return cook.substring(name.length + 1, cook.length);
+    }
+    return def;
+}
+function setCookie(name, value, days) {
+    var expires = '';
+    if (typeof days === 'number' && data !== 0) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toGMTString();
+    }
+    else if (typeof days === 'undefined')
+    document.cookie = name + '=' + value + ';expires=' + expires + '; path=/';
+}
 
 
 var dataBinder = {
@@ -812,6 +831,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             let div = $('<div class="picIndicator"></div>');
             el.addClass('picToggleButton');
+            //el.addClass('btn');
             el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
             div.appendTo(el);
@@ -838,6 +858,7 @@ $.ui.position.fieldTip = {
             text.appendTo(el);
             if (o.icon) icon.html(o.icon);
             el.addClass('picActionButton');
+            el.addClass('btn');
             if (o.text) text.text(o.text);
             el[0].buttonText = function (val) { return self.buttonText(val); };
             if (o.bind) el.attr('data-bind', o.bind);
@@ -1323,7 +1344,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el.addClass('picTabBar');
             $('<div class="picTabs"></div>').prependTo(el);
-            $('<div class="picTabContents"></div>').appendTo(el);
+            $('<div class="picTabContents tab-contents"></div>').appendTo(el);
             el.find('div.picTabs:first').on('click', 'div.picTab', function (evt) {
                 // Set the active tab here.
                 self.selectTabById($(evt.currentTarget).attr('data-tabid'));
@@ -1372,7 +1393,7 @@ $.ui.position.fieldTip = {
         tabContent: function (tabId) { return this.contents().find('div.picTabContent[data-tabid=' + tabId + ']:first'); },
         addTab: function (tabObj) {
             var self = this, o = self.options, el = self.element;
-            var tab = $('<div class="picTab"><span class="picTabText"></span></div>');
+            var tab = $('<div class="picTab tab-item"><span class="picTabText"></span></div>');
             tab.appendTo(self.tabs());
             tab.attr('data-tabid', tabObj.id);
             tab.find('span.picTabText').each(function () { $(this).text(tabObj.text); });
@@ -1422,6 +1443,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             o.id = _uniqueId++;
             el.addClass('picPopover');
+            el.addClass('popover');
             el.attr('data-popoverid', o.id);
             el[0].toggle = function (elTarget) { self.toggle(elTarget); };
             el[0].show = function (elTarget) { self.show(elTarget); };
@@ -2391,7 +2413,7 @@ $.ui.position.fieldTip = {
         _buildButtons: function (btns) {
             var self = this, o = self.options, el = self.element;
             if (typeof btns !== 'undefined') {
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 for (var i = 0; i < btns.length; i++) {
                     var btn = btns[i];
                     var b = $('<div></div>').appendTo(btnPnl).actionButton({ text: btn.text, icon: btn.icon });
@@ -2493,7 +2515,7 @@ $.ui.position.fieldTip = {
             el[0].addRow = function (data) { return self.addRow(data); };
             el[0].select = function (row) { return self.selectRow(row); };
             el[0].selectedIndex = function (ndx, scrollTo) { return typeof ndx === 'undefined' ? o.selectedIndex : self.selectRow($(o.rows[ndx].row), scrollTo); };
-            el[0].clear = function () { self.clear(); };
+            el[0].clear = function (fn) { self.clear(fn); };
             el[0].render = function (recalc) { if (recalc) self._calculateBlocks(); self.render(); };
             el[0].applyFilter = function (cb) { self.applyFilter(cb); self._calculateBlocks(); self.render(); };
             el[0].clearFilter = function () { o.hiddenRows = 0; self._calculateBlocks(true); self.render(); };
@@ -2734,14 +2756,18 @@ $.ui.position.fieldTip = {
                 }
             }
         },
-        clear: function () {
+        clear: function (fn) {
             var self = this, o = self.options, el = self.element;
-            o.rows = [];
+            if (typeof fn === 'function')
+                o.rows = o.rows.filter(fn);
+            else
+                o.rows = [];
             self._calculateBlocks();
             el.find('div.vlist-body').scrollTop(0);
             o.selectedIndex = -1;
             self.render();
         },
+        
         scrollTo: function (ndx) {
             var self = this, o = self.options, el = self.element;
             if (ndx < o.rows.length) {
@@ -2768,8 +2794,8 @@ $.ui.position.fieldTip = {
             // Create all the ticks for the scale by starting at the top and drawing down.
             var tickpos = 100 / 7;
             el.attr('data-chemtype', o.chemType);
-            for (var i = 1; i <= 5; i++) {
-                $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 14.5px)' }).appendTo(liquid);
+            for (var i = 1; i <= 6; i++) {
+                $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 10.5px)' }).appendTo(liquid);
             }
             $('<label></label>').addClass('chemTank-label').text(o.labelText).appendTo(el);
 
@@ -2889,7 +2915,7 @@ $.ui.position.fieldTip = {
                 var maxval = o.scales[o.scales.length - 1].max;
                 // Calculate the left value.
                 var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
-                console.log({ val: val, minval: minval, maxval: maxval, tot:tot, left: left });
+                //console.log({ val: val, minval: minval, maxval: maxval, tot:tot, left: left });
                 tgt.css({ left: left + '%' });
                 o.target = val;
             }

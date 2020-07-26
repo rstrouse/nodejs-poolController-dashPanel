@@ -28,26 +28,33 @@
     <script type="text/javascript" src="scripts/config/chemistry.js"></script>
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.theme.css" />
-    <link rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
-    <link rel="stylesheet" type="text/css" href="themes/intellibrite.css" />
-    <link rel="stylesheet" type="text/css" href="themes/widgets.css" />
-    <link rel="stylesheet" type="text/css" href="themes/configPage.css" />
-    <link rel="stylesheet" type="text/css" href="themes/dashboard.css" />
+    <link id="cssref_glyphs" rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
+    
+    
+    <link id="cssref_intellibrite" rel="stylesheet" type="text/css" href="themes/intellibrite.css" />
+    <link id="cssref_widgets" rel="stylesheet" type="text/css" href="themes/widgets.css" />
+    <link id="cssref_config" rel="stylesheet" type="text/css" href="themes/configPage.css" />
+    <link id="cssref_dash" rel="stylesheet" type="text/css" href="themes/dashboard.css" />
+    <script type="text/javascript">
+        // Add in the current theme for the pool controller.
+        var theme = getCookie('dashTheme', 'default');
+        $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head'));
+    </script>
 </head>
 <body>
     <div class="dashOuter picDashboard " data-panel="dashboard">
         <header>
-            <div class="picController picControlPanel" style="display:block;"></div>
+            <div class="picController picControlPanel control-panel" style="display:block;"></div>
         </header>
         <div class="dashContainer">
             <div>
-                <div class="picBodies picControlPanel" style="display:block;"></div>
-                <div class="picChemistry picControlPanel" style="display:block;"></div>
-                <div class="picPumps picControlPanel picPumpContainer" style="display:block;"></div>
-                <div class="picSchedules picControlPanel picScheduleContainer" style="display:block;"></div>
+                <div class="picBodies picControlPanel control-panel" style="display:block;"></div>
+                <div class="picChemistry picControlPanel control-panel" style="display:block;"></div>
+                <div class="picPumps picControlPanel picPumpContainer control-panel" style="display:block;"></div>
+                <div class="picSchedules picControlPanel picScheduleContainer control-panel" style="display:block;"></div>
             </div>
             <div>
-                <div class="picCircuits picControlPanel"></div>
+                <div class="picCircuits picControlPanel control-panel"></div>
 
             </div>
         </div>

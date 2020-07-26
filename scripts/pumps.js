@@ -9,7 +9,7 @@
         _initPumps: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle"></div>');
+            let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);

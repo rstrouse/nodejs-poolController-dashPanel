@@ -15,7 +15,7 @@
                 for (var i = 0; i < pumps.length; i++) {
                     $('<div></div>').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models })[0].dataBind(pumps[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var groups = el.find('div.picConfigCategory.cfgPump');
@@ -85,7 +85,7 @@
 
 
             line = $('<div class="picPumpDetails"></div>').appendTo(pnl);
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSavePump"></div>').appendTo(btnPnl).actionButton({ text: 'Save Pump', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
@@ -216,7 +216,7 @@
             $('<div><hr></hr></div>').appendTo(pnlCircuits);
             line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Pump Circuits</span></div>').appendTo(line);
-            var btnCPnl = $('<div class="picBtnPanel"></div>').appendTo(line);
+            var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(line);
             var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
                 var pmp = dataBinder.fromElement(el);

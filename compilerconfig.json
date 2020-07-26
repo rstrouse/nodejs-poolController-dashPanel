@@ -14,11 +14,17 @@
   {
     "outputFile": "themes/messageManager.css",
     "inputFile": "themes/messageManager.scss"
-
   },
   {
     "outputFile": "themes/vlist.css",
     "inputFile": "themes/vlist.scss"
+  },
+  {
+    "outputFile": "themes/default/theme.css",
+    "inputFile": "themes/default/theme.scss"
+  },
+  {
+    "outputFile": "themes/sketchy/theme.css",
+    "inputFile": "themes/sketchy/theme.scss"
   }
-
 ]

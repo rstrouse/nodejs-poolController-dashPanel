@@ -455,6 +455,7 @@ mhelper.init();
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
             el[0].cancelBulkMessages = function () {};
             el[0].clear = function () { self.clear(); };
+            el[0].clearOutbound = function () { self.clearOutbound(); };
             el[0].pinSelection = function (val) {
                 if (typeof val !== 'undefined') {
                     var pin = el.find('div.picScrolling:first');
@@ -534,7 +535,7 @@ mhelper.init();
                     var p = $(evt.allRows[i].row);
                     if (p.attr('data-msgkey') === msgKey) {
                         prev = o.messages['m' + p.attr('data-rowid')];
-                        console.log({ msg: 'Found Prev', prev });
+                        //console.log({ msg: 'Found Prev', prev });
                         break;
                     }
                 }
@@ -596,6 +597,15 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList')[0].clear();
             o.messageKeys = {};
+        },
+        clearOutbound: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picVirtualList')[0].clear(elem => elem.rowId < 1);
+            var props = Object.getOwnPropertyNames(o.messages);
+            for (var i = 0; i < props.length; i++) {
+                if (props[i] === 'm1') continue;
+                delete o.messages[props[i]];
+            }
         },
         addMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
@@ -1014,7 +1024,7 @@ mhelper.init();
         },
         bindMessage: function (msg, prev, ctx) {
             var self = this, o = self.options, el = self.element;
-            console.log(msg);
+            //console.log(msg);
             if (msg.protocol === 'api') {
                 self._bindApiCall(msg, prev, ctx);
             }
@@ -1172,7 +1182,7 @@ mhelper.init();
             div = $('<div class="queue-list-header"></div>').appendTo(el);
             $('<table class="queue-list-header"><tbody><tr><td></td><td>Proto</td><td>Src/Dest</td><td>Action</td><td>Payload</td><td>Delay</td><td></td></tr></tbody></table>').appendTo(div);
             div = $('<div class="queue-send-list"></div>').appendTo(el);
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').attr('id', 'btnAddMessage').appendTo(btnPnl).actionButton({ text: 'Add Message', icon: '<i class="fas fa-plus" ></i>' }).on('click', function (e) {
                 var controller = $(document.body).attr('data-controllertype') === 'intellicenter' ? 63 : 34;
                 var msg = { protocol: 'broadcast', payload: [], header: [165, controller, 15, 16, 0, 0], term: [], delay:0 };
@@ -1515,7 +1525,7 @@ mhelper.init();
             $('<div></div>').addClass('edit-message-panel').appendTo(el);
             var pnlPayload = $('<div></div>').addClass('edit-message-payload').appendTo(el);
             $('<div></div>').appendTo(pnlPayload).inputField({ required: false, labelText: 'Payload', binding: 'payloadBytes', inputAttrs: { style: { width: '44rem' } }, labelAttrs: { style: { width: '4rem' } } });
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Message', icon: '<i class="far fa-save"></i>' }).on('click', function (e) {
                 var msg = self._fromWindow(true);
                 if (msg) {
@@ -1707,7 +1717,7 @@ mhelper.init();
             line = $('<div></div>').appendTo(div);
             $('<div></div>').appendTo(line).inputField({ required: false, multiLine:true, labelText: 'Description', binding: 'description', inputAttrs: { maxlength: 100, style: { width: '19rem', height:'4rem' } }, labelAttrs: { style: { width: '5.5rem', paddingLeft: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Queue', icon: '<i class="far fa-save"></i>' }).on('click', function (e) {
                 var queue = self._fromWindow(true);
                 
@@ -1756,7 +1766,7 @@ mhelper.init();
                 });
             });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Load Queue', icon: '<i class="fas fa-download"></i>' }).on('click', function (e) {
                 console.log('Loading queue');
                 var queue = self._fromWindow(true);
@@ -1802,7 +1812,7 @@ mhelper.init();
             //        { name: 'Pool Controller', desc: 'Plays the log file back to the poolController Instance' } ],
             //    inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: {} }, dropdownStyle: {width:'450px'}
             //});
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Begin Processing File', icon: '<i class="fas fa-upload"></i>' }).on('click', function (e) {
                 self._uploadLogFile();
             });
@@ -1919,7 +1929,7 @@ mhelper.init();
             var fileProg = $('<div></div>').appendTo(el).addClass('upload-file-progress').progressbar();
             $('<div></div>').appendTo(el).addClass('upload-process-label').text('Log Processing Progress');
             var procProg = $('<div></div>').appendTo(el).addClass('upload-process-progress').progressbar();
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Cancel Upload', icon: '<i class="fas fa-plane-slash"></i>' }).on('click', function (e) {
                 o.isCancelled = true;
             });

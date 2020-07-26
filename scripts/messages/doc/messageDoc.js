@@ -19,7 +19,7 @@
             self._buildMessageTab();
             self._buildPayloadTab();
             tabs[0].selectTabById('tabMessage');
-            var btnPnl = $('<div class="picBtnPanel"></div>');
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
             btnPnl.appendTo(el);
             var btnApply = $('<div></div>');
             btnApply.appendTo(btnPnl);

@@ -24,7 +24,7 @@
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(el).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(el);
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Controller', icon: '<i class="fas fa-plus" ></i>' });
                 //btnAdd[0].disabled(true);
                 btnAdd.on('click', function (e) {
@@ -156,7 +156,7 @@
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Super Chlor', binding: binding + 'superChlorHours', min: 1, max: 96, step: 1, units: 'hours', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
 
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Chlorinator', icon: '<i class="fas fa-save"></i>' });
 
             btnSave.on('click', function (e) {
@@ -268,7 +268,7 @@
             line = $('<div></div>').appendTo(grpIndex);
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cyanuric Acid', binding: binding + 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             
-            var btnPnl = $('<div class="picBtnPanel"></div>').appendTo(pnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Controller', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');

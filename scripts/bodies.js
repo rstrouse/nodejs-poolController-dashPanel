@@ -9,7 +9,7 @@
         _initBodies: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            var div = $('<div class="picAmbientTemp"></div>');
+            var div = $('<div class="picAmbientTemp control-panel-title"></div>');
             div.appendTo(el);
             var d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
@@ -79,7 +79,7 @@
 
                 + '<div class="picBodyTemp">'
                 + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-                + '<div><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>'
+                + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>'
                 + '</div>'
 
                 + '<div class= "picBodySetPoints">'

@@ -1,29 +1,12 @@
-﻿div, span, i, input, label {
-    box-sizing:border-box;
-}
-.disabled {
-    opacity:.5;
-}
-body {
-    font-family:arial;
-}
-div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
-span.picInstructions {
-    font-size:.8rem;
-    font-style:italic;
-}
-div.picBtnPanel {
-    text-align:right;
-    border-top:solid 3px gainsboro;
-    padding:.2rem;
-    margin-top:.2rem;
-}
-div.picOptionButton > span,
+﻿div.picOptionButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
     margin-left: .2rem;
     line-height:1rem;
     vertical-align:middle;
+}
+div.picFeature, div.picVirtualCircuit {
+    min-width:10.4rem;
 }
 div.picFeatures > div.picCircuit[data-showinfeatures=false] {
     display:none;
@@ -36,13 +19,14 @@ div.picLights > div.picCircuit[data-showinfeatures=true] {
     display: none;
 }
 div.picOptionButton {
-    user-select:none;
+    user-select: none;
     text-align: left;
     white-space: nowrap;
     border: solid 1px gray;
     border-radius: 5px;
+    /*border-radius: 255px 25px 225px 25px/25px 225px 25px 255px;*/
     display: inline-block;
-    padding:.2rem;
+    padding: .2rem;
     min-width: 5.4rem;
     margin: .1rem;
     /*
@@ -64,6 +48,7 @@ div.picOptionButton > i {
     margin-left:.4rem;
     vertical-align:middle;
 }
+/*
 div.picActionButton, div.picButton {
     user-select:none;
     text-align:left;
@@ -91,6 +76,7 @@ div.picActionButton, div.picButton {
     -ms-user-select: none;
     cursor: pointer;
 }
+    */
 div.picOptionButton:not(.disabled):hover,
 div.picActionButton:not(.disabled):hover, 
 div.picButton:not(.disabled).button-hover {
@@ -121,38 +107,20 @@ div.pover-icon:hover {
 }
 
 
-div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes=true] div.picLight i.picDropdownButton.fa-palette {
-    display: none;
-}
-div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
-    display:none;
-}
 div.picTab {
-    border: solid 1px black;
-    border-bottom: none;
     padding: 4px;
     display: inline-block;
+    border-bottom: none;
     cursor: pointer;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    background-color: white;
     margin-bottom: -1px;
-    user-select:none;
+    user-select: none;
 }
 div.picTabContents {
-    border-left:solid 1px black;
-    border-bottom:solid 1px black;
-    border-right:solid 1px black;
-    border-top:solid 1px black;
-    border-bottom-right-radius:5px;
-    border-bottom-left-radius:5px;
-    border-top-right-radius:5px;
     padding:.2rem;
     margin-bottom:-1px;
 }
 div.picTabSelected {
-    border-bottom:solid 3px white;
+    border-bottom:solid 3px transparent;
     z-index:101;
     margin-bottom:-2px;
 }
@@ -172,44 +140,8 @@ div.picOption {
 div.picPopover {
     z-index:101;
     padding: .5em;
-    border: solid 1px gray;
-    border-radius: 5px;
     display: none;
     position: absolute;
-    background: -moz-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ff3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(222,222,222,1)), color-stop(18%, rgba(255,255,255,1)), color-stop(76%, rgba(255,255,255,1)), color-stop(85%, rgba(249,249,249,1)), color-stop(100%, rgba(240,240,240,1))); /* safari4+,chrome */
-    background: -webkit-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* safari5.1+,chrome10+ */
-    background: -o-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* opera 11.10+ */
-    background: -ms-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ie10+ */
-    background: linear-gradient(1deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* w3c */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#DEDEDE', endColorstr='#F0F0F0',GradientType=0 ); /* ie6-9 */
-    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-div.picControlPanel {
-    vertical-align: top;
-    /*max-width: 22rem;*/
-    display: inline-block;
-    margin-top: .4rem;
-    margin-right: .2rem;
-    padding: .4em;
-    border: solid 1px gray;
-    border-radius: 5px;
-    background: -moz-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ff3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(222,222,222,1)), color-stop(18%, rgba(255,255,255,1)), color-stop(76%, rgba(255,255,255,1)), color-stop(85%, rgba(249,249,249,1)), color-stop(100%, rgba(240,240,240,1))); /* safari4+,chrome */
-    background: -webkit-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* safari5.1+,chrome10+ */
-    background: -o-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* opera 11.10+ */
-    background: -ms-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ie10+ */
-    background: linear-gradient(1deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* w3c */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#DEDEDE', endColorstr='#F0F0F0',GradientType=0 ); /* ie6-9 */
-    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -350,8 +282,6 @@ div.picController > div.picControllerLine label {
 }
 
 
-div.picCircuits {
-}
 div.picFeatures, div.picLights {
     display:block;
 }
@@ -360,8 +290,6 @@ div.picCircuits > div:nth-child(n+2) {
 }
 div.picVirtualCircuit {
     white-space: nowrap;
-    border: solid 1px gray;
-    border-radius: 5px;
     display: inline-block;
     padding-top: .4rem;
     padding-bottom: .4rem;
@@ -369,65 +297,11 @@ div.picVirtualCircuit {
     padding-left: 0px;
     min-width: 10.4rem;
     margin: .1rem;
-    background: -moz-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ff3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(222,222,222,1)), color-stop(18%, rgba(255,255,255,1)), color-stop(76%, rgba(255,255,255,1)), color-stop(85%, rgba(249,249,249,1)), color-stop(100%, rgba(240,240,240,1))); /* safari4+,chrome */
-    background: -webkit-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* safari5.1+,chrome10+ */
-    background: -o-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* opera 11.10+ */
-    background: -ms-linear-gradient(89deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* ie10+ */
-    background: linear-gradient(1deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%); /* w3c */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#DEDEDE', endColorstr='#F0F0F0',GradientType=0 ); /* ie6-9 */
-    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
 }
-div.picFeature {
-    white-space: nowrap;
-    border: solid 1px gray;
-    border-radius: 5px;
-    display: inline-block;
-    padding-top: .4rem;
-    padding-bottom:.4rem;
-    padding-right:.2rem;
-    padding-left:0px;
-    min-width: 10.4rem;
-    margin: .1rem;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 );
-    background: rgb(238,238,238);
-    background: -moz-linear-gradient(top, rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%);
-    background: -webkit-linear-gradient(top, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
-    background: linear-gradient(to bottom, rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%);
-    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    cursor: pointer;
-}
-    div.picFeature > * {
-        cursor: pointer;
-    }
-    div.picFeature:hover {
-        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
-        background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: linear-gradient(top, #ffaf4b, #ff920a);
-    }
-    div.picFeature:active {
-        color:white;
-        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-        background-image: -ms-linear-gradient(top, #159FCF, #13647F);
-        background-image: -moz-linear-gradient(top, #159FCF, #13647F);
-        background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
-        background-image: linear-gradient(top, #159FCF, #13647F);
-    }
-
     div.picFeature > div.picToggleButton,
     div.picFeature > div.picFeatureLabel,
     div.picVirtualCircuit > div.picFeatureLabel,
@@ -435,8 +309,8 @@ div.picFeature {
     div.picActionButton > div.picOptionToggle,
     div.picOptionButton > div.picOptionToggle {
         display: inline-block;
-        line-height:1rem;
-        vertical-align:middle;
+        line-height: 1rem;
+        vertical-align: middle;
     }
 div.picFeature > div.picToggleButton, div.picVirtualCircuit > div.picToggleButton {
     margin-right:.2em;
@@ -463,22 +337,6 @@ div.picBody > div.picBodyTemp {
 }
 div.picBody[data-ison=false] div.picBodyTemp {
     color:silver;
-}
-div.picAmbientTemp, div.picCircuitTitle, div.picControllerTitle {
-    border-bottom:solid 3px orange;
-    white-space:nowrap;
-}
-div.picAmbientTemp > div {
-    display:inline-block;
-}
-div.picAmbientTemp > div:nth-child(2) {
-    float:right;
-}
-div.picAmbientTemp label {
-    color:gray;
-}
-div.picBodyTemp > div:nth-child(2) {
-    font-size:2em;
 }
 label {
     cursor:inherit;

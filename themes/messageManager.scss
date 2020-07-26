@@ -1,20 +1,4 @@
-﻿html {
-    width:100%;
-    height:100%;
-    margin:0px;
-    box-sizing:border-box;
-}
-* {
-    box-sizing: border-box;
-}
-
-body {
-    width: 100%;
-    height: 100%;
-    margin: 0px;
-    background-image: url(Images/WaterDropBackground.jpg);
-    box-sizing: border-box;
-}
+﻿@import 'default.scss';
 div.mmgrOuter {
     width: 100%;
     display: grid;
@@ -501,6 +485,4 @@ div.edit-message-protocol input[type=text],
 div.edit-message-payload input[type=text] {
     font-size: 10pt;
 }
-
-
-    @import 'controller.scss';
+@import 'controller.scss';

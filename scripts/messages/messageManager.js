@@ -6,6 +6,8 @@
             self._initLogs();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
             el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); };
+            el[0].clearOutbound = function () { el.find('div.picMessages:first')[0].clearOutbound(); };
+
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -46,7 +48,7 @@
                 });
             });
             o.socket.on('logMessage', function (data) {
-                console.log({ evt: 'logMessage', data: data });
+                //console.log({ evt: 'logMessage', data: data });
                 $('div.picMessages').each(function () {
                     this.addMessage(data);
                 });
@@ -116,7 +118,7 @@
             var self = this, o = self.options, el = self.element;
             if (o.isConnected) {
                 if (typeof msg !== 'undefined') {
-                    console.log(`sendOutboundMessage Emit ${msg}`);
+                    //console.log(`sendOutboundMessage Emit ${msg}`);
                     o.socket.emit('sendOutboundMessage', msg);
                 }
             }
