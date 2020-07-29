@@ -22,6 +22,7 @@ div.picFreezeProtect {
     text-align: center;
     color: blue;
 }
+div.picPanelMode[data-status=""],
 div.picPanelMode[data-status=auto],
 div.picFreezeProtect[data-status=off] {
     display: none;

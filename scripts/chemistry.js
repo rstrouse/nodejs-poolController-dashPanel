@@ -8,19 +8,24 @@
         _initChemistry: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
+            
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Chemistry');
-            for (let i = 0; i < data.chlorinators.length; i++) {
-                let div = $('<div class="picChlorinator"></div>');
-                div.appendTo(el);
-                div.chlorinator(data.chlorinators[i]);
+            if (typeof data !== 'undefined') {
+                el.show();
+                for (let i = 0; i < data.chlorinators.length; i++) {
+                    let div = $('<div class="picChlorinator"></div>');
+                    div.appendTo(el);
+                    div.chlorinator(data.chlorinators[i]);
+                }
+                for (let i = 0; i < data.chemControllers.length; i++) {
+                    $('<div class="picChemController"></div>').appendTo(el).chemController(data.chemControllers[i]);
+                }
             }
-            for (let i = 0; i < data.chemControllers.length; i++) {
-                $('<div class="picChemController"></div>').appendTo(el).chemController(data.chemControllers[i]);
-            }
+            else el.hide(); 
         }
     });
     $.widget('pic.chlorinator', {
@@ -129,7 +134,7 @@
                         });
 
                         // Add in the super chlorinate button.
-                        let btn = $('<div class="picSuperChlorBtn"></div>');
+                        let btn = $('<div class="picSuperChlorBtn btn"></div>');
                         btn.appendTo(evt.contents());
 
                         let toggle = $('<div class="picToggleSuperChlor"></div>');

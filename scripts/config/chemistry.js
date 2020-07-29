@@ -46,18 +46,18 @@
                         }]
                     });
                     var line = $('<div></div>').appendTo(dlg);
-                    $('<div></div>').appendTo(line).css({ padding: '.5rem' }).text('Select the type of chemistry equipment you would like to add.  If selecting a chemistry controller like IntelliChem select a sub-type from the dropdown.');
+                    $('<div></div>').appendTo(line).addClass('status-text').css({ padding: '.5rem' }).text('Select the type of chemistry equipment you would like to add.  If selecting a chemistry controller like IntelliChem select a sub-type from the dropdown.');
                     line = $('<div></div>').appendTo(dlg);
                     $('<hr></hr>').appendTo(line);
                     line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
-                    var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').css({ width: '177px', height: '97px', verticalAlign:'middle' }).appendTo(line);
+                    var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line);
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
                     if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) {
                         divSelection.addClass('disabled');
                         $('<div></div>').css({ textAlign: 'center', fontSize: '8pt' }).appendTo(divSelection).text('Max Chlorinators Added');
                     }
-                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line)
+                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' }).appendTo(line)
                         .on('mouseover', function (e) {
                             $(e.currentTarget).addClass('button-hover');
                         })

@@ -9,7 +9,7 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('messageDoc');
             el[0].bindMessage = function (msg) { return self.bindMessage(msg); };
-            //$.getJSON('/messages/docs/constants', undefined, function (data, status, xhr) {
+            //$.getLocalService('/messages/docs/constants', undefined, function (data, status, xhr) {
             //console.log(data);
             o.constants = msgManager.constants;
             var tabs = $('<div class="picTabPanel"></div>');
@@ -248,7 +248,7 @@
             var self = this, o = self.options, el = self.element;
             console.log(msg);
             if (typeof msg === 'string') {
-                $.getJSON('/messages/docs/' + msg, undefined, function (data, status, xhr) {
+                $.getLocalService('/messages/docs/' + msg, undefined, function (data, status, xhr) {
                     console.log(data);
                     self.bindMessage(data);
                 });

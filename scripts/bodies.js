@@ -15,15 +15,21 @@
             d.appendTo(div);
             d = $('<div class="picSolarTempField"><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
             d.appendTo(div);
-            for (let i = 0; i < data.temps.bodies.length; i++) {
-                $('<div></div>').appendTo(el).body(data.temps.bodies[i]);
+            if (typeof data !== 'undefined') {
+                el.show();
+                for (let i = 0; i < data.temps.bodies.length; i++) {
+                    $('<div></div>').appendTo(el).body(data.temps.bodies[i]);
+                }
+                self.setTemps(data.temps);
+                for (let i = 0; i < data.circuits.length; i++) {
+                    let circuit = data.circuits[i];
+                    el.find('div.picBody[data-circuitid=' + circuit.id + ']').each(function () {
+                        this.setCircuitState(circuit);
+                    });
+                }
             }
-            self.setTemps(data.temps);
-            for (let i = 0; i < data.circuits.length; i++) {
-                let circuit = data.circuits[i];
-                el.find('div.picBody[data-circuitid=' + circuit.id + ']').each(function () {
-                    this.setCircuitState(circuit);
-                });
+            else {
+                el.hide();
             }
         },
         setTemps: function (data) {

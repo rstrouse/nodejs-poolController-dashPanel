@@ -9,17 +9,23 @@
         _initPumps: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            let div = $('<div class="picCircuitTitle control-panel-title"></div>');
-            div.appendTo(el);
-            let span = $('<span class="picCircuitTitle"></span>');
-            span.appendTo(div);
-            span.text('Pumps');
-
-            for (let i = 0; i < data.pumps.length; i++) {
-                // Create a new pump for each installed pump.
-                let div = $('<div class="picPump"></div>');
+            if (typeof data !== 'undefined') {
+                el.show();
+                let div = $('<div class="picCircuitTitle control-panel-title"></div>');
                 div.appendTo(el);
-                div.pump(data.pumps[i]);
+                let span = $('<span class="picCircuitTitle"></span>');
+                span.appendTo(div);
+                span.text('Pumps');
+
+                for (let i = 0; i < data.pumps.length; i++) {
+                    // Create a new pump for each installed pump.
+                    let div = $('<div class="picPump"></div>');
+                    div.appendTo(el);
+                    div.pump(data.pumps[i]);
+                }
+            }
+            else {
+                el.hide();
             }
         },
       

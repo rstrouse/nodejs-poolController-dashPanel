@@ -16,7 +16,7 @@
         _initLogs: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getJSON('/config/web.services', null, function (data, status, xhr) {
+            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);

@@ -9,12 +9,18 @@
         _initCircuits: function (data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picFeatures"></div>');
-            div.appendTo(el);
-            div.features(data);
-            div = $('<div class="picLights"></div>');
-            div.appendTo(el);
-            div.lights(data);
+            if (typeof data !== 'undefined') {
+                el.show();
+                div = $('<div class="picFeatures"></div>');
+                div.appendTo(el);
+                div.features(data);
+                div = $('<div class="picLights"></div>');
+                div.appendTo(el);
+                div.lights(data);
+            }
+            else {
+                el.hide();
+            }
         },
         _isLight: function (name) {
             switch (name) {

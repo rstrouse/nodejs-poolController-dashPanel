@@ -1,5 +1,7 @@
 ﻿import * as path from "path";
 import * as express from "express";
+import { URL } from "url";
+import { Client } from "node-ssdp";
 import { config } from "../server/config/Config";
 import { logger } from "../server/logger/Logger";
 import * as http2 from "http2";
@@ -10,9 +12,10 @@ import * as extend from 'extend';
 import { ApiError } from './Errors';
 import { UploadRoute } from "./upload/upload";
 import { MessageDocs } from "./messages/messages";
+import { setTimeout } from "timers";
+
 
 // This class serves data and pages for
-// external interfaces as well as an internal dashboard.
 export class WebServer {
     private _servers: ProtoServer[] = []; 
     constructor() { }
@@ -112,11 +115,40 @@ export class HttpServer extends ProtoServer {
             this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
             this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
-            
+          
             this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
+            this.app.get('/config/findPoolControllers', async (req, res, next) => {
+                let prom = new Promise((resolve, reject) => {
+                    let ssdpClient = new Client({});
+                    let servers = [];
+                    try {
+                        ssdpClient.on('response', (headers, statusCode, rinfo) => {
+                            if (statusCode === 200) {
+                                let url = new URL(headers.LOCATION);
+                                if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
+                                    servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname:url.hostname, port: url.port, hash: url.hash });
+                                }
+                            }
+                        });
+                        ssdpClient.search('urn:schemas-upnp-org:device:PoolController:1');
+                        setTimeout(() => {
+                            resolve();
+                            ssdpClient.stop(); console.log('done searching for poolController');
+                            return res.status(200).send(servers);
+                        }, 5000);
+                    }
+                    catch (err) { reject(err); };
+                });
+            });
+
+
             this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
             this.app.put('/config/:section', (req, res) => {
+                try {
+                    config.setSection(req.params.section, req.body);
+                }
+                catch (err) { return res.status(400).send(new Error(err)); }
                 return res.status(200).send(config.getSection(req.params.section));
             });
             this.app.put('/messages/queue', async (req, res, next) => {

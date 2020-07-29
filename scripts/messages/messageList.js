@@ -889,7 +889,7 @@ mhelper.init();
             });
             el.on('click', 'div.picDocumentSignature', function (evt) {
                 console.log('Opening doc signature');
-                $.getJSON('/messages/docs/' + o.context.docKey, undefined, function (docs, status, xhr) {
+                $.getLocalService('/messages/docs/' + o.context.docKey, undefined, function (docs, status, xhr) {
                     console.log(docs);
                     var docMsg = msgManager.toDocMessage(o.message, docs, o.context);
                     console.log(docMsg);
@@ -1327,7 +1327,7 @@ mhelper.init();
         saveQueue: function () {
             var self = this, o = self.options, el = self.element;
             var queue = self._fromWindow(true);
-            $.putJSON('/messages/queue', queue, 'Saving Queue...', function (data, status, xhr) {
+            $.putLocalService('/messages/queue', queue, 'Saving Queue...', function (data, status, xhr) {
                 self.bindQueue(data);
             });
         },
@@ -1361,7 +1361,7 @@ mhelper.init();
         },
         loadQueue: function (id) {
             var self = this, o = self.options, el = self.element;
-            $.getJSON('/messages/queue/' + id, undefined, function (data, status, xhr) {
+            $.getLocalService('/messages/queue/' + id, undefined, function (data, status, xhr) {
                 console.log(data);
                 self.bindQueue(data);
             });
@@ -1754,7 +1754,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             var div = $('<div></div>').appendTo(el).addClass('edit-queue');
             var line = $('<div></div>').css({ minWidth: '20rem' }).appendTo(div);
-            $.getJSON('/messages/queues', undefined, function (data, status, xhr) {
+            $.getLocalService('/messages/queues', undefined, function (data, status, xhr) {
                 console.log(data);
                 $('<div></div>').appendTo(line).pickList({ required: true,
                     labelText: 'Queue', binding: 'id',

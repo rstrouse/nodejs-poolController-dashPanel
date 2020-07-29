@@ -5,6 +5,16 @@
             var self = this, o = self.options, el = self.element;
             self._initState();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
+            el[0].reset = function () { self._reset(); };
+        },
+        _clearPanels: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picController').each(function () { this.initController(); });
+            el.find('div.picBodies').each(function () { this.initBodies(); });
+            el.find('div.picCircuits').each(function () { this.initCircuits(); });
+            el.find('div.picPumps').each(function () { this.initPumps(); });
+            el.find('div.picChemistry').each(function () { this.initChemistry(); });
+            el.find('div.picSchedules').each(function () { this.initSchedules(); });
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -22,6 +32,14 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picPumps').each(function () { this.initPumps(data); });
         },
+        _reset: function() {
+            var self = this, o = self.options, el = self.element;
+            if (o.socket && typeof o.socket !== 'undefined' && o.socket.connected) {
+                o.socket.close();
+            }
+            o.socket = null;
+            self._initState();
+        },
         _createSchedulesPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picSchedules').each(function () { this.initSchedules(data); });
@@ -33,7 +51,7 @@
         _resetState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('resetting state');
-            $.getJSON('/config/web.services', null, function (data, status, xhr) {
+            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
@@ -69,7 +87,7 @@
         _initState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getJSON('/config/web.services', null, function (data, status, xhr) {
+            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
@@ -99,7 +117,10 @@
                     console.log(data);
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })
-                    .fail(function (xhr, status, error) { console.log('Failed:' + error); });
+                    .fail(function (xhr, status, error) {
+                        console.log('Failed:' + error);
+                        self._clearPanels();
+                    });
             });
         },
         _initSockets: function () {

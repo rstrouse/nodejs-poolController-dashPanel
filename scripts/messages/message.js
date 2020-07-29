@@ -11,14 +11,14 @@ var msgManager = {
     },
     loadConstants: function (cb) {
         var self = this;
-        $.getJSON('/messages/docs/constants', undefined, function (data, status, xhr) {
+        $.getLocalService('/messages/docs/constants', undefined, function (data, status, xhr) {
             self.constants = data;
             if (typeof cb === 'function') cb(data);
         });
     },
     loadKeyBytes: function (cb) {
         var self = this;
-        $.getJSON('/messages/docs/keyBytes', undefined, function (data, status, xhr) {
+        $.getLocalService('/messages/docs/keyBytes', undefined, function (data, status, xhr) {
             console.log(data);
             self.keyBytes = data;
             if (typeof cb === 'function') cb(data);

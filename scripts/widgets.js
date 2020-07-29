@@ -290,8 +290,8 @@ jQuery.each(["put", "delete"], function (i, method) {
         });
     };
 });
-jQuery.each(['put', 'delete', 'post'], function (i, method) {
-    jQuery[method + 'JSON'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
+jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
+    jQuery[method + 'LocalService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
         if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
             method = method || successCallback;
             completeCallback = errorCallback;
@@ -340,7 +340,6 @@ jQuery.each(['put', 'delete', 'post'], function (i, method) {
         };
         var cbShowSuccess = function (data, status, jqXHR) { };
         var serviceUrl = url;
-
 
         // Set up the callbacks.
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
@@ -904,6 +903,7 @@ $.ui.position.fieldTip = {
             text.appendTo(el);
             if (o.icon) icon.html(o.icon);
             el.addClass('picOptionButton');
+            el.addClass('btn-border');
             if (typeof o.id !== 'undefined') el.prop('id', o.id);
             el.attr('data-datatype', 'boolean');
             if (o.text) text.text(o.text);
@@ -1451,7 +1451,7 @@ $.ui.position.fieldTip = {
             el[0].interactive = function (val) { self.interactive(val); };
             el[0].titleText = function (val) { return el.find('span.picPopoverTitle').html(val); };
             el[0].close = function () { return self.close(); };
-            var header = $('<div class="picPopoverHeader"><div class="picPopoverTitle"><span class="picPopoverTitle"></span></div>').prependTo(el);
+            var header = $('<div class="picPopoverHeader control-panel-title"><div class="picPopoverTitle"><span class="picPopoverTitle"></span></div>').prependTo(el);
             if (!o.autoClose) {
                 $('<div class="picClosePopover pover-icon picIconRight" title="Close"><i class="far fa-window-close"></i></div>').appendTo(header.find('div.picPopoverTitle:first'));
                 el.on('click', 'div.picClosePopover', function (evt) { el[0].close(); });
@@ -1585,15 +1585,15 @@ $.ui.position.fieldTip = {
         _initPickList: function () {
             var self = this, o = self.options, el = self.element;
             if (o.bind) el.attr('data-bind', o.bind);
-            $('<label class="picPickList-label"></label>').appendTo(el).text(o.labelText);
+            $('<label class="picPickList-label field-label"></label>').appendTo(el).text(o.labelText);
             var itm = self._getItem(o.value);
             if (o.canEdit)
-                $('<div class="picPickList-value"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
+                $('<div class="picPickList-value fld-value-combo"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
             else
-                $('<div class="picPickList-value"></div>').appendTo(el);
+                $('<div class="picPickList-value fld-value-combo"></div>').appendTo(el);
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
-            $('<div class="picPickList-drop"><i class="fas fa-caret-down"></i></div>').appendTo(el);
+            $('<div class="picPickList-drop fld-btn-right"><i class="fas fa-caret-down"></i></div>').appendTo(el);
             el.attr('data-bind', o.binding);
             el[0].label = function () { return el.find('label.picPickList-label:first'); };
             el[0].field = function () { return el.find('div.picPickList-value:first'); };
@@ -1677,8 +1677,8 @@ $.ui.position.fieldTip = {
         },
         _buildOptionList: function () {
             var self = this, o = self.options, el = self.element;
-            div = $('<div class="picPickList-options"></div>');
-            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
+            div = $('<div class="picPickList-options dropdown-panel"></div>');
+            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader header-background"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
             self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
             var tbody = $('<table class="optBody"><tbody></tbody></table>').appendTo(tblOuter.find('div.optBody > div:first'));
             var val = self.val();
@@ -1905,10 +1905,10 @@ $.ui.position.fieldTip = {
             $('<label></label>').appendTo(el).text(o.labelText);
             if (o.multiLine) {
                 el.addClass('multiline');
-                $('<textarea class="picInputField-value"></textarea>').appendTo(el);
+                $('<textarea class="picInputField-value"></textarea>').addClass('fld-value').appendTo(el);
             }
             else
-                $('<input type="text" class="picInputField-value"></input>').appendTo(el);
+                $('<input type="text" class="picInputField-value"></input>').addClass('fld-value').appendTo(el);
             
             self.val(o.value);
             el.attr('data-bind', o.binding);

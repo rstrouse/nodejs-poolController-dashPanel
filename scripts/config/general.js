@@ -47,7 +47,7 @@
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
                 labelText: 'Country', binding: 'location.country',
-                columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Country', style: { whiteSpace: 'nowrap' } }],
+                columns: [{ binding: 'val', hidden: true, text: 'name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Country', style: { whiteSpace: 'nowrap' } }],
                 items: o.countries, inputStyle: { width: '7rem' }, bindColumn: 1, labelAttrs: { style: { width: '5.7rem' } }
             });
             line = $('<div></div>').appendTo(pnl);

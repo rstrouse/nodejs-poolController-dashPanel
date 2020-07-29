@@ -14,7 +14,8 @@
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Schedules');
-            if (typeof data.schedules !== 'undefined') {
+            if (typeof data !== 'undefined' && typeof data.schedules !== 'undefined') {
+                el.show();
                 var schedules = data.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     // Create a new schedule for each installed schedule.
@@ -23,6 +24,7 @@
                     divSched.schedule(data.schedules[i]);
                 }
             }
+            else el.hide();
         },
         setScheduleData: function (data) {
             var self = this, o = self.options, el = self.element;

@@ -21,7 +21,7 @@
                 $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div></div>').appendTo(row);
             console.log('jQuery:' + jQuery.fn.jquery + ' jQueryUI:' + ($.ui.version || 'pre 1.6'));
 
-            row = $('<div class="picFreezeProtect" data-status="on"><i class="fas fa-snowflake burst-animated"></i><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"></i></div>');
+            row = $('<div class="picFreezeProtect" data-status="off"><i class="fas fa-snowflake burst-animated"></i><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"></i></div>');
             row.appendTo(el);
             row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><i class="far fa-pause-circle burst-animated"></i></div>');
             row.appendTo(el);
@@ -60,7 +60,7 @@
                 }
             });
             self.setControllerState(data);
-            self.setEquipmentState(data.equipment);
+            self.setEquipmentState(typeof data !== 'undefined' ? data.equipment : undefined);
         },
         _buildConfigPage: function () {
             var self = this, o = self.options, el = self.element;
@@ -98,50 +98,81 @@
         setControllerState: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                let dt = new Date.parseISO(data.time);
-                el.find('span.picControllerTime').each(function () {
-                    if (typeof data.clockMode !== 'undefined' && data.clockMode.val === 24) {
-                        $(this).text(dt.format('MM/dd/yyyy HH:mm'));
-                    }
-                    else
-                        $(this).text(dt.format('MM/dd/yyyy h:mmtt'));
-                    //$(this).text(self.formatDate(dt));
-                });
-                el.find('div.picControllerStatus').each(function () {
-                    let ln = $(this);
-                    ln.find('span.picPercentData').text(data.status.name === 'loading' ? data.status.percent + '%' : '');
-                    ln.find('span.picStatusData').text(data.status.desc);
-                    ln.find('div.picIndicator').attr('data-status', data.status.name);
-                });
-                el.find('div.picPanelMode').attr('data-status', data.mode.name);
-                el.find('div.picPanelMode > label').text(data.mode.desc);
-                el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
-                el.attr('data-status', data.status.val);
-                $('div.picActionButton[id$=btnReloadConfig]').each(function () {
-                    let btn = $(this);
-                    if (data.status.val === 1) {
+                if (typeof data !== 'undefined') {
+                    let dt = new Date.parseISO(data.time);
+                    el.find('span.picControllerTime').each(function () {
+                        if (typeof data.clockMode !== 'undefined' && data.clockMode.val === 24) {
+                            $(this).text(dt.format('MM/dd/yyyy HH:mm'));
+                        }
+                        else
+                            $(this).text(dt.format('MM/dd/yyyy h:mmtt'));
+                        //$(this).text(self.formatDate(dt));
+                    });
+                    el.find('div.picControllerStatus').each(function () {
+                        let ln = $(this);
+                        ln.find('span.picPercentData').text(data.status.name === 'loading' ? data.status.percent + '%' : '');
+                        ln.find('span.picStatusData').text(data.status.desc);
+                        ln.find('div.picIndicator').attr('data-status', data.status.name);
+                    });
+                    el.find('div.picPanelMode').attr('data-status', data.mode.name);
+                    el.find('div.picPanelMode > label').text(data.mode.desc);
+                    el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+                    el.attr('data-status', data.status.val);
+                    $('div.picActionButton[id$=btnReloadConfig]').each(function () {
+                        let btn = $(this);
+                        if (data.status.val === 1) {
+                            btn.find('i').removeClass('fa-spin');
+                            btn.find('span.picButtonText').text('Reload Config');
+                            btn.removeClass('disabled');
+                        }
+                        else {
+                            btn.find('i').addClass('fa-spin');
+                            btn.find('span.picButtonText').text('Loading Config...');
+                            btn.addClass('disabled');
+                        }
+                    });
+                }
+                else {
+                    el.find('span.picControllerTime').each(function () {
+                            $(this).text('--/--/---- --:--');
+                    });
+                    el.find('div.picControllerStatus').each(function () {
+                        let ln = $(this);
+                        ln.find('span.picPercentData').text('');
+                        ln.find('span.picStatusData').text('Not Connected');
+                        ln.find('div.picIndicator').attr('data-status', '');
+                    });
+                    el.find('div.picPanelMode').attr('data-status', '');
+                    el.find('div.picPanelMode > label').text('');
+                    el.find('div.picFreezeProtect').attr('data-status', 'off');
+                    el.attr('data-status', 2);
+                    $('div.picActionButton[id$=btnReloadConfig]').each(function () {
+                        let btn = $(this);
                         btn.find('i').removeClass('fa-spin');
-                        btn.find('span.picButtonText').text('Reload Config');
-                        btn.removeClass('disabled');
-                    }
-                    else {
-                        btn.find('i').addClass('fa-spin');
-                        btn.find('span.picButtonText').text('Loading Config...');
+                        btn.find('span.picButtonText').text('Not Connected...');
                         btn.addClass('disabled');
-                    }
-
-
-                });
+                    });
+                }
             } catch (err) { console.error(err); }
 
         },
         setEquipmentState: function (data) {
             var self = this, o = self.options, el = self.element;
-            el.attr('data-maxbodies', data.maxBodies);
-            el.attr('data-maxvalves', data.maxValves);
-            el.attr('data-maxcircuits', data.maxCircuits);
-            el.attr('data-shared', data.shared);
-            el.find('div.picModel > span.picModelData').text(data.model);
+            if (typeof data !== 'undefined') {
+                el.attr('data-maxbodies', data.maxBodies);
+                el.attr('data-maxvalves', data.maxValves);
+                el.attr('data-maxcircuits', data.maxCircuits);
+                el.attr('data-shared', data.shared);
+                el.find('div.picModel > span.picModelData').text(data.model);
+            }
+            else {
+                el.attr('data-maxbodies', 0);
+                el.attr('data-maxvalves', 0);
+                el.attr('data-maxcircuits', 0);
+                el.attr('data-shared', false);
+                el.find('div.picModel > span.picModelData').text('Unknown Model');
+
+            }
         }
     });
     $.widget('pic.settingsPanel', {
@@ -396,16 +427,75 @@
                 var contents = this.addTab(tabObj);
                 var divOuter = $('<div class="picConnections"></div>');
                 divOuter.appendTo(contents);
-                $('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
+                var line = $('<div></div>').appendTo(divOuter);
+                var binding = 'services.';
+                $('<div></div>').appendTo(line).pickList({ labelText: 'Server', binding: binding + 'protocol', required:true,
+                    inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.25rem' } },
+                    columns: [{ binding: 'val', hidden: true, text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                    bindColumn: 0, displayColumn: 1, items: [{ val: 'http://', name:'http:', desc: 'The nodejs-PoolController is communicating without an SSL certificate' },
+                        { val: 'https://', name: 'https:', desc: 'The nodejs-PoolController is communicating using an SSL certificate.' }]
+                });
+                $('<div></div>').appendTo(line).inputField({ labelText: '', binding: binding + 'ip', inputAttrs: { maxlength: 20 } });
+                $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType:'int', binding: binding + 'port', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight:'.15rem' } } });
+
+                //$('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
+                $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Find Server', icon: '<i class="fas fa-binoculars"></i>' })
+                    .on('click', function (e) {
+                        var dlg = $.pic.modalDialog.createDialog('dlgFindPoolController', {
+                            message: 'Searching for Controllers',
+                            width: '400px',
+                            height: 'auto',
+                            title: 'Find Pool Controller',
+                            buttons: [{
+                                text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                                click: function () { $.pic.modalDialog.closeDialog(this); }
+                            }]
+                        });
+                        var line = $('<div></div>').appendTo(dlg);
+                        var searchStatus = $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Searching for running nodejs-PoolController servers.');
+                        line = $('<div></div>').appendTo(dlg);
+                        $('<hr></hr>').appendTo(line);
+                        line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+                        dlg.css({ overflow: 'visible' });
+
+                        $.getLocalService('/config/findPoolControllers', null, 'Searching for Servers...', function (servers, status, xhr) {
+                            if (servers.length > 0) {
+                                searchStatus.text(servers.length + ' Running nodejs-PoolController server(s) found.');
+                                for (var i = 0; i < servers.length; i++) {
+                                    var server = servers[i];
+                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle' }).appendTo(line);
+                                    $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Pool Controller</span>');
+                                    $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(server.origin);
+                                    divSelection.data('server');
+                                    divSelection.on('click', function (e) {
+                                        console.log(server);
+                                        dataBinder.bind(divOuter, { services: { ip: server.hostname, port: server.port, protocol: server.protocol + '//' } });
+                                        $.pic.modalDialog.closeDialog(dlg[0]);
+                                    });
+                                }
+                            }
+                            else {
+                                searchStatus.text('No running nodesjs-PoolController servers could be found.  Enable SSDP on the pool controller application configuration.');
+                            }
+                        });
+                    });
+
                 var btnApply = $('<div></div>');
                 btnApply.appendTo(btnPnl);
                 btnApply.actionButton({ text: 'Apply', icon: '<i class="fas fa-save"></i>' });
-                btnApply.addClass('disabled');
                 btnApply.on('click', function (e) {
+                    if (dataBinder.checkRequired(divOuter)) {
+                        var cfg = dataBinder.fromElement(divOuter);
+                        $.putLocalService('/config/web.services', cfg.services, 'Updating Connection...', function (data, status, xhr) {
+                            $('div.picDashboard')[0].reset();
+
+                        });
+                    }
 
                 });
+                dataBinder.bind(divOuter, settings);
             });
         },
         _buildFirmwareTab: function (settings) {
@@ -478,7 +568,7 @@
             console.log('Building controls');
             tabs.appendTo(el);
             tabs.tabBar();
-            $.getJSON('/config/web', null, function (configData, status, xhr) {
+            $.getLocalService('/config/web', null, function (configData, status, xhr) {
                 console.log(configData);
                 o.initializing = true;
                 self._buildAppearanceTab(configData);

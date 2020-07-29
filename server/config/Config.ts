@@ -35,6 +35,21 @@ class Config {
             logger.error("Error writing configuration file %s", err);
         }
     }
+    public setSection(section: string, val) {
+        let c = this._cfg;
+        if (section.indexOf('.') !== -1) {
+            let arr = section.split('.');
+            for (let i = 0; i < arr.length - 1; i++) {
+                if (typeof c[arr[i]] === 'undefined')
+                    c[arr[i]] = {};
+                c = c[arr[i]];
+            }
+            section = arr[arr.length - 1];
+        }
+        c[section] = val;
+        this.update();
+    }
+
     public getSection(section?: string, opts?: any) : any {
         if (typeof (section) === 'undefined') return this._cfg;
         var c: any = this._cfg;
