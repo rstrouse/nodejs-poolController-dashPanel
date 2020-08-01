@@ -638,7 +638,8 @@ div.picModules > table > tbody > tr:nth-child(1) > td {
 div.picConfigIcon, div.picStartLogs {
   display: inline-block;
   cursor: pointer;
-  margin-left: .5rem; }
+  margin-left: .5rem;
+  vertical-align: middle; }
 
 div.picConfigIcon:hover, div.picStartLogs:hover {
   color: orange;

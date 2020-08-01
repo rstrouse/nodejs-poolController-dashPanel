@@ -179,7 +179,8 @@ div.picModules > table > tbody > tr:nth-child(1) > td {
 div.picConfigIcon, div.picStartLogs {
   display: inline-block;
   cursor: pointer;
-  margin-left: .5rem; }
+  margin-left: .5rem;
+  vertical-align: middle; }
 
 div.picConfigIcon:hover, div.picStartLogs:hover {
   color: orange;
@@ -214,7 +215,7 @@ div.dashOuter {
 
 div.dashContainer {
   display: inline-grid;
-  grid-template-columns: 377px 377px; }
+  grid-template-columns: 377px 22.4rem; }
 
 div.dashOuter[data-panel=dashboard] > div.configContainer {
   display: none; }

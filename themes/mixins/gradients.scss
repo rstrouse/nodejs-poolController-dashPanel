@@ -15,7 +15,6 @@
 @function is-direction($value) {
     $is-direction: index((to top, to top right, to right top, to right, to bottom right, to right bottom, to bottom, to bottom left, to left bottom, to left, to left top, to top left), $value);
     $is-angle: type-of($value) == 'number' and index('deg' 'grad' 'turn' 'rad', unit($value));
-
     @return $is-direction or $is-angle;
 }
 
@@ -48,14 +47,21 @@
         $color-stops: ($direction, $color-stops);
         $direction: 180deg;
     }
-
     background: nth(nth($color-stops, 1), 1);
     background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
     background: linear-gradient($direction, $color-stops);
 }
-@mixin box_shadow($thickness, $shadowcolor_r, $shadowcolor_g, $shadowcolor_b, $msequivcolor, $transparency) {
-    box-shadow: $thickness rgba($shadowcolor_r, $shadowcolor_g, $shadowcolor_b, $transparency);
-    -webkit-box-shadow: $thickness rgba($shadowcolor_r, $shadowcolor_g, $shadowcolor_b, $transparency);
-    -moz-box-shadow: $thickness rgba($shadowcolor_r, $shadowcolor_g, $shadowcolor_b, $transparency);
-    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='#{$msequivcolor}',strength=3);
+@mixin radial_gradient($position: center, $shape: circle, $extent: farthest-corner, $color-stops...) {
+    background: -moz-radial-gradient($position, $shape cover, $color-stops);
+    background: -webkit-radial-gradient(center, $shape cover, $color-stops);
+    background: -o-radial-gradient($position, $shape cover, $color-stops);
+    background: -ms-radial-gradient($position, $shape cover, $color-stops);
+    background: radial-gradient($shape $extent at $position, $color-stops);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1);
+}
+@mixin box_shadow($thickness, $shadowcolor, $msequivcolor) {
+    box-shadow: $thickness $shadowcolor;
+    -webkit-box-shadow: $thickness $shadowcolor;
+    -moz-box-shadow: $thickness $shadowcolor;
+    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='#{$msequivcolor}',strength=nth($thickness, 1));
 }

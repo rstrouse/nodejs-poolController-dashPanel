@@ -3,12 +3,12 @@
 @import './widgets.scss';
 
 body {
-    font-family: Arial;
-    background-image: url(../Images/WaterDropBackground.jpg);
+    font-family: Roboto;
+    background-image: url('background.jpg');
 }
 select, input[type=text], fieldset {
     font-size: 1rem;
-    border-radius: 4px;
+    border-radius: $border_radius;
 }
 .popover,
 .control-panel {
@@ -18,14 +18,27 @@ select, input[type=text], fieldset {
     margin-top: .4rem;
     margin-right: .2rem;
     padding: .4em;
-    border: solid 1px gray;
-    border-radius: 5px;
+    border: $outline_border;
+    border-radius: $border_radius;
     @include panel_background();
-    @include box_shadow(5px 5px 5px, rgba(27, 27, 27, 0.4), gainsboro);
+    @include box_shadow(2px 2px 2px, rgba(27, 27, 27, 0.4), gainsboro);
 }
 .control-panel-title {
-    border-bottom: solid 3px orange;
     white-space: nowrap;
+    border-bottom: solid 1px gray;
+    margin-left: -.4rem;
+    margin-right: -.4rem;
+    margin-top: -.4rem;
+    padding-top: .4rem;
+    color: white;
+    padding-left: .4rem;
+    padding-right: .2rem;
+    padding-bottom:.2rem;
+    margin-bottom:.2rem;
+    border-top-left-radius:$border_radius;
+    border-top-right-radius:$border_radius;
+    @include panel_header_background();
+    @include box_shadow(2px 2px 5px, rgba(27, 27, 27, 0.4), gainsboro);
 }
 .status-text {
 
@@ -50,7 +63,7 @@ select, input[type=text], fieldset {
 .btn-border {
     white-space: nowrap;
     border: solid 1px gray;
-    border-radius: 5px;
+    border-radius: $border_radius;
     display: inline-block;
     padding-top: .4rem;
     padding-bottom: .4rem;
@@ -62,15 +75,16 @@ select, input[type=text], fieldset {
 .btn {
     white-space: nowrap;
     border: solid 1px gray;
-    border-radius: 5px;
+    border-radius: $border_radius;
     display: inline-block;
     padding-top: .4rem;
     padding-bottom: .4rem;
     padding-right: .2rem;
     padding-left: 0px;
     margin: .1rem;
+    color:white;
     @include button_background();
-    @include box_shadow(3px 3px 3px, rgba(127,127,127,0.5), gainsboro);
+    @include box_shadow(1px 1px 1px, rgba(127,127,127,0.5), gainsboro);
 }
 .btn-stateonly {
     @include box_shadow(3px 3px 3px, rgba(127,127,127,0.5), gainsboro);
@@ -83,15 +97,19 @@ select, input[type=text], fieldset {
     border-top: solid 3px gainsboro;
 }
 .fld-btn-right {
-    border-top-right-radius: 50%;
-    border-bottom-right-radius: 50%;
+    color:white;
+    border-radius:$border_radius;
+    border-top-left-radius:0px;
+    border-bottom-left-radius:0px;
     border: solid 1px gray;
     @include fldbutton_background();
 }
 .fld-btn-left {
-    border-top-left-radius: 50%;
-    border-bottom-left-radius: 50%;
+    color: white;
+    border-radius: $border_radius;
     border: solid 1px gray;
+    border-top-right-radius:0px;
+    border-bottom-right-radius:0px;
     @include fldbutton_background();
 }
 .fld-btn-left:not([disabled]):not(.disabled):hover,
@@ -102,6 +120,7 @@ select, input[type=text], fieldset {
 .btn-border:not([disabled]):not(.disabled).hover,
 .btn:not([disabled]):not(.disabled):hover,
 .btn:not([disabled]):not(.disabled).hover {
+    color: white;
     @include hover_background();
 }
 .fld-btn-left:not([disabled]):not(.disabled):active,
@@ -114,6 +133,7 @@ select, input[type=text], fieldset {
 .btn:not([disabled]):not(.disabled).active {
     color: white;
     @include active_background();
+    opacity: .5;
 }
 .tab-contents {
     border: $outline_border;
@@ -134,10 +154,11 @@ select, input[type=text], fieldset {
     border-radius: $border_radius;
 }
 .header-background {
+    color:white;
     @include header_background();
 }
 table.optOuter {
-    border-radius: 5px;
+    border-radius: $border_radius;
 }
 
 tr.optHeader > td {
@@ -166,24 +187,23 @@ table.optBody > tbody > tr:hover {
 }
 div.picIndicator {
     display: inline-block;
-    border: solid 1px gray;
-    @include radial_gradient(center, ellipse, farthest-corner, rgba(222,222,222,1) 45%, rgba(0,33,0,0.2) 54%, rgba(0,0,0,1) 100%);
-    @include box_shadow(2px 2px 2px, rgba(127,127,127,0.5), gainsboro);
+    border: solid 1px silver;
+    background:white;
     vertical-align:text-top;
-    border-radius: 50%;
+    border-radius: 25%;
 }
 div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],
 div.picIndicator[data-status=selected],
 div.picIndicator[data-status=true] {
-    @include radial_gradient(center, ellipse, farthest-corner, rgba(0,240,0,1) 0%, rgba(0,0,0,1) 100%);
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(210,255,82,1) 0%,rgba(145,232,66,1) 100%);
 }
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(255,255,28,1) 0%, rgba(204,201,73,1) 85%, rgba(196,192,81,1) 100%);
 }
 
 div.picIndicator[data-status=loading] {
-    @include radial_gradient(center, ellipse, farthest-corner, rgba(252,255,84,1) 0%, rgba(255,182,71,1) 100%);
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(255,175,75,1) 0%,rgba(255,146,10,1) 100%);
 }
 
 div.picIndicator[data-status=error] {

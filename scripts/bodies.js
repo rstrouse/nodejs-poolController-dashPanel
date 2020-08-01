@@ -11,9 +11,9 @@
             el.empty();
             var div = $('<div class="picAmbientTemp control-panel-title"></div>');
             div.appendTo(el);
-            var d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            var d = $('<div><label class="picInline-label picAmbientTemp">Air Temp</label><span class="picAirTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>');
             d.appendTo(div);
-            d = $('<div class="picSolarTempField"><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>');
+            d = $('<div class="picSolarTempField"><label class="picInline-label picAmbientTemp">Solar Temp</label><span class="picSolarTemp"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>');
             d.appendTo(div);
             if (typeof data !== 'undefined') {
                 el.show();
@@ -37,7 +37,8 @@
             var nSolar = 0;
             el.find('span.picAirTemp').text(data.air);
             el.find('span.picSolarTemp').text(data.solar);
-            el.find('span.picUnits').text(data.units.name);
+            el.find('span.picTempUnits').text(data.units.name);
+            el.attr('data-unitsname', data.units.name);
             for (let i = 0; i < data.bodies.length; i++) {
                 let body = data.bodies[i];
                 el.find('div.picBody[data-id=' + body.id + ']').each(function () {
@@ -85,11 +86,11 @@
 
                 + '<div class="picBodyTemp">'
                 + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-                + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span></div>'
+                + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
                 + '</div>'
 
                 + '<div class= "picBodySetPoints">'
-                + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picUnits">-</span><div>'
+                + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span><div>'
                 + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span class="picModeData" data-bind="heatMode.desc">----</span>'
                 + '<div><label class="picInline-label picSetPointText">Heater Status</label><span class="picStatusData" data-bind="heatStatus.desc">----</span>'
                 + '</div>'
@@ -110,20 +111,24 @@
                     setPoint: parseInt(body.attr('data-setpoint'), 10)
                 };
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
-                    console.log(data);
+                    //console.log(data);
+                    var units = el.parents('div.picBodies:first').attr('data-unitsname');
                     var divPopover = $('<div></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
-                        $('<div><label class="picInline-label picSetpointText">' + body.attr('data-body') + ' Set Point</label><div class="picValueSpinner" data-bind="heatSetpoint"></div></div>'
-                            + '<div class= "picSelector" data-bind="heatMode"></div>').appendTo(evt.contents());
-                        evt.contents().find('div.picValueSpinner').each(function () {
-                            $(this).valueSpinner({ val: settings.setPoint, min: 65, max: 104, step: 1 });
-                        });
+                        $('<div></div>').appendTo(evt.contents()).valueSpinner({ labelText: 'Set Point', val: settings.setPoint, min: 65, max: 104, step: 1, bind:'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } });
+                        $('<div></div>').appendTo(evt.contents()).selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data, bind: 'heatMode' });
+                        //console.log(settings);
+                        //$('<div><label class="picInline-label picSetpointText">' + body.attr('data-body') + ' Set Point</label><div class="picValueSpinner" data-bind="heatSetpoint"></div></div>'
+                        //    + '<div class= "picSelector" data-bind="heatMode"></div>').appendTo(evt.contents());
+                        //evt.contents().find('div.picValueSpinner').each(function () {
+                        //    $(this).valueSpinner({ val: settings.setPoint, min: 65, max: 104, step: 1 });
+                        //});
                         evt.contents().find('div.picValueSpinner').on('change', function (e) {
                             //console.log(e);
                             self.putSetpoint(e.value);
                         });
-                        evt.contents().find('div.picSelector').selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data });
+                        //evt.contents().find('div.picSelector').selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data });
                         evt.contents().find('div.picSelector').on('selchange', function (e) {
                             self.putHeatMode(parseInt(e.newVal, 10));
                         });
@@ -172,7 +177,8 @@
         },
         setUnits: function (units) {
             var self = this, o = self.options, el = self.element;
-            el.find('*.picUnits').text(units.name);
+            el.attr('data-unitsname', units.name);
+            el.find('*.picTempUnits').text(units.name);
         },
         putHeatMode: function (mode) {
             var self = this, o = self.options, el = self.element;

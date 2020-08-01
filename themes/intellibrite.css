@@ -38,8 +38,12 @@
         -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
         -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
     }
+
 div.picLightSettings {
     position:relative;
+}
+div.picLightGroupCircuit {
+    white-space:nowrap;
 }
 div.picLightGroupCircuit > div {
     display: inline-block;

@@ -1,7 +1,104 @@
 ﻿@import url("https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch");
+div.picTab:not(.picTabSelected) {
+  border-color: silver;
+  color: silver; }
+
+div.picConfigTabContents {
+  background-color: white; }
+
+div.pover-icon:hover {
+  color: orange;
+  text-shadow: 3px 3px 16px #272634; }
+
+div.picSaltReqd {
+  padding: .2rem;
+  border-bottom: solid 1px gainsboro;
+  margin-bottom: .4rem; }
+
+div.picBody[data-ison=false] div.picBodyTemp {
+  color: silver; }
+
 div.picBodyTemp > div.body-temp {
   font-family: cabin sketch;
   font-weight: 400; }
+
+span.picUnits {
+  color: gray; }
+
+div.picAccordian-title {
+  border: solid 1px gray;
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px; }
+
+div.pnl-scheduleDays > div.table {
+  border-top-left-radius: 25px 5px;
+  border-top-right-radius: 5px 25px;
+  border-collapse: separate; }
+
+div.pnl-scheduleDays div.table-caption {
+  border-top-left-radius: 25px 5px;
+  border-top-right-radius: 5px 25px;
+  font-family: "cabin sketch";
+  border: solid 1px gray;
+  background: url("pencilshade-gray.png"); }
+
+div.pnl-scheduleDays div.table-cell.dayheader {
+  text-align: center;
+  width: 2.4rem;
+  border: solid 1px gray;
+  font-weight: bold;
+  color: white; }
+
+div.pnl-scheduleDays div.table-row.dayheader {
+  background: url("pencilshade-orange.png");
+  color: black;
+  font-weight: bold; }
+
+div.pnl-scheduleDays div.table-cell.day:hover {
+  background: url("highlighter-yellow.png"); }
+
+div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
+  color: white;
+  background: url("pencilshade-blue.png"); }
+
+div.pnl-scheduleDays div.table-cell.day {
+  text-align: center;
+  font-size: 2rem;
+  border: solid 1px gainsboro;
+  cursor: pointer; }
+
+div.pnl-scheduleDays div.table-cell.day:first-child {
+  border-bottom-left-radius: 25px 4px; }
+
+div.pnl-scheduleDays div.table-cell.day:last-child {
+  border-bottom-right-radius: 25px 4px; }
+
+div.pnl-scheduleDays div.table-cell.day {
+  text-align: center;
+  font-size: 1.5rem;
+  cursor: pointer; }
+
+div.pnl-scheduleDays div.table-row.days {
+  height: 2rem; }
+
+div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
+  content: " ";
+  width: 1.5rem;
+  height: 1.5rem;
+  background: url("pencilshade-green.png");
+  display: inline-block;
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
+  margin: 1px;
+  vertical-align: middle; }
+
+div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
+  content: " ";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 1rem;
+  height: 1rem; }
 
 body {
   margin: 0;
@@ -17,29 +114,108 @@ body {
 [tabindex="-1"]:focus {
   outline: none !important; }
 
+select, input[type=text] {
+  font-family: "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px; }
+
+fieldset {
+  border-radius: 5px 25px 5px 25px/25px 5px 25px 5px; }
+
+legend {
+  font-family: cabin sketch; }
+
+input[type=checkbox] {
+  position: relative;
+  cursor: pointer;
+  border: none;
+  box-shadow: none;
+  width: 1.1em;
+  height: 1.1em;
+  -webkit-appearance: none;
+  -mos-appearance: none;
+  outline: 0px;
+  appearance: none; }
+
+input[type=checkbox]:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 1.25em;
+  height: 1.25em;
+  top: 0;
+  left: 0;
+  background-color: white;
+  border: solid 1px black;
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important; }
+
+input[type=checkbox]:checked:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 1.25em;
+  height: 1.25em;
+  top: 0;
+  left: 0;
+  background-color: white;
+  border: solid 1px black;
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important; }
+
+input[type=checkbox]:checked:after {
+  content: "";
+  display: block;
+  width: calc(1.25em - 2px);
+  height: calc(1.25em - 2px);
+  top: 0;
+  left: 0;
+  margin-top: 2px;
+  margin-left: 2px;
+  position: absolute;
+  background: url("pencilshade-green.png") !important;
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
+  overflow: hidden; }
+
+div.chem-balance-value {
+  font-family: "cabin sketch"; }
+
 .popover,
 .control-panel {
   vertical-align: top;
   display: inline-block;
   margin-top: .4rem;
   margin-right: .2rem;
-  padding: .4em;
+  padding-left: .4em;
+  padding-right: .4em;
+  padding-bottom: .4em;
+  padding-top: 0px;
   border: solid 1px gray;
   border-radius: 5px 25px 5px 25px/25px 5px 25px 5px;
   background-color: white;
+  padding-top: 0px;
   box-shadow: 3px 3px 3px #7f7f7f;
   -webkit-box-shadow: 3px 3px 3px #7f7f7f;
   -moz-box-shadow: 3px 3px 3px #7f7f7f;
-  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='gainsboro',strength=3); }
+  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px; }
 
 .control-panel-title {
   font-family: cabin sketch;
-  background: url("highlighter-green.png") !important;
-  border-bottom: solid 3px gainsboro;
-  border-radius: 5px 25px 5px 25px/25px 5px 2px 5px; }
+  background: url("pencilshade-blue.png") !important;
+  border-bottom: solid 1px black;
+  border-top: solid 1px gainsboro;
+  border-radius: 5px 25px 5px 25px/25px 5px 2px 5px;
+  margin-bottom: 2px;
+  padding-left: .4em;
+  padding-right: .4em;
+  margin-left: -.4em;
+  margin-right: -.4em; }
+
+div.picPopover {
+  padding-top: 0px;
+  padding-right: .4em; }
 
 .picController > .control-panel-title {
-  background: white !important; }
+  background: white !important;
+  margin-left: 0px;
+  margin-right: 0px; }
 
 .status-text {
   font-family: "cabin sketch", "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -115,6 +291,13 @@ body {
   border: solid 1px gray;
   border-radius: 4px 15px 15px 5px/25px 5px 13px 5px !important; }
 
+.fld-value-center {
+  border-top-left-radius: 12px 5px !important;
+  border-bottom-left-radius: 3px 4px !important;
+  border-top-right-radius: 3px 29px !important;
+  border-bottom-right-radius: 12px 3px !important;
+  border: solid 1px gray !important; }
+
 .fld-value-combo {
   border-top-left-radius: 4px 15px;
   border-bottom-left-radius: 4px;
@@ -148,25 +331,31 @@ body {
   border-bottom-right-radius: 4px 10px;
   border-bottom-left-radius: 2px 15px;
   border: solid 1px gray;
-  background: #f6f8f9;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
-  /* FF3.6-15 */
-  background: -webkit-linear-gradient(top, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
-  /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
-  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 );
-  /* IE6-9 */ }
+  background: url("pencilshade-gray.png") !important;
+  background-repeat: no-repeat;
+  background-size: 100%; }
 
+.fld-btn-left {
+  border-top-left-radius: 15px 5px;
+  border-bottom-left-radius: 4px 10px;
+  border-bottom-right-radius: 2px 15px;
+  border: solid 1px gray;
+  background: url("pencilshade-gray.png") !important;
+  background-repeat: no-repeat;
+  background-size: 100%; }
+
+.fld-btn-left:not([disabled]):not(.disabled):hover,
+.fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
 .fld-btn-right:not([disabled]):not(.disabled).hover,
 .btn-border:not([disabled]):not(.disabled):hover,
 .btn-border:not([disabled]):not(.disabled).hover,
 .btn:not([disabled]):not(.disabled):hover,
 .btn:not([disabled]):not(.disabled).hover {
-  background: url("highlighter-yellow.png"); }
+  background: url("highlighter-yellow.png") !important; }
 
+.fld-btn-left:not([disabled]):not(.disabled):active,
+.fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
 .fld-btn-right:not([disabled]):not(.disabled).active,
 .btn-border:not([disabled]):not(.disabled):active,
@@ -230,7 +419,8 @@ table.optBody > tbody > tr:hover {
 div.picIndicator {
   display: inline-block;
   border: solid 1px gray;
-  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important; }
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
+  vertical-align: middle; }
 
 div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],

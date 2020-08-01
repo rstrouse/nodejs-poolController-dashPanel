@@ -1,0 +1,25 @@
+﻿@import '../mixins/gradients.scss';
+$border_radius: 5px;
+$outline_border: solid 1px gray;
+
+@mixin panel_background() {
+    @include linear_gradient(0deg, rgba(240,240,240, 1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%);
+}
+@mixin button_background() {
+    @include linear_gradient(180deg, rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%);
+}
+@mixin fldbutton_background() {
+    @include linear_gradient(180deg, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%);
+}
+@mixin header_background() {
+    @include linear_gradient(180deg, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%);
+}
+@mixin hover_background() {
+    @include linear_gradient(180deg, #ffaf4b, #ff920a);
+}
+@mixin active_background() {
+    @include linear_gradient(180deg, #159FCF, #13647F);
+}
+@mixin selected_background() {
+    @include linear_gradient(180deg, #159FCF, #13647F);
+}

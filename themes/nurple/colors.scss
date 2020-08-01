@@ -1,0 +1,37 @@
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import '../mixins/gradients.scss';
+$border_radius: 5px;
+$outline_border: solid 2px white;
+
+@mixin panel_background() {
+    background: #63727A !important;
+    //@include linear_gradient(0deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 100%);
+}
+@mixin panel_header_background() {
+    background: #5A2D81;
+    //@include linear_gradient(0deg, #673ab7 0%, #673ab7 100%);
+}
+
+@mixin button_background() {
+    background: #000000;
+    //@include linear_gradient(180deg, rgba(2, 150, 155, 1) 0%, rgba(2, 150, 155, 1) 100%);
+}
+@mixin fldbutton_background() {
+    background: #000000;
+    //@include linear_gradient(180deg, rgba(2, 150, 155, 1) 0%, rgba(2, 150, 155, 1) 100%);
+}
+@mixin header_background() {
+    background: #673ab7;
+    //@include linear_gradient(180deg, #D500F9 0%, #D500F9 100%);
+}
+@mixin hover_background() {
+    background: #4b555a;
+    //@include linear_gradient(180deg, rgba(123,31,162,1) 0%,rgba(123,31,162,1) 100%);
+}
+@mixin active_background() {
+    @include linear_gradient(180deg, rgba(123,31,162,1) 0%,rgba(123,31,162,1) 100%);
+}
+@mixin selected_background() {
+    background: #a64dff;
+    //@include linear_gradient(180deg, #159FCF, #13647F);
+}

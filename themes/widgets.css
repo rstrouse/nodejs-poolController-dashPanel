@@ -13,7 +13,6 @@ div.picFeatures > div.picCircuit[data-showinfeatures=false] {
 }
 select, input[type=text], fieldset {
     font-size:1rem;
-    border-radius:4px;
 }
 div.picLights > div.picCircuit[data-showinfeatures=true] {
     display: none;
@@ -27,12 +26,6 @@ div.picIconRight {
     float: right;
     cursor: pointer;
 }
-div.pover-icon:hover {
-    color: orange;
-    text-shadow: 3px 3px 16px #272634;
-}
-
-
 div.picTab {
     padding: 4px;
     display: inline-block;
@@ -59,7 +52,6 @@ i.picDropdownButton {
 div.picOption {
     cursor:pointer;
 }
-
 div.picPopover {
     z-index:101;
     padding: .5em;
@@ -71,7 +63,6 @@ div.picPopover {
     -ms-user-select: none;
 }
 div.picControlPanelTitle {
-    border-bottom: solid 3px orange;
     white-space: nowrap;
 }
 div.picController, div.picChemistry {
@@ -88,11 +79,6 @@ div.picChemistry span.picStatus {
 div.picChlorinator[data-status=commlost] > div.picChlorStatus,
 div.picChlorinator[data-status=ok] > div.picChlorStatus {
     display: none;
-}
-div.picSaltReqd {
-    padding:.2rem;
-    border-bottom:solid 1px gainsboro;
-    margin-bottom:.4rem;
 }
 div.picController > div.picControllerLine {
     font-size:.9rem;
@@ -203,8 +189,6 @@ div.picController > div.picControllerLine label {
     -webkit-animation: flicker1 1s infinite linear;
     animation: flicker1 1s infinite linear
 }
-
-
 div.picFeatures, div.picLights {
     display:block;
 }
@@ -257,9 +241,6 @@ div.picBody > div {
 }
 div.picBody > div.picBodyTemp {
     text-align:center;
-}
-div.picBody[data-ison=false] div.picBodyTemp {
-    color:silver;
 }
 label {
     cursor:inherit;
@@ -366,7 +347,6 @@ label.picPumpName, label.picScheduleName {
     width:6.7rem;
 }
 label.picUnits, span.picUnits {
-    color:gray;
     padding-left:.1em;
     padding-right:.1em;
     font-size:.8em;
@@ -407,23 +387,23 @@ div.picValueSpinner > label {
     display:inline-block;
 }
 div.picValueSpinner > input.picSpinner-value {
-    border-radius:0px;
     margin:0px;
     font-size:1.1rem;
     padding-top:0px;
     padding-bottom:0px;
     vertical-align:middle;
-    border:solid 1px gray;
     text-align:center;
 }
 div.picSpinner-value {
     font-size: 1.1rem;
 }
 span.picSpinner-units {
-    color:gray;
     display:inline-block;
     margin-left:.15rem;
     vertical-align:middle;
+    font-size: 1em !important;
+    padding-left:0px !important;
+    padding-right:0px !important;
 }
     div.picValueSpinner.picPumpSpeed {
         margin-left: 1em;
@@ -431,7 +411,6 @@ span.picSpinner-units {
     }
 
 div.picSpinner-up, div.picSpinner-down {
-    border: solid 1px gray;
     display: inline-block;
     width: 1.4rem;
     height: 1.4rem;
@@ -440,42 +419,7 @@ div.picSpinner-up, div.picSpinner-down {
     cursor: pointer;
     font-size:.57em;
     line-height:1.4rem;
-    background: rgb(246,248,249); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
 }
-
-div.picSpinner-up {
-    border-top-right-radius: 50%;
-    border-bottom-right-radius: 50%;
-    
-}
-
-div.picSpinner-down {
-    border-top-left-radius: 50%;
-    border-bottom-left-radius: 50%;
-}
-
-    div.picSpinner-up:hover, div.picSpinner-down:hover {
-        color:white;
-        filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
-        background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
-        background-image: linear-gradient(top, #ffaf4b, #ff920a);
-    }
-
-div.picSpinner-up:active, div.active-down:active {
-    color: white;
-    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-    background-image: -ms-linear-gradient(top, #159FCF, #13647F);
-    background-image: -moz-linear-gradient(top, #159FCF, #13647F);
-    background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
-    background-image: linear-gradient(top, #159FCF, #13647F);
-}
-
 div.picSpinner-value {
     display: inline-block;
     padding-left: .2em;
@@ -485,8 +429,6 @@ div.picSpinner-value {
     line-height:1.4rem;
     width: 2.5em;
     text-align: center;
-    border: solid 1px gray;
-    background-color:white;
 }
 
 div.picPickList {
@@ -539,12 +481,14 @@ input.picPickList-value {
     margin:0px;
     display:block;
 }
+div.picPickList-options.dropdown-panel {
+    overflow:hidden;
+}
 div.picPickList-options {
     position: absolute;
     z-index: 100;
 }
     div.picPickList-options table.optOuter {
-        border-radius: 5px;
         height:100%;
         width:100%;
     }
@@ -589,9 +533,6 @@ div.picPickList-options {
     div.picPickList-options table.optHeader {
         width: 100%;
     }
-div.pickList-options > tr.optHeader > table td {
-    border: solid 1px black;
-}
 div.picFieldTip {
     position:absolute;
 }
@@ -730,17 +671,9 @@ div.picCheckbox > label {
     vertical-align:middle;
 }
 div.picAccordian-title {
-    user-select:none;
-    border:solid 1px gray;
-    cursor:pointer;
-    padding:.25rem;
-    border-top-left-radius:5px;
-    border-top-right-radius:5px;
-    background: rgb(246,248,249); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(246,248,249,1) 0%, rgba(229,235,238,1) 50%, rgba(215,222,227,1) 51%, rgba(245,247,249,1) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
+    user-select: none;
+    cursor: pointer;
+    padding: .25rem;
 }
 div.picAccordian-titlecol > span {
     padding-left:.25rem;
@@ -980,7 +913,6 @@ label.chemLevel-label {
     width:37px;
 }
 div.chemLevel-level {
-    border:solid 1px gray;
     border-radius:5px;
     display:inline-block;
     width: calc(100% - 37px);

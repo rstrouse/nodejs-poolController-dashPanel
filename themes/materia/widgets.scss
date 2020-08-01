@@ -1,0 +1,129 @@
+﻿@import '../mixins/gradients.scss';
+@import 'colors.scss';
+
+div.picTabs {
+    background-color:white;
+    border-top-left-radius:$border_radius;
+    border-top-right-radius:$border_radius;
+    border:none;
+    border-top:$outline_border;
+    border-left:$outline_border;
+    border-right:$outline_border;
+    
+}
+div.picTab {
+    border:none;
+}
+div.picTab > .picTabText {
+    margin-bottom:.4rem;
+
+}
+div.tab-contents {
+    border-top:none;
+}
+div.picTab.picTabSelected > span.picTabText {
+    border-bottom: solid 2px teal;
+}
+div.picTab:not(.picTabSelected) {
+    border-color:silver;
+    color:silver;
+}
+div.picConfigTabContents {
+    background-color:white;
+}
+div.picConfigPage {
+    margin-top:.4rem;
+}
+div.picController {
+    padding:0px;
+}
+div.picFeatures {
+    padding-bottom:.4rem;
+}
+div.picAmbientTemp label {
+    color:white;
+}
+div.picController > div.picControllerTitle {
+    margin:0px;
+}
+div.pover-icon:hover {
+    color: orange;
+    text-shadow: 3px 3px 16px #272634;
+}
+div.picSaltReqd {
+    padding: .2rem;
+    border-bottom: solid 1px gainsboro;
+    margin-bottom: .4rem;
+}
+div.picBody[data-ison=false] div.picBodyTemp {
+    color: silver;
+}
+span.picUnits {
+    color: gray;
+}
+div.picAccordian-title {
+    border: solid 1px gray;
+    border-top-left-radius: $border_radius;
+    border-top-right-radius: $border_radius;
+}
+div.pnl-scheduleDays {
+    margin-top:.2rem;
+}
+div.pnl-scheduleDays > div.table {
+    border-top-left-radius: $border_radius;
+    border-top-right-radius: $border_radius;
+}
+div.pnl-scheduleDays div.table-caption {
+    border-top-left-radius: $border_radius;
+    border-top-right-radius: $border_radius;
+    border: solid 1px gray;
+    color:white;
+    @include header_background();
+}
+div.pnl-scheduleDays div.table-row.dayheader {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+div.pnl-scheduleDays div.table-cell.dayheader {
+    text-align: center;
+    width: 2.4rem;
+    border: solid 1px gray;
+    font-weight: bold;
+    color: white;
+}
+div.pnl-scheduleDays div.table-row.dayheader {
+    background: #fde4be;
+    background: #ff9800 linear-gradient(180deg, #ffa726, #ff9800);
+    color: black;
+    font-weight: bold;
+}
+div.pnl-scheduleDays div.table-cell.day:hover {
+    @include hover_background();
+}
+
+div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
+    color: white;
+    @include active_background();
+}
+div.pnl-scheduleDays div.table-cell.day {
+    text-align: center;
+    font-size: 2rem;
+    border: solid 1px gainsboro;
+    cursor: pointer;
+}
+div.pnl-scheduleDays div.table-cell.day {
+    text-align: center;
+    font-size: 2rem;
+    cursor: pointer;
+    font-family: 'Font Awesome 5 Free';
+}
+
+div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
+    content: "\f057";
+    font-weight: 900;
+}
+
+div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
+    content: "\f111";
+    font-weight: 400;
+}

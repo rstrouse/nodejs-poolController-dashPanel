@@ -1,0 +1,9 @@
+﻿@import '../mixins/gradients.scss';
+
+$panel_background: ghostwhite, 1deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%;
+$section_radius: 5px 25px 5px 25px/25px 5px 25px 5px;
+$btn_radius: 555px 55px 525px 55px/35px 225px 45px 125px;
+$fld_radius: 4px 15px 15px 5px/25px 5px 13px 5px;
+$tab_content_radius: 0px 5px 5px 3px/3px 2px 25px 5px;
+$title_font_family: "cabin sketch";
+$text_font_family: "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

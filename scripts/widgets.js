@@ -992,7 +992,7 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
-            $('<label class="picSpinner-label"></label><div class="picSpinner-down"><i class="fas fa-minus"></i></div><div class="picSpinner-value"></div><div class="picSpinner-up"><i class="fas fa-plus"></i></div><span class="picSpinner-units"></span>').appendTo(el);
+            $('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             if (typeof o.min === 'undefined' || o.min === null) o.min = 0;
             if (typeof o.val === 'undefined' || o.val === null) o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
@@ -1142,7 +1142,7 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
-            $('<label class="picSpinner-label"></label><div class="picSpinner-down"><i class="fas fa-minus"></i></div><input type="text" class="picSpinner-value"></input><div class="picSpinner-up"><i class="fas fa-plus"></i></div><span class="picSpinner-units"></span>').appendTo(el);
+            $('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><input type="text" class="picSpinner-value fld-value-center"></input><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             if (typeof o.min === 'undefined') o.min = 0;
             if (typeof o.val === 'undefined') o.val = o.min;
             // format our time based upon minutes from midnight.
@@ -2240,7 +2240,7 @@ $.ui.position.fieldTip = {
         },
         _buildTitle: function () {
             var self = this, o = self.options, el = self.element;
-            var title = $('<div class="picAccordian-title"></div>');
+            var title = $('<div class="picAccordian-title header-background"></div>');
             for (var i = 0; i < o.columns.length; i++) {
                 var div = $('<div class="picAccordian-titlecol"></div>').appendTo(title);
                 var col = o.columns[i];

@@ -498,7 +498,7 @@ mhelper.init();
             var tbody = $('<tbody></tbody>').appendTo(tblOuter);
             var row = $('<tr></tr>').appendTo(tbody);
             var td = $('<td></td>').appendTo(row);
-            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(td);
+            div = $('<div class="picMessageListTitle picControlPanelTitle control-panel-title"></div>').appendTo(td);
             $('<span>Messages</span><div class="picStartLogs mmgrButton picIconRight" title="Start/Stop Log"><i class="far fa-list-alt"></i></div>').appendTo(div);
             $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack"></i></div>').appendTo(div);
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
@@ -798,7 +798,7 @@ mhelper.init();
         _initHeader: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            var div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
+            var div = $('<div class="picMessageListTitle picControlPanelTitle control-panel-title"></div>').appendTo(el);
             $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
             $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div).hide();
             $('<div class="picDocumentSignature mmgrButton picIconRight" title="Document this Message Signature"><i class="fas fa-file-signature"></i></div>').appendTo(div).hide();
@@ -1161,7 +1161,7 @@ mhelper.init();
         _initQueue: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            div = $('<div class="picMessageListTitle picControlPanelTitle"></div>').appendTo(el);
+            div = $('<div class="picMessageListTitle picControlPanelTitle control-panel-title"></div>').appendTo(el);
             $('<span>Send Message Queue</span>').appendTo(div);
             $('<div class="picLoadQueue mmgrButton picIconRight" title="Load Saved Queue"><i class="far fa-folder-open"></i></div>').appendTo(div);
             $('<div class="picSaveQueue mmgrButton picIconRight" title="Save Queue"><i class="far fa-save"></i></div>').appendTo(div);

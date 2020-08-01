@@ -151,7 +151,7 @@
                             btn.appendTo(div);
                             spin.appendTo(div);
                             div.appendTo(evt.contents());
-                            $('<label class="picUnits"></label>').appendTo(div).text(circuit.units.name);
+                            
                             $('<input type="hidden" data-datatype="int" data-bind="units"></input>').appendTo(div).val(circuit.units.val);
                             if (circuit.circuit.equipmentType === 'feature') {
                                 div.attr('data-featureid', circuit.circuit.id);
@@ -177,7 +177,8 @@
                                 val: circuit.units.val === 0 ? circuit.speed : circuit.flow,
                                 min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
                                 max: circuit.units.val === 0 ? data.maxSpeed : data.maxFlow,
-                                step: circuit.units.val === 0 ? 50 : data.flowStepSize
+                                step: circuit.units.val === 0 ? 50 : data.flowStepSize,
+                                units: circuit.units.name
                             });
                             spin.attr('data-id', i + 1);
                             spin.find('div.picSpinner-value').css({ width: '4.5rem' });

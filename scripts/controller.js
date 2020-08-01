@@ -399,22 +399,28 @@
                     bindColumn: 0, displayColumn: 1, labelText: 'Theme',
                     columns: [{ binding: 'code', hidden: true, text: 'code', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
                     items: [
-                        { code: 'default', name: 'Default', desc: 'The default theme for the dashPanel' },
-                        { code: 'sketchy', name: 'Sketchy', desc: 'A whimsical display that looks like it is hand drawn' }
+                        { code: 'default', name: 'Default', desc: 'The default theme for the dashPanel.' },
+                        { code: 'sketchy', name: 'Sketchy', desc: 'A whimsical display that looks like it is hand drawn.' },
+                        { code: 'materia', name: 'Materia', desc: 'Material metaphor using bold colors and highlights.' },
+                        { code: 'purple', name: 'Purple', desc: 'A mix or purple and teal.' },
+                        { code: 'nurple', name: 'Nurple', desc: 'A mix or purple and black.' }
+
                     ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '4rem' } }
                 }).on('selchanged', function (evt) {
-                    console.log(evt.newItem);
-                    setCookie('dashTheme', evt.newItem.code);
-                    var ss = $(document).find('link[id="cssref_theme"]');
-                    if (ss.length > 0) {
-                        if (ss[0].href !== 'themes/' + evt.newItem.code + '/theme.css') { // Don't change the theme if it isn't changing.
-                            ss[0].sheet.disabled = true;
-                            ss[0].href = 'themes/' + evt.newItem.code + '/theme.css';
-                            ss[0].sheet.disabled = false;
+                    if (evt.newItem) {
+                        setCookie('dashTheme', evt.newItem.code);
+                        var ss = $(document).find('link[id="cssref_theme"]');
+                        if (ss.length > 0) {
+                            if (ss[0].href.indexOf('themes/' + evt.newItem.code + '/theme.css') === -1) { // Don't change the theme if it isn't changing.
+                                console.log({ text: 'Setting theme', theme: evt.newItem, href: ss[0].href });
+                                ss[0].sheet.disabled = true;
+                                ss[0].href = 'themes/' + evt.newItem.code + '/theme.css';
+                                ss[0].sheet.disabled = false;
+                            }
                         }
+                        else
+                            $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head')).attr('data-theme', evt.newItem.code);
                     }
-                    else
-                        $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head'));
 
 
                 })[0].val(getCookie('dashTheme', 'default'));

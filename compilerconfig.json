@@ -26,5 +26,18 @@
   {
     "outputFile": "themes/sketchy/theme.css",
     "inputFile": "themes/sketchy/theme.scss"
+  },
+  {
+    "outputFile": "themes/materia/theme.css",
+    "inputFile": "themes/materia/theme.scss"
+  },
+  {
+    "outputFile": "themes/purple/theme.css",
+    "inputFile": "themes/purple/theme.scss"
+  },
+  {
+    "outputFile": "themes/nurple/theme.css",
+    "inputFile": "themes/nurple/theme.scss"
   }
+
 ]
