@@ -126,6 +126,14 @@
         //   Label Barcode: 69857861
         //   Label Date: 04/19/2016
         //   Site: W
+        //[255, 0, 255][165, 1, 16, 12, 82,8][0, 128, 128, 31, 18, 65, 231, 171][4, 32] -- Mine
+        // Number on Housing: 521381
+        // Label P/N: 521485
+        // Label S/N: 1245339180052W
+        // Label Barcode: 10757156
+        // Label Date: 12/05/2018
+        // Site: W
+
         //[255, 0, 255][165, 1, 16, 12, 82, 8][0, 128, 216, 128, 57, 159, 209, 162][5, 63]
         //   This is a guess since MCQuerty didn't indicate which valves were wich.  This seems to be an earlier valve.
         //   Label S/N:1245342160120K

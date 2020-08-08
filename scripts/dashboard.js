@@ -224,7 +224,10 @@
                     this.setEquipmentState(data);
                 });
             });
+            o.socket.on('valve', function (data) {
+                console.log({ evt: 'valve', data: data });
 
+            });
             o.socket.on('controller', function (data) {
                 console.log({ evt: 'controller', data: data });
                 $('div.picController').each(function () {

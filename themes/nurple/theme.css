@@ -69,8 +69,9 @@ div.pnl-scheduleDays > div.table {
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  border: solid 1px gray;
-  background: #673ab7; }
+  border: solid 1px white;
+  background: #673ab7;
+  border-bottom: none; }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
@@ -79,7 +80,7 @@ div.pnl-scheduleDays div.table-row.dayheader {
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
-  border: solid 1px gray;
+  border: solid 1px white;
   font-weight: bold;
   color: white; }
 
@@ -107,7 +108,8 @@ div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: 'Font Awesome 5 Free'; }
+  font-family: 'Font Awesome 5 Free';
+  background-color: black; }
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: "\f057";
@@ -119,6 +121,26 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
 
 div.picLightThemes {
   width: 22rem; }
+
+table.picSchedDays {
+  margin-left: -2px; }
+
+table.picSchedDays > tbody > tr:nth-child(1) {
+  background-color: #701c7c !important;
+  background-image: none; }
+
+table.picSchedDays > tbody > tr:nth-child(1) > td {
+  border-top: solid 1px white; }
+
+table.picSchedDays > tbody > tr:nth-child(1) > td:nth-child(1) {
+  border-left: solid 1px white; }
+
+table.picSchedDays > tbody > tr:nth-child(1) > td:last-child {
+  border-right: solid 1px white; }
+
+table.picSchedDays > tbody > tr:nth-child(2) > td {
+  border: solid 1px white;
+  background-color: black; }
 
 body {
   font-family: Roboto;

@@ -12,9 +12,30 @@
             $.getApiService('/config/options/valves', null, function (opts, status, xhr) {
                 console.log(opts);
                 var valves = opts.valves;
+                var pnl = $('<div></div>').addClass('pnlValves').appendTo(el);
                 for (var i = 0; i < valves.length; i++) {
-                    $('<div></div>').appendTo(el).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits })[0].dataBind(valves[i]);
+                    $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits })[0].dataBind(valves[i]);
                 }
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
+                $('<div id="btnAddValve"></div>').appendTo(btnPnl).actionButton({ text: 'Add Valve', icon: '<i class="fas fa-plus"></i>' })
+                    .on('click', function (e) {
+                        var id = 0;
+                        el.find('input[data-bind=isVirtual]').each(function () {
+                            if ($(this).val()) id++;
+                        });
+                        var acc = $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits });
+                        acc[0].dataBind({
+                            isIntake: false,
+                            isReturn: false,
+                            isVirtual: true,
+                            isActive: true,
+                            type: 0,
+                            id: -1,
+                            name: 'Valve V' + (id + 1),
+                            circuit: 256
+                        });
+                        acc.find('div.picAccordian')[0].expanded(true);
+                    });
             });
         }
     });
@@ -40,7 +61,8 @@
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isIntake').appendTo(line);
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isReturn').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isVirtual').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginLeft: '.25rem', width:'3rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Valve Type', style: { whiteSpace: 'nowrap' } }],
@@ -51,6 +73,8 @@
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
                 items: o.circuits, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Pin Id', binding: binding + 'pinId', min: 0, max: 100, step: 1, units: '', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { marginLeft: '.25rem', width: '3rem'  } } });
 
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -66,6 +90,36 @@
                     });
                 }
             });
+            var btnDelete = $('<div id="btnDeleteValve"></div>').appendTo(btnPnl).actionButton({ text: 'Delete Valve', icon: '<i class="fas fa-trash"></i>' });
+            btnDelete.on('click', function (e) {
+                var p = $(e.target).parents('div.picAccordian-contents:first');
+                var v = dataBinder.fromElement(p);
+                console.log(v);
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteValve', {
+                    message: 'Are you sure you want to delete Valve ' + v.name + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Valve',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            if (v.id <= 0) p.parents('div.picConfigCategory.cfgValve:first').remove();
+                            else {
+                                console.log('Deleting Valve');
+                                $.deleteApiService('/config/valve', v, 'Deleting Valve...', function (c, status, xhr) {
+                                    p.parents('div.picConfigCategory.cfgValve:first').remove();
+                                });
+                            }
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+            });
+
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -94,7 +148,16 @@
             }
             if (makeBool(obj.isIntake)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-arrow-circle-right').css('color', 'red');
             else if (makeBool(obj.isReturn)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-arrow-circle-left').css('color', 'red');
+            else if (makeBool(obj.isVirtual)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'far fa-compass').css('color', '');
             else el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-compass').css('color', '');
+            if (obj.isVirtual) {
+                el.find('div.picValueSpinner[data-bind=pinId]').show();
+                el.find('div.picActionButton#btnDeleteValve').show();
+            }
+            else {
+                el.find('div.picValueSpinner[data-bind=pinId]').hide();
+                el.find('div.picActionButton#btnDeleteValve').hide();
+            }
 
 
             dataBinder.bind(el, obj);
