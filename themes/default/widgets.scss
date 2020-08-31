@@ -6,7 +6,11 @@ div.picConfigTabContents {
 }
 div.picTab:not(.picTabSelected) {
     border-color: silver;
-    color: silver;
+    color: slategray;
+    text-shadow: 1px 1px 2px gainsboro;
+}
+div.picTab.picTabSelected {
+    font-weight:bold;
 }
 
 div.pover-icon:hover {
@@ -59,7 +63,11 @@ div.pnl-scheduleDays div.table-row.dayheader {
 div.pnl-scheduleDays div.table-cell.day:hover {
     @include hover_background();
 }
-
+.disabled {
+    pointer-events:none;
+    cursor:no-drop;
+    opacity:.7;
+}
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
     color: white;
     @include active_background();

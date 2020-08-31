@@ -2180,18 +2180,33 @@ $.ui.position.fieldTip = {
             el[0].checkbox = function () { return el.find('input.picCheckbox-value:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].val = function (val) { return self.val(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
             var fld = el.find('input.picCheckbox-value:first');
             var lbl = el.find('label:first');
             if (typeof o.style !== 'undefined') el.css(o.style);
-
             for (var la in o.labelAttrs) {
                 lbl.attr(la, o.labelAttrs[la]);
             }
             if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
             if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) {
+                    el.addClass('disabled');
+                    el.find('input.picCheckbox-value:first').attr('disabled', true);
+                }
+                else {
+                    el.removeClass('disabled');
+                    el.find('input.picCheckbox-value:first').removeAttr('disabled');
+                }
+            }
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;

@@ -62,7 +62,8 @@
                     self._buildRemotesTab(evt.newTab.contents);
                     break;
                 case 'tabHeaters':
-                    self._buildHeatersTab(evt.newTab.contents);
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configHeaters();
                     break;
                 case 'tabSchedules':
                     evt.newTab.contents.empty();

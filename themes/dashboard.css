@@ -180,7 +180,7 @@ div.picConfigIcon, div.picStartLogs {
   display: inline-block;
   cursor: pointer;
   margin-left: .5rem;
-  vertical-align: middle; }
+  vertical-align: text-top; }
 
 div.picConfigIcon:hover, div.picStartLogs:hover {
   color: orange;
