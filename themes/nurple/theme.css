@@ -122,9 +122,6 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
 div.picLightThemes {
   width: 22rem; }
 
-table.picSchedDays {
-  margin-left: -2px; }
-
 table.picSchedDays > tbody > tr:nth-child(1) {
   background-color: #701c7c !important;
   background-image: none; }

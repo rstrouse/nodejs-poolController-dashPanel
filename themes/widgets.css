@@ -311,7 +311,6 @@ table.picSchedDays {
     text-align:center;
     border-collapse:collapse;
     display:inline-table;
-    margin-left:1rem;
 }
     table.picSchedDays > tbody > tr:nth-child(1) {
         color:white;
@@ -330,7 +329,7 @@ label.picSchedDays {
 }
 span.picSchedTime {
     font-size:.9em;
-    width:9em;
+    width:9.25em;
     white-space:nowrap;
     text-overflow:ellipsis;
     display:inline-block;
