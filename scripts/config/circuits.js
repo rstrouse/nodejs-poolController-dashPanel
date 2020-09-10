@@ -170,7 +170,7 @@
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
                 { binding: 'feature', style: { width: '8rem' } },
-                { binding: 'eggTimer', style: { width: '5rem' } }]
+                { binding: 'eggTimer', style: { width: '5.7rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -195,8 +195,13 @@
             line = $('<div style="text-align:right"></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
 
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: {marginLeft: '4rem', marginRight:'.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
+                var dontStop = evt.newVal;
+                el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
+                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
+            });
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Circuit', icon: '<i class="fas fa-save"></i>' });
@@ -232,7 +237,9 @@
             cols[1].elGlyph().attr('class', obj.freeze ? 'fas fa-icicles' : '');
             cols[2].elText().text(func.desc);
             cols[3].elText().text(obj.showInFeatures ? 'Feature' : '');
-            cols[4].elText().text(hrs + 'h ' + mins + 'm');
+            cols[4].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
+            el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+            el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
         }
@@ -256,7 +263,7 @@
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
                 { binding: 'feature', style: { width: '8rem' } },
-                { binding: 'eggTimer', style: { width: '5rem' } }]
+                { binding: 'eggTimer', style: { width: '5.7rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -281,9 +288,13 @@
             line = $('<div style="text-align:right"></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Freeze Protection', binding: binding + 'freeze' });
 
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
-
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
+                var dontStop = evt.newVal;
+                el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
+                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
+            });
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Feature', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
@@ -344,7 +355,9 @@
             cols[1].elGlyph().attr('class', obj.freeze ? 'fas fa-icicles' : '');
             cols[2].elText().text(func.desc);
             cols[3].elText().text(obj.showInFeatures ? 'Feature' : '');
-            cols[4].elText().text(hrs + 'h ' + mins + 'm');
+            cols[4].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
+            el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+            el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
         }
     });
@@ -365,7 +378,7 @@
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
                     { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
-                { binding: 'eggTimer', style: { width: '5rem' } }]
+                { binding: 'eggTimer', style: { width: '5.7rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -380,8 +393,14 @@
             }
             else
                 $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
+                var dontStop = evt.newVal;
+                el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
+                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
+            });
             line = $('<div><hr></hr></div>').appendTo(pnl);
 
             var pnlCircuits = $('<div class="cfgCircuitGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
@@ -510,7 +529,9 @@
                 });
             });
             cols[1].elText().text(circuits);
-            cols[2].elText().text(hrs + 'h ' + mins + 'm');
+            cols[2].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
+            el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+            el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
             // Bind all the circuits.
         }
@@ -547,8 +568,13 @@
             }
             else
                 $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
+                var dontStop = evt.newVal;
+                el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
+                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
+            });
             line = $('<div><hr></hr></div>').appendTo(pnl);
 
             var pnlCircuits = $('<div class="cfgLightGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
@@ -702,7 +728,9 @@
                 });
             });
             cols[1].elText().text(circuits);
-            cols[2].elText().text(hrs + 'h ' + mins + 'm');
+            cols[2].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
+            el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+            el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
             // Bind all the circuits.
         }

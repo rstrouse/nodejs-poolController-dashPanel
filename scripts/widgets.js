@@ -2166,9 +2166,9 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             if (typeof o.id === 'undefined') o.id = 'cb_' + _uniqueId++;
             el.addClass('picCheckbox');
-            $('<input type="checkbox" class="picCheckbox-value"></input>').appendTo(el).attr('id', o.id).on('change', function (evt) {
+            $('<input type="checkbox" class="picCheckbox-value"></input>').appendTo(el).attr('id', o.id).on('change', function (e) {
                 evt = $.Event('changed');
-                evt.newVal = $(evt.currentTarget).is(':checked');
+                evt.newVal = $(e.currentTarget).is(':checked');
                 evt.oldVal = !evt.newVal;
                 el.trigger(evt);
             });
