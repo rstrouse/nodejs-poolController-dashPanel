@@ -263,7 +263,7 @@
                 { binding: 'freeze', glyph: '', style: { width: '1.5rem' } },
                 { binding: 'function', style: { width: '8rem' } },
                 { binding: 'feature', style: { width: '8rem' } },
-                { binding: 'eggTimer', style: { width: '5.7rem' } }]
+                    { binding: 'eggTimer', style: { width: '5.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -378,7 +378,7 @@
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
                     { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
-                { binding: 'eggTimer', style: { width: '5.7rem' } }]
+                    { binding: 'eggTimer', style: { width: '5.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -553,7 +553,7 @@
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
                 { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } },
-                { binding: 'eggTimer', style: { width: '5rem' } }]
+                    { binding: 'eggTimer', style: { width: '5.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle'} }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -633,7 +633,7 @@
                     }
                     if (dataBinder.checkRequired(el)) {
                         // Send this off to the server.
-                        $.putApiService('/config/lightGroup', v, function (data, status, xhr) {
+                        $.putApiService('/config/lightGroup', v, 'Saving Light Group...', function (data, status, xhr) {
                             console.log({ data: data, status: status, xhr: xhr });
                             self.dataBind(data);
                         });
