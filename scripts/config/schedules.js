@@ -82,8 +82,16 @@
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Heat Source', binding: binding + 'heatSource',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heat Source', style: { whiteSpace: 'nowrap' } }],
                 items: o.heatSources, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { width: '5.75rem', marginLeft: '.25rem' } }
+            }).on('selchanged', function (evt) {
+                var p = el.find('div.schedule-heatsource');
+                if (typeof evt.newItem === 'undefined' || evt.newItem.name === 'nochange' || evt.newItem.name === 'off') {
+                    p.find('div.picValueSpinner[data-bind=heatSetpoint]').hide()[0].required(false);
+                }
+                else {
+                    p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
+                }
             });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { width: '3rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft:'.25rem', width: '3rem' } } });
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
 
             line = $('<div></div>').addClass('schedule-time').addClass('start-time').appendTo(inline);
@@ -117,13 +125,11 @@
                 var p = el.find('div.schedule-heatsource');
                 if (evt.newItem.id === 6 || evt.newItem.id === 1) {
                     p.show();
-                    p.find('div.picPickList[data-bind=heatSource]').show()[0].required(true);
-                    p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
+                    p.find('div.picPickList[data-bind=heatSource]')[0].required(true);
                 }
                 else {
                     p.hide();
-                    p.find('div.picPickList[data-bind=heatSource]').hide()[0].required(false);
-                    p.find('div.picValueSpinner[data-bind=heatSetpoint]').hide()[0].required(false);
+                    p.find('div.picPickList[data-bind=heatSource]')[0].required(false);
                 }
             });
             el.on('selchanged', 'div.picPickList[data-bind$=TimeType]', function (evt) {

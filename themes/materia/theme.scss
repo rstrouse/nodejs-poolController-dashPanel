@@ -133,6 +133,7 @@ fieldset {
 .fld-btn-left {
     color: #2196F3;
 }
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -147,6 +148,7 @@ fieldset {
     color: white;
     @include hover_background();
 }
+.btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -233,4 +235,19 @@ div.picIndicator[data-status=loading] {
 div.picIndicator[data-status=error] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(255,173,41,1) 0%, rgba(255,0,0,1) 100%);
 }
+.btn-toggle.fld-btn-left {
+    color:black;
+}
 
+.btn-toggle.fld-btn-right {
+    color:black;
+}
+
+.btn-toggle.fld-btn-center {
+    color: black;
+}
+
+.btn-toggle[data-selected="true"] {
+    color: cornflowerblue;
+    border-bottom:solid 1px black;
+}

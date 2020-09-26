@@ -49,4 +49,12 @@ fieldset[disabled] a.btn {
     pointer-events:none;
     cursor:no-drop;
 }
-
+.btnarray {
+    display:inline-block;
+}
+.btnarray > div {
+    display: inline-block;
+}
+.btn-toggle {
+    cursor:pointer;
+}

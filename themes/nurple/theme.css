@@ -277,6 +277,7 @@ select, input[type=text], fieldset {
   border-bottom-right-radius: 0px;
   background: #000000; }
 
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -288,6 +289,7 @@ select, input[type=text], fieldset {
   color: white;
   background: #4b555a; }
 
+.btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -396,3 +398,21 @@ div.picIndicator[data-status=error] {
   background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+
+.btn-toggle.fld-btn-left {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem; }
+
+.btn-toggle.fld-btn-right {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem; }
+
+.btn-toggle.fld-btn-center {
+  border: solid 1px gray;
+  background: #000000; }
+
+.btn-toggle[data-selected="true"] {
+  color: white;
+  background: #7b1fa2;
+  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
+  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }

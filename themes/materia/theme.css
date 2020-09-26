@@ -256,6 +256,7 @@ fieldset {
 .fld-btn-left {
   color: #2196F3; }
 
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -269,6 +270,7 @@ fieldset {
   color: white;
   background: #4DB6AC; }
 
+.btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -371,3 +373,16 @@ div.picIndicator[data-status=error] {
   background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+
+.btn-toggle.fld-btn-left {
+  color: black; }
+
+.btn-toggle.fld-btn-right {
+  color: black; }
+
+.btn-toggle.fld-btn-center {
+  color: black; }
+
+.btn-toggle[data-selected="true"] {
+  color: cornflowerblue;
+  border-bottom: solid 1px black; }

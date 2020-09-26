@@ -61,7 +61,7 @@
             $.getApiService('/config/options/circuitGroups', null, function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.circuitGroups.length; i++) {
-                    $('<div></div>').appendTo(el).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups })[0].dataBind(opts.circuitGroups[i]);
+                    $('<div></div>').appendTo(el).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, circuitStates: opts.circuitStates })[0].dataBind(opts.circuitGroups[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
@@ -69,7 +69,7 @@
                     var groups = el.find('div.picConfigCategory.cfgCircuitGroup');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlCircuitGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, circuitStates: opts.circuitStates });
                     pnl[0].dataBind({ id: 0, eggTimer: 720, circuits: [], name: 'Group ' + (groups.length + 1), type: 2 });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -496,6 +496,10 @@
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
                 items: o.circuits, inputAttrs: { style: { width: '9rem', marginLeft:'.25rem' } }, labelAttrs: { style: { marginRight: '.25rem', display: 'none' } }
             }).appendTo(line);
+            $('<div></div>').appendTo(line).buttonOptions({ binding: binding + 'desiredState',
+                items: o.circuitStates, value:circ.desiredState,
+                btnAttrs: { style: { width: '4rem', textAlign: 'center' } }
+            }).css({ marginLeft: '.25rem'}).appendTo(line);
             $('<i class="fas fa-trash picRemoveOption"></i>').appendTo(line);
         },
         dataBind: function (obj) {

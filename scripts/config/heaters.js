@@ -229,18 +229,18 @@
             el.empty();
             el.addClass('pnl-heatpump-heater');
             var binding = '';
-            var line = $('<div></div>').appendTo(el);
-            var addresses = [];
-            for (var i = 1; i <= 16; i++) addresses.push({ val: i + 143, desc: i });
-            $('<div></div>').appendTo(line).pickList({
-                required: true,
-                bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
-                columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
-                items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width: '4rem' } }
-            });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Differential Temp', binding: binding + 'differentialTemp', min: 3, max: 9, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '2rem', marginRight: '.25rem' } } });
-            line = $('<div></div>').appendTo(el);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Nocturnal Cooling', binding: 'coolingEnabled' }).attr('title', 'Check this to enable cooling when the body is on/r/nand the solar temperature is less than the water temperature.');
+            //var line = $('<div></div>').appendTo(el);
+            //var addresses = [];
+            //for (var i = 1; i <= 16; i++) addresses.push({ val: i + 143, desc: i });
+            //$('<div></div>').appendTo(line).pickList({
+            //    required: true,
+            //    bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
+            //    columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
+            //    items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width: '4rem' } }
+            //});
+            //$('<div></div>').appendTo(line).valueSpinner({ labelText: 'Differential Temp', binding: binding + 'differentialTemp', min: 3, max: 9, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '2rem', marginRight: '.25rem' } } });
+            //line = $('<div></div>').appendTo(el);
+            //$('<div></div>').appendTo(line).checkbox({ labelText: 'Nocturnal Cooling', binding: 'coolingEnabled' }).attr('title', 'Check this to enable cooling when the body is on/r/nand the solar temperature is less than the water temperature.');
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

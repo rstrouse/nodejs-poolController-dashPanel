@@ -208,6 +208,7 @@ select, input[type=text], fieldset {
   background: -webkit-linear-gradient(-90deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
   background: linear-gradient(180deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%); }
 
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -220,6 +221,8 @@ select, input[type=text], fieldset {
   background: -webkit-linear-gradient(-90deg, #ffaf4b, #ff920a);
   background: linear-gradient(180deg, #ffaf4b, #ff920a); }
 
+.btn-toggle:not([disabled]):not(.disabled):active,
+.btn:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -337,3 +340,23 @@ div.picIndicator[data-status=error] {
   background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+
+.btn-toggle.fld-btn-left {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem; }
+
+.btn-toggle.fld-btn-right {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem; }
+
+.btn-toggle.fld-btn-center {
+  border: solid 1px gray;
+  background: #f6f8f9;
+  background: -webkit-linear-gradient(-90deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
+  background: linear-gradient(180deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%); }
+
+.btn-toggle[data-selected="true"] {
+  color: white;
+  background: #159FCF;
+  background: -webkit-linear-gradient(-90deg, #159FCF, #13647F);
+  background: linear-gradient(180deg, #159FCF, #13647F); }

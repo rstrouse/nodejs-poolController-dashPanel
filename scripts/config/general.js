@@ -186,14 +186,13 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<span style="margin-left:8.5rem"></span><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;"></span><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
-            console.log(o);
             var tempUnits = o.tempUnits.find(elem => elem.val === 0) || { val: 0, name: "F", desc: "Fahrenheit" };
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
-                $('<input type="hidden"></input>').appendTo(line).attr('data-bind', 'options.' + sensor.binding + '_curr').val(sensor.temp);
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'options.' + sensor.binding + '_adj', value: sensor.temp + sensor.tempAdj, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
-                $('<span style="width:4.5rem;display:inline-block"></span><span style="display:inline-block;width:7rem;text-align:center">' + sensor.temp + '</span>').appendTo(line);
+                $('<input type="hidden"></input>').appendTo(line).attr('data-bind', 'options.' + sensor.binding + '_curr').attr('data-datatype', 'number').val(sensor.temp + sensor.tempAdj);
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'options.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
+                $('<span style="width:4.5rem;display:inline-block"></span><span style="display:inline-block;width:7rem;text-align:center">' + (sensor.temp + sensor.tempAdj) + '</span>').appendTo(line);
             }
 
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -203,6 +202,7 @@
                 //$(this).find('i').addClass('burst-animated');
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(el);
+                console.log(dataBinder.fromElement(el));
                 for (var prop in v.options) {
                     if (prop.endsWith('_curr')) {
                         var offName = prop.replace('_curr', '');
@@ -220,6 +220,7 @@
                         data.options[sensor.binding + '_curr'] = sensor.temp;
                         data.options[sensor.binding + '_adj'] = sensor.temp + data.options[sensor.binding];
                     }
+                    console.log(data);
                     self.dataBind(data);
                 });
 

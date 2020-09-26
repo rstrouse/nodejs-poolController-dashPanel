@@ -129,6 +129,7 @@ select, input[type=text], fieldset {
     border-bottom-right-radius:0px;
     @include fldbutton_background();
 }
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -140,6 +141,7 @@ select, input[type=text], fieldset {
     color: white;
     @include hover_background();
 }
+.btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -230,4 +232,22 @@ div.picIndicator[data-status=loading] {
 div.picIndicator[data-status=error] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(255,173,41,1) 0%, rgba(255,0,0,1) 100%);
 }
+.btn-toggle.fld-btn-left {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+}
 
+.btn-toggle.fld-btn-right {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.btn-toggle.fld-btn-center {
+    border: solid 1px gray;
+    @include fldbutton_background();
+}
+
+.btn-toggle[data-selected="true"] {
+    color: white;
+    @include active_background();
+}

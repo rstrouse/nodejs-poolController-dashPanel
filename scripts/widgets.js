@@ -2937,7 +2937,114 @@ $.ui.position.fieldTip = {
             else return o.target;
         }
     });
+    $.widget("pic.buttonOptions", {
+        options: { items:[], selectionType:'single', toggleType:'' },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picButtonOptions');
+            el.addClass('btnarray');
+            el.attr('data-bind', o.binding);
+            self._createButtons();
+            el[0].val = function (val) { return self.val(val); };
+            el.on('click', 'div.btn-toggle', function (evt) {
+                console.log(evt);
+                var val = $(evt.currentTarget).attr('data-value');
+                self.selectItemByVal(val);
 
+            });
+            if (typeof o.value !== 'undefined') self.val(o.value);
+        },
+        _createButtons: function () {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            for (var i = 0; i < o.items.length; i++) {
+                var itm = o.items[i];
+                var btn = $('<div></div>').appendTo(el);
+                btn.addClass('btn-toggle');
+                btn.attr('data-value', itm.val);
+                self._applyAttrs(btn, o.btnAttrs);
+                if (typeof itm.btnAttrs !== 'undefined') self._applyAttrs(btn, itm.btnAttrs);
+                if (i === 0) btn.addClass('fld-btn-left');
+                if (i === o.items.length - 1) btn.addClass('fld-btn-right');
+                else if (i !== 0) btn.addClass('fld-btn-center');
+                var label = $('<span></span>').appendTo(btn).html(itm.labelText || itm.desc).attr('data-btnindex', i);
+                self._applyAttrs(label, o.labelAttrs);
+                if (typeof itm.labelAttrs !== 'undefined') self._applyAttrs(label, itm.labelAttrs);
+                
+            }
+            return btn;
+        },
+        _applyAttrs: function (elem, attrs) {
+            if (typeof attrs === 'undefined') return;
+            for (var a in attrs) {
+                switch (a) {
+                    case 'style':
+                        if (typeof attrs[a] === 'object') elem.css(attrs[a]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        elem.css({ width: parseInt(attrs[a], 10) * .55 + 'rem' });
+                        break;
+                    default:
+                        if (a.startsWith('data')) elem.attr(a, attrs[a]);
+                        break;
+                }
+            }
+        },
+        _findItemByVal: function (val) {
+            var self = this, o = self.options, el = self.element;
+            for (var i = 0; i < o.items.length; i++) {
+                var itm = o.items[i];
+                if (itm.val.toString() === val.toString()) return itm;
+            }
+        },
+        selectItemByVal: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var oldVal = self.val();
+            var itm = self._findItemByVal(val);
+            if (typeof itm === 'undefined' && typeof val !== 'undefined') return;
+            var btn = el.find('div.btn-toggle[data-value="' + val + '"]');
+            var bSelect = true;
+            var changed = false;
+            if (o.selectionType === 'multi') {
+                if (o.toggleType === 'toggle') {
+                    if (typeof oldVal.find(elem => elem.val.toString() === val.toString()) !== 'undefined') bSelect = false;
+                    changed = true;
+                }
+                else {
+                    changed = makeBool(btn.attr('data-selected'));
+                }
+            }
+            else {
+                if (typeof oldVal === 'undefined' || oldVal.toString() !== val.toString()) {
+                    changed = true;
+                    // We need to unselect the old button.
+                    el.find('div.btn-toggle[data-selected="true"]').attr('data-selected', false);
+                }
+            }
+            if (changed) {
+                btn.attr('data-selected', bSelect);
+                var evt = $.Event('selchanged');
+                evt.oldVal = oldVal;
+                evt.newVal = (typeof newVal !== 'undefined') ? itm.val : undefined;
+                el.trigger(evt);
+            }
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') {
+                var arr = [];
+                el.find('div.btn-toggle[data-selected=true]').each(function () {
+                    var ai = self._findItemByVal($(this).attr('data-value'));
+                    if (typeof ai !== 'undefined') arr.push(ai.val);
+                });
+                return o.selectionType === 'multi' ? arr : arr[0];
+            }
+            else
+                self.selectItemByVal(val);
+        }
+    });
 })(jQuery);
 $.pic.modalDialog.createDialog = function (id, options) {
     var opt = typeof options !== 'undefined' && options !== null ? options : {

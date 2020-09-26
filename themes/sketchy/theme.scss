@@ -248,7 +248,7 @@ div.picPopover {
     background-repeat: no-repeat;
     background-size: 100%;
 }
-
+.btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled).hover,
 .fld-btn-right:not([disabled]):not(.disabled):hover,
@@ -259,6 +259,7 @@ div.picPopover {
 .btn:not([disabled]):not(.disabled).hover {
     background: url('highlighter-yellow.png') !important;
 }
+.btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled).active,
 .fld-btn-right:not([disabled]):not(.disabled):active,
@@ -358,4 +359,18 @@ div.picIndicator[data-status=error] {
     background-size: auto;
     background-attachment: fixed;
     background-position: left top;
+}
+.btn-toggle.fld-btn-left {
+}
+
+.btn-toggle.fld-btn-right {
+}
+
+.btn-toggle.fld-btn-center {
+    border: solid 1px gray;
+    background: url('pencilshade-gray.png') !important;
+}
+
+.btn-toggle[data-selected="true"] {
+    background: url('pencilshade-blue.png') !important;
 }
