@@ -8,8 +8,9 @@ div.picActionButton > span {
 div.picFeature, div.picVirtualCircuit {
     min-width:10.4rem;
 }
-div.picFeatures > div.picCircuit[data-showinfeatures=false] {
-    display:none;
+div.picFeatures > div.picCircuit[data-showinfeatures=false],
+div.picFeatures > div.picCircuitGroup[data-showinfeatures=false] {
+    display: none;
 }
 select, input[type=text], fieldset {
     font-size:1rem;

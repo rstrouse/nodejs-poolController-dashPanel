@@ -211,7 +211,8 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
-            if (data.isActive === false) el.hide();
+            if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
+            if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;

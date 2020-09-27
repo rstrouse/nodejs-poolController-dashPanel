@@ -393,7 +393,9 @@
             }
             else
                 $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures', value: true });
 
+            line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
