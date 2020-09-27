@@ -190,37 +190,38 @@
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
-                $('<input type="hidden"></input>').appendTo(line).attr('data-bind', 'options.' + sensor.binding + '_curr').attr('data-datatype', 'number').val(sensor.temp + sensor.tempAdj);
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'options.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
-                $('<span style="width:4.5rem;display:inline-block"></span><span style="display:inline-block;width:7rem;text-align:center">' + (sensor.temp + sensor.tempAdj) + '</span>').appendTo(line);
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
+                $('<span></span>').css({ width: '4.5rem', display: 'inline-block' }).appendTo(line);
+                $('<span></span>').appendTo(line).attr('data-bind', 'sensorRaw.' + sensor.binding + '_curr').attr('data-datatype', 'number').text(sensor.temp - sensor.tempAdj)
+                    .css({ width: '7rem', display: 'inline-block', textAlign:'center' });
             }
-
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveCalibration"></div>').appendTo(btnPnl).actionButton({ text: 'Save Calibration', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
-                //$(this).addClass('disabled');
-                //$(this).find('i').addClass('burst-animated');
                 var p = $(e.target).parents('div.picAccordian-contents:first');
-                var v = dataBinder.fromElement(el);
-                console.log(dataBinder.fromElement(el));
-                for (var prop in v.options) {
+                var raw = dataBinder.fromElement(el);
+                var v = { options: {} };
+                for (var prop in raw.sensorRaw) {
                     if (prop.endsWith('_curr')) {
                         var offName = prop.replace('_curr', '');
-                        v.options[offName] = v.options[offName + '_adj'] - v.options[prop];
-                        delete v.options[prop];
-                        delete v.options[offName + '_adj'];
+                        v.options[offName] = raw.sensorRaw[offName + '_adj'] - raw.sensorRaw[offName + '_curr'];
                     }
                 }
                 console.log(v);
                 // Send this off to the server.
                 $.putApiService('/config/general', v, 'Saving Sensor Calibration...', function (data, status, xhr) {
-                    var s = dataBinder.fromElement(el);
-                    for (var j = 0; j < o.sensors.length; j++) {
-                        var sensor = o.sensors[j];
-                        data.options[sensor.binding + '_curr'] = sensor.temp;
-                        data.options[sensor.binding + '_adj'] = sensor.temp + data.options[sensor.binding];
+                    // We need to hold onto the original sensor adjustment temperature but adjust the new true readout.  We do this
+                    // because the web interface jumps all over the place when making the adjustments.  It's annoying in the end the
+                    // current true readout value should not change.  It should only put the adjusted value back if it was not
+                    // set on the server.
+                    data.sensorRaw = {};
+                    for (var j = 0; j < data.sensors.length; j++) {
+                        var sensor = data.sensors[j];
+                        if (v.options[sensor.binding] !== sensor.tempAdj) {
+                            data.sensorRaw[sensor.binding + '_curr'] = sensor.temp - sensor.tempAdj;
+                            data.sensorRaw[sensor.binding + '_adj'] = sensor.temp;
+                        }
                     }
-                    console.log(data);
                     self.dataBind(data);
                 });
 
