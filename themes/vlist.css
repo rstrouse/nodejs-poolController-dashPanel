@@ -61,3 +61,6 @@ div.vlist-body {
   width: 100%;
   height: 100%;
   padding-right: 1px; }
+
+tr.msgRow, tr.msgApiRow {
+  cursor: pointer; }

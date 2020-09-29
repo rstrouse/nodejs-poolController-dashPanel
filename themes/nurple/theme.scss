@@ -251,3 +251,18 @@ div.picIndicator[data-status=error] {
     color: white;
     @include active_background();
 }
+table.vlist-outer {
+    border:solid 1px white;
+}
+tr.msgRow:nth-child(2n+1) {
+    color: black;
+}
+tr.msgRow:nth-child(2n) > td {
+    border-color:white;
+}
+tr.msgRow.selected, tr.msgApiRow.selected {
+    color: white!important;
+    @include active_background();
+    border-color:white;
+}
+

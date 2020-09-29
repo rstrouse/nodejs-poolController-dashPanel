@@ -416,3 +416,19 @@ div.picIndicator[data-status=error] {
   background: #7b1fa2;
   background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
   background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }
+
+table.vlist-outer {
+  border: solid 1px white; }
+
+tr.msgRow:nth-child(2n+1) {
+  color: black; }
+
+tr.msgRow:nth-child(2n) > td {
+  border-color: white; }
+
+tr.msgRow.selected, tr.msgApiRow.selected {
+  color: white !important;
+  background: #7b1fa2;
+  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
+  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%);
+  border-color: white; }
