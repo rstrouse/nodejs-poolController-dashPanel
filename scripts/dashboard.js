@@ -250,7 +250,13 @@
             o.socket.on('logMessage', function (data) {
                 console.log({ evt: 'logMessage', data: data });
             });
+            o.socket.on('chemController', function (data) {
+                console.log({ evt: 'chemController', data: data });
+                $('div.picChemController[data-id=' + data.id + ']').each(function () {
+                    this.setEquipmentData(data);
+                });
 
+            });
 
             o.socket.on('heater', function (data) {
                 console.log({ evt: 'heater', data: data });
