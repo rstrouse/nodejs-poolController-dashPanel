@@ -208,7 +208,8 @@ select, input[type=text], fieldset {
   filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px;
   background: white;
   background: -webkit-linear-gradient(90deg, white 0%, white 100%);
-  background: linear-gradient(0deg, white 0%, white 100%); }
+  background: linear-gradient(0deg, white 0%, white 100%);
+  color: gray; }
 
 .btn-panel {
   padding: .2rem;

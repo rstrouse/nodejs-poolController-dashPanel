@@ -21,6 +21,22 @@ export class UploadRoute {
                 }
             });
         });
+        app.post('/upload/backgroundFile', (req, res, next) => {
+            let upload = backgroundUpload.upload.single('backgroundFile');
+            upload(req, res, function (err) {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+                else {
+                    let backgrounds = BackgroundUpload.getBackgrounds();
+                    res.status(200).send({
+                        uploaded: backgrounds.find(elem => elem.name === req.file.filename),
+                        backgrounds: backgrounds
+                    });
+                }
+            });
+        });
         
     }
 }
@@ -124,4 +140,57 @@ export class LogUpload {
         return arr;
     }
 }
+export class BackgroundUpload {
+    public path = path.posix.join(process.cwd(), 'themes/images');
+    constructor() {
+        try {
+            this._multer = multer({
+                dest: this.path,
+                storage: multer.diskStorage({
+                    destination: (req, file, cb) => {
+                        cb(null, this.path);
+                    },
+                    filename: (req, file, cb) => {
+                        let target = path.posix.join(process.cwd(), this.path, file.originalname);
+                        let p = path.parse(target);
+                        let ord = 1;
+                        if (this.preserveFile) {
+                            while (fs.existsSync(target)) {
+                                //console.log(p);
+                                var name = p.name;
+                                if (name.endsWith('_' + (ord - 1))) {
+                                    name = name.substring(0, name.lastIndexOf('_' + (ord - 1)));
+                                }
+                                target = path.posix.join(process.cwd(), this.path, name + '_' + ord + p.ext);
+                                p = path.posix.parse(target);
+                                ord++;
+                            }
+                        }
+                        cb(null, p.name + p.ext);
+                    }
+                })
+            });
+        } catch (err) { logger.error(err); }
+    }
+    private _multer = multer({});
+    public preserveFile: boolean = false;
+    public get upload() { return this._multer; }
+    public static getBackgrounds(): { name: string, ext: string, size: number, url: string }[] {
+        let arr = [];
+        let dir = path.posix.join(process.cwd(), 'themes/images');
+        let files = fs.readdirSync(dir, { withFileTypes: true });
+        for (let i = 0; i < files.length; i++) {
+            let f = files[i];
+            if (f.isFile()) {
+                let ext = path.extname(f.name).toLocaleLowerCase();
+                if (['.jpg', '.gif', '.png', '.bmp', '.tiff'].includes(ext)) {
+                    let stat = fs.statSync(path.posix.join(dir, f.name));
+                    arr.push({ name: f.name, ext: ext, size: stat.size, url:`/themes/images/${f.name}` });
+                }
+            }
+        }
+        return arr;
+    }
+}
 const logUpload = new LogUpload();
+const backgroundUpload = new BackgroundUpload();

@@ -50,6 +50,12 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var background = getCookie('dashBackground', '');
+            if (typeof background !== 'undefined' && background !== '')
+                $(document.body).css('background-image', `url(${background})`);
+            else
+                $(document.body).css('background-image', '');
+            console.log(background);
             $('div.picMessageManager').messageManager();
             $('div.picController').controller();
             $('div.picMessages').messageList();

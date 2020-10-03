@@ -89,6 +89,7 @@ select, input[type=text], fieldset {
 .btn-stateonly {
     @include box_shadow(3px 3px 3px, rgba(127,127,127,0.5), gainsboro);
     @include panel_background();
+    color:gray;
 }
 .btn-panel {
     padding: .2rem;

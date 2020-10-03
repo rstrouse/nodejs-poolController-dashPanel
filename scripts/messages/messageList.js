@@ -1797,7 +1797,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             var div = $('<div></div>').appendTo(el).addClass('upload-logfile');
             var line = $('<div></div>').css({ minWidth: '30rem' }).appendTo(div);
-            $('<div></div>').appendTo(line).fileUpload({ binding: 'logFile' });
+            $('<div></div>').appendTo(line).fileUpload({ binding: 'logFile', labelText: 'Log File', inputAttrs: { style: { width: '24rem' } }, hasPostProcess: true });
             line = $('<div></div>').appendTo(div);
             $('<hr></hr>').appendTo(line);
             line = $('<div></div>').appendTo(div);
@@ -1822,7 +1822,7 @@ mhelper.init();
             var divPopover = $('<div></div>');
             divPopover.appendTo(document.body);
             divPopover.on('initPopover', function (e) {
-                var progress = $('<div></div>').appendTo(e.contents()).uploadProgress();
+                var progress = $('<div></div>').appendTo(e.contents()).uploadProgress({ hasPostProcess: true });
                 e.stopImmediatePropagation();
                 var opts = dataBinder.fromElement(el);
                 var uploader = $('div[data-bind=logFile]');
@@ -1911,59 +1911,4 @@ mhelper.init();
             }
         }
     });
-    $.widget("pic.uploadProgress", {
-        options: { procTotal: 0, procProcessed:0, uploadTotal:0, uploadProcessed:0 },
-        _create: function () {
-            var self = this, o = self.options, el = self.element;
-            self._initProgress();
-            el[0].setUploadProgress = function (processed, total) { self.setUploadProgress(processed, total); };
-            el[0].setProcessProgress = function (processed, total) { self.setProcessedProgress(processed, total); };
-            el[0].incrementProcessProgress = function (total) { self.incrementProcessProgress(total); };
-            el[0].isCancelled = function () { return o.isCancelled || false; };
-        },
-        _initProgress: function () {
-            var self = this, o = self.options, el = self.element;
-            var div = $('<div></div>').appendTo(el).addClass('upload-progress');
-            var line = $('<div></div>').css({ minWidth: '30rem' }).appendTo(div);
-            $('<div></div>').appendTo(el).addClass('upload-file-label').text('File Upload Progress');
-            var fileProg = $('<div></div>').appendTo(el).addClass('upload-file-progress').progressbar();
-            $('<div></div>').appendTo(el).addClass('upload-process-label').text('Log Processing Progress');
-            var procProg = $('<div></div>').appendTo(el).addClass('upload-process-progress').progressbar();
-            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
-            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Cancel Upload', icon: '<i class="fas fa-plane-slash"></i>' }).on('click', function (e) {
-                o.isCancelled = true;
-            });
-        },
-        incrementProcessProgress: function (total) {
-            var self = this, o = self.options, el = self.element;
-            var label = el.find('div.upload-process-label:first');
-            var prog = el.find('div.upload-process-progress:first');
-            if (typeof total !== 'undefined') o.procTotal = total;
-            var pct = o.procTotal !== 0 ? ++o.procProcessed / o.procTotal : 1;
-            prog.progressbar('value', pct * 100);
-            label.text('Log Processing Progress: ' + o.procProcessed + ' of ' + o.procTotal);
-        },
-        setUploadProgress: function (processed, total) {
-            var self = this, o = self.options, el = self.element;
-            var label = el.find('div.upload-file-label:first');
-            var prog = el.find('div.upload-file-progress:first');
-            var pct = total !== 0 ? processed / total : 1;
-            prog.progressbar('value', pct * 100);
-            o.uploadTotal = total;
-            o.uploadProcessed = processed;
-            label.text('File Upload Progress: ' + o.uploadProcessed + ' of ' + o.uploadTotal + ' bytes');
-        },
-        setProcessedProgress: function (processed, total) {
-            var self = this, o = self.options, el = self.element;
-            var label = el.find('div.upload-process-label:first');
-            var prog = el.find('div.upload-process-progress:first');
-            var pct = total !== 0 ? processed / total : 1;
-            prog.progressbar('value', pct * 100);
-            o.procTotal = total;
-            o.procProcessed = processed;
-            label.text('Log Processing Progress: ' + o.procProcessed + ' of ' + o.procTotal);
-
-        }
-    });
-
 })(jQuery);

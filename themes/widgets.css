@@ -430,11 +430,12 @@ div.picSpinner-value {
     width: 2.5em;
     text-align: center;
 }
-
+div.picFileUpload,
 div.picPickList {
     user-select: none;
     display: inline-block;
 }
+label.picFileUpload-label,
 div.picPickList > label {
     padding-right:.25rem;
     white-space: nowrap;
@@ -442,6 +443,7 @@ div.picPickList > label {
     vertical-align:middle;
     display:inline-block;
 }
+div.picFileUpload-choose,
 div.picPickList-drop {
     display: inline-block;
     width: 1.4rem;
@@ -452,6 +454,7 @@ div.picPickList-drop {
     font-size: 1em;
     line-height: 1.4rem;
 }
+div.picFileUpload-filename,
 div.picPickList-value {
     display: inline-block;
     padding-left: .2em;
@@ -462,6 +465,14 @@ div.picPickList-value {
     white-space:nowrap;
     text-overflow:ellipsis;
     overflow:hidden;
+}
+.picFileUpload-file {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px);
+    clip: rect(1px, 1px, 1px, 1px);
 }
 div.picPickList-value.editable {
     padding:0px;

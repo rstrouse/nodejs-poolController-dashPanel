@@ -27,6 +27,7 @@
     <script type="text/javascript" src="scripts/config/schedules.js"></script>
     <script type="text/javascript" src="scripts/config/heaters.js"></script>
     <script type="text/javascript" src="scripts/config/chemistry.js"></script>
+    <script type="text/javascript" src="scripts/uploader.js"></script>
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="../../jquery-ui/jquery-ui.theme.css" />
     <link id="cssref_glyphs" rel="stylesheet" type="text/css" href="/font-awesome/css/all.css" />
@@ -38,6 +39,11 @@
     <link id="cssref_dash" rel="stylesheet" type="text/css" href="themes/dashboard.css" />
     <script type="text/javascript">
         // Add in the current theme for the pool controller.
+        var background = getCookie('dashBackground', '');
+        if (typeof background !== 'undefined' && background !== '')
+            $(document.body).css('background-image', `url(${background})`);
+        else
+            $(document.body).css('background-image', '');
         var theme = getCookie('dashTheme', 'default');
         $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head')).attr('data-theme', theme);
     </script>
@@ -65,6 +71,13 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            var background = getCookie('dashBackground', '');
+            if (typeof background !== 'undefined' && background !== '')
+                $(document.body).css('background-image', `url(${background})`);
+            else
+                $(document.body).css('background-image', '');
+            console.log(background);
+
             $('div.picDashboard').dashboard();
             $('div.picController').controller();
             $('div.picBodies').bodies();

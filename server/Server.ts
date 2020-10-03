@@ -10,7 +10,7 @@ import * as https from "https";
 import { outQueues } from "./queues/outboundQueue";
 import * as extend from 'extend';
 import { ApiError } from './Errors';
-import { UploadRoute } from "./upload/upload";
+import { UploadRoute, BackgroundUpload } from "./upload/upload";
 import { MessageDocs } from "./messages/messages";
 import { setTimeout } from "timers";
 
@@ -160,6 +160,13 @@ export class HttpServer extends ProtoServer {
                 catch (err) {
                     next(err);
                 }
+            });
+            this.app.get('/options', (req, res) => {
+                let opts = {
+                    web: config.getSection('web'),
+                    backgrounds: BackgroundUpload.getBackgrounds()
+                }
+                return res.status(200).send(opts);
             });
             this.app.get('/messages/queue/:id', (req, res, next) => {
                 try {

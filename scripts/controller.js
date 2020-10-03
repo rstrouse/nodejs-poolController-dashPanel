@@ -404,8 +404,7 @@
                         { code: 'materia', name: 'Materia', desc: 'Material metaphor using bold colors and highlights.' },
                         { code: 'purple', name: 'Purple', desc: 'A mix or purple and teal.' },
                         { code: 'nurple', name: 'Nurple', desc: 'A mix or purple and black.' }
-
-                    ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '4rem' } }
+                    ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '7rem' } }
                 }).on('selchanged', function (evt) {
                     if (evt.newItem) {
                         setCookie('dashTheme', evt.newItem.code);
@@ -421,9 +420,55 @@
                         else
                             $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head')).attr('data-theme', evt.newItem.code);
                     }
+                    })[0].val(getCookie('dashTheme', 'default'));
+                line = $('<div></div>').appendTo(divOuter);
+                $('<label></label>').appendTo(line).css({ width: '7rem', display: 'inline-block' }).addClass('field-label').text('Background');
+                settings.backgrounds.unshift({ name: 'Use Theme Default', url:'' });
+                $('<div></div>').appendTo(line).pickList({
+                    id:'dashBackground',
+                    binding: 'background',
+                    bindColumn: 1, displayColumn: 0,
+                    columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'url', text: 'Url', style: { whiteSpace: 'nowrap' }, hidden:true }],
+                    inputAttrs: { style: { width: '14rem' } },
+                    labelAttrs: { style: { display: 'none' } },
+                    items: settings.backgrounds
+                }).on('selchanged', function (evt) {
+                    setCookie('dashBackground', evt.newItem.url);
+                    if (evt.newItem.url === 'undefined' || evt.newItem.url === '')
+                        $(document.body).css('background-image', '');
+                    else
+                            $(document.body).css('background-image', `url(${evt.newItem.url})`);
+                    })[0].val(getCookie('dashBackground', ''));
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
+                btnPnl.appendTo(contents);
+                $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Upload Background', icon: '<i class="fas fa-file-image"></i>' })
+                    .on('click', function (e) {
+                        var dlg = $.pic.modalDialog.createDialog('dlgUploadBackground', {
+                            message: 'Upload Custom Background',
+                            width: '470px',
+                            height: 'auto',
+                            title: 'Upload Custom Background',
+                            buttons: [{
+                                text: 'Upload Image', icon: '<i class="fas fa-upload"></i>',
+                                click: function () {
+                                    var bg = dataBinder.fromElement(dlg);
+                                    self.uploadBackgroundFile(dlg.find('div[data-bind=backgroundFile]'), bg);
+                                }
+                            },
+                                { text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                                click: function () { $.pic.modalDialog.closeDialog(this); }
+                            }]
+                        });
+                        var line = $('<div>Select a file to upload then click the upload file to add it to the list of selectable backgrounds.</div>').appendTo(dlg);
+                        $('<hr></hr>').appendTo(dlg);
+                        line = $('<div></div>').appendTo(dlg);
+                        $('<div></div>').appendTo(line).fileUpload({ binding: 'backgroundFile', accept: 'image/*', labelText: 'Background', inputAttrs: { style: { width: '24rem' } } })
+                            .on('changed', function (e) {
 
-
-                })[0].val(getCookie('dashTheme', 'default'));
+                            });
+                        line = $('<div></div>').appendTo(div);
+                        dlg.css({ overflow: 'visible' });
+                    });
             });
         },
         _buildConnectionsTab: function (settings) {
@@ -574,13 +619,13 @@
             console.log('Building controls');
             tabs.appendTo(el);
             tabs.tabBar();
-            $.getLocalService('/config/web', null, function (configData, status, xhr) {
+            $.getLocalService('/options', null, function (configData, status, xhr) {
                 console.log(configData);
                 o.initializing = true;
                 self._buildAppearanceTab(configData);
-                self._buildConnectionsTab(configData);
+                self._buildConnectionsTab(configData.web);
                 self._buildLoggingTab();
-                self._buildFirmwareTab(configData);
+                self._buildFirmwareTab(configData.web);
                 tabs[0].selectTabById('tabAppearance');
                 var evt = $.Event('loaded');
                 o.initializing = false;
@@ -590,6 +635,37 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
+        },
+        uploadBackgroundFile: function(uploader, opts) {
+            var self = this, o = self.options, el = self.element;
+            var divPopover = $('<div></div>');
+            divPopover.appendTo(document.body);
+            divPopover.on('initPopover', function (e) {
+                var progress = $('<div></div>').appendTo(e.contents()).uploadProgress();
+                e.stopImmediatePropagation();
+                uploader[0].upload({
+                    url: 'upload/backgroundFile',
+                    params: { preserveFile: false },
+                    progress: function (xhr, evt, prog) {
+                        //console.log(xhr, evt, prog);
+                        progress[0].setUploadProgress(prog.loaded, prog.total);
+                    },
+                    complete: function (data, status, xhr) {
+                        data.backgrounds.unshift({ name: 'Use Theme Default', url: '' });
+                        progress.parents('div.picPopover:first')[0].close();
+                        console.log(el);
+                        el.find('div.picPickList#dashBackground').each(function () {
+                            this.items(data.backgrounds);
+                            this.val(data.uploaded.url);
+                        });
+                        $.pic.modalDialog.closeDialog(uploader[0]);
+                    }
+                });
+                //console.log(opts);
+
+            });
+            divPopover.popover({ autoClose: false, title: 'Uploading Background File', popoverStyle: 'modal', placement: { my: 'center center', at: '50% 50%', of: document.body } });
+            divPopover[0].show(uploader);
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;

@@ -8,13 +8,30 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            
             var form = $('<form></form>').appendTo(el).attr('enctype', 'multipart/form-data');
+            var line = $('<div></div>').appendTo(el);
+            var label = $('<label></label>').addClass('picFileUpload-label').addClass('field-label').appendTo(line).text(o.labelText);
+            var fname = $('<div></div>').addClass('picFileUpload-filename').addClass('fld-value-combo').addClass('file-upload-filename').appendTo(line);
+            var btn = $('<div></div>').addClass('picFileUpload-choose').addClass('fld-btn-right').appendTo(line)
+                .on('click', function (evt) {
+                    finput.trigger('click');
+                });
+            $('<i></i>').appendTo(btn).addClass('fas').addClass('fa-file-upload');
+            
             var params = $('<input></input>').attr('type', 'hidden').attr('name', 'params').appendTo(form);
-            var fname = $('<input></input>').attr('type', 'file').attr('name', 'logFile').appendTo(form);
-            $('<div></div>').appendTo(form).addClass('fiile-drop-area');
+            var finput = $('<input></input>').attr('type', 'file').addClass('picFileUpload-file').attr('name', o.binding).appendTo(form).on('change', function (e) {
+                fname.text(this.files[0].name);
+                var evt = $.Event('changed');
+                evt.newFile = fname.text;
+                el.trigger(evt);
+            });
+            if (typeof o.accept !== 'undefined') finput.attr('accept', o.accept);
+            $('<div></div>').appendTo(form).addClass('file-drop-area');
             el.attr('data-bind', o.binding);
+            el.addClass('file-upload');
             el[0].val = function (val) { return el.find('input[type=file]:first')[0].files[0]; };
-            el[0].params = function (val) { return el.find('input[type=hidden]:first').val(val); }
+            el[0].params = function (val) { return el.find('input[type=hidden]:first').val(val); };
             el[0].upload = function (opts) {
                 form.attr('action', opts.url);
                 form.attr('method', 'post');
@@ -45,6 +62,43 @@
                     if (typeof opts.complete === 'function') opts.complete(data, status, xhr);
                 });
             };
+            self._applyStyles();
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('.picFileUpload-filename:first');
+            var lbl = el.find('.picFileUload-label:first');
+            var choose = el.find('.picFileUpload-choose > i:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') fld.css(o.inputAttrs[ia]);
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .55 + 'rem' });
+                        fld.attr('maxlength', o.inputAttrs[ia]);
+                        break;
+                    default:
+                        if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
+                        break;
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+
+            }
+            if (typeof o.icon !== 'undefined') choose.addClass(o.icon);
         }
     });
 })(jQuery); // File Upload
