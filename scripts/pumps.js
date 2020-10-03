@@ -70,7 +70,7 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                if (typeof data.type === 'undefined' || data.type.val === 0) {
+                if (typeof data.type === 'undefined' || data.type.val === 0 || data.isActive === false) {
                     setTimeout(function () { el.remove(); }, 10);
                 }
                 else {

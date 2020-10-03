@@ -62,8 +62,6 @@
             o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'H:mm';
             o.fmtTimeEmpty = o.clockMode === 12 ? '12:00am' : '24:00';
 
-
-
             var line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<div></div>').appendTo(line).pickList({
@@ -91,7 +89,8 @@
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
                 }
             });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft:'.25rem', width: '3rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '.25rem', width: '3rem' } } });
+            $('<hr></hr>').appendTo(pnl);
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
 
             line = $('<div></div>').addClass('schedule-time').addClass('start-time').appendTo(inline);
@@ -123,6 +122,9 @@
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
                 var p = el.find('div.schedule-heatsource');
+                // When the user selects a non-body we need to hide the heat source panel.  The schedule type
+                // hides/shows the individual items in the panel.  Perhaps in the future we need a better way to
+                // determine which circuits are body circuits but 1 and 6 work for now.
                 if (evt.newItem.id === 6 || evt.newItem.id === 1) {
                     p.show();
                     p.find('div.picPickList[data-bind=heatSource]')[0].required(true);
@@ -258,6 +260,7 @@
                 else daysTitle = 'Every Day';
             }
             else if (schedType.startDate) {
+                console.log(obj.startDate);
                 daysTitle = Date.format(obj.startDate, 'MM/dd/yyyy', '--/--/----');
             }
             cols[2].elText().text(daysTitle);
@@ -364,5 +367,4 @@
             else return o.val;
         }
     });
-
 })(jQuery); // Schedule Panel

@@ -26,8 +26,8 @@
                     pnl[0].dataBind({
                         id: -1, name: 'Pump ' + (groups.length + 1),
                         type: pt.val, circuits: [],
-                        minFlow: 0, maxFlow: 9999,
-                        minSpeed: 0, maxSpeed: 9999, primingTime: 0,
+                        minFlow: 0, maxFlow: 130,
+                        minSpeed: 0, maxSpeed: 3450, primingTime: 0,
                         primingSpeed: 0, address: 96 + groups.length
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
@@ -127,7 +127,7 @@
                         }
                         if (valid) {
                             console.log(v);
-                            $.putApiService('/config/pump', v, function (data, status, xhr) {
+                            $.putApiService('/config/pump', v, 'Saving Pump...', function (data, status, xhr) {
                                 console.log(data);
                                 self.dataBind(data);
                             });

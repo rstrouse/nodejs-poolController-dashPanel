@@ -51,6 +51,7 @@ div.pnl-scheduleDays div.table-caption {
     border-top-left-radius: $border_radius;
     border-top-right-radius: $border_radius;
     border: solid 1px gray;
+    color:white;
     @include fldbutton_background();
 }
 div.pnl-scheduleDays div.table-row.dayheader {

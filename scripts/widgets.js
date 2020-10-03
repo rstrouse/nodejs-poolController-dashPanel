@@ -227,6 +227,7 @@ Date.prototype.addMinutes = function (nMins) {
     return this;
 };
 Date.format = function (date, fmtMask, emptyMask) {
+    if (typeof date === 'undefined') return emptyMask;
     var dt;
     if (typeof date === 'string') {
         if (date.indexOf('T') !== -1)

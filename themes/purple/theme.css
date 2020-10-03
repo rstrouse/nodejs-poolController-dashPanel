@@ -50,6 +50,7 @@ div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   border: solid 1px gray;
+  color: white;
   background: #02969b;
   background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
   background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }

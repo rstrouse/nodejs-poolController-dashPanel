@@ -102,9 +102,10 @@ $.widget('pic.lightGroupPanel', {
             divCircuit.find('div.picLightGroupCircuitColor').attr('data-color', circuit.color.name);
             divCircuit.find('div.picLightGroupCircuitColor').attr('data-val', circuit.color.val);
             divCircuit.find('div.picCSColor').on('click', function (evtCircuit) {
-                $.getApiService('config/intellibrite/colors', function (data, status, xhr) {
+                $.getApiService('config/options/lightGroups', function (opts, status, xhr) {
                     var divPopover = $('<div class="picCSColors"></div>');
-                    divPopover.appendTo(el.parent());
+                    var data = opts.colors;
+                    divPopover.appendTo(el.parent().parent().parent());
                     divPopover.on('initPopover', function (evt) {
                         let curr = $(evtCircuit.currentTarget).attr('data-color');
                         let divColors = $('<div class= "picLightColors" data-bind="color"></div>');
