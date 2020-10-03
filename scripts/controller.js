@@ -516,13 +516,13 @@
                                 searchStatus.text(servers.length + ' Running nodejs-PoolController server(s) found.');
                                 for (var i = 0; i < servers.length; i++) {
                                     var server = servers[i];
-                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle' }).appendTo(line);
+                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth:'210px' }).appendTo(line);
                                     $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Pool Controller</span>');
                                     $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(server.origin);
-                                    divSelection.data('server');
+                                    divSelection.data('server', server);
                                     divSelection.on('click', function (e) {
-                                        console.log(server);
-                                        dataBinder.bind(divOuter, { services: { ip: server.hostname, port: server.port, protocol: server.protocol + '//' } });
+                                        var srv = $(e.currentTarget).data('server');
+                                        dataBinder.bind(divOuter, { services: { ip: srv.hostname, port: srv.port, protocol: srv.protocol + '//' } });
                                         $.pic.modalDialog.closeDialog(dlg[0]);
                                     });
                                 }
