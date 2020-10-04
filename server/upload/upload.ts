@@ -141,7 +141,7 @@ export class LogUpload {
     }
 }
 export class BackgroundUpload {
-    public path = path.posix.join(process.cwd(), 'themes/images');
+    public path = path.posix.join(process.cwd(), 'themes/Images');
     constructor() {
         try {
             this._multer = multer({
@@ -177,7 +177,7 @@ export class BackgroundUpload {
     public get upload() { return this._multer; }
     public static getBackgrounds(): { name: string, ext: string, size: number, url: string }[] {
         let arr = [];
-        let dir = path.posix.join(process.cwd(), 'themes/images');
+        let dir = path.posix.join(process.cwd(), 'themes/Images');
         let files = fs.readdirSync(dir, { withFileTypes: true });
         for (let i = 0; i < files.length; i++) {
             let f = files[i];
@@ -185,7 +185,7 @@ export class BackgroundUpload {
                 let ext = path.extname(f.name).toLocaleLowerCase();
                 if (['.jpg', '.gif', '.png', '.bmp', '.tiff'].includes(ext)) {
                     let stat = fs.statSync(path.posix.join(dir, f.name));
-                    arr.push({ name: f.name, ext: ext, size: stat.size, url:`/themes/images/${f.name}` });
+                    arr.push({ name: f.name, ext: ext, size: stat.size, url:`/themes/Images/${f.name}` });
                 }
             }
         }
