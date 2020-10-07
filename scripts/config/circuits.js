@@ -411,7 +411,8 @@
             var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(line);
             var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
             btnAddCircuit.on('click', function (e) {
-                self.addCircuit({ circuit: -1 });
+                var desiredState = o.circuitStates.find(elem => elem.name === 'on');
+                self.addCircuit({ circuit: -1, desiredState: desiredState.val || 1 });
             });
             $('<div class="picCircuitsList-list" style="min-width:14rem;"></div>').appendTo(pnlCircuits);
 
