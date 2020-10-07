@@ -3,8 +3,31 @@
         options: { },
         _create: function () {
             var self = this, o = self.options, el = self.element;
-            el[0].initChemistry = function(data) { self._initChemistry(data); };
+            el[0].initChemistry = function (data) { self._initChemistry(data); };
+            el[0].setChlorinatorData = function (data) { self.setChlorinatorData(data); };
+            el[0].setChemControllerData = function (data) { self.setChemControllerData(data); };
         },
+        setChlorinatorData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            if (data.isActive !== false && el.find('div.picChlorinator[data-id=' + data.id + ']').length === 0) {
+                var div = $('<div></div>');
+                div.appendTo(el);
+                div.chlorinator(data);
+            }
+            else
+                el.find('div.picChlorinator[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
+        },
+        setChemControllerData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            if (data.isActive !== false && el.find('div.picChemController[data-id=' + data.id + ']').length === 0) {
+                var div = $('<div></div>');
+                div.appendTo(el);
+                div.chemController(data);
+            }
+            else
+                el.find('div.picChemController[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
+        },
+
         _initChemistry: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
@@ -14,15 +37,13 @@
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Chemistry');
-            if (typeof data !== 'undefined') {
+            if (typeof data !== 'undefined' && data.chlorinators.length > 0) {
                 el.show();
                 for (let i = 0; i < data.chlorinators.length; i++) {
-                    let div = $('<div class="picChlorinator"></div>');
-                    div.appendTo(el);
-                    div.chlorinator(data.chlorinators[i]);
+                    $('<div></div>').appendTo(el).chlorinator(data.chlorinators[i]);
                 }
                 for (let i = 0; i < data.chemControllers.length; i++) {
-                    $('<div class="picChemController"></div>').appendTo(el).chemController(data.chemControllers[i]);
+                    $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
                 }
             }
             else el.hide(); 
@@ -39,8 +60,9 @@
             var self = this, o = self.options, el = self.element;
             try {
                 el.attr('data-saltrequired', data.saltRequired);
-                if (!data.isActive === false) el.hide();
+                if (data.isActive === false) el.hide();
                 else el.show();
+                el.attr('data-active', makeBool(data.isActive));
                 //data.state = data.currentOutput > 0 ? 'on' : 'off';
                 el.find('div.picChlorinatorState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
                 dataBinder.bind(el, data);
@@ -64,9 +86,15 @@
                 if (typeof data.status !== 'object' || data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
                 else el.find('div.picSuperChlorBtn').show();
                 el.data('remaining', data.superChlorRemaining);
-                el.attr('data-status', data.status.name);
+                if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
+                else el.attr('data-status', '');
             }
             catch (err) { console.log({ m: 'Error setting chlorinator data', err: err, chlor: data }); }
+            var pnl = el.parents('div.picChemistry:first');
+            if (pnl.find('div.picChlorinator[data-active=true], div.picChemController[data-active=true]').length > 0)
+                pnl.show();
+            else
+                pnl.hide();
         },
         countdownSuperChlor: function () {
             var self = this, o = self.options, el = self.element;
@@ -160,6 +188,7 @@
         },
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;
+            el.addClass('picChlorinator');
             var div = $('<div class="picChlorinatorState picIndicator"></div>');
             el.attr('data-id', o.id);
             div.appendTo(el);
@@ -186,14 +215,20 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                if (!data.isActive === false) el.hide();
+                if (data.isActive === false) el.hide();
                 else el.show();
+                el.attr('data-active', makeBool(data.isActive));
                 el.find('div.picChemControllerState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
                 dataBinder.bind(el, data);
-                el.attr('data-status', data.status.name);
-
+                if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
+                else el.attr('data-status', '');
             }
             catch (err) { console.log({ m: 'Error setting chem controller data', err: err, chlor: data }); }
+            var pnl = el.parents('div.picChemistry:first');
+            if (pnl.find('div.picChlorinator[data-active=true], div.picChemController[data-active=true]').length > 0)
+                pnl.show();
+            else
+                pnl.hide();
         },
         _buildPopover: function () {
             var self = this, o = self.options, el = self.element;
@@ -302,6 +337,8 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             var div = $('<div class="picChemControllerState picIndicator"></div>');
+            el.addClass('picChemController');
+
             el.attr('data-id', o.id);
             div.appendTo(el);
             div.attr('data-ison', o.currentOutput > 0);

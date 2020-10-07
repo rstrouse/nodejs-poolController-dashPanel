@@ -63,6 +63,8 @@ fieldset {
 }
 .fld-value-combo {
     border-bottom: solid 1px gray;
+    background-color: white;
+    color: black;
 }
 .fld-value-center {
     border-bottom: solid 1px gray;
@@ -185,6 +187,7 @@ fieldset {
 }
 table.optOuter {
     border-radius: $border_radius;
+    color: black;
 }
 
 tr.optHeader > td {

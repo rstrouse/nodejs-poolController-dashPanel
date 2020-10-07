@@ -184,7 +184,9 @@ fieldset {
   border-bottom: solid 1px gray; }
 
 .fld-value-combo {
-  border-bottom: solid 1px gray; }
+  border-bottom: solid 1px gray;
+  background-color: white;
+  color: black; }
 
 .fld-value-center {
   border-bottom: solid 1px gray; }
@@ -309,7 +311,8 @@ fieldset {
   background: #4CAF50 linear-gradient(180deg, #67bb6a, #4CAF50); }
 
 table.optOuter {
-  border-radius: 3px; }
+  border-radius: 3px;
+  color: black; }
 
 tr.optHeader > td {
   border-bottom: solid 2px black;

@@ -192,9 +192,7 @@
             });
             o.socket.on('chlorinator', function (data) {
                 console.log({ evt: 'chlorinator', data: data });
-                $('div.picChlorinator[data-id=' + data.id + ']').each(function () {
-                    this.setEquipmentData(data);
-                });
+                el.find('div.picChemistry').each(function () { this.setChlorinatorData(data); });
             });
             o.socket.on('body', function (data) {
                 $('div.picBody[data-id=' + data.id + ']').each(function () {
@@ -252,10 +250,7 @@
             });
             o.socket.on('chemController', function (data) {
                 console.log({ evt: 'chemController', data: data });
-                $('div.picChemController[data-id=' + data.id + ']').each(function () {
-                    this.setEquipmentData(data);
-                });
-
+                el.find('div.picChemistry').each(function () { this.setChemControllerData(data); });
             });
 
             o.socket.on('heater', function (data) {

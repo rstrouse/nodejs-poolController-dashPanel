@@ -54,6 +54,8 @@ select, input[type=text], fieldset {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
     border: solid 1px gray;
+    background-color:white;
+    color:black;
 }
 .fld-value-center {
     border-radius: 0px !important;
@@ -162,6 +164,7 @@ select, input[type=text], fieldset {
 }
 table.optOuter {
     border-radius: $border_radius;
+    color:black;
 }
 
 tr.optHeader > td {
@@ -188,6 +191,7 @@ table.optBody > tbody > tr:hover {
     @include hover_background();
     color: white;
 }
+
 div.picIndicator {
     display: inline-block;
     border: solid 1px silver;

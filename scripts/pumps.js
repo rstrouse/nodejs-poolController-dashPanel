@@ -70,10 +70,13 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
-                if (typeof data.type === 'undefined' || data.type.val === 0 || data.isActive === false) {
+                var type = data.type || { val: 0, name: 'none' };
+                if ( type.val === 0 || data.isActive === false) {
+                    el.attr('data-active', false);
                     setTimeout(function () { el.remove(); }, 10);
                 }
                 else {
+                    el.attr('data-active', true);
                     dataBinder.bind(el, data);
                     el.css({ display: '' });
                     el.find('div.picIndicator').attr('data-status', data.command === 10 ? 'on' : 'off');
@@ -113,12 +116,16 @@
                         let $this = $(this);
                         for (let i = 0; i < data.circuits.length; i++)
                             $this.find('div.picPumpCircuit[data-id=' + (i + 1) + ']').each(function () {
-                                console.log(data.circuits[i]);
                                 dataBinder.bind($(this), data.circuits[i]);
                             });
                     });
                 }
             } catch (err) { console.error({ m: 'Error setting pump data', err: err, pump: data }); }
+            var pnl = el.parents('div.picPumps:first');
+            if (pnl.find('div.picPump[data-active=true]').length > 0)
+                pnl.show();
+            else
+                pnl.hide();
         },
         _buildControls: function() {
             var self = this, o = self.options, el = self.element;

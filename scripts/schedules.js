@@ -65,11 +65,18 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
+            var pnl = el.parents('div.picSchedules:first');
             try {
                 if (data.circuit <= 0 || data.isActive === false) {
+                    el.attr('data-active', false);
+                    if (pnl.find('div.picSchedule[data-active=true]').length > 0)
+                        pnl.show();
+                    else
+                        pnl.hide();
                     el.remove();
                     return;
                 }
+                el.attr('data-active', true);
                 dataBinder.bind(el, data);
                 el.css({ display: '' });
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
@@ -84,6 +91,11 @@
                 el.find('.picEndTime').text(endTimeType.name !== 'manual' ? data.endTimeType.desc : endTime.formatTime('hh:mmtt', '--:--'));
                 self._createDays(data).appendTo(el);
             } catch (err) { console.error({ m: 'Error setting schedule', err: err, schedule: data }); }
+            if (pnl.find('div.picSchedule[data-active=true]').length > 0)
+                pnl.show();
+            else
+                pnl.hide();
+
         },
        
         _buildControls: function() {
@@ -130,6 +142,11 @@
             }
             return arr.length === 5;
         },
+        _isNodays: function (days) {
+            let arr = [];
+            if (typeof days === 'undefined' || typeof days.days === 'undefined') return true;
+            if (days.days.length === 0) return true;
+        },
         _createDays: function (sched) {
             var self = this, o = self.options, el = self.element;
             if (typeof sched === 'undefined') return $('<label class="picSchedDays"></label>');
@@ -139,6 +156,7 @@
             else if (self._isEveryDay(sched.scheduleDays)) return $('<label class="picSchedDays">Every Day</label>');
             else if (self._isWeekends(sched.scheduleDays)) return $('<label class="picSchedDays">Weekends</label>');
             else if (self._isWeekdays(sched.scheduleDays)) return $('<label class="picSchedDays">Weekdays</label>');
+            else if (self._isNodays(sched.scheduleDays)) return $('<label class="picSchedDays">No Days</label>');
             else if (typeof sched.scheduleDays !== 'undefined') {
                 let tbl = $('<table class="picSchedDays"><tbody>' +
                     '<tr><td>S</td><td>M</td><td>T</td><td>W</td><td>T</td><td>F</td><td>S</td></tr>' +
