@@ -108,11 +108,12 @@
                             $(this).text(dt.format('MM/dd/yyyy h:mmtt'));
                         //$(this).text(self.formatDate(dt));
                     });
+                    var status = data.status || { name: 'unknown', desc: 'Not Connected', percent: 0 };
                     el.find('div.picControllerStatus').each(function () {
                         let ln = $(this);
-                        ln.find('span.picPercentData').text(data.status.name === 'loading' ? data.status.percent + '%' : '');
-                        ln.find('span.picStatusData').text(data.status.desc);
-                        ln.find('div.picIndicator').attr('data-status', data.status.name);
+                        ln.find('span.picPercentData').text(status.name === 'loading' ? status.percent + '%' : '');
+                        ln.find('span.picStatusData').text(status.desc);
+                        ln.find('div.picIndicator').attr('data-status', status.name);
                     });
                     el.find('div.picPanelMode').attr('data-status', data.mode.name);
                     el.find('div.picPanelMode > label').text(data.mode.desc);
@@ -540,7 +541,9 @@
                     if (dataBinder.checkRequired(divOuter)) {
                         var cfg = dataBinder.fromElement(divOuter);
                         $.putLocalService('/config/web.services', cfg.services, 'Updating Connection...', function (data, status, xhr) {
-                            $('div.picDashboard')[0].reset();
+                            $('div.picDashboard, div.picMessageManager').each(function () {
+                                this.reset();
+                            });
 
                         });
                     }

@@ -7,27 +7,42 @@
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
             el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); };
             el[0].clearOutbound = function () { el.find('div.picMessages:first')[0].clearOutbound(); };
-
+            el[0].reset = function () { self._reset(); };
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picController').each(function () { this.initController(data); });
         },
+        _clearPanels: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picController').each(function () { this.initController(); });
+        },
+        _reset: function () {
+            var self = this, o = self.options, el = self.element;
+            if (o.socket && typeof o.socket !== 'undefined' && o.socket.connected) {
+                o.socket.close();
+            }
+            o.socket = null;
+            self._initLogs();
+        },
+
         _initLogs: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
-                console.log(data);
-                o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+            $.getLocalService('/config/web.services', null, function (cfg, status, xhr) {
+                console.log(cfg);
+                o.apiServiceUrl = cfg.protocol + cfg.ip + (typeof cfg.port !== 'undefined' && !isNaN(cfg.port) ? ':' + cfg.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
-                $.getApiService('/state/all', null, function (data, status, xhr) {
-                    $('body').attr('data-controllertype', data.equipment.controllerType);
-                    self._createControllerPanel(data);
+                $.getApiService('/state/all', null, function (state, status, xhr) {
+                    $('body').attr('data-controllertype', state.equipment.controllerType);
+                    self._createControllerPanel(state);
                     self._initSockets();
-                    console.log(data);
+                    console.log(state);
+                    self._createControllerPanel(state);
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })
-                    .fail(function (xhr, status, error) { console.log('Failed:' + error); });
+                    .fail(function (xhr, status, error) { console.log('Failed:' + error); self._clearPanels(); });
+
             });
         },
         _initSockets: function () {

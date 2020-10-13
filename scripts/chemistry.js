@@ -62,7 +62,7 @@
                 el.attr('data-saltrequired', data.saltRequired);
                 if (data.isActive === false) el.hide();
                 else el.show();
-                el.attr('data-active', makeBool(data.isActive));
+                el.attr('data-active', data.isActive === false ? false : true);
                 //data.state = data.currentOutput > 0 ? 'on' : 'off';
                 el.find('div.picChlorinatorState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
                 dataBinder.bind(el, data);
@@ -217,7 +217,7 @@
             try {
                 if (data.isActive === false) el.hide();
                 else el.show();
-                el.attr('data-active', makeBool(data.isActive));
+                el.attr('data-active', data.isActive === false ? false : true);
                 el.find('div.picChemControllerState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
                 dataBinder.bind(el, data);
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);

@@ -15,6 +15,7 @@ window.console = window.console || (function () { var c = {}; c.log = c.warn = c
 window.console.error = window.console.error || (function () { })();
 if (!Date.parseISO) {
     Date.parseISO = function (sDate) {
+        if (typeof sDate === 'undefined') return new Date();
         var s = sDate.split(/[^0-9]/);
         return new Date(s[0], s[1] - 1, s[2], s[3], s[4], s[5]);
     };
