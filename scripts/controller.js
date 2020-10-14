@@ -762,6 +762,10 @@
                 for (var i = 0; i < data.includeActions.length; i++) {
                     tabInclude.find('div.picOptionButton[data-actionid=' + data.includeActions[i] + ']')[0].val(true);
                 }
+                for (var i = 0; i < data.excludeActions.length; i++) {
+                    tabExclude.find('div.picOptionButton[data-actionid=' + data.excludeActions[i] + ']')[0].val(true);
+                }
+
             } catch (err) { console.error(err); }
         }
     });
