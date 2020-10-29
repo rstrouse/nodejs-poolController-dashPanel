@@ -40,3 +40,75 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
 .control-panel-title {
     white-space:nowrap;
 }
+    @media screen and (max-width: 744px) {
+        div.picController {
+            width: 100%;
+            min-width: 100%;
+            max-width: 100%;
+        }
+        div.picController div.picModel {
+            min-width: 0px;
+            width: auto;
+        }
+
+        div.picCircuits {
+            width: 100%;
+        }
+
+        div.dashContainer {
+            display: contents !important;
+            overflow-y: auto;
+        }
+        div.control-panel {
+            margin-right: 0px;
+        }
+        .dashContainer-col1 {
+            order: 2;
+            display: block;
+            padding-left: 2px;
+            padding-right:2px;
+        }
+
+        .dashContainer-col2 {
+            display: block;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        div.picBodyTemp .picTempText,
+        div.picBodyTemp .picTempUnits {
+            display: none;
+        }
+
+        div.picBodies {
+            max-width: 100%;
+        }
+
+        div.picPumps, div.picChemistry {
+            max-width: 100%;
+        }
+    }
+@media screen and (max-width: 540px) {
+    div.picController span.picModelData {
+        display: none;
+    }
+
+    div.picController div.picModel {
+        min-width: 0px;
+        width: auto;
+    }
+}
+    @media screen and (max-width: 370px) {
+        div.dashContainer {
+            display: contents !important;
+            overflow-x: auto;
+            width: 100%;
+        }
+        div.picBodies {
+            min-width:100%;
+        }
+        div.picChlorinator > label.picChlorinatorName,
+        div.picChemController > label.picControllerName {
+            max-width:25%;
+        }
+        }

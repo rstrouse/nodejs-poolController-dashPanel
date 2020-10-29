@@ -1003,17 +1003,17 @@ $.ui.position.fieldTip = {
             if (typeof o.value !== 'undefined') self.val(o.value);
             if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);
             if (o.labelText) el.find('label.picSpinner-label:first').html(o.labelText);
-            el.on('mousedown', 'div.picSpinner-down', function (evt) {
+            el.on('mousedown touchstart', 'div.picSpinner-down', function (evt) {
                 self._rampDecrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
-            el.on('mousedown', 'div.picSpinner-up', function (evt) {
+            el.on('mousedown touchstart', 'div.picSpinner-up', function (evt) {
                 self._rampIncrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
-            el.on('mouseup', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
+            el.on('mouseup touchend', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
                 o.ramps = 0;
                 clearTimeout(o.timer);
                 o.timer = null;
@@ -1154,17 +1154,17 @@ $.ui.position.fieldTip = {
             if (typeof o.value !== 'undefined') self.val(o.value);
             if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);
             if (o.labelText) el.find('label.picSpinner-label:first').html(o.labelText);
-            el.on('mousedown', 'div.picSpinner-down', function (evt) {
+            el.on('mousedown touchstart', 'div.picSpinner-down', function (evt) {
                 self._rampDecrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
-            el.on('mousedown', 'div.picSpinner-up', function (evt) {
+            el.on('mousedown touchstart', 'div.picSpinner-up', function (evt) {
                 self._rampIncrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
-            el.on('mouseup', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
+            el.on('mouseup touchend', 'div.picSpinner-up, div.picSpinner-down', function (evt) {
                 o.ramps = 0;
                 clearTimeout(o.timer);
                 o.timer = null;
@@ -1624,7 +1624,7 @@ $.ui.position.fieldTip = {
                         self._buildOptionList();
                 }
             });
-            el.find('div.picPickList-drop').on('mousedown', function (evt) {
+            el.find('div.picPickList-drop').on('mousedown touchstart', function (evt) {
                 evt.stopImmediatePropagation();
                
             });
