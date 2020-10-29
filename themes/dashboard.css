@@ -260,17 +260,17 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
     width: auto; }
   div.picCircuits {
     width: 100%; }
-  div.dashContainer {
+  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
     display: contents !important;
     overflow-y: auto; }
   div.control-panel {
     margin-right: 0px; }
-  .dashContainer-col1 {
+  div.dashContainer-col1 {
     order: 2;
     display: block;
     padding-left: 2px;
     padding-right: 2px; }
-  .dashContainer-col2 {
+  div.dashContainer-col2 {
     display: block;
     padding-left: 2px;
     padding-right: 2px; }
@@ -290,7 +290,7 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
     width: auto; } }
 
 @media screen and (max-width: 370px) {
-  div.dashContainer {
+  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
     display: contents !important;
     overflow-x: auto;
     width: 100%; }
