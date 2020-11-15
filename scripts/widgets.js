@@ -756,6 +756,69 @@ var dataBinder = {
                     break;
             }
         }
+    },
+    parseValue: function (val, dataType) {
+        switch (dataType) {
+            case 'int':
+                return Math.floor(this.parseNumber(val));
+            case 'uint':
+                return Math.abs(this.parseNumber(val));
+            case 'float':
+            case 'real':
+            case 'double':
+            case 'decimal':
+            case 'number':
+                return this.parseNumber(val);
+            case 'date':
+                if (typeof val === 'string') return Date.parseISO(val);
+                else if (typeof val === 'number') return new Date(number);
+                else if (typeof val.getMonth === 'function') return val;
+                return undefined;
+            case 'time':
+                var dt = new Date();
+                if (typeof val === 'number') {
+                    dt.setHours(0, 0, 0);
+                    dt.addMinutes(tval);
+                    return dt;
+                }
+                else if (typeof val === 'string' && val.indexOf(':') !== -1) {
+                    var n = val.lastIndexOf(':');
+                    var min = this.parseNumber(val.substring(n));
+                    var nsp = val.substring(0, n).lastIndexOf(' ') + 1;
+                    var hrs = this.parseNumber(val.substring(nsp, n));
+                    dt.setHours(0, 0, 0);
+                    if (hrs <= 12 && val.substring(n).indexOf('p')) hrs += 12;
+                    dt.addMinutes(hrs * 60 + min);
+                    return dt;
+                }
+                break;
+            case 'duration':
+                if (typeof val === 'number') return val;
+                return Math.floor(this.parseNumber(val));
+            default:
+                return val;
+        }
+    },
+    formatValue: function (val, dataType, fmtMask, emptyMask) {
+        var v = this.parseValue(val, dataType);
+        if (typeof v === 'undefined') return emptyMask || '';
+        switch (dataType) {
+            case 'int':
+            case 'uint':
+            case 'float':
+            case 'real':
+            case 'double':
+            case 'decimal':
+            case 'number':
+                return v.format(fmtMask, emptyMask || '');
+            case 'time':
+            case 'date':
+            case 'dateTime':
+                return v.format(fmtMask, emptyMask || '');
+            case 'duration':
+                return this.formatDuration(dur);
+        }
+        return v;
     }
 };
 $.ui.position.fieldTip = {
@@ -1916,6 +1979,8 @@ $.ui.position.fieldTip = {
             self.val(o.value);
             el.attr('data-bind', o.binding);
             el.attr('data-datatype', o.dataType);
+            el.attr('data-fmtmask', o.fmtMask);
+            el.attr('data-emptyMask', o.emptyMask);
             self._applyStyles();
             el[0].label = function () { return el.find('label:first'); };
             el[0].field = function () { return el.find('.picInputField-value:first'); };
@@ -1925,6 +1990,8 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
+            el.on('change', '.picInputField-value', function (evt) { self.formatField(); });
+
 
         },
         _applyStyles: function () {
@@ -1974,15 +2041,23 @@ $.ui.position.fieldTip = {
             var val = self.val();
             return typeof val === 'undefined' || val.toString() === '';
         },
+        formatField: function () {
+            var self = this, o = self.options, el = self.element;
+            var dataType = el.attr('data-datatype') || 'string';
+            if (dataType !== 'string') {
+                var v = self.val();
+                self.val(v);
+            }
+        },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             //if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picInputField-value:first').val(val) });
-            if (el.attr('data-datatype') === 'int' && typeof val === 'undefined') {
-                var v = el.find('.picInputField-value:first').val();
-                var match = v.match(/(\d+)/g);
-                return (match) ? parseInt(match.join(''), 10) : undefined;
-            }
-            return typeof val !== 'undefined' ? el.find('.picInputField-value:first').val(val) : el.find('.picInputField-value:first').val();
+            var dataType = el.attr('data-datatype') || 'string';
+            var fld = el.find('.picInputField-value:first');
+            if (typeof val === 'undefined')
+                return dataBinder.parseValue(fld.val(), dataType);
+            else
+                fld.val(dataBinder.formatValue(val, dataType, el.attr('data-fmtmask'), el.attr('data-emptymask')));
         },
         disabled: function (val) {
             var self = this, o = self.options, el = self.element;

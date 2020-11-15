@@ -52,16 +52,42 @@
             });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Addresss', binding: 'location.address', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '5.7rem' } } });
+
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'City', binding: 'location.city', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: 'State', binding: 'location.state', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginLeft: '.7rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: 'Zip', binding: 'location.zip', inputAttrs: { maxlength: 10 }, labelAttrs: { style: { marginLeft: '.7rem' } } });
+            line = $('<div></div>').appendTo(pnl);
+            var fldLatitude = $('<div></div>').appendTo(line).inputField({
+                readOnly: true,
+                labelText: 'Latitude', binding: 'location.latitude', dataType: 'number', fmtMask: '#,##0.00####', emptyMask: '',
+                inputAttrs: { maxlength: 10, style: { textAlign: 'right' } }, labelAttrs: { style: { width: '5.7rem' } }
+            });
+            var fldLongitude = $('<div></div>').appendTo(line).inputField({
+                labelText: 'Longitude', binding: 'location.longitude', dataType: 'number', fmtMask: '#,##0.00####', emptyMask: '',
+                inputAttrs: { maxlength: 10, style: { textAlign: 'right' } }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } }
+            });
+            var btnGPS = $('<div id="btnGetGPS"></div>').appendTo(line).actionButton({ text: 'Get Location', icon: '<i class="fas fa-location-arrow"></i>' })
+                .css({ marginLeft: '1rem' })
+                .on('click', function (evt) {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        fldLatitude.val(pos.coords.latitude);
+                        fldLongitude.val(pos.coords.longitude);
+                    }, (err) => {
+                        console.log(err);
+                    });
+                });
+            var pnlType = $('div.dashOuter').attr('data-controllertype');
+            if (!('geolocation' in navigator) || window.location.protocol !== 'https:' || pnlType === 'IntelliCenter') btnGPS.hide();
+            if (pnlType === 'IntelliCenter') {
+                fldLongitude[0].disabled(true);
+                fldLatitude[0].disabled(true);
+            }
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSavePersonal"></div>').appendTo(btnPnl).actionButton({ text: 'Save Personal', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                console.log(v);
                 $.putApiService('/config/general', v, 'Saving Personal Information...', function(data, status, xhr) {
                     self.dataBind(data);
                 });
