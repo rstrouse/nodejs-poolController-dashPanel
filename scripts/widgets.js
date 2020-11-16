@@ -54,6 +54,7 @@ formatType.SUFFIXES = [
 Number.prototype.round = function (dec) { return Number(Math.round(this + 'e' + dec) + 'e-' + dec); };
 Number.prototype.format = function (format, empty) {
     if (isNaN(this)) return empty;
+    if (typeof format === 'undefined') return this.toString();
     let isNegative = this < 0;
     let tok = ['#', '0'];
     let pfx = '', sfx = '', fmt = format.replace(/[^#\.0\,]/g, '');
