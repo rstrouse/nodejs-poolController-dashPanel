@@ -123,13 +123,12 @@
                 console.log(opts);
                 var names = opts.names;
                 for (var i = 0; i < opts.maxCustomNames; i++) {
-                    var name = opts.customNames.find(elem => elem.id === i + 201);
-                    if (typeof name === 'undefined') name = { id: i + 201, name: '', desc: '' };
-                    var binding = '';
-                    if (typeof name === 'undefined') name = { id: i + 1, name: '' };
+                    var name = opts.customNames.find(elem => elem.id === i);
+                    if (typeof name === 'undefined') name = { id: i, name: ''};
                     var line = $('<div></div>').appendTo(pnl).addClass('cfgCustomName');
+                    line.attr('data-id', i);
                     $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-                    $('<div></div>').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: binding + 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
+                    $('<div></div>').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
                     dataBinder.bind(line, name);
                 }
             });
@@ -138,16 +137,17 @@
             var btnSave = $('<div id="btnSaveNames"></div>').appendTo(btnPnl).actionButton({ text: 'Save Custom Names', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var names = [];
-                el.find('div.cfgCustomName').each(function () {
-                    var name = dataBinder.fromElement($(this));
-                    name.id = name.id - 200;
-                    names.push(dataBinder.fromElement($(this)));
-                });
+                el.find('div.cfgCustomName').each(function () { names.push(dataBinder.fromElement($(this))); });
                 $.putApiService('/config/customNames', names, 'Saving Custom Names...', function (data, status, xhr) {
                     console.log({ data: data, status: status, xhr: xhr });
+
                 });
             });
-
+        },
+        dataBind: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.cfgCustomName').each(function () {
+            });
         }
     });
 })(jQuery); // Custom Names Tab

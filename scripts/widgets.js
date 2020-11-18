@@ -899,6 +899,7 @@ $.ui.position.fieldTip = {
             //el.addClass('btn');
             el[0].val = function (val) { return self.val(val); };
             if (o.bind) el.attr('data-bind', o.bind);
+            if (typeof o.style === 'object') el.css(o.style);
             div.appendTo(el);
         },
         val: function (val) {
@@ -929,6 +930,7 @@ $.ui.position.fieldTip = {
             if (o.bind) el.attr('data-bind', o.bind);
             el[0].buttonIcon = function (val) { return self.buttonIcon(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
+            if (typeof o.style === 'object') el.css(o.style);
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -985,6 +987,7 @@ $.ui.position.fieldTip = {
                     $(this).attr('data-status', !v);
                 });
             });
+            if (typeof o.style === 'object') el.css(o.style);
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -1058,7 +1061,24 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
-            $('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
+            //$('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
+            $('<label></label>').addClass('picSpinner-label').appendTo(el);
+            $('<div></div>').addClass('picSpinner-down').addClass('fld-btn-left').appendTo(el).append($('<i class="fas fa-minus"></i>'));
+            if (o.canEdit) {
+                $('<div></div>').addClass('picSpinner-value').addClass('fld-value-center').attr('contenteditable', true).appendTo(el)
+                    .on('focusout', function (evt) {
+                        console.log(evt);
+                        var val = Number($(evt.target).text().replace(/[^0-9\.\-]+/g, ''));
+                        if (isNaN(val)) self.val(o.min);
+                        else self.val(val);
+                    });
+            }
+            else {
+                $('<div></div>').addClass('picSpinner-value').addClass('fld-value-center').appendTo(el);
+            }
+            $('<div></div>').addClass('picSpinner-up').addClass('fld-btn-right').appendTo(el).append($('<i class="fas fa-plus"></i>'));
+            $('<span></span>').addClass('picSpinner-units').addClass('picUnits').attr('data-bind', o.unitsBinding).appendTo(el);
+
             if (typeof o.min === 'undefined' || o.min === null) o.min = 0;
             if (typeof o.val === 'undefined' || o.val === null) o.val = o.min;
             el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
@@ -1369,7 +1389,7 @@ $.ui.position.fieldTip = {
                 divOpt.attr('data-name', opt.name);
                 divOpt.attr('data-val', opt.val);
                 if (opt.val === o.val) divOpt.find('div.picIndicator').attr('data-status', 'selected');
-                
+                if (typeof o.style !== 'undefined') el.css(o.style);
             }
             el.on('click', 'div.picOption', function (evt) {
                 let opt = $(this);
@@ -1420,9 +1440,11 @@ $.ui.position.fieldTip = {
             el[0].selectTabById = function (tabId) { return self.selectTabById(tabId); };
             el[0].selectedTabId = function (tabId) { return self.selectedTabId(tabId); };
             el[0].addTab = function (tabObj) { return self.addTab(tabObj); };
+            if (typeof o.style !== 'undefined') el.css(o.style);
             var evt = $.Event('initTabs');
             evt.contents = function () { return self.contents(); };
             el.trigger(evt);
+
         },
         isInDOM: function () { return $.contains(this.element[0].ownerDocument.documentElement, this.element[0]); },
         selectTabById: function (tabId) {
@@ -1524,6 +1546,7 @@ $.ui.position.fieldTip = {
             }
             $('<div class="picPopoverBody"></div>').appendTo(el);
             el.find('span.picPopoverTitle').html(o.title);
+            if (typeof o.style !== 'undefined') el.css(o.style);
             //el.on('click', function (evt) { evt.preventDefault(); });
             var evt = $.Event('initPopover');
             evt.contents = function () { return el.find('div.picPopoverBody'); };
@@ -1702,7 +1725,6 @@ $.ui.position.fieldTip = {
             var fld = el.find('div.picPickList-value:first');
             var lbl = el.find('label.picPickList-label:first');
             if (typeof o.style !== 'undefined') el.css(o.style);
-
             for (var ia in o.inputAttrs) {
                 switch (ia) {
                     case 'style':
@@ -2618,6 +2640,7 @@ $.ui.position.fieldTip = {
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.style !== 'undefined') el.css(o.style);
             el.addClass('picVirtualList');
             var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(el).addClass('vlist-outer')).addClass('vlist-outer');
             $('<tr></tr>').appendTo(tbody).addClass('vlist-header-outer');
@@ -2633,6 +2656,7 @@ $.ui.position.fieldTip = {
             o.blockHeight = o.rowHeight * o.rowsPerBlock;
             o.rowsPerCluster = o.blocksPerCluster * o.rowsPerBlock;
             o.clusterHeight = o.blocksPerCluster * o.blockHeight;
+            if (typeof o.style !== 'undefined') el.css(o.style);
             divBody.on('scroll', function (evt) {
                 if (o.scrollDebounce) clearTimeout(o.scrollDebounce);
                 o.pointerSet = true;
@@ -2902,6 +2926,7 @@ $.ui.position.fieldTip = {
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picChemTank');
+            if (typeof o.style !== 'undefined') el.css(o.style);
         },
         isEmpty: function () {
             var self = this, o = self.options, el = self.element;
@@ -2967,6 +2992,7 @@ $.ui.position.fieldTip = {
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picChemLevel');
+            if (typeof o.style !== 'undefined') el.css(o.style);
         },
         isEmpty: function () {
             var self = this, o = self.options, el = self.element;
@@ -3049,7 +3075,7 @@ $.ui.position.fieldTip = {
                 var label = $('<span></span>').appendTo(btn).html(itm.labelText || itm.desc).attr('data-btnindex', i);
                 self._applyAttrs(label, o.labelAttrs);
                 if (typeof itm.labelAttrs !== 'undefined') self._applyAttrs(label, itm.labelAttrs);
-                
+                if (typeof o.style !== 'undefined') el.css(o.style);
             }
             return btn;
         },
@@ -3136,6 +3162,7 @@ $.ui.position.fieldTip = {
         },
         _initProgress: function () {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.style !== 'undefined') el.css(o.style);
             var div = $('<div></div>').appendTo(el).addClass('upload-progress');
             var line = $('<div></div>').css({ minWidth: '30rem' }).appendTo(div);
             $('<div></div>').appendTo(el).addClass('upload-file-label').text('File Upload Progress');

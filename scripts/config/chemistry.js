@@ -136,6 +136,7 @@
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chem Controller');
                     $('<div></div>').appendTo(divSelection).pickList({
                         required: true,
+                        style: { textAlign: 'left' },
                         bindColumn: 0, displayColumn: 2, labelText: 'Chem Controller Type<br/>', binding: 'type',
                         columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
                         items: chemTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
@@ -149,6 +150,216 @@
                     dlg.css({ overflow: 'visible' });
 
                 });
+            });
+        }
+    });
+    $.widget('pic.pnlChemSetpoints', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-chemcontroller-setpoints');
+            var binding = o.binding || '';
+            var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(el);
+            $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
+            var line = $('<div></div>').appendTo(grpSetpoints);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'pH Setpoint', binding: binding + 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(grpSetpoints);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'ORP Setpoint', binding: binding + 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
+
+            var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(el);
+            $('<legend></legend>').text('Index Values').appendTo(grpIndex);
+            line = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Total Alkalinity', binding: binding + 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Calcium Hardness', binding: binding + 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cyanuric Acid', binding: binding + 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+        }
+    });
+    $.widget('pic.pnlChemPhSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-chemcontroller-phsettings');
+            var sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top', paddingTop:'1rem', paddingRight:'1rem' });
+            $('<div></div>').appendTo(sec).checkbox({ labelText: 'pH Enabled', binding: 'pHEnabled' });
+            sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+
+
+            sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            var grpDose = $('<fieldset></fieldset>').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('Dosing').appendTo(grpDose);
+            line = $('<div></div>').appendTo(grpDose);
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'phDoseBy',
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Dose By',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Method', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 0, name: 'none', desc: 'No Dosing' }, { val: 1, name: 'time', desc: 'Time' }, { val: 2, name: 'volume', desc: 'Volume' }, { val: 3, name: 'volumeTime', desc: 'Volume/Time' }],
+                inputAttrs: { style: { width: '7rem' } },
+                labelAttrs: { style: { width: '4.5rem' } }
+            })
+                .on('selchanged', function (evt) {
+                    switch (evt.newItem.name) {
+                        case 'time':
+                            el.find('div.pnl-phDose-time').show();
+                            el.find('div.pnl-phDose-volume').hide();
+                            el.find('div[data-bind="phStartDelay"]').show();
+                            el.find('.pnl-phDose-mix').show();
+                            break;
+                        case 'volume':
+                            el.find('div.pnl-phDose-time').hide();
+                            el.find('div.pnl-phDose-volume').show();
+                            el.find('.pnl-phDose-mix').show();
+                            break;
+                        case 'volumeTime':
+                            el.find('div.pnl-phDose-time').show();
+                            el.find('div.pnl-phDose-volume').show();
+                            el.find('.pnl-phDose-mix').show();
+                            el.find('div[data-bind="phStartDelay"]').show();
+                            break;
+                        default:
+                            el.find('div.pnl-phDose-time').hide();
+                            el.find('div.pnl-phDose-volume').hide();
+                            el.find('.pnl-phDose-mix').hide();
+                            el.find('div[data-bind="phStartDelay"]').hide();
+                            break;
+                    }
+                });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phStartDelay', labelText: 'Start Delay', min: 0, max: 59, step:.1, fmtMask:'#,##0.#', dataType: 'number', labelAttrs: { style: { marginRight:'.15rem' } }, inputAttrs: { style: { width: '3.4rem' } }, style: { marginLeft: '.15rem' }, units: 'min' }).hide();
+
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-volume').hide();
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phDoseVolume', labelText: 'Max Vol', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width:'4.5rem' } }, inputAttrs: { style: { width: '7rem' } }, units: 'mL' });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-time').hide();
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phDoseHours', labelText: 'Max Time', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '2.1rem' } }, units:'hrs' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phDoseMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'min' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phDoseSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'sec' });
+            
+
+            var grpMix = $('<fieldset></fieldset>').addClass('pnl-phDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
+            $('<legend></legend>').text('Mixing').appendTo(grpMix);
+            line = $('<div></div>').appendTo(grpMix);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phMixHours', labelText: 'Time', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3.7rem' } }, inputAttrs: { style: { width: '2.1rem' } }, units:'hrs' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'phMixMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'min' });
+
+
+            //$('<div></div>').appendTo(line).valueSpinner('')
+        }
+    });
+    $.widget('pic.pnlChemHardware', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-chemcontroller-phsettings');
+            var sec = $('<div></div>').appendTo(el);
+            var grpConn = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('REM Connection').appendTo(grpConn);
+            line = $('<div></div>').appendTo(grpConn);
+            $('<div></div>').appendTo(line).actionButton({ text: 'Connection', icon: '<i class="fas fa-plug"></i>' });
+
+            sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            var grpPump = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('pH Pump').appendTo(grpPump);
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'phPumpType', value: 'none',
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 0, name: 'none', desc: 'No Pump' }, { val: 1, name: 'relay', desc: 'Relay Pump' }, { val: 2, name: 'ezo-pmp', desc: 'Atlas EZO-PMP' }],
+                inputAttrs: { style: { width: '8.5rem' } }
+            }).on('selchanged', function (evt) {
+                switch (evt.newItem.name) {
+                    case 'relay':
+                        el.find('div[data-bind="phMaxFlow"]').show();
+                        el.find('div.pnl-phTank-size').show();
+                        break;
+                    default:
+                        el.find('div[data-bind="phMaxFlow"]').hide();
+                        el.find('div.pnl-phTank-size').hide();
+                        break;
+                }
+            });
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: 'phMaxFlow', labelText: 'Flow', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }, units: 'mL/min'
+            }).hide();
+            line = $('<div></div>').appendTo(grpPump).addClass('pnl-phTank-size').hide();
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: 'phTankSize', labelText: 'Tank', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }
+            });
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'phTankUnits', value: 'gal',
+                bindColumn: 0, displayColumn: 0,
+                labelText: 'Tank Units',
+                columns: [{ binding: 'val', text: 'val' }, { binding: 'name', text: 'name', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 'gal', name: 'Gallons' }, { val: 'L', name: 'Liters' }, { val: 'cL', name: 'Centiliters' }, { val: 'mL', name: 'Milliliters' }, { val: 'oz', name: 'Fluid Ounces' }, { val: 'qts', name: 'Quarts' }, { val: 'pints', name: 'Pints' }],
+                inputAttrs: { style: { width: '2.25rem' } },
+                labelAttrs: { style: { display: 'none' } }
+            });
+
+            grpPump = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('ORP Pump').appendTo(grpPump);
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'orpPumpType', value:'none',
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 0, name: 'none', desc: 'No Pump' }, { val: 1, name: 'relay', desc: 'Relay Pump' }, { val: 2, name: 'ezo-pmp', desc: 'Atlas EZO-PMP' }],
+                inputAttrs: { style: { width: '8.5rem' } }
+            }).on('selchanged', function (evt) {
+                switch (evt.newItem.name) {
+                    case 'relay':
+                        el.find('div[data-bind="orpMaxFlow"]').show();
+                        el.find('div.pnl-orpTank-size').show();
+                        break;
+                    default:
+                        el.find('div[data-bind="orpMaxFlow"]').hide();
+                        el.find('div.pnl-orpTank-size').hide();
+                        break;
+                }
+            });
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: 'orpMaxFlow', labelText: 'Flow', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }, units: 'mL/min'
+            }).hide();
+            line = $('<div></div>').appendTo(grpPump).addClass('pnl-orpTank-size').hide();
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: 'orpTankSize', labelText: 'Tank', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }
+            });
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'orpTankUnits', value: 'gal',
+                bindColumn: 0, displayColumn: 0,
+                labelText: 'Tank Units',
+                columns: [{ binding: 'val', text: 'val' }, { binding: 'name', text: 'name', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 'gal', name: 'Gallons' }, { val: 'L', name: 'Liters' }, { val: 'cL', name: 'Centiliters' }, { val: 'mL', name: 'Milliliters' }, { val: 'oz', name: 'Fluid Ounces' }, { val: 'qts', name: 'Quarts' }, { val: 'pints', name: 'Pints' }],
+                inputAttrs: { style: { width: '2.25rem' } },
+                labelAttrs: { style: { display: 'none' } }
             });
         }
     });
@@ -166,7 +377,7 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-soap', style: { width: '14rem' } },
-                { binding: 'type', glyph: '', style: { width: '5rem' } }]
+                { binding: 'type', glyph: '', style: { } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -251,7 +462,7 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-flask', style: { width: '14rem' } },
-                { binding: 'type', glyph: '', style: { width: '5rem' } }]
+                { binding: 'type', glyph: '', style: { } }]
             });
 
             var pnl = acc.find('div.picAccordian-contents');
@@ -279,25 +490,8 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
                 items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
-
-            //line = $('<div></div>').appendTo(pnl);
-
             $('<hr></hr>').appendTo(pnl);
-            var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
-            $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
-            line = $('<div></div>').appendTo(grpSetpoints);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'pH Setpoint', binding: binding + 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
-            line = $('<div></div>').appendTo(grpSetpoints);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'ORP Setpoint', binding: binding + 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
-
-            var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
-            $('<legend></legend>').text('Index Values').appendTo(grpIndex);
-            line = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Total Alkalinity', binding: binding + 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-            line = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Calcium Hardness', binding: binding + 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-            line = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cyanuric Acid', binding: binding + 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(pnl).addClass('pnl-chemcontroller-type');
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Controller', icon: '<i class="fas fa-save"></i>' });
@@ -347,6 +541,39 @@
             cols[0].elText().text(obj.name);
             var type = o.types.find(elem => elem.val === obj.type);
             cols[1].elText().text(typeof type !== 'undefined' ? type.desc : 'Controller');
+            var ctype = el.attr('data-controllertype');
+            if (el.attr('data-controllertype') !== obj.type) {
+                var pnl = el.find('div.pnl-chemcontroller-type');
+                pnl.empty();
+                if (type.name !== 'rem') {
+                    $('<div></div>').appendTo(pnl).pnlChemSetpoints();
+                }
+                else {
+                    console.log(obj);
+                    var tabBar = $('<div></div>').appendTo(pnl).tabBar();
+                    var tab = tabBar[0].addTab({ id: 'tabSetpoints', text: 'Setpoints' });
+                    $('<div></div>').appendTo(tab).pnlChemSetpoints();
+                    tab = tabBar[0].addTab({ id: 'tabPhSettings', text: 'pH Settings' });
+                    $('<div></div>').appendTo(tab).pnlChemPhSettings();
+                    tabBar[0].addTab({ id: 'tabORPSettings', text: 'ORP Settings' });
+                    tabBar[0].addTab({ id: 'tabAlarms', text: 'Alarms' });
+                    tab = tabBar[0].addTab({ id: 'tabHardware', text: 'Hardware' });
+                    $('<div></div>').appendTo(tab).pnlChemHardware();
+                    if (typeof obj.orpPumpType === 'undefined' || typeof obj.phPumpType === 'undefined' || obj.id <= 0)
+                        tabBar[0].selectTabById('tabHardware');
+                    else
+                        tabBar[0].selectTabById('tabSetpoints');
+                    obj.orpPumpType = typeof obj.orpPumpType !== 'undefined' ? obj.orpPumpType : 0;
+                    obj.phPumpType = typeof obj.phPumpType !== 'undefined' ? obj.phPumpType : 0;
+                    obj.phDoseBy = typeof obj.phDoseBy !== 'undefined' ? obj.phDoseBy : 0;
+                    obj.orpDoseBy = typeof obj.phDoseBy !== 'undefined' ? obj.phDoseBy : 0;
+                    obj.phStartDelay = typeof obj.phStartDelay !== 'undefined' ? obj.phStartDelay : 0.5;
+                    obj.orpStartDelay = typeof obj.orpStartDelay !== 'undefined' ? obj.orpStartDelay : 0.5;
+                    obj.phMixHours = typeof obj.phMixHours !== 'undefined' ? obj.phMixHours : 1;
+                    obj.orpMixHours = typeof obj.orpMixHours !== 'undefined' ? obj.orpMixHours : 1;
+
+                }
+            }
             el.attr('data-controllertype', obj.type);
             dataBinder.bind(el, obj);
         }

@@ -26,7 +26,8 @@
     "services": {
       "protocol": "http://",
       "ip": "127.0.0.1",
-      "port": 4200
+      "port": 4200,
+      "useProxy": false
     },
     "socket": {
       "sendLogMessages":  false

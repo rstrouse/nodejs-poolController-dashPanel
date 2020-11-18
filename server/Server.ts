@@ -7,13 +7,12 @@ import { logger } from "../server/logger/Logger";
 import * as http2 from "http2";
 import * as http from "http";
 import * as https from "https";
-import { outQueues } from "./queues/outboundQueue";
 import * as extend from 'extend';
 import { ApiError } from './Errors';
 import { UploadRoute, BackgroundUpload } from "./upload/upload";
-import { MessageDocs } from "./messages/messages";
 import { setTimeout } from "timers";
-
+import { ConfigRoute } from "./api/Config";
+import { MessagesRoute } from "./api/Messages";
 
 // This class serves data and pages for
 export class WebServer {
@@ -73,7 +72,7 @@ export class HttpServer extends ProtoServer {
                 var cfgHttps = config.getSection('web.server.https');
                 this.app.get('*', (res: express.Response, req: express.Request) => {
                     let host = res.get('host');
-                    host = host.replace(/:\d+$/, ':' + cfgHttps.port);
+                    host = typeof cfgHttps.port !== 'undefined' ? host.replace(/:\d+$/, ':' + cfgHttps.port) : host;
                     return res.redirect('https://' + host + req.url);
                 });
             }
@@ -117,104 +116,104 @@ export class HttpServer extends ProtoServer {
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
             this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
-            this.app.get('/config/findPoolControllers', async (req, res, next) => {
-                let prom = new Promise((resolve, reject) => {
-                    let ssdpClient = new Client({});
-                    let servers = [];
-                    try {
-                        ssdpClient.on('response', (headers, statusCode, rinfo) => {
-                            if (statusCode === 200) {
-                                let url = new URL(headers.LOCATION);
-                                if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
-                                    servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname:url.hostname, port: url.port, hash: url.hash });
-                                }
-                            }
-                        });
-                        ssdpClient.search('urn:schemas-upnp-org:device:PoolController:1');
-                        setTimeout(() => {
-                            resolve();
-                            ssdpClient.stop(); console.log('done searching for poolController');
-                            return res.status(200).send(servers);
-                        }, 5000);
-                    }
-                    catch (err) { reject(err); };
-                });
-            });
-
-
-            this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
-            this.app.put('/config/:section', (req, res) => {
-                try {
-                    config.setSection(req.params.section, req.body);
-                }
-                catch (err) { return res.status(400).send(new Error(err)); }
-                return res.status(200).send(config.getSection(req.params.section));
-            });
-            this.app.put('/messages/queue', async (req, res, next) => {
-                try {
-                    console.log(`request:  ${JSON.stringify(req.body)}...`);
-                    let queue = await outQueues.saveQueue(req.body);
-                    return res.status(200).send(queue);
-                }
-                catch (err) {
-                    next(err);
-                }
-            });
-            this.app.get('/options', (req, res) => {
-                let opts = {
-                    web: config.getSection('web'),
-                    backgrounds: BackgroundUpload.getBackgrounds()
-                }
-                return res.status(200).send(opts);
-            });
-            this.app.get('/messages/queue/:id', (req, res, next) => {
-                try {
-                    console.log(`Getting Queue request:  ${JSON.stringify(req.params)}...`);
-                    let id = parseInt(req.params.id, 10);
-                    let queue = outQueues.find(q => { return q.id === id });
-                    if (typeof queue === 'undefined') next(new ApiError(`Outbound queue id:${id} not found.`, 100, 404));
-                    let out = extend(true, {}, queue);
-                    out.messages = queue.loadMessages();
-                    return res.status(200).send(out);
-                }
-                catch (err) { next(err); }
-            });
-            this.app.get('/messages/queues', async (req, res, next) => {
-                try {
-                    outQueues.loadDescriptors();
-                    console.log(`request:  ${JSON.stringify(req.body)}...`);
-                    return res.status(200).send(outQueues);
-                }
-                catch (err) {
-                    next(err);
-                }
-            });
-            this.app.get('/messages/docs/constants', (req, res, next) => {
-                try {
-                    return res.status(200).send(MessageDocs.getConstants());
-                }
-                catch (err) {
-                    next(err);
-                }
-
-            });
-            this.app.get('/messages/docs/keyBytes', (req, res, next) => {
-                try {
-                    return res.status(200).send(MessageDocs.getKeyBytes());
-                }
-                catch (err) {
-                    next(err);
-                }
-            });
-            this.app.get('/messages/docs/:key', (req, res, next) => {
-                try {
-                    return res.status(200).send(MessageDocs.findMessageByKey(req.params.key) || { docKey: req.params.key });
-                }
-                catch (err) {
-                    next(err);
-                }
-            });
+            ConfigRoute.initRoutes(this.app);
+            MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);
+            //this.app.get('/config/findPoolControllers', async (req, res, next) => {
+            //    let prom = new Promise((resolve, reject) => {
+            //        let ssdpClient = new Client({});
+            //        let servers = [];
+            //        try {
+            //            ssdpClient.on('response', (headers, statusCode, rinfo) => {
+            //                if (statusCode === 200) {
+            //                    let url = new URL(headers.LOCATION);
+            //                    if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
+            //                        servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname:url.hostname, port: url.port, hash: url.hash });
+            //                    }
+            //                }
+            //            });
+            //            ssdpClient.search('urn:schemas-upnp-org:device:PoolController:1');
+            //            setTimeout(() => {
+            //                resolve();
+            //                ssdpClient.stop(); console.log('done searching for poolController');
+            //                return res.status(200).send(servers);
+            //            }, 5000);
+            //        }
+            //        catch (err) { reject(err); };
+            //    });
+            //});
+            //this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
+            //this.app.put('/config/:section', (req, res) => {
+            //    try {
+            //        config.setSection(req.params.section, req.body);
+            //    }
+            //    catch (err) { return res.status(400).send(new Error(err)); }
+            //    return res.status(200).send(config.getSection(req.params.section));
+            //});
+            //this.app.get('/options', (req, res) => {
+            //    let opts = {
+            //        web: config.getSection('web'),
+            //        backgrounds: BackgroundUpload.getBackgrounds()
+            //    }
+            //    return res.status(200).send(opts);
+            //});
+            //this.app.put('/messages/queue', async (req, res, next) => {
+            //    try {
+            //        console.log(`request:  ${JSON.stringify(req.body)}...`);
+            //        let queue = await outQueues.saveQueue(req.body);
+            //        return res.status(200).send(queue);
+            //    }
+            //    catch (err) {
+            //        next(err);
+            //    }
+            //});
+            //this.app.get('/messages/queue/:id', (req, res, next) => {
+            //    try {
+            //        console.log(`Getting Queue request:  ${JSON.stringify(req.params)}...`);
+            //        let id = parseInt(req.params.id, 10);
+            //        let queue = outQueues.find(q => { return q.id === id });
+            //        if (typeof queue === 'undefined') next(new ApiError(`Outbound queue id:${id} not found.`, 100, 404));
+            //        let out = extend(true, {}, queue);
+            //        out.messages = queue.loadMessages();
+            //        return res.status(200).send(out);
+            //    }
+            //    catch (err) { next(err); }
+            //});
+            //this.app.get('/messages/queues', async (req, res, next) => {
+            //    try {
+            //        outQueues.loadDescriptors();
+            //        console.log(`request:  ${JSON.stringify(req.body)}...`);
+            //        return res.status(200).send(outQueues);
+            //    }
+            //    catch (err) {
+            //        next(err);
+            //    }
+            //});
+            //this.app.get('/messages/docs/constants', (req, res, next) => {
+            //    try {
+            //        return res.status(200).send(MessageDocs.getConstants());
+            //    }
+            //    catch (err) {
+            //        next(err);
+            //    }
+
+            //});
+            //this.app.get('/messages/docs/keyBytes', (req, res, next) => {
+            //    try {
+            //        return res.status(200).send(MessageDocs.getKeyBytes());
+            //    }
+            //    catch (err) {
+            //        next(err);
+            //    }
+            //});
+            //this.app.get('/messages/docs/:key', (req, res, next) => {
+            //    try {
+            //        return res.status(200).send(MessageDocs.findMessageByKey(req.params.key) || { docKey: req.params.key });
+            //    }
+            //    catch (err) {
+            //        next(err);
+            //    }
+            //});
 
             // This is last so that it is picked up when we have an error.
             this.app.use((error, req, res, next) => {
