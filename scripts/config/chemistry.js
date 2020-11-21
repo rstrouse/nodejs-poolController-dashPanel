@@ -4,6 +4,17 @@
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._buildControls();
+            el[0].getREMServers = function () { return self.getREMServers(); };
+        },
+        getREMServers: function () {
+            var self = this, o = self.options, el = self.element;
+            try {
+                return new Promise((resolve, reject) => {
+                    $.getApiService('/config/options/rem', null, function (opts, status, xhr) {
+                        resolve(opts);
+                    });
+                });
+            } catch (err) { console.log(err); }
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
@@ -262,6 +273,12 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var rem;
+            el.parents('div.picConfigCategory.cfgChemControllers').each(function () {
+                var rem = (async () => { let r = await this.getREMServers(); console.log(r); return r; })();
+                console.log(rem);
+                //console.log(k);
+            });
             el.addClass('pnl-chemcontroller-phsettings');
             var sec = $('<div></div>').appendTo(el);
             var grpConn = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);

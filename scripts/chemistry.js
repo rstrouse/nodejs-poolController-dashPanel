@@ -363,6 +363,12 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
+            el.find('div.picChemLevel[data-chemtype="PH"]').each(function () {
+                this.val(data.pHLevel);
+            });
+            el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
+                this.val(data.orpLevel);
+            });
             self.dataBind(data);
         },
         dataBind: function (data) {
@@ -374,6 +380,8 @@
             var divLine = $('<div></div>').appendTo(el);
             var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
             var data = o;
+            $('<input type="hidden"></input>').appendTo(el).attr('data-dataType', 'int').attr('data-bind', 'id');
+            el.addClass('pnl-chemcontroller-settings');
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
             divLine = $('<div></div>').appendTo(grpSetpoints);
             $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
@@ -410,12 +418,15 @@
             // A good balanced saturationIndex is between +- 0.3
 
             divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
-            $('<div></div>').chemTank({ chemType: 'acid', labelText: 'Acid Tank' }).css({ width: '80px', height: '120px' }).attr('data-bind', 'acidTankLevel').attr('data-datatype', 'int').appendTo(divLine);
-            $('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank' }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orpTankLevel').attr('data-datatype', 'int').appendTo(divLine);
+            $('<div></div>').chemTank({
+                chemType: 'acid', labelText: 'Acid Tank',
+                max: data.acidTankCapacity
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'acidTankLevel').attr('data-datatype', 'int').appendTo(divLine);
+            $('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank', max: data.orpTankCapacity }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orpTankLevel').attr('data-datatype', 'int').appendTo(divLine);
             divLine = $('<div></div>').appendTo(grpLevels);
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
-                format: '#,##0.0',
+                fmtMask: '#,##0.##',
                 scales: [
                     { class: 'chemLevel-lred', min: 6.7, max: 7.0, labelEnd: '7.0' },
                     { class: 'chemLevel-lyellow', min: 7.0, max: 7.2, labelEnd: '7.2' },
@@ -430,7 +441,7 @@
             divLine = $('<div></div>').appendTo(grpLevels);
             orpLvl = $('<div></div>').chemLevel({
                 labelText: 'ORP', chemType: 'ORP', min: 400, max: 1000,
-                format: '#,##0',
+                fmtMask: '#,##0.##',
                 scales: [
                     { class: 'chemLevel-lred', min: 400, max: 500, labelEnd: '500' },
                     { class: 'chemLevel-lyellow', min: 500, max: 650, labelEnd: '650' },

@@ -3017,7 +3017,7 @@ $.ui.position.fieldTip = {
                 var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
                 console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
                 pin.css({ left: left + '%' });
-                pin.find('div.chemLevel-value-label').text(val.format(o.format));
+                pin.find('div.chemLevel-value-label').text(val.format(o.fmtMask));
                 o.value = val;
             }
             else return o.value;

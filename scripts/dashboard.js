@@ -125,6 +125,7 @@
         },
         _initSockets: function () {
             var self = this, o = self.options, el = self.element;
+            console.log({ msg: 'Checking Url', url: o.apiServiceUrl });
             o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000 });
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
@@ -251,6 +252,19 @@
             o.socket.on('chemController', function (data) {
                 console.log({ evt: 'chemController', data: data });
                 el.find('div.picChemistry').each(function () { this.setChemControllerData(data); });
+                el.find('div.pnl-chemcontroller-settings').each(function () {
+                    this.setEquipmentData(data);
+                    //var pnlChem = $(this);
+                    //pnlChem.find('div.picChemLevel[data-chemtype="PH"]').each(function () {
+                    //    this.val(data.pHLevel);
+                    //});
+                    //pnlChem.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
+                    //    this.val(data.orpLevel);
+                    //});
+
+
+                });
+
             });
 
             o.socket.on('heater', function (data) {
