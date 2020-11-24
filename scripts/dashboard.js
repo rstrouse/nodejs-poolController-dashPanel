@@ -252,18 +252,7 @@
             o.socket.on('chemController', function (data) {
                 console.log({ evt: 'chemController', data: data });
                 el.find('div.picChemistry').each(function () { this.setChemControllerData(data); });
-                el.find('div.pnl-chemcontroller-settings').each(function () {
-                    this.setEquipmentData(data);
-                    //var pnlChem = $(this);
-                    //pnlChem.find('div.picChemLevel[data-chemtype="PH"]').each(function () {
-                    //    this.val(data.pHLevel);
-                    //});
-                    //pnlChem.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
-                    //    this.val(data.orpLevel);
-                    //});
-
-
-                });
+                el.find(`div.pnl-chemcontroller-settings[data-eqid="${data.id}"]`).each(function () { this.setEquipmentData(data); });
 
             });
 

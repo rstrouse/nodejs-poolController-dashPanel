@@ -345,8 +345,8 @@
             div.attr('data-status', o.currentOutput > 0 ? 'on' : 'off');
 
             $('<label class="picControllerName" data-bind="name"></label>').appendTo(el);
-            $('<span class="pHLevel picData"><label class="picInline-label">pH</label><span class="phLevel" data-bind="pHLevel" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="----"></span></span>').appendTo(el);
-            $('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orpLevel"></span></span>').appendTo(el);
+            $('<span class="pHLevel picData"><label class="picInline-label">pH</label><span class="phLevel" data-bind="ph.probe.level" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="----"></span></span>').appendTo(el);
+            $('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orp.probe.level"></span></span>').appendTo(el);
             $('<span class="lsiIndex picData"><label class="picInline-label">Balance</label><span class="saturationIndex" data-bind="saturationIndex"></span></span>').appendTo(el);
 
             //$('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc"></span></div>').appendTo(el);
@@ -363,11 +363,11 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            el.find('div.picChemLevel[data-chemtype="PH"]').each(function () {
-                this.val(data.pHLevel);
+            el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
+                this.val(data.ph.probe.level);
             });
             el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
-                this.val(data.orpLevel);
+                this.val(data.orp.probe.level);
             });
             self.dataBind(data);
         },
@@ -380,19 +380,19 @@
             var divLine = $('<div></div>').appendTo(el);
             var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
             var data = o;
-            $('<input type="hidden"></input>').appendTo(el).attr('data-dataType', 'int').attr('data-bind', 'id');
             el.addClass('pnl-chemcontroller-settings');
+            el.attr('data-eqid', data.id);
+            $('<input type="hidden"></input>').appendTo(el).attr('data-dataType', 'int').attr('data-bind', 'id');
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
             divLine = $('<div></div>').appendTo(grpSetpoints);
             $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
-            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'pH', binding: 'pHSetpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
                 .on('change', function (e) {
                     el.find('div.picChemLevel[data-chemtype=pH').each(function () {
                         this.target(e.value);
                     });
                 });
-
-            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'ORP', binding: 'orpSetpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '2rem' } } })
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'ORP', binding: 'orp.setpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '2rem' } } })
                 .on('change', function (e) {
                     el.find('div.picChemLevel[data-chemtype=ORP').each(function () {
                         this.target(e.value);
@@ -420,9 +420,12 @@
             divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
             $('<div></div>').chemTank({
                 chemType: 'acid', labelText: 'Acid Tank',
-                max: data.acidTankCapacity
-            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'acidTankLevel').attr('data-datatype', 'int').appendTo(divLine);
-            $('<div></div>').chemTank({ chemType: 'orp', labelText: 'ORP Tank', max: data.orpTankCapacity }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orpTankLevel').attr('data-datatype', 'int').appendTo(divLine);
+                max: data.ph.tank.capacity || 0
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'ph.tank.level').attr('data-datatype', 'number').appendTo(divLine);
+            $('<div></div>').chemTank({
+                chemType: 'orp', labelText: 'ORP Tank',
+                max: data.orp.tank.capacity || 0
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orp.tank.level').attr('data-datatype', 'number').appendTo(divLine);
             divLine = $('<div></div>').appendTo(grpLevels);
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
@@ -435,8 +438,8 @@
                     { class: 'chemLevel-rred', min: 7.8, max: 8.1, labelEnd: '' }
                 ]
             }).appendTo(divLine);
-            pHLvl[0].target(data.pHSetpoint);
-            pHLvl[0].val(data.pHLevel);
+            pHLvl[0].target(data.ph.setpoint);
+            pHLvl[0].val(data.ph.probe.level);
 
             divLine = $('<div></div>').appendTo(grpLevels);
             orpLvl = $('<div></div>').chemLevel({
@@ -450,8 +453,8 @@
                     { class: 'chemLevel-rred', min: 900, max: 1000, labelEnd: '' }
                 ]
             }).appendTo(divLine);
-            orpLvl[0].target(data.orpSetpoint);
-            orpLvl[0].val(data.orpLevel);
+            orpLvl[0].target(data.orp.setpoint);
+            orpLvl[0].val(data.orp.probe.level);
             self.setEquipmentData(data);
             el.on('change', 'div.picValueSpinner', function () {
                 var cont = dataBinder.fromElement(el);

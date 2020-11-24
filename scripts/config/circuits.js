@@ -128,7 +128,7 @@
                     var line = $('<div></div>').appendTo(pnl).addClass('cfgCustomName');
                     line.attr('data-id', i);
                     $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-                    $('<div></div>').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: 'name', inputAttrs: { maxlength: 10, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
+                    $('<div></div>').appendTo(line).inputField({ labelText: 'Custom Name #' + name.id, binding: 'name', inputAttrs: { maxlength: 11, style: { width: '10rem' } }, labelAttrs: { style: { marginRight: '.25rem', width:'9.5rem' } } });
                     dataBinder.bind(line, name);
                 }
             });

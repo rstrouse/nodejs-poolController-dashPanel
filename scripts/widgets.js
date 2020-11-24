@@ -623,6 +623,7 @@ var dataBinder = {
         });
     },
     parseNumber: function (val) {
+        if (typeof val === 'undefined') return val;
         if (typeof val === 'number') return val;
         var tval = val.replace(/[^0-9\.\-]+/g, '');
         return tval.indexOf('.') !== -1 ? parseFloat(tval) : parseInt(tval, 10);
@@ -2312,7 +2313,17 @@ $.ui.position.fieldTip = {
         val: function (val) {
             var self = this, o = self.options, el = self.element;
             var cb = el.find('input.picCheckbox-value:first');
-            if (typeof val !== 'undefined') cb.prop('checked', makeBool(val));
+            if (typeof val !== 'undefined') {
+                var oldVal = cb.is(':checked');
+                cb.prop('checked', makeBool(val));
+                if (makeBool(val) !== makeBool(oldVal)) {
+                    console.log('Triggering checkbox');
+                    evt = $.Event('changed');
+                    evt.newVal = makeBool(val);
+                    evt.oldVal = !evt.newVal;
+                    el.trigger(evt);
+                }
+            }
             else return cb.is(':checked');
         }
     });
@@ -2920,7 +2931,8 @@ $.ui.position.fieldTip = {
 
             if (o.required === true) self.required(true);
             if (o.binding) el.attr('data-bind', o.binding);
-            self.val(o.value);
+            
+            self.val(o.value || o.min);
             self._applyStyles();
         },
         _applyStyles: function () {
@@ -2937,7 +2949,8 @@ $.ui.position.fieldTip = {
             if (typeof val !== 'undefined') {
                 var tot = o.max - o.min;
                 // Calculate the left value.
-                var pct = Math.max(0, Math.min(100, ((val - o.min) / (tot)) * 100));
+                
+                var pct = tot !== 0 ? Math.max(0, Math.min(100, ((val - o.min) / (tot)) * 100)) : 0;
                 var liquid = el.find('div.chemTank-liquid');
                 //console.log(liquid);
                 liquid.find('div.chemTank-level-top').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)' });
@@ -3015,9 +3028,9 @@ $.ui.position.fieldTip = {
                 var maxval = o.scales[o.scales.length - 1].max;
                 // Calculate the left value.
                 var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
-                console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
+                //console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
                 pin.css({ left: left + '%' });
-                pin.find('div.chemLevel-value-label').text(val.format(o.fmtMask));
+                pin.find('div.chemLevel-value-label').text(typeof val === 'number' ? val.format(o.fmtMask) : o.emptyMask);
                 o.value = val;
             }
             else return o.value;
