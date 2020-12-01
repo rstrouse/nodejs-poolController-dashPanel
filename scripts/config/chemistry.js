@@ -214,8 +214,12 @@
                 items: o.phSupplyTypes,
                 inputAttrs: { style: { width: '5.1rem' } },
                 labelAttrs: { style: { width: '3rem' } }
+            })
+                .on('selchanged', function (evt) {
+                    if (evt.newItem.name === 'acid') el.find('.pnl-acidType').show();
+                    else el.find('.pnl-acidType').hide();
 
-            });
+                });
             $('<div></div>').appendTo(line).pickList({
                 binding: 'ph.dosingMethod',
                 bindColumn: 0, displayColumn: 2,
@@ -253,6 +257,17 @@
                             break;
                     }
                 });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-acidType').hide();
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'ph.acidType',
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Using',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Acid Type', style: { whiteSpace: 'nowrap' } }],
+                items: o.acidTypes,
+                units: 'muriatic acid',
+                inputAttrs: { style: { width: '10rem' } },
+                labelAttrs: { style: { width: '3rem' } }
+            });
 
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-delay').hide();
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.startDelay', labelText: 'Delay', min: 0, max: 59, step:.1, fmtMask:'#,##0.#', dataType: 'number', labelAttrs: { style: { width:'3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' });

@@ -356,7 +356,7 @@ div.picPump, div.picChlorinator, div.picSchedule, div.picChemController {
     cursor:pointer;
 }
     div.picChlorinator > label.picChlorinatorName,
-    div.picChemController > label.picControllerName {
+    div.picChemController label.picControllerName {
         display: inline-block;
         text-overflow: ellipsis;
         display: inline-block;
@@ -365,6 +365,22 @@ div.picPump, div.picChlorinator, div.picSchedule, div.picChemController {
         white-space: nowrap;
         overflow-x: hidden;
         vertical-align: bottom;
+    }
+    div.picChemController label.picInline-label {
+        display: inline-block;
+        padding-right:.25rem;
+        min-width:0;
+        width:auto;
+    }
+    div.picChemController div.chemcontroller-status {
+        padding-left:1rem;
+    }
+    div.picChemController div.chemcontroller-warning {
+        padding-left:1rem;
+    }
+    div.picChemController div.chemcontroller-warning > i {
+        color: red;
+        padding-right:.25rem;
     }
 div.picIndicator {
     width: 1em;
@@ -627,11 +643,13 @@ div.picFieldTip-message {
     -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
     -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
 }
+div.picStaticField,
 div.picInputField {
     user-select: none;
     display: inline-block;
     line-height: 1.4rem;
 }
+    div.picStaticField > label,
     div.picInputField > label {
         display: inline-block;
         padding-right: .25rem;
@@ -645,6 +663,7 @@ div.picInputField {
         resize:none;
         line-height:1.4em;
     }
+    div.picStaticField-value, 
     div.picInputField > textarea,
     div.picInputField > input {
         line-height: 1.4em;

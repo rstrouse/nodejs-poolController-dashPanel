@@ -212,21 +212,83 @@
             self._buildControls();
             el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
         },
+        setDosingStatus: function (stat, chem, type) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof chem === 'undefined' || typeof chem.dosingStatus === 'undefined')
+                stat.hide();
+            else {
+                switch (chem.dosingStatus.name) {
+                    case 'dosing':
+                        stat.empty();
+                        $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${typeof chem.doseVolume !== 'undefined' && chem.doseVolume > 0 ? chem.doseVolume.format('#, ##0.##') + 'mL ' : ''}${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                        if (chem.delayTimeRemaining > 0) $('<span></span>').appendTo(stat).css({ float: 'right' }).text(`Delay: ${dataBinder.formatDuration(chem.delayTimeRemaining)}`);
+                        stat.show();
+                        break;
+                    case 'mixing':
+                        stat.empty();
+                        $('<span></span>').appendTo(stat).text(`Mixing ${type}: ${dataBinder.formatDuration(chem.mixTimeRemaining)}`);
+                        stat.show();
+                        break;
+                    default:
+                        stat.hide();
+                        break;
+                }
+            }
+        },
+        setWarnings: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var arr = [];
+            // Put together the list of warnings.
+            if (typeof data.status !== 'undefined' && data.status.val > 0) arr.push(data.status);
+            if (typeof data.warnings !== 'undefined') {
+                var warns = data.warnings;
+                if (typeof warns.waterChemistry !== 'undefined' && warns.waterChemistry.val > 0) arr.push(warns.waterChemistry);
+                if (typeof warns.chlorinatorCommError !== 'undefined' && warns.chlorinatorCommError.val > 0) arr.push(warns.chlorinatorCommError);
+                if (typeof warns.invalidSetup !== 'undefined' && warns.invalidSetup.val > 0 && warns.invalidSetup.name !== 'ok') arr.push(warns.invalidSetup);
+                if (typeof warns.pHDailyLimitReached !== 'undefined' && warns.pHDailyLimitReached.val > 0) arr.push(warns.pHDailyLimitReached);
+                if (typeof warns.pHLockout !== 'undefined' && warns.pHLockout.val > 0) arr.push(warns.pHLockout);
+                if (typeof warns.orpDailyLimitReached !== 'undefined' && warns.orpDailyLimitReached.val > 0) arr.push(warns.orpDailyLimitReached);
+            }
+            if (typeof data.alarms !== 'undefined') {
+                var alarms = data.alarms;
+                if (typeof alarms.flow !== 'undefined' && alarms.flow.val > 0) arr.push(alarms.flow);
+                if (typeof alarms.pH !== 'undefined' && alarms.pH.val > 0) arr.push(alarms.pH);
+                if (typeof alarms.pHTank !== 'undefined' && alarms.pHTank.val > 0) arr.push(alarms.pHTank);
+                if (typeof alarms.orp !== 'undefined' && alarms.orp.val > 0) arr.push(alarms.orp);
+                if (typeof alarms.orpTank !== 'undefined' && alarms.orpTank.val > 0) arr.push(alarms.orpTank);
+            }
+            var divWarnings = el.find('div.chemcontroller-warnings');
+            divWarnings.empty();
+            if (arr.length > 0) divWarnings.show();
+            else divWarnings.hide();
+            for (var i = 0; i < arr.length; i++) {
+                var w = arr[i];
+                var warn = $('<div></div>').addClass('chemcontroller-warning').appendTo(divWarnings);
+                // Add in the icon.
+                $('<i></i>').addClass('fas').addClass('fa-exclamation-triangle').appendTo(warn);
+                $('<span></span>').addClass('chemcontroller-warning-text').text(w.desc).appendTo(warn);
+            }
+        },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
                 if (data.isActive === false) el.hide();
                 else el.show();
                 el.attr('data-active', data.isActive === false ? false : true);
-                el.find('div.picChemControllerState').attr('data-status', data.currentOutput > 0 ? 'on' : 'off');
+                el.find('div.picChemControllerState').attr('data-status', data.ph.pump.isDosing || data.orp.pump.isDosing ? 'on' : 'off');
                 dataBinder.bind(el, data);
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
                 else el.attr('data-status', '');
             }
             catch (err) { console.log({ m: 'Error setting chem controller data', err: err, chlor: data }); }
             var pnl = el.parents('div.picChemistry:first');
-            if (pnl.find('div.picChlorinator[data-active=true], div.picChemController[data-active=true]').length > 0)
+            if (pnl.find('div.picChlorinator[data-active=true], div.picChemController[data-active=true]').length > 0) {
                 pnl.show();
+                // Now lets add in our status.
+                self.setDosingStatus(el.find('div.chemcontroller-status-ph'), data.ph, 'pH');
+                self.setDosingStatus(el.find('div.chemcontroller-status-orp'), data.orp, 'ORP');
+                self.setWarnings(data);
+            }
             else
                 pnl.hide();
         },
@@ -336,20 +398,30 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            var div = $('<div class="picChemControllerState picIndicator"></div>');
             el.addClass('picChemController');
-
             el.attr('data-id', o.id);
-            div.appendTo(el);
-            div.attr('data-ison', o.currentOutput > 0);
-            div.attr('data-status', o.currentOutput > 0 ? 'on' : 'off');
 
-            $('<label class="picControllerName" data-bind="name"></label>').appendTo(el);
-            $('<span class="pHLevel picData"><label class="picInline-label">pH</label><span class="phLevel" data-bind="ph.probe.level" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="----"></span></span>').appendTo(el);
-            $('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orp.probe.level"></span></span>').appendTo(el);
-            $('<span class="lsiIndex picData"><label class="picInline-label">Balance</label><span class="saturationIndex" data-bind="saturationIndex"></span></span>').appendTo(el);
+            var line = $('<div></div>').appendTo(el);
+            var div = $('<div class="picChemControllerState picIndicator"></div>');
+            div.appendTo(line);
+            $('<label></label>').addClass('picControllerName').attr('data-bind', 'name').appendTo(line);
+            let span = $('<span></span>').addClass('pHLevel').addClass('picData').appendTo(line);
+            $('<label></label>').addClass('picInline-label').text('pH').appendTo(line);
+            $('<span></span>').addClass('phLevel').attr('data-bind', 'ph.probe.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0#').attr('data-emptymask', '-.-').appendTo(line);
+            span = $('<span></span>').addClass('orpLevel').addClass('picData').appendTo(line);
+            $('<label></label>').addClass('picInline-label').text('ORP').appendTo(line);
+            $('<span></span>').addClass('phLevel').attr('data-bind', 'orp.probe.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-emptymask', '-.-').appendTo(line);
+            span = $('<span></span>').addClass('lsiIndex').addClass('picData').appendTo(line);
+            $('<label></label>').addClass('picInline-label').text('Bal').appendTo(line);
+            $('<span></span>').addClass('saturationIndex').attr('data-bind', 'saturationIndex').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-emptymask', '-.-').appendTo(line);
+
+            //$('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orp.probe.level"></span></span>').appendTo(line);
+            //$('<span class="lsiIndex picData"><label class="picInline-label">Bal</label><span class="saturationIndex" data-bind="saturationIndex"></span></span>').appendTo(line);
 
             //$('<div class="picChlorStatus picData"><span class="picStatus" data-bind="status.desc"></span></div>').appendTo(el);
+            $('<div></div>').addClass('chemcontroller-status').addClass('chemcontroller-status-ph').appendTo(el).hide();
+            $('<div></div>').addClass('chemcontroller-status').addClass('chemcontroller-status-orp').appendTo(el).hide();
+            $('<div></div>').addClass('chemcontroller-warnings').appendTo(el).hide();
             self.setEquipmentData(o);
             self._buildPopover();
         }
@@ -374,6 +446,70 @@
         dataBind: function (data) {
             var self = this, o = self.options, el = self.element;
             dataBinder.bind(el, data);
+        },
+        _createTankAttributesDialog(chemType, tankElem) {
+            var self = this, o = self.options, el = self.element;
+            var tank = tankElem[0].tank();
+            var dlg = $.pic.modalDialog.createDialog('dlgChemTankAttributes', {
+                width: '447px',
+                height: 'auto',
+                title: `${chemType} Supply Tank Level`,
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Save', icon: '<i class="fas fa-save"></i>',
+                        click: function (e) {
+                            var t = { id: parseInt(el.attr('data-eqid'), 10) };
+                            t[chemType.toLowerCase()] = { tank: dataBinder.fromElement(dlg) };
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemController', t, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Set the current level for the tank.  As ${chemType} is pumped from the tank the level will fall.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+
+            var capacity = $('<div></div>').appendTo(line).staticField({
+                labelText: 'Capacity', dataType: 'number',
+                units: tank.units, value: tank.capacity, fmtMask: '#,##0.###',
+                labelAttrs: { style: { width: '4.7rem' } }
+            });
+            line = $('<div></div>').appendTo(divPnl);
+            var qty = $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Level', binding: 'level', min: 0, max: tank.capacity, step: tankElem[0].incrementStep(),
+                fmtMask: tankElem.attr('data-fmtMask'),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '7rem' } }
+            }).on('change', function (e) {
+                pct.text(`${capacity[0].val() !== 0 ? Math.round((qty[0].val() / capacity[0].val()) * 100) : 0}%`);
+            });
+
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            let pct = $('<div></div>').appendTo(divPnl).addClass('tank-attr-percent').css({ fontSize: '2em', textAlign: 'center', padding: '.5em' });
+            dataBinder.bind(dlg, tank);
+            pct.text(`${tank.capacity !== 0 ? Math.round((tank.level / tank.capacity) * 100) : 0}%`);
+            dlg.css({ overflow: 'visible' });
+        },
+        saveControllerState: function () {
+            var self = this, o = self.options, el = self.element;
+            var cont = dataBinder.fromElement(el);
+            // Don't save the tank data.
+            console.log(cont);
+            cont.orp.tank = undefined;
+            cont.ph.tank = undefined;
+            $.putApiService('/state/chemController', cont, function (c, status, xhr) {
+                self.setEquipmentData(c);
+            });
+
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
@@ -421,11 +557,17 @@
             $('<div></div>').chemTank({
                 chemType: 'acid', labelText: 'Acid Tank',
                 max: data.ph.tank.capacity || 0
-            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'ph.tank.level').attr('data-datatype', 'number').appendTo(divLine);
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'ph.tank').attr('data-datatype', 'number').appendTo(divLine)
+                .on('click', function (evt) {
+                    self._createTankAttributesDialog('pH', $(evt.currentTarget));
+                });
             $('<div></div>').chemTank({
                 chemType: 'orp', labelText: 'ORP Tank',
                 max: data.orp.tank.capacity || 0
-            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orp.tank.level').attr('data-datatype', 'number').appendTo(divLine);
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orp.tank').attr('data-datatype', 'number').appendTo(divLine)
+                .on('click', function (evt) {
+                    self._createTankAttributesDialog('ORP', $(evt.currentTarget));
+                });
             divLine = $('<div></div>').appendTo(grpLevels);
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,
@@ -457,10 +599,7 @@
             orpLvl[0].val(data.orp.probe.level);
             self.setEquipmentData(data);
             el.on('change', 'div.picValueSpinner', function () {
-                var cont = dataBinder.fromElement(el);
-                $.putApiService('/state/chemController', cont, function (c, status, xhr) {
-                    self.setEquipmentData(c);
-                });
+                self.saveControllerState();
             });
         }
     });

@@ -53,12 +53,13 @@ formatType.SUFFIXES = [
 ];
 Number.prototype.round = function (dec) { return Number(Math.round(this + 'e' + dec) + 'e-' + dec); };
 Number.prototype.format = function (format, empty) {
-    if (isNaN(this)) return empty;
+    if (isNaN(this)) return empty || '';
     if (typeof format === 'undefined') return this.toString();
     let isNegative = this < 0;
     let tok = ['#', '0'];
     let pfx = '', sfx = '', fmt = format.replace(/[^#\.0\,]/g, '');
-    let dec = fmt.lastIndexOf('.') > 0 ? fmt.length - (fmt.lastIndexOf('.') + 1) : 0, fw = '', fd = '', vw = '', vd = '', rw = '', rd = '';
+    let dec = fmt.lastIndexOf('.') > 0 ? fmt.length - (fmt.lastIndexOf('.') + 1) : 0,
+        fw = '', fd = '', vw = '', vd = '', rw = '', rd = '';
     let val = String(Math.abs(this).round(dec));
     let ret = '', commaChar = ',', decChar = '.';
     for (var i = 0; i < format.length; i++) {
@@ -1023,7 +1024,7 @@ $.ui.position.fieldTip = {
     });
     $.widget("pic.valueSpinner", {
         options: {
-            lastChange: 0, ramp: 40, ramps: 0, fmtMask: '#,##0.####', fmtEmpty: '', step: 1, inputAttrs: {}, labelAttrs: {} },
+            lastChange: 0, min:0, max:9999999999, ramp: 40, ramps: 0, fmtMask: '#,##0.####', fmtEmpty: '', step: 1, inputAttrs: {}, labelAttrs: {} },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initValueSpinner();
@@ -1164,8 +1165,14 @@ $.ui.position.fieldTip = {
         },
         decrement: function () {
             var self = this, o = self.options, el = self.element;
-            o.val = Math.max(o.min, o.val - o.step);
-            el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
+            o.val = Math.round(Math.max(o.min, o.val - o.step) * 100000000) / 100000000;
+            if (isNaN(o.val)) {
+                console.log({ msg: 'Got a NaN value from the format', val: o.val, min: o.min, step: o.step });
+            }
+            var txt = o.val.format(o.fmtMask, o.fmtEmpty);
+            if (txt === 'NaN') console.log({ msg: 'Got a NaN value from the format', val: o.val, min: o.min, step: o.step });
+
+            el.find('div.picSpinner-value').text(txt);
             o.lastChange = new Date().getTime();
             return o.val;
         },
@@ -1684,6 +1691,8 @@ $.ui.position.fieldTip = {
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
             $('<div class="picPickList-drop fld-btn-right"><i class="fas fa-caret-down"></i></div>').appendTo(el);
+            $('<span></span>').addClass('picSpinner-units').addClass('picUnits').attr('data-bind', o.unitsBinding).appendTo(el);
+
             el.attr('data-bind', o.binding);
             el[0].label = function () { return el.find('label.picPickList-label:first'); };
             el[0].field = function () { return el.find('div.picPickList-value:first'); };
@@ -1697,6 +1706,7 @@ $.ui.position.fieldTip = {
             el.attr('data-val', o.value);
             if (o.required === true) self.required(true);
             el.attr('data-datatype', o.dataType);
+            el.find('span.picSpinner-units').html(o.units);
             self._applyStyles();
             el.find('div.picPickList-drop').on('click', function (evt) {
                 var div = el.find('div.picPickList-options:first');
@@ -2086,6 +2096,118 @@ $.ui.position.fieldTip = {
         disabled: function (val) {
             var self = this, o = self.options, el = self.element;
             var fld = el.find('.picInputField-value:first');
+            if (typeof val === 'undefined') return el.hasClass('disabled');
+            else {
+                if (val) {
+                    el.addClass('disabled');
+                    fld.prop('disabled', true);
+                    fld.attr('disabled', true);
+                }
+                else {
+                    el.remove('disabled');
+                    fld.prop('disabled', false);
+                    fld.removeAttr('disabled');
+                }
+            }
+        }
+    });
+    $.widget("pic.staticField", {
+        options: {
+            inputAttrs: {},
+            labelAttrs: {}
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initField();
+        },
+        _initField: function () {
+            var self = this, o = self.options, el = self.element;
+            if (o.bind) el.attr('data-bind', o.bind);
+            if (typeof o.id !== 'undefined') el.attr('id', o.id);
+            el.addClass('picStaticField');
+            $('<label></label>').appendTo(el).text(o.labelText);
+            if (o.multiLine) {
+                el.addClass('multiline');
+                $('<div class="picStaticField-value"></div>').addClass('static-fld-value').appendTo(el);
+            }
+            else
+                $('<span type="text" class="picStaticField-value"></span>').addClass('static-fld-value').appendTo(el);
+            el.attr('data-bind', o.binding);
+            el.attr('data-datatype', o.dataType);
+            el.attr('data-fmtMask', o.fmtMask);
+            el.attr('data-emptyMask', o.emptyMask);
+            $('<span class="picStatic-units picUnits"></span>').attr('data-bind', o.unitsBinding).appendTo(el);
+            if (typeof o.units !== 'undefined') el.find('span.picStatic-units').html(o.units);
+
+            self._applyStyles();
+            el[0].label = function () { return el.find('label:first'); };
+            el[0].field = function () { return el.find('.picStaticField-value:first'); };
+            el[0].text = function (text) { return self.text(text); };
+            el[0].val = function (val) { return self.val(val); };
+            el[0].isEmpty = function () { return self.isEmpty(); };
+            self.val(o.value);
+        },
+        _applyStyles: function () {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('.picStaticField-value:first');
+            var lbl = el.find('label:first');
+            if (typeof o.style !== 'undefined') el.css(o.style);
+
+            for (var ia in o.inputAttrs) {
+                switch (ia) {
+                    case 'style':
+                        if (typeof o.inputAttrs[ia] === 'object') {
+                            //console.log({ style: o.inputAttrs[ia], fld: fld });
+                            fld.css(o.inputAttrs[ia]);
+                        }
+                        break;
+                    case 'maxlength':
+                    case 'maxLength':
+                        //if (typeof o.inputStyle.width === 'undefined')
+                        fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .55 + 'rem' });
+                        fld.attr('maxlength', o.inputAttrs[ia]);
+                        break;
+                    default:
+                        if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
+                        break;
+                }
+            }
+            for (var la in o.labelAttrs) {
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
+            }
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            var val = self.val();
+            return typeof val === 'undefined' || val.toString() === '';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var dataType = el.attr('data-datatype') || 'string';
+            var fld = el.find('.picStaticField-value:first');
+            if (typeof val === 'undefined')
+                return dataBinder.parseValue(fld.html(), dataType);
+            else
+                fld.html(dataBinder.formatValue(val, dataType, el.attr('data-fmtmask'), el.attr('data-emptymask')));
+
+            ////if (typeof val === 'undefined') console.log({ msg: 'Getting field value', val: el.find('input.picStaticField-value:first').val(val) });
+            //if (el.attr('data-datatype') === 'int' && typeof val === 'undefined') {
+            //    var v = el.find('.picStaticField-value:first').html();
+            //    var match = v.match(/(\d+)/g);
+            //    return (match) ? parseInt(match.join(''), 10) : undefined;
+            //}
+            //return typeof val !== 'undefined' ? el.find('.picStaticField-value:first').html(val) : el.find('.picStaticField-value:first').html();
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            var fld = el.find('.picStaticField-value:first');
             if (typeof val === 'undefined') return el.hasClass('disabled');
             else {
                 if (val) {
@@ -2905,7 +3027,8 @@ $.ui.position.fieldTip = {
         }
     });
     $.widget("pic.chemTank", {
-        options: { labelText: '', binding: '', min: 0, max: 6 },
+        options: {
+            labelText: '', binding: '', min: 0, max: 6, bindTank: false, format: {} },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initChemTank();
@@ -2914,7 +3037,9 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el.attr('data-datatype', 'int');
             el[0].val = function (val) { return self.val(val); };
+            el[0].tank = function (val) { return self.tank(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
+            el[0].incrementStep = function (val) { return typeof val === 'number' ? o.step = val : o.step || 1; };
             var liquid = $('<div></div>').addClass('chemTank-liquid').appendTo(el);
             $('<div></div>').addClass('chemTank-level-top').appendTo(liquid);
             $('<div></div>').addClass('chemTank-level').appendTo(liquid);
@@ -2944,21 +3069,78 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             return self.val() === 'undefined';
         },
-        val: function (val) {
+        tank: function (val) {
             var self = this, o = self.options, el = self.element;
             if (typeof val !== 'undefined') {
+                var lvl;
+                if (typeof val === 'number') lvl = val;
+                else if (typeof val === 'object') {
+                    lvl = typeof val.level !== 'undefined' ? val.level : o.value;
+                    o.max = (typeof val.capacity !== 'undefined') ? val.capacity : o.max;
+                    if (typeof val.units === 'string') o.units === val.units;
+                    else if (typeof val.units === 'object') o.units = val.units.name;
+                    var opts;
+                    switch (o.units) {
+                        case 'L':
+                        case 'liters':
+                        case 'litres':
+                        case 'gal':
+                        case 'gals':
+                        case 'gallons':
+                            opts = { step: .1, fmtMask: '#,##0.####', emptyMask: '' };
+                            break;
+                        case 'cL':
+                        case 'quarts':
+                        case 'pints':
+                        case 'qt':
+                        case 'pt':
+                            opts = { step: .1, fmtMask: '#,##0.##', emptyMask: '' };
+                            break;
+                        case 'oz':
+                        case 'mL':
+                            opts = { step: 1, fmtMask: '#,##0', emptyMask: '' };
+                            break;
+                        default:
+                            opts = { step: 1, fmtMask: '#,##0', emptyMask: '' };
+                            break;
+                    }
+                    o.step = opts.step;
+                    el.attr('data-fmtMask', opts.fmtMask);
+                   
+                }
                 var tot = o.max - o.min;
                 // Calculate the left value.
-                
-                var pct = tot !== 0 ? Math.max(0, Math.min(100, ((val - o.min) / (tot)) * 100)) : 0;
+                var pct = Math.max(0, Math.min(100, ((lvl - o.min) / (tot)) * 100));
                 var liquid = el.find('div.chemTank-liquid');
                 //console.log(liquid);
                 liquid.find('div.chemTank-level-top').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)' });
                 liquid.find('div.chemTank-level').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)', height: 'calc(' + pct + '% + 25px)' });
-                o.value = val;
+                o.value = lvl;
             }
             else {
-                return o.value;
+                return { capacity: o.max, units: o.units, level: o.value };
+            }
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var lvl;
+                if (typeof val === 'number') lvl = val;
+                else if (typeof val === 'object') {
+                    self.tank(val);
+                    return;
+                }
+                var tot = o.max - o.min;
+                // Calculate the left value.
+                var pct = Math.max(0, Math.min(100, ((lvl - o.min) / (tot)) * 100));
+                var liquid = el.find('div.chemTank-liquid');
+                //console.log(liquid);
+                liquid.find('div.chemTank-level-top').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)' });
+                liquid.find('div.chemTank-level').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)', height: 'calc(' + pct + '% + 25px)' });
+                o.value = lvl;
+            }
+            else {
+                return o.bindTank ? self.tank() : o.value;
             }
         }
     });
