@@ -422,6 +422,8 @@
                 inputAttrs: { style: { width: '8.5rem' } },
                 labelAttrs: { style: { width: '5.4rem' } }
             }).hide().addClass('pnl-rem-address');
+            line = $('<div></div>').appendTo(line);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Flow Readings Only', binding: `${type.toLowerCase()}.flowReadingsOnly` }).attr('title', 'Check if you want to ignore readings from the probe when no flow is detected.');
             return grpProbe;
         },
         _buildPumpPanel: function (remServers, type) {

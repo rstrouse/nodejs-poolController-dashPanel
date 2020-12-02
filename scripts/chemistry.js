@@ -414,10 +414,10 @@
             $('<label></label>').addClass('picControllerName').attr('data-bind', 'name').appendTo(line);
             let span = $('<span></span>').addClass('pHLevel').addClass('picData').appendTo(line);
             $('<label></label>').addClass('picInline-label').text('pH').appendTo(line);
-            $('<span></span>').addClass('phLevel').attr('data-bind', 'ph.probe.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0#').attr('data-emptymask', '-.-').appendTo(line);
+            $('<span></span>').addClass('phLevel').attr('data-bind', 'ph.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0#').attr('data-emptymask', '-.-').appendTo(line);
             span = $('<span></span>').addClass('orpLevel').addClass('picData').appendTo(line);
             $('<label></label>').addClass('picInline-label').text('ORP').appendTo(line);
-            $('<span></span>').addClass('phLevel').attr('data-bind', 'orp.probe.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-emptymask', '-.-').appendTo(line);
+            $('<span></span>').addClass('phLevel').attr('data-bind', 'orp.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-emptymask', '-.-').appendTo(line);
             span = $('<span></span>').addClass('lsiIndex').addClass('picData').appendTo(line);
             $('<label></label>').addClass('picInline-label').text('Bal').appendTo(line);
             $('<span></span>').addClass('saturationIndex').attr('data-bind', 'saturationIndex').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-emptymask', '-.-').appendTo(line);
@@ -443,24 +443,26 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
-                this.val(data.ph.probe.level);
+                this.val(data.ph.level);
             });
             el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
-                this.val(data.orp.probe.level);
+                this.val(data.orp.level);
             });
-            
-            if (data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) {
-                el.find('div.picChemTank[data-chemtype="orp"]').show();
+            if (typeof data.orp.pump.type !== 'undefined') {
+                if (data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) {
+                    el.find('div.picChemTank[data-chemtype="orp"]').show();
+                }
+                else {
+                    el.find('div.picChemTank[data-chemtype="orp"]').hide();
+                }
             }
-            else {
-                el.find('div.picChemTank[data-chemtype="orp"]').hide();
-            }
-            if (data.ph.enabled && data.ph.pump.type.name !== 'none') {
-                console.log('show pc');
-                el.find('div.picChemTank[data-chemtype="acid"]').show();
-            }
-            else {
-                el.find('div.picChemTank[data-chemtype="acid"]').hide();
+            if (typeof data.ph.pump.type !== 'undefined') {
+                if (data.ph.enabled && data.ph.pump.type.name !== 'none') {
+                    el.find('div.picChemTank[data-chemtype="acid"]').show();
+                }
+                else {
+                    el.find('div.picChemTank[data-chemtype="acid"]').hide();
+                }
             }
             self.dataBind(data);
         },
@@ -574,7 +576,7 @@
             $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
             // A good balanced saturationIndex is between +- 0.3
 
-            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
+            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign:'center' }).appendTo(grpLevels);
             $('<div></div>').chemTank({
                 chemType: 'acid', labelText: 'Acid Tank',
                 max: data.ph.tank.capacity || 0
@@ -602,7 +604,7 @@
                 ]
             }).appendTo(divLine);
             pHLvl[0].target(data.ph.setpoint);
-            pHLvl[0].val(data.ph.probe.level);
+            pHLvl[0].val(data.ph.level);
 
             divLine = $('<div></div>').appendTo(grpLevels);
             orpLvl = $('<div></div>').chemLevel({
@@ -617,7 +619,7 @@
                 ]
             }).appendTo(divLine);
             orpLvl[0].target(data.orp.setpoint);
-            orpLvl[0].val(data.orp.probe.level);
+            orpLvl[0].val(data.orp.level);
             self.setEquipmentData(data);
             el.on('change', 'div.picValueSpinner', function () {
                 self.saveControllerState();
