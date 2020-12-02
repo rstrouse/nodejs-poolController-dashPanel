@@ -220,8 +220,15 @@
                 switch (chem.dosingStatus.name) {
                     case 'dosing':
                         stat.empty();
-                        $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${typeof chem.doseVolume !== 'undefined' && chem.doseVolume > 0 ? chem.doseVolume.format('#, ##0.##') + 'mL ' : ''}${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
-                        if (chem.delayTimeRemaining > 0) $('<span></span>').appendTo(stat).css({ float: 'right' }).text(`Delay: ${dataBinder.formatDuration(chem.delayTimeRemaining)}`);
+                        var vol = !isNaN(chem.doseVolume) ? chem.doseVolume : 0;
+                        var volDosed = !isNaN(chem.dosingVolumeRemaining) ? vol - chem.dosingVolumeRemaining : 0;
+                        if (chem.delayTimeRemaining > 0) {
+                            $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${vol.format('#,##0')}mL`);
+                            $('<span></span>').appendTo(stat).css({ float: 'right' }).text(`Delay: ${dataBinder.formatDuration(chem.delayTimeRemaining)}`);
+                        }
+                        else {
+                            $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${volDosed.format('#,##0')}mL of ${vol.format('#,##0')}mL - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                        }
                         stat.show();
                         break;
                     case 'mixing':
@@ -441,6 +448,20 @@
             el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
                 this.val(data.orp.probe.level);
             });
+            
+            if (data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) {
+                el.find('div.picChemTank[data-chemtype="orp"]').show();
+            }
+            else {
+                el.find('div.picChemTank[data-chemtype="orp"]').hide();
+            }
+            if (data.ph.enabled && data.ph.pump.type.name !== 'none') {
+                console.log('show pc');
+                el.find('div.picChemTank[data-chemtype="acid"]').show();
+            }
+            else {
+                el.find('div.picChemTank[data-chemtype="acid"]').hide();
+            }
             self.dataBind(data);
         },
         dataBind: function (data) {
@@ -522,7 +543,7 @@
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
             divLine = $('<div></div>').appendTo(grpSetpoints);
             $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
-            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: 6.5, max: 7.8, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
                 .on('change', function (e) {
                     el.find('div.picChemLevel[data-chemtype=pH').each(function () {
                         this.target(e.value);
@@ -550,7 +571,7 @@
             divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
             var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
             $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
-            $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-format', '#,##0.0').attr('data-datatype', 'number').appendTo(divVal);
+            $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
             // A good balanced saturationIndex is between +- 0.3
 
             divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto' }).appendTo(grpLevels);
@@ -560,14 +581,14 @@
             }).css({ width: '80px', height: '120px' }).attr('data-bind', 'ph.tank').attr('data-datatype', 'number').appendTo(divLine)
                 .on('click', function (evt) {
                     self._createTankAttributesDialog('pH', $(evt.currentTarget));
-                });
+                }).hide();
             $('<div></div>').chemTank({
                 chemType: 'orp', labelText: 'ORP Tank',
                 max: data.orp.tank.capacity || 0
             }).css({ width: '80px', height: '120px' }).attr('data-bind', 'orp.tank').attr('data-datatype', 'number').appendTo(divLine)
                 .on('click', function (evt) {
                     self._createTankAttributesDialog('ORP', $(evt.currentTarget));
-                });
+                }).hide();
             divLine = $('<div></div>').appendTo(grpLevels);
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.1,

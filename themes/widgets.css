@@ -72,7 +72,7 @@ div.picController, div.picChemistry {
 div.picChemistry label.picInline-label {
     min-width:2rem;
     display:inline-block;
-    margin-left:1.2rem;
+    margin-left:.75rem;
 }
 div.picChemistry span.picStatus {
     margin-left:1.2rem;
@@ -935,7 +935,7 @@ label.chemTank-label {
 }
 div.chem-balance-value {
     color:crimson;
-    font-size:44pt;
+    font-size:32pt;
     font-weight:bold;
     text-align:center;
 }
