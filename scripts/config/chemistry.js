@@ -689,6 +689,7 @@
             cols[0].elText().text(obj.name);
             var type = o.types.find(elem => elem.val === obj.type);
             cols[1].elText().text(typeof type !== 'undefined' ? type.desc : 'Controller');
+
             var ctype = el.attr('data-controllertype');
             if (el.attr('data-controllertype') !== type.name) {
                 var pnl = el.find('div.pnl-chemcontroller-type');
@@ -723,6 +724,10 @@
                     //obj.orpStartDelay = typeof obj.orpStartDelay !== 'undefined' ? obj.orpStartDelay : 0.5;
                     //obj.phMixHours = typeof obj.phMixHours !== 'undefined' ? obj.phMixHours : 1;
                     //obj.orpMixHours = typeof obj.orpMixHours !== 'undefined' ? obj.orpMixHours : 1;
+                    var phRange = type.ph || { min: 7.2, max: 7.6 };
+                    let sp = el.find('div[data-bind="ph.setpoint"]').each(function () {
+                        this.options(phRange);
+                    });
 
                 }
             }
