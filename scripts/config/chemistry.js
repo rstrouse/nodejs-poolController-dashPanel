@@ -38,15 +38,7 @@
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Controller', icon: '<i class="fas fa-plus" ></i>' });
-                //btnAdd[0].disabled(true);
                 btnAdd.on('click', function (e) {
-                    //return;
-                    //var features = el.find('div.picConfigCategory.cfgChemControllers');
-                    //$(this).addClass('disabled');
-                    //$(this).find('i').addClass('burst-animated');
-                    //var pnl = $('<div></div>').insertBefore(btnPnl).pnlChemControllerConfig(opts);
-                    //pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Feature ' + (opts.features.length + 1), type: 0, showInFeatures: true });
-                    //pnl.find('div.picAccordian:first')[0].expanded(true);
                     var dlg = $.pic.modalDialog.createDialog('dlgSelectControllerType', {
                         message: 'Select a Controller Type',
                         width: '400px',
@@ -79,7 +71,6 @@
                             $.pic.modalDialog.closeDialog(dlg[0]);
 
                         });
-
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
                     if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) {
@@ -117,7 +108,7 @@
                                         break;
                                 }
                                 var divController = $('<div></div>').appendTo(pnl).pnlChemControllerConfig(opts);
-                                divController[0].dataBind({
+                                var cc = {
                                     id: -1,
                                     type: type.val,
                                     name: type.desc + (el.find('div.cfgChemController[data-controllertype=' + type.val + ']').length + 1),
@@ -126,7 +117,14 @@
                                     alkalinity: 25,
                                     calciumHardness: 25,
                                     cyanuricAcid: 0
-                                });
+                                };
+                                switch (type.name) {
+                                    case 'rem':
+                                        cc.ph = { flowReadingsOnly: true };
+                                        cc.orp = { flowReadingsOnly: true };
+                                        break;
+                                }
+                                divController[0].dataBind(cc);
                                 divController.find('div.picAccordian:first').each(function () { this.expanded(true); });
                                 $.pic.modalDialog.closeDialog(dlg[0]);
                             }
