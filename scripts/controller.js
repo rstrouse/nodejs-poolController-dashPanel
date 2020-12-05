@@ -219,7 +219,10 @@
                         var obj = dataBinder.fromElement(opt);
                         $.putApiService('app/logger/setOptions', obj);
                     }
-                });
+                    });
+                divLine = $('<div class="picAppLogging"></div>').appendTo(grp);
+                $('<label></label>').appendTo(divLine).text('Log to');
+                btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'File', bind: 'app.logToFile' });
 
 
 
