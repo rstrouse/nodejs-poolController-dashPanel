@@ -11,6 +11,7 @@
 config.json
 dist/
 ./dist/
+.vscode/ 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
