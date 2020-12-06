@@ -374,11 +374,11 @@
       "key": "V"
     },
     {
-      "val": 15,
+      "val": 16,
       "desc": "OCP (Outdoor Control Panel)",
       "name": "OCP",
       "protocol": "!chlorinator,any",
-      "key": 15
+      "key": 16
     },
     {
       "val": 33,
@@ -388,11 +388,11 @@
       "key": 33
     },
     {
-      "val": 16,
+      "val": 15,
       "name": "Broadcast",
       "desc": "To whom it may concern",
       "protocol": "!chlorinator,any",
-      "key": 16
+      "key": 15
     },
     {
       "val": 80,
