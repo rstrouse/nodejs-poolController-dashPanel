@@ -387,10 +387,12 @@
         _createTankAttributesDialog(chemType, tankElem) {
             var self = this, o = self.options, el = self.element;
             var tank = tankElem[0].tank();
+            console.log(tank);
+            var chemName = tank.chemType ? tank.chemType.charAt(0).toUpperCase() + tank.chemType.slice(1) : chemType;
             var dlg = $.pic.modalDialog.createDialog('dlgChemTankAttributes', {
                 width: '447px',
                 height: 'auto',
-                title: `${chemType} Supply Tank Level`,
+                title: `${chemName} Supply Tank Level`,
                 position: { my: "center bottom", at: "center top", of: el },
                 buttons: [
                     {
@@ -410,7 +412,7 @@
                     }
                 ]
             });
-            $('<div></div>').appendTo(dlg).html(`Set the current level for the tank.  As ${chemType} is pumped from the tank the level will fall.`);
+            $('<div></div>').appendTo(dlg).html(`Set the current level for the tank.  As ${chemName.toLowerCase()} is pumped from the tank the level will be reduced by the amount of the chemical dose.`);
             $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
             var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
             var line = $('<div></div>').appendTo(divPnl);

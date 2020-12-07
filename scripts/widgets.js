@@ -3118,7 +3118,7 @@ $.ui.position.fieldTip = {
                 o.value = lvl;
             }
             else {
-                return { capacity: o.max, units: o.units, level: o.value };
+                return { capacity: o.max, units: o.units, level: o.value, chemType: el.attr('data-chemtype') };
             }
         },
         val: function (val) {
