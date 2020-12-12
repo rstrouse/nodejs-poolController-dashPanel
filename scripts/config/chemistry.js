@@ -371,6 +371,68 @@
             //$('<div></div>').appendTo(line).valueSpinner('')
         }
     });
+    $.widget('pic.pnlChemAlarmSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildPhPanel: function () {
+            var self = this, o = self.options, el = self.element;
+            var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            $('<legend></legend>').text(`pH Alarms`).appendTo(grpAlarm);
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'pH Range', binding: 'ph.tolerance.enabled' }).css({ width: '8.7rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Low', min: 6.8, max: 7.4, step: .1, binding: 'ph.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'High', min: 7.4, max: 8.3, step: .1, binding: 'ph.tolerance.high' });
+            return grpAlarm;
+        },
+        _buildORPPanel: function () {
+            var self = this, o = self.options, el = self.element;
+            var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            $('<legend></legend>').text(`ORP Alarms`).appendTo(grpAlarm);
+            return grpAlarm;
+        },
+        _buildRangePanel: function () {
+            var self = this, o = self.options, el = self.element;
+            var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            $('<legend></legend>').text(`Ideal Range Settings`).appendTo(grpAlarm);
+            var line = $('<div></div>').appendTo(grpAlarm).css({ marginTop: '-7px', width: '17rem', fontSize:'.7rem' }).html(`Set the high and low ranges below.  Check the box if you would like these alerts to appear in the chemistry section of the dashboard.`);
+            
+
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<span></span>').appendTo(line).css({ width: '5.7rem', display: 'inline-block' });
+            $('<label></label>').appendTo(line).css({ width: '5.5rem', display: 'inline-block', textAlign: 'center', marginRight:'.15rem' }).text('Low');
+            $('<label></label>').appendTo(line).css({ width: '5.5rem', display: 'inline-block', textAlign: 'center', marginRight: '.15rem' }).text('High');
+
+
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<hr></hr>').appendTo(line).css({ margin: '2px' });
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Balance', binding: 'lsiRange.enabled' }).css({ width: '5.7rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: -.9, max: 0, step: .1, binding: 'lsiRange.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: 0, max: .9, step: .1, binding: 'lsiRange.high' });
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'pH', binding: 'ph.tolerance.enabled' }).css({ width: '5.7rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: 6.8, max: 7.4, step: .1, binding: 'ph.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: 7.4, max: 8.1, step: .1, binding: 'ph.tolerance.high' });
+
+            line = $('<div></div>').appendTo(grpAlarm);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'ORP', binding: 'orp.tolerance.enabled' }).css({ width: '5.7rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: 400, max: 700, step: 1, binding: 'orp.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ min: 700, max: 950, step: 1, binding: 'orp.tolerance.high' });
+            return grpAlarm;
+        },
+        _buildControls: async function () {
+            var self = this, o = self.options, el = self.element;
+            var pnlControllers = el.parents('div.picConfigCategory.cfgChemControllers:first');
+            el.addClass('pnl-chemcontroller-alarms');
+            var sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            self._buildRangePanel().appendTo(sec).css({ display: 'block' });
+            //self._buildPhPanel(o.remServers, 'pH').appendTo(sec).css({ display: 'block' });
+            //self._buildORPPanel(o.remServers, 'ORP').appendTo(sec).css({ display: 'block' });
+        }
+    });
 
     $.widget('pic.pnlChemHardware', {
         options: {},
@@ -705,7 +767,8 @@
                     $('<div></div>').appendTo(tab).pnlChemPhSettings(o);
                     tab = tabBar[0].addTab({ id: 'tabORPSettings', text: 'ORP Settings' });
                     $('<div></div>').appendTo(tab).pnlChemORPSettings(o);
-                    tabBar[0].addTab({ id: 'tabAlarms', text: 'Alarms' });
+                    tab = tabBar[0].addTab({ id: 'tabAlarms', text: 'Alarms' });
+                    $('<div></div>').appendTo(tab).pnlChemAlarmSettings(o);
                     tab = tabBar[0].addTab({ id: 'tabHardware', text: 'Hardware' });
                     $('<div></div>').appendTo(tab).pnlChemHardware(o);
                     if (typeof obj.orp === 'undefined' || typeof obj.ph === 'undefined' ||

@@ -382,6 +382,30 @@
         },
         dataBind: function (data) {
             var self = this, o = self.options, el = self.element;
+            var ph = data.ph;
+            var orp = data.orp;
+            if (typeof ph !== 'undefined' && typeof ph.tolerance !== 'undefined') {
+                el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
+                    this.scales([
+                        { class: 'chemLevel-lred', min: 6.7, max: ph.tolerance.low - .2, labelEnd: (ph.tolerance.low - .2).format('0.0') },
+                        { class: 'chemLevel-lyellow', min: ph.tolerance.low - .2, max: ph.tolerance.low, labelEnd: ph.tolerance.low.format('0.0') },
+                        { class: 'chemLevel-green', min: ph.tolerance.low, max: ph.tolerance.high, labelEnd: ph.tolerance.high.format('0.0') },
+                        { class: 'chemLevel-ryellow', min: ph.tolerance.high, max: ph.tolerance.high + .2, labelEnd: (ph.tolerance.high + .2).format('0.0') },
+                        { class: 'chemLevel-rred', min: ph.tolerance.high + .2, max: 8.4, labelEnd: '' }]);
+                });
+            }
+            if (typeof orp !== 'undefined' && typeof orp.tolerance !== 'undefined') {
+                el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
+                    this.scales([
+                        { class: 'chemLevel-lred', min: 400, max: orp.tolerance.low - 150, labelEnd: (orp.tolerance.low - 150).format('0') },
+                        { class: 'chemLevel-lyellow', min: orp.tolerance.low - 150, max: orp.tolerance.low, labelEnd: orp.tolerance.low.format('0') },
+                        { class: 'chemLevel-green', min: orp.tolerance.low, max: orp.tolerance.high, labelEnd: orp.tolerance.high.format('0') },
+                        { class: 'chemLevel-ryellow', min: orp.tolerance.high, max: orp.tolerance.high + 100, labelEnd: (orp.tolerance.high + 100).format('0') },
+                        { class: 'chemLevel-rred', min: orp.tolerance.high + 100, max: 1000, labelEnd: '' }
+                    ]);
+
+                });
+            }
             dataBinder.bind(el, data);
         },
         _createTankAttributesDialog(chemType, tankElem) {
@@ -511,6 +535,8 @@
                     self._createTankAttributesDialog('ORP', $(evt.currentTarget));
                 }).hide();
             divLine = $('<div></div>').appendTo(grpLevels);
+
+
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.4,
                 fmtMask: '#,##0.##',

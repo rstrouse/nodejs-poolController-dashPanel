@@ -3156,6 +3156,7 @@ $.ui.position.fieldTip = {
             el[0].val = function (val) { return self.val(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
             el[0].target = function (val) { return self.target(val); };
+            el[0].scales = function (val) { return self._createScales(val); }
             $('<label></label>').text(o.labelText).addClass('chemLevel-label').appendTo(el);
             $('<div></div>').addClass('chemLevel-level').appendTo(el);
             el.attr('data-chemtype', o.chemType);
@@ -3163,13 +3164,15 @@ $.ui.position.fieldTip = {
             if (o.binding) el.attr('data-bind', o.binding);
             self.val(o.value);
             self._applyStyles();
-            if(typeof o.scales !== 'undefined') self._createScales();
+            if (typeof o.scales !== 'undefined') self._createScales(o.scales);
         },
-        _createScales: function () {
+        _createScales: function (scales) {
             var self = this, o = self.options, el = self.element;
             var lvl = el.find('div.chemLevel-level');
+            lvl.empty();
             var maxWidth = lvl.width();
             var tot = o.max - o.min;
+            o.scales = scales;
             for (var i = 0; i < o.scales.length; i++) {
                 var scale = o.scales[i];
                 var d = $('<div></div>').addClass('chemLevel-scale').appendTo(lvl);
@@ -3181,7 +3184,6 @@ $.ui.position.fieldTip = {
                 var width = ((scale.max - scale.min) / tot ) * 100;
                 d.css({ width: width + '%' });
                 var lbl = $('<label></label>').addClass('chemLevel-scale-label').text(scale.labelEnd).appendTo(lvl);
-
             }
         },
         _applyStyles: function () {
