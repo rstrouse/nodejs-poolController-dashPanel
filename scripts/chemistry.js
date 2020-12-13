@@ -383,14 +383,30 @@
             if (typeof data.ph !== 'undefined' && typeof data.ph.dosingStatus !== 'undefined') {
                 if (data.ph.dosingStatus.name !== 'dosing') {
                     // Change the button to stop dosing.
-                    el.find('div#btnDoseAcid').show();
+                    if (data.flowDetected === false)
+                        el.find('div#btnDoseAcid').hide();
+                    else
+                        el.find('div#btnDoseAcid').show();
                     el.find('div#btnCancelAcid').hide();
                 }
                 else {
                     el.find('div#btnCancelAcid').show();
                     el.find('div#btnDoseAcid').hide();
                 }
-
+            }
+            if (typeof data.orp !== 'undefined' && typeof data.orp.dosingStatus !== 'undefined') {
+                if (data.orp.dosingStatus.name !== 'dosing') {
+                    // Change the button to stop dosing.
+                    if (data.flowDetected === false)
+                        el.find('div#btnDoseOrp').hide();
+                    else
+                        el.find('div#btnDoseOrp').show();
+                    el.find('div#btnCancelOrp').hide();
+                }
+                else {
+                    el.find('div#btnCancelOrp').show();
+                    el.find('div#btnDoseOrp').hide();
+                }
             }
 
             self.dataBind(data);
@@ -521,7 +537,7 @@
         },
         _confirmCancelDose: function (chemical, chemType) {
             var self = this, o = self.options, el = self.element;
-            $.pic.modalDialog.createConfirm('dlgConfirmDeleteValve', {
+            $.pic.modalDialog.createConfirm('dlgConfirmCancelDosing', {
                 message: `Are you sure you want to Cancel ${chemical} dosing?`,
                 width: '350px',
                 height: 'auto',
@@ -626,10 +642,13 @@
                 .on('click', function (evt) {
                     self._confirmCancelDose('Acid', 'ph');
                 }).hide();
-            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' });
+            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                .on('click', function (evt) {
+                    self._createManualDoseDialog('Chlorine', 'orp');
+                }).hide();
             $('<div></div>').appendTo(divLine).actionButton({ id: 'btnCancelOrp', text: 'Stop Chlorine', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
                 .on('click', function (evt) {
-
+                    self._confirmCancelDose('Chlorine', 'orp');
                 }).hide();
 
             divLine = $('<div></div>').appendTo(grpLevels);
