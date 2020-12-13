@@ -920,6 +920,7 @@ $.ui.position.fieldTip = {
         },
         _initActionButton: function () {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.id !== 'undefined') el.attr('id', o.id);
             let icon = $('<span class="picButtonIcon"></span>');
             let text = $('<span class="picButtonText"></span>');
             icon.appendTo(el);

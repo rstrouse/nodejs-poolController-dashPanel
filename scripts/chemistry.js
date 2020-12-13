@@ -378,6 +378,21 @@
                     el.find('div.picChemTank[data-chemtype="acid"]').hide();
                 }
             }
+            // If we are dosing I need to kill the manual dose window as well as change the buttons
+            // to stop dosing.
+            if (typeof data.ph !== 'undefined' && typeof data.ph.dosingStatus !== 'undefined') {
+                if (data.ph.dosingStatus.name !== 'dosing') {
+                    // Change the button to stop dosing.
+                    el.find('div#btnDoseAcid').show();
+                    el.find('div#btnCancelAcid').hide();
+                }
+                else {
+                    el.find('div#btnCancelAcid').show();
+                    el.find('div#btnDoseAcid').hide();
+                }
+
+            }
+
             self.dataBind(data);
         },
         dataBind: function (data) {
@@ -462,6 +477,72 @@
             pct.text(`${tank.capacity !== 0 ? Math.round((tank.level / tank.capacity) * 100) : 0}%`);
             dlg.css({ overflow: 'visible' });
         },
+        _createManualDoseDialog(chemical, chemType, elBtn) {
+            var self = this, o = self.options, el = self.element;
+            var chemName = chemical.charAt(0).toUpperCase() + chemical.slice(1);
+            var dlg = $.pic.modalDialog.createDialog('dlgManualChemDose', {
+                width: '357px',
+                height: 'auto',
+                title: `Start Manual ${chemName} Dose`,
+                position: { my: "center top", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Start Dosing', icon: '<i class="fas fa-fill-drip"></i>',
+                        click: function (e) {
+                            var d = dataBinder.fromElement(dlg);
+                            d = $.extend(true, d, { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType });
+                            console.log(d);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemController/manualDose', d, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Supply a manual ${chemName.toLowerCase()} dose amount in mL.  Then press the Start Dosing button.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Dose Amount', binding: 'volume', min: 0, max: 1000, step: 10,
+                fmtMask: '#,##0', units:'mL',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '7rem' } }
+            }).on('change', function (e) {
+
+                });
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            dlg.css({ overflow: 'visible' });
+        },
+        _confirmCancelDose: function (chemical, chemType) {
+            var self = this, o = self.options, el = self.element;
+            $.pic.modalDialog.createConfirm('dlgConfirmDeleteValve', {
+                message: `Are you sure you want to Cancel ${chemical} dosing?`,
+                width: '350px',
+                height: 'auto',
+                title: 'Confirm Cancel Dosing',
+                buttons: [{
+                    text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                    click: function () {
+                        var d = { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType };
+                        console.log(d);
+                        $.pic.modalDialog.closeDialog(this);
+                        $.putApiService('/state/chemController/cancelDosing', d, function (c, status, xhr) {
+                            self.setEquipmentData(c);
+                        });
+                    }
+                },
+                {
+                    text: 'No', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+        },
         saveControllerState: function () {
             var self = this, o = self.options, el = self.element;
             var cont = dataBinder.fromElement(el);
@@ -485,7 +566,7 @@
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
             divLine = $('<div></div>').appendTo(grpSetpoints);
             $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
-            var type = typeof data !== 'undefined' && typeof data.type !== 'undefined' ? data.type : {val: 0};
+            var type = typeof data !== 'undefined' && typeof data.type !== 'undefined' ? data.type : { val: 0 };
             var phRange = type.ph || { min: 7.2, max: 7.6 };
 
             $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: phRange.min, max: phRange.max, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
@@ -519,7 +600,7 @@
             $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
             // A good balanced saturationIndex is between +- 0.3
 
-            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign:'center' }).appendTo(grpLevels);
+            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign: 'center' }).appendTo(grpLevels);
             $('<div></div>').chemTank({
                 chemType: 'acid', labelText: 'Acid Tank',
                 max: data.ph.tank.capacity || 0
@@ -527,6 +608,8 @@
                 .on('click', function (evt) {
                     self._createTankAttributesDialog('pH', $(evt.currentTarget));
                 }).hide();
+
+
             $('<div></div>').chemTank({
                 chemType: 'orp', labelText: 'ORP Tank',
                 max: data.orp.tank.capacity || 0
@@ -534,8 +617,22 @@
                 .on('click', function (evt) {
                     self._createTankAttributesDialog('ORP', $(evt.currentTarget));
                 }).hide();
-            divLine = $('<div></div>').appendTo(grpLevels);
+            divLine = $('<div></div>').appendTo(grpLevels).css({ textAlign: 'center' });
+            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseAcid', text: 'Dose Acid', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                .on('click', function (evt) {
+                    self._createManualDoseDialog('Acid', 'ph');
+                }).hide();
+            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnCancelAcid', text: 'Stop Acid', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                .on('click', function (evt) {
+                    self._confirmCancelDose('Acid', 'ph');
+                }).hide();
+            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' });
+            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnCancelOrp', text: 'Stop Chlorine', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                .on('click', function (evt) {
 
+                }).hide();
+
+            divLine = $('<div></div>').appendTo(grpLevels);
 
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.4,
