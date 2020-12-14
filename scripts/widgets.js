@@ -3157,7 +3157,7 @@ $.ui.position.fieldTip = {
             el[0].val = function (val) { return self.val(val); };
             el[0].isEmpty = function (val) { return self.isEmpty(); };
             el[0].target = function (val) { return self.target(val); };
-            el[0].scales = function (val) { return self._createScales(val); }
+            el[0].scales = function (val) { return self._createScales(val); };
             $('<label></label>').text(o.labelText).addClass('chemLevel-label').appendTo(el);
             $('<div></div>').addClass('chemLevel-level').appendTo(el);
             el.attr('data-chemtype', o.chemType);
@@ -3186,6 +3186,8 @@ $.ui.position.fieldTip = {
                 d.css({ width: width + '%' });
                 var lbl = $('<label></label>').addClass('chemLevel-scale-label').text(scale.labelEnd).appendTo(lvl);
             }
+            self.target(o.target);
+            self.val(o.value);
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;
@@ -3233,9 +3235,10 @@ $.ui.position.fieldTip = {
                 var maxval = o.scales[o.scales.length - 1].max;
                 // Calculate the left value.
                 var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
-                //console.log({ val: val, minval: minval, maxval: maxval, tot:tot, left: left });
+                console.log({ msg:'Setting target', tgt: tgt, val: val, minval: minval, maxval: maxval, tot:tot, left: left });
                 tgt.css({ left: left + '%' });
                 o.target = val;
+                
             }
             else return o.target;
         }
