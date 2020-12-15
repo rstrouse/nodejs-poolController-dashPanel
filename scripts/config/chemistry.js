@@ -433,7 +433,6 @@
             //self._buildORPPanel(o.remServers, 'ORP').appendTo(sec).css({ display: 'block' });
         }
     });
-
     $.widget('pic.pnlChemHardware', {
         options: {},
         _create: function () {
@@ -456,7 +455,7 @@
             }).on('selchanged', function (evt) {
                 let grp = $(evt.currentTarget).parents('fieldset:first');
                 evt.newItem.remAddress ? grp.find('.pnl-rem-address').show() : grp.find('.pnl-rem-address').hide();
-            });
+                });
             line = $('<div></div>').appendTo(grpProbe);
             $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}connectionId`,
@@ -484,6 +483,10 @@
             }).hide().addClass('pnl-rem-address');
             line = $('<div></div>').appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Flow Readings Only', binding: `${type.toLowerCase()}.flowReadingsOnly` }).attr('title', 'Check if you want to ignore readings from the probe when no flow is detected.');
+            if (type === 'pH') {
+                line = $('<div></div>').appendTo(grpProbe);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Feed Body Temperature', binding: `${binding}feedBodyTemp` }).attr('title', 'Check if you want to feed the temperature from the currently running body for temp compensation.').hide().addClass('pnl-rem-address');
+            }
             return grpProbe;
         },
         _buildPumpPanel: function (remServers, type) {
