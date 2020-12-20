@@ -247,6 +247,21 @@
             var arr = [];
             // Put together the list of warnings.
             if (typeof data.status !== 'undefined' && data.status.val > 0) arr.push(data.status);
+            if (typeof data.alarms !== 'undefined') {
+                var alarms = data.alarms;
+                if (typeof alarms.flow !== 'undefined' && alarms.flow.val > 0) arr.push(alarms.flow);
+                if (typeof alarms.pH !== 'undefined' && alarms.pH.val > 0) arr.push(alarms.pH);
+                if (typeof alarms.pHTank !== 'undefined' && alarms.pHTank.val > 0) arr.push(alarms.pHTank);
+                if (typeof alarms.orp !== 'undefined' && alarms.orp.val > 0) arr.push(alarms.orp);
+                if (typeof alarms.orpTank !== 'undefined' && alarms.orpTank.val > 0) arr.push(alarms.orpTank);
+                if (typeof alarms.pHPumpFault !== 'undefined' && alarms.pHPumpFault.val > 0) arr.push(alarms.pHPumpFault);
+                if (typeof alarms.pHProbeFault !== 'undefined' && alarms.pHProbeFault.val > 0) arr.push(alarms.pHProbeFault);
+                if (typeof alarms.orpPumpFault !== 'undefined' && alarms.orpPumpFault.val > 0) arr.push(alarms.orpPumpFault);
+                if (typeof alarms.orpProbeFault !== 'undefined' && alarms.orpProbeFault.val > 0) arr.push(alarms.orpProbeFault);
+                if (typeof alarms.chlorFault !== 'undefined' && alarms.chlorFault.val > 0) arr.push(alarms.chlorFault);
+                if (typeof alarms.bodyFault !== 'undefined' && alarms.bodyFault.val > 0) arr.push(alarms.bodyFault);
+            }
+
             if (typeof data.warnings !== 'undefined') {
                 var warns = data.warnings;
                 if (typeof warns.waterChemistry !== 'undefined' && warns.waterChemistry.val > 0) arr.push(warns.waterChemistry);
@@ -255,14 +270,6 @@
                 if (typeof warns.pHDailyLimitReached !== 'undefined' && warns.pHDailyLimitReached.val > 0) arr.push(warns.pHDailyLimitReached);
                 if (typeof warns.pHLockout !== 'undefined' && warns.pHLockout.val > 0) arr.push(warns.pHLockout);
                 if (typeof warns.orpDailyLimitReached !== 'undefined' && warns.orpDailyLimitReached.val > 0) arr.push(warns.orpDailyLimitReached);
-            }
-            if (typeof data.alarms !== 'undefined') {
-                var alarms = data.alarms;
-                if (typeof alarms.flow !== 'undefined' && alarms.flow.val > 0) arr.push(alarms.flow);
-                if (typeof alarms.pH !== 'undefined' && alarms.pH.val > 0) arr.push(alarms.pH);
-                if (typeof alarms.pHTank !== 'undefined' && alarms.pHTank.val > 0) arr.push(alarms.pHTank);
-                if (typeof alarms.orp !== 'undefined' && alarms.orp.val > 0) arr.push(alarms.orp);
-                if (typeof alarms.orpTank !== 'undefined' && alarms.orpTank.val > 0) arr.push(alarms.orpTank);
             }
             var divWarnings = el.find('div.chemcontroller-warnings');
             divWarnings.empty();
@@ -408,7 +415,6 @@
                     el.find('div#btnDoseOrp').hide();
                 }
             }
-
             self.dataBind(data);
         },
         dataBind: function (data) {
@@ -602,12 +608,15 @@
             var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
             $('<legend></legend>').text('Index Values').appendTo(grpIndex);
             divLine = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Total Alkalinity', binding: 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Total Alkalinity', canEdit: true, binding: 'alkalinity', min: 25, max: 800, step: 10, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             divLine = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', canEdit: true, binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             divLine = $('<div></div>').appendTo(grpIndex);
-            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', canEdit: true, binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            if (data.type.name !== 'intellichem') {
+                divLine = $('<div></div>').appendTo(grpIndex);
+                $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Borates', canEdit: true, binding: 'borates', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            }
             var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(el);
             $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
             divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
@@ -634,25 +643,29 @@
                     self._createTankAttributesDialog('ORP', $(evt.currentTarget));
                 }).hide();
             divLine = $('<div></div>').appendTo(grpLevels).css({ textAlign: 'center' });
-            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseAcid', text: 'Dose Acid', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
-                .on('click', function (evt) {
-                    self._createManualDoseDialog('Acid', 'ph');
-                }).hide();
-            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnCancelAcid', text: 'Stop Acid', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
-                .on('click', function (evt) {
-                    self._confirmCancelDose('Acid', 'ph');
-                }).hide();
-            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
-                .on('click', function (evt) {
-                    self._createManualDoseDialog('Chlorine', 'orp');
-                }).hide();
-            $('<div></div>').appendTo(divLine).actionButton({ id: 'btnCancelOrp', text: 'Stop Chlorine', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
-                .on('click', function (evt) {
-                    self._confirmCancelDose('Chlorine', 'orp');
-                }).hide();
-
+            if (data.ph.enabled === true && data.ph.pump.type.val !== 0) {
+                var divBtnAcidCont = $('<div></div>').appendTo(divLine).addClass('divDoseOrp').css({ display: 'inline-block' });
+                $('<div></div>').appendTo(divBtnAcidCont).actionButton({ id: 'btnDoseAcid', text: 'Dose Acid', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualDoseDialog('Acid', 'ph');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnAcidCont).actionButton({ id: 'btnCancelAcid', text: 'Stop Acid', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelDose('Acid', 'ph');
+                    }).hide();
+            }
+            if (data.orp.enabled === true && data.orp.pump.type.val !== 0 && data.orp.useChlorinator !== true) {
+                var divBtnOrpCont = $('<div></div>').appendTo(divLine).addClass('divDoseOrp').css({ display: 'inline-block' });
+                $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualDoseDialog('Chlorine', 'orp');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnCancelOrp', text: 'Stop Chlorine', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelDose('Chlorine', 'orp');
+                    }).hide();
+            }
             divLine = $('<div></div>').appendTo(grpLevels);
-
             pHLvl = $('<div></div>').chemLevel({
                 labelText: 'pH', chemType: 'pH', min: 6.7, max: 8.4,
                 fmtMask: '#,##0.##',

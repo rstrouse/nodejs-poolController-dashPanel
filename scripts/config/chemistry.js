@@ -187,6 +187,8 @@
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Calcium Hardness', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             line = $('<div></div>').appendTo(grpIndex);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cyanuric Acid', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Borates', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'borates', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } }).hide();
         }
     });
     $.widget('pic.pnlChemPhSettings', {
@@ -720,7 +722,7 @@
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                $.pic.modalDialog.createConfirm('dlgConfirmDeleteFeature', {
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteController', {
                     message: 'Are you sure you want to delete controller ' + v.name + '?',
                     width: '350px',
                     height: 'auto',
@@ -767,6 +769,7 @@
                     var tab = tabBar[0].addTab({ id: 'tabSetpoints', text: 'Setpoints' });
                     $('<div></div>').appendTo(tab).pnlChemSetpoints();
                     tab = tabBar[0].addTab({ id: 'tabPhSettings', text: 'pH Settings' });
+                    el.find('div[data-bind="borates"]').show();
                     $('<div></div>').appendTo(tab).pnlChemPhSettings(o);
                     tab = tabBar[0].addTab({ id: 'tabORPSettings', text: 'ORP Settings' });
                     $('<div></div>').appendTo(tab).pnlChemORPSettings(o);
@@ -780,6 +783,7 @@
                         tabBar[0].selectTabById('tabHardware');
                     else
                         tabBar[0].selectTabById('tabSetpoints');
+
                     //obj.orpPumpType = typeof obj.orpPumpType !== 'undefined' ? obj.orpPumpType : 0;
                     //obj.phPumpType = typeof obj.phPumpType !== 'undefined' ? obj.phPumpType : 0;
                     //obj.phDoseBy = typeof obj.phDoseBy !== 'undefined' ? obj.phDoseBy : 0;
