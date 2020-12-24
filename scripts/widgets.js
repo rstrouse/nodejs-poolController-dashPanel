@@ -1071,9 +1071,11 @@ $.ui.position.fieldTip = {
                 $('<div></div>').addClass('picSpinner-value').addClass('fld-value-center').attr('contenteditable', true).appendTo(el)
                     .on('focusout', function (evt) {
                         console.log(evt);
+                        var v = o.val;
                         var val = Number($(evt.target).text().replace(/[^0-9\.\-]+/g, ''));
                         if (isNaN(val)) self.val(o.min);
                         else self.val(val);
+                        if (v !== o.val) self._fireValueChanged();
                     });
             }
             else {

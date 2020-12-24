@@ -138,28 +138,50 @@
                         let saltReqd = parseFloat(el.attr('data-saltrequired'));
                         if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"></i><span> Add ' + (saltReqd/40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
                         if (data.body.val === 32 || data.body.val === 0) {
-                            let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"></div></div>');
-                            divSetpoint.appendTo(evt.contents());
-                            divSetpoint.find('div.picValueSpinner').each(function () {
-                                $(this).valueSpinner({ val: data.poolSetpoint, min: 0, max: 100, step: 1 });
-                                $(this).on('change', function (e) { self.putPoolSetpoint(e.value); });
-                            });
+                            //let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"></div></div>');
+                            //divSetpoint.appendTo(evt.contents());
+                            //divSetpoint.find('div.picValueSpinner').each(function () {
+                            //    $(this).valueSpinner({ val: data.poolSetpoint, min: 0, max: 100, step: 1 });
+                            //    $(this).on('change', function (e) { self.putPoolSetpoint(e.value); });
+                            //});
+                           
+                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({ binding: 'poolSetpoint',
+                                canEdit: true, labelText: 'Pool Setpoint', min: 0, max: 100, step: 1, units: '%',
+                                labelAttrs: { style: {width: '7rem'}}
+                            }).on('change', function (e) {
+                                    self.putPoolSetpoint(e.value);
+                                });
                         }
                         if (data.body.val === 32 || data.body.val === 1) {
                             // Add in the spa setpoint.
-                            let divSetpoint = $('<div class="picSpaSetpoint picSetpoint"><label class="picInline-label picSetpointText">Spa Set Point</label><div class="picValueSpinner" data-bind="spaSetpoint"></div></div>');
-                            divSetpoint.appendTo(evt.contents());
-                            divSetpoint.find('div.picValueSpinner').each(function () {
-                                $(this).valueSpinner({ val: data.spaSetpoint, min: 0, max: 100, step: 1 });
-                                $(this).on('change', function (e) { self.putSpaSetpoint(e.value); });
-                            });
+                            //let divSetpoint = $('<div class="picSpaSetpoint picSetpoint"><label class="picInline-label picSetpointText">Spa Set Point</label><div class="picValueSpinner" data-bind="spaSetpoint"></div></div>');
+                            //divSetpoint.appendTo(evt.contents());
+                            //divSetpoint.find('div.picValueSpinner').each(function () {
+                            //    $(this).valueSpinner({ val: data.spaSetpoint, min: 0, max: 100, step: 1 });
+                            //    $(this).on('change', function (e) { self.putSpaSetpoint(e.value); });
+                            //});
+                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({ binding: 'spaSetpoint',
+                                canEdit: true, labelText: 'Spa Setpoint', min: 0, max: 100, step: 1, units: '%',
+                                labelAttrs: { style: { width: '7rem' } }
+                            }).on('change', function (e) {
+                                    self.putSpaSetpoint(e.value);
+                                });
                         }
-                        let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
-                        divSuperChlorHours.appendTo(evt.contents());
-                        divSuperChlorHours.find('div.picValueSpinner').each(function () {
-                            $(this).valueSpinner({ val: data.superChlorHours, min: 1, max: 96, step: 1 });
-                            $(this).on('change', function (e) { self.putSuperChlorHours(e.value); });
-                        });
+
+                        //let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
+                        //divSuperChlorHours.appendTo(evt.contents());
+                        //divSuperChlorHours.find('div.picValueSpinner').each(function () {
+                        //    $(this).valueSpinner({ val: data.superChlorHours, min: 1, max: 96, step: 1 });
+                        //    $(this).on('change', function (e) { self.putSuperChlorHours(e.value); });
+                        //});
+                        $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({
+                            binding: 'superChlorHours',
+                            canEdit: true, labelText: 'Super Chlorinate', min: 1, max: 96, step: 1, units: 'hours',
+                            labelAttrs: { style: { width: '7rem' } }
+                        }).addClass('picPoolSetpoint').addClass('picSetpoint').
+                            on('change', function (e) {
+                                self.putSuperChlorHours(e.value);
+                            });
 
                         // Add in the super chlorinate button.
                         let btn = $('<div class="picSuperChlorBtn btn"></div>');
