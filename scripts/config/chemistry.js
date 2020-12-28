@@ -441,12 +441,79 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
         },
+        _buildFlowSensorPanel: function (remServers) {
+            var self = this, o = self.options, el = self.element;
+            var grpSensor = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            let binding = 'flowSensor.';
+            $('<legend></legend>').text(`Flow Sensor`).appendTo(grpSensor);
+            var sec = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpSensor);
+            var line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}type`, value: 0,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                items: o.flowSensorTypes,
+                inputAttrs: { style: { width: '8.5rem' } }
+            }).on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                evt.newItem.remAddress ? grp.find('.pnl-rem-address').show() : grp.find('.pnl-rem-address').hide();
+                if (evt.newItem.val === 4) grp.find('div[data-bind$=minimumPressure]').show();
+                else grp.find('div[data-bind$=minimumPressure]').hide();
+                if (evt.newItem.val === 2) grp.find('div[data-bind$=minimumFlow]').show();
+                else grp.find('div[data-bind$=minimumFlow]').hide();
+            });
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}connectionId`,
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Connection',
+                columns: [{ binding: 'uuid', text: 'uuid', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                items: remServers,
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).addClass('pnl-rem-address').hide().on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                grp.find('div[data-bind$=".deviceBinding"]').each(function () {
+                    this.items(evt.newItem.devices);
+                });
+            });
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}deviceBinding`,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Device',
+                columns: [{ binding: 'binding', text: 'binding', hidden: true }, { binding: 'category', text: 'Category', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Device', style: { whiteSpace: 'nowrap' } }],
+                items: [],
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).hide().addClass('pnl-rem-address');
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${binding}.minimumFlow`, labelText: 'Min Flow', dataType: 'number', fmtType: '#,##0.0#', min: 1, max: 140, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '6.2rem' } }, units: 'gpm'
+            }).hide();
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${binding}.minimumPressure`, labelText: 'Min Pressure', dataType: 'number', fmtType: '#,##0.0#', min: 1, max: 30, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '7rem' } }, units: 'psi'
+            }).hide();
+
+            sec = $('<div></div>').addClass('warning-message').css({ display: 'inline-block', verticalAlign: 'top', width: '16.5rem', fontSize: '8.5pt', marginLeft:'1rem' }).appendTo(grpSensor);
+            $('<div></div>').appendTo(sec).html('<div><span style="font-weight:bold">WARNING:</span><span> It is highly advisable that you install and specify a flow detection sensor.  This will ensure there is proper flow prior to turning on any of the dosing pumps.  Chemical dispensed while the pump is not running could result in equipment damage or risk to bathers.<span></div>');
+            return grpSensor;
+
+        },
         _buildProbePanel: function (remServers, type) {
             var self = this, o = self.options, el = self.element;
             var grpProbe = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
             let binding = type.toLowerCase() + '.probe.';
             $('<legend></legend>').text(`${type} Probe`).appendTo(grpProbe);
-            line = $('<div></div>').appendTo(grpProbe);
+            var line = $('<div></div>').appendTo(grpProbe);
             $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}type`, value: 0,
                 bindColumn: 0, displayColumn: 2,
@@ -567,11 +634,16 @@
             var self = this, o = self.options, el = self.element;
             var pnlControllers = el.parents('div.picConfigCategory.cfgChemControllers:first');
             el.addClass('pnl-chemcontroller-hardware');
-            var sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            var line = $('<div></div>').appendTo(el);
+            sec = $('<div></div>').appendTo(line).css({ display: 'inline-block', verticalAlign: 'top' });
+            self._buildFlowSensorPanel(o.remServers).appendTo(sec).css({ display: 'block' });
+
+            line = $('<div></div>').appendTo(el);
+            sec = $('<div></div>').appendTo(line).css({ display: 'inline-block', verticalAlign: 'top' });
             self._buildProbePanel(o.remServers, 'pH').appendTo(sec).css({ display: 'block' });
             var grpPump = self._buildPumpPanel(o.remServers, 'pH').appendTo(sec).css({ display: 'block' });
 
-            sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            sec = $('<div></div>').appendTo(line).css({ display: 'inline-block', verticalAlign: 'top' });
             self._buildProbePanel(o.remServers, 'ORP').appendTo(sec).css({ display: 'block' });
             grpPump = self._buildPumpPanel(o.remServers, 'ORP').appendTo(sec).css({ display: 'block' });
         }
