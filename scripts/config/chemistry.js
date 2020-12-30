@@ -202,6 +202,7 @@
             el.addClass('pnl-chemcontroller-phsettings');
             var sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top', paddingRight:'1rem' });
             $('<div></div>').appendTo(sec).checkbox({ labelText: 'pH Enabled', binding: 'ph.enabled' });
+            $('<div></div>').appendTo(sec).checkbox({ labelText: 'pH Dose Priority', binding: 'ph.dosePriority' }).css({ marginLeft: '2rem' }).attr('title', 'Check this box to disable ORP dosing while pH is being dosed.  This includes disabling chlorinators on the body.');
             //sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
             var grpDose = $('<fieldset></fieldset>').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec);
             $('<legend></legend>').text('Dosing Parameters').appendTo(grpDose);
@@ -364,6 +365,9 @@
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'sec' });
             
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-delay').hide();
+            $('<hr></hr>').appendTo(line).css({ margin: '3px' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.phLockout', labelText: 'pH Lockout', min: 7.2, max: 8.4, step: .1, dataType: 'number', fmtMask: '#,##0.0#', labelAttrs: { style: { width: '5.5rem' } }, inputAttrs: { style: { width: '3.5rem' } } });
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-orpDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
             $('<legend></legend>').text('Mixing').appendTo(grpMix);
