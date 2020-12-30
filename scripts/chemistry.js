@@ -393,7 +393,7 @@
                 this.val(data.orp.level);
             });
             if (typeof data.orp.pump.type !== 'undefined') {
-                if (data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) {
+                if ((data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) || data.type.name === 'intellichem') {
                     el.find('div.picChemTank[data-chemtype="orp"]').show();
                 }
                 else {
@@ -401,7 +401,7 @@
                 }
             }
             if (typeof data.ph.pump.type !== 'undefined') {
-                if (data.ph.enabled && data.ph.pump.type.name !== 'none') {
+                if ((data.ph.enabled && data.ph.pump.type.name !== 'none') || data.type.name === 'intellichem') {
                     el.find('div.picChemTank[data-chemtype="acid"]').show();
                 }
                 else {
