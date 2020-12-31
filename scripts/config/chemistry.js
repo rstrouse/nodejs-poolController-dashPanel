@@ -120,8 +120,9 @@
                                 };
                                 switch (type.name) {
                                     case 'rem':
-                                        cc.ph = { flowReadingsOnly: true };
-                                        cc.orp = { flowReadingsOnly: true };
+                                        cc.lsiRange = { enabled: true, low: -0.5, high: 0.5 };
+                                        cc.ph = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5 };
+                                        cc.orp = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8 };
                                         break;
                                 }
                                 divController[0].dataBind(cc);
@@ -388,9 +389,9 @@
             var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
             $('<legend></legend>').text(`pH Alarms`).appendTo(grpAlarm);
             line = $('<div></div>').appendTo(grpAlarm);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'pH Range', binding: 'ph.tolerance.enabled' }).css({ width: '8.7rem' });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Low', min: 6.8, max: 7.4, step: .1, binding: 'ph.tolerance.low' });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'High', min: 7.4, max: 8.3, step: .1, binding: 'ph.tolerance.high' });
+            $('<div></div>').appendTo(line).checkbox({ canEdit: true, labelText: 'pH Range', binding: 'ph.tolerance.enabled' }).css({ width: '8.7rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Low', min: 6.8, max: 7.4, step: .1, fmtMask: "#,##0.0", binding: 'ph.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'High', min: 7.4, max: 8.3, step: .1, fmtMask: "#,##0.0", binding: 'ph.tolerance.high' });
             return grpAlarm;
         },
         _buildORPPanel: function () {
@@ -416,17 +417,17 @@
             $('<hr></hr>').appendTo(line).css({ margin: '2px' });
             line = $('<div></div>').appendTo(grpAlarm);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Balance', binding: 'lsiRange.enabled' }).css({ width: '5.7rem' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: -.9, max: 0, step: .1, binding: 'lsiRange.low' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: 0, max: .9, step: .1, binding: 'lsiRange.high' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: -.9, max: 0, step: .1, binding: 'lsiRange.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 0, max: .9, step: .1, binding: 'lsiRange.high' });
             line = $('<div></div>').appendTo(grpAlarm);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'pH', binding: 'ph.tolerance.enabled' }).css({ width: '5.7rem' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: 6.8, max: 7.4, step: .1, binding: 'ph.tolerance.low' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: 7.4, max: 8.1, step: .1, binding: 'ph.tolerance.high' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 6.8, max: 7.4, step: .1, fmtMask: "#,##0.0", binding: 'ph.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 7.4, max: 8.1, step: .1, fmtMask:"#,##0.0", binding: 'ph.tolerance.high' });
 
             line = $('<div></div>').appendTo(grpAlarm);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'ORP', binding: 'orp.tolerance.enabled' }).css({ width: '5.7rem' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: 400, max: 700, step: 1, binding: 'orp.tolerance.low' });
-            $('<div></div>').appendTo(line).valueSpinner({ min: 700, max: 950, step: 1, binding: 'orp.tolerance.high' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 400, max: 700, step: 1, fmtMask: "#,##0", binding: 'orp.tolerance.low' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 700, max: 950, step: 1, fmtMask: "#,##0", binding: 'orp.tolerance.high' });
             return grpAlarm;
         },
         _buildControls: async function () {
