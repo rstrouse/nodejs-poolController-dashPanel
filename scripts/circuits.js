@@ -452,11 +452,15 @@
                 var btn = evt.currentTarget;
                 divPopover.appendTo(el.parent());
                 divPopover.on('initPopover', function (e) {
+                    console.log('initializing popover');
                     let divThemes = $('<div class= "picLightSettings" data-bind="lightingTheme"></div>');
                     divThemes.appendTo(e.contents());
                     divThemes.attr('data-circuitid', '0');
                     divThemes.lightGroupPanel({ id: '0'});
-                    divThemes.on('loaded', function (e) { divPopover[0].show(btn); });
+                    divThemes.on('loaded', function (e) {
+                        divPopover[0].show(btn);
+                        console.log('Loaded called');
+                    });
                 });
                 divPopover.popover({ title: 'IntelliBrite Settings', popoverStyle: 'modal', placement: { target: btn } });
                 evt.preventDefault();

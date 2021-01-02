@@ -93,16 +93,19 @@
                 for (var i = 0; i < opts.lightGroups.length; i++) {
                     $('<div></div>').appendTo(el).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes })[0].dataBind(opts.lightGroups[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
-                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
-                btnAdd.on('click', function (e) {
-                    var groups = el.find('div.picConfigCategory.cfgLightGroup');
-                    //$(this).addClass('disabled');
-                    //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes });
-                    pnl[0].dataBind({ id: 0, eggTimer: 720, circuits: [], name: 'Group ' + (groups.length + 1), type: 1 });
-                    pnl.find('div.picAccordian:first')[0].expanded(true);
-                });
+                // If this is a Touch panel then we cannot add more light groups.
+                if (!makeBool($('div.picDashboard').attr('data-hidethemes'))) {
+                    var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
+                    var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Group', icon: '<i class="fas fa-plus" ></i>' });
+                    btnAdd.on('click', function (e) {
+                        var groups = el.find('div.picConfigCategory.cfgLightGroup');
+                        //$(this).addClass('disabled');
+                        //$(this).find('i').addClass('burst-animated');
+                        var pnl = $('<div></div>').insertBefore(btnPnl).pnlLightGroupConfig({ circuits: opts.circuits, equipmentNames: opts.equipmentNames, maxCircuitGroups: opts.maxCircuitGroups, colors: opts.colors, themes: opts.themes });
+                        pnl[0].dataBind({ id: 0, eggTimer: 720, circuits: [], name: 'Group ' + (groups.length + 1), type: 1 });
+                        pnl.find('div.picAccordian:first')[0].expanded(true);
+                    });
+                }
             });
         }
     });
@@ -647,7 +650,7 @@
                     }
                 }
             });
-            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash"></i>' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Group', icon: '<i class="fas fa-trash"></i>' }).addClass('deleteGroup').hide();
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -739,7 +742,12 @@
             el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
+            var type = obj.type || 1;
             // Bind all the circuits.
+            if (type === 3)
+                el.find('div.deleteGroup').hide();
+            else
+                el.find('div.deleteGroup').show();
         }
     });
 })(jQuery); // Light Group Panel
