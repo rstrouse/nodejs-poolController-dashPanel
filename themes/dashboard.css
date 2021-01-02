@@ -241,6 +241,9 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
     display: none;
 }
 */
+div.picDashboard span.picIntelliBriteIcon {
+  display: none; }
+
 .control-panel {
   vertical-align: top;
   display: inline-block;
