@@ -152,7 +152,8 @@ $.widget('pic.lightGroupPanel', {
         btnApply.on('click', function (e) {
             var obj = self.fromWindow();
             // Send this off to the server.
-            $.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
+            //$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
+            $.putApiService('/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
 
             });
         });
@@ -190,7 +191,8 @@ $.widget('pic.lightGroupPanel', {
             var tabObj = { id: 'tabThemes', text: 'Light Shows' };
             var contents = this.addTab(tabObj);
             let circuitId = parseInt(el.attr('data-circuitid'), 10) || 0;
-            let cmd = circuitId === 0 ? 'config/intellibrite/themes' : '/config/circuit/' + circuitId + '/lightThemes';
+            //let cmd = circuitId === 0 ? 'config/intellibrite/themes' : '/config/circuit/' + circuitId + '/lightThemes';
+            let cmd = '/config/circuit/' + circuitId + '/lightThemes';
             $.getApiService(cmd, function (data, status, xhr) {
                 let curr = group.lightingTheme.name;
                 let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme"></div>');
@@ -208,10 +210,10 @@ $.widget('pic.lightGroupPanel', {
                     div.on('click', function (evt) {
                         evt.stopPropagation();
                         // Set the lighting theme.
-                        if (circuitId !== 0)
+                        //if (circuitId !== 0)
                             $.putApiService('state/circuit/setTheme', { id: circuitId, theme: parseInt(theme.val, 10) });
-                        else
-                            $.putApiService('state/intellibrite/setTheme', { theme: parseInt(theme.val, 10) });
+                        //else
+                        //    $.putApiService('state/intellibrite/setTheme', { theme: parseInt(theme.val, 10) });
 
                     });
                 }
@@ -228,8 +230,10 @@ $.widget('pic.lightGroupPanel', {
         tabs.appendTo(el);
         tabs.tabBar();
         let circuitId = parseInt(el.attr('data-circuitid'), 10) || 0;
-        let cfgCmd = circuitId === 0 ? '/config/intellibrite' : '/config/lightGroup/' + circuitId;
-        let stateCmd = circuitId === 0 ? '/state/intellibrite' : '/state/lightGroup/' + circuitId;
+        //let cfgCmd = circuitId === 0 ? '/config/intellibrite' : '/config/lightGroup/' + circuitId;
+        //let stateCmd = circuitId === 0 ? '/state/intellibrite' : '/state/lightGroup/' + circuitId;
+        let cfgCmd = '/config/lightGroup/' + circuitId;
+        let stateCmd = '/state/lightGroup/' + circuitId;
         let obj;
         $.getApiService(cfgCmd, function (group, status, xhr) {
             console.log(group);
