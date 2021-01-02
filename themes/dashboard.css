@@ -232,11 +232,13 @@ div.dashOuter[data-panel=dashboard] > div.configContainer {
 div.dashOuter[data-panel=configuration] > div.dashContainer {
   display: none; }
 
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picLight i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picIBColor,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picLight div.picIBColor {
+  display: none; }
+
 /*
-div.picDashboard[data-hidethemes=true] div.picCircuit i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes=true] div.picLight i.picDropdownButton.fa-palette {
-    display: none;
-}
 div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
     display: none;
 }

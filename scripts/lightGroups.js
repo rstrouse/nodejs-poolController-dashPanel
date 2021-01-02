@@ -193,6 +193,7 @@ $.widget('pic.lightGroupPanel', {
             let circuitId = parseInt(el.attr('data-circuitid'), 10) || 0;
             //let cmd = circuitId === 0 ? 'config/intellibrite/themes' : '/config/circuit/' + circuitId + '/lightThemes';
             let cmd = '/config/circuit/' + circuitId + '/lightThemes';
+            var hideThemes = makeBool($('div.picDashboard').attr('data-hidethemes'));
             $.getApiService(cmd, function (data, status, xhr) {
                 let curr = group.lightingTheme.name;
                 let divThemes = $('<div class= "picLightThemes" data-bind="lightingTheme"></div>');
@@ -200,6 +201,7 @@ $.widget('pic.lightGroupPanel', {
                 divThemes.attr('data-circuitid', el.attr('data-circuitid'));
                 for (let i = 0; i < data.length; i++) {
                     let theme = data[i];
+                    if (hideThemes && (theme.val > 197 || theme.val < 177 || theme.name === 'save' || theme.name === 'recall')) continue;
                     let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"></div><label class="picIBThemeLabel"></label></div>');
                     div.appendTo(divThemes);
                     div.attr('data-val', theme.val);
