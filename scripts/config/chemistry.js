@@ -275,14 +275,14 @@
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.startDelay', labelText: 'Delay', min: 0, max: 59, step:.1, fmtMask:'#,##0.#', dataType: 'number', labelAttrs: { style: { width:'3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' });
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-volume').hide();
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingVolume', labelText: 'Max Vol', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width:'4.5rem' } }, inputAttrs: { style: { width: '4.7rem' } }, units: 'mL' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingVolume', labelText: 'Max Vol', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width:'4.5rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL per Dose' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-time').hide();
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingTimeHours', labelText: 'Max Time', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '2.1rem' } }, units:'hrs' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'min' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingTimeSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'sec' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDosingTimeSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units:'sec per Dose' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-delay').hide();
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDailyVolume', labelText: 'Max Daily', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '4.7rem' } }, units: 'mL' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
             
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-phDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
@@ -358,21 +358,24 @@
                             break;
                     }
                 });
-
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.phLockout', labelText: 'pH Lockout', min: 7.2, max: 8.4, step: .1, dataType: 'number', fmtMask: '#,##0.0#', labelAttrs: { style: { width: '5.5rem', marginLeft: '1rem' } }, inputAttrs: { style: { width: '3.5rem' } } })
+                .addClass('pnl-orpDose-delay')
+                .attr('title', 'Set the minimum pH threshold where orp will not dose.\nIf the ph is higher than the lockout threshold orp dispensing will be suspended.');
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-delay').hide();
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.startDelay', labelText: 'Delay', min: 0, max: 59, step: .1, fmtMask: '#,##0.#', dataType: 'number', labelAttrs: { style: { width: '4rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.startDelay', labelText: 'Delay', min: 0, max: 59, step: .1, fmtMask: '#,##0.#', dataType: 'number', labelAttrs: { style: { width: '4rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' })
+                .attr('title', 'The number of minutes to delay after flow is detected before attempting to dose\nSet this value to ample amount of time for probe readings to be acquired and flow to stabilize.');
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-volume').hide();
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingVolume', labelText: 'Max Vol', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '4.7rem' } }, units: 'mL' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingVolume', labelText: 'Max Vol', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-time').hide();
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeHours', labelText: 'Max Time', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '2.1rem' } }, units: 'hrs' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'sec' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDosingTimeSeconds', labelText: 'Seconds', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'sec per Dose' });
             
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-delay').hide();
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDailyVolume', labelText: 'Max Daily', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '4.5rem' } }, inputAttrs: { style: { width: '4.7rem' } }, units: 'mL' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.phLockout', labelText: 'pH Lockout', min: 7.2, max: 8.4, step: .1, dataType: 'number', fmtMask: '#,##0.0#', labelAttrs: { style: { width: '5.5rem', marginLeft:'1rem' } }, inputAttrs: { style: { width: '3.5rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
+            
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-orpDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
             $('<legend></legend>').text('Mixing').appendTo(grpMix);
