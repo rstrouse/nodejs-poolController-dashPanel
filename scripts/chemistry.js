@@ -395,17 +395,21 @@
             if (typeof data.orp.pump.type !== 'undefined') {
                 if ((data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) || data.type.name === 'intellichem') {
                     el.find('div.picChemTank[data-chemtype="orp"]').show();
+                    el.find('div.daily-dose[data-chemtype="orp"]').show();
                 }
                 else {
                     el.find('div.picChemTank[data-chemtype="orp"]').hide();
+                    el.find('div.daily-dose[data-chemtype="orp"]').hide();
                 }
             }
             if (typeof data.ph.pump.type !== 'undefined') {
                 if ((data.ph.enabled && data.ph.pump.type.name !== 'none') || data.type.name === 'intellichem') {
                     el.find('div.picChemTank[data-chemtype="acid"]').show();
+                    el.find('div.daily-dose[data-chemtype="acid"]').show();
                 }
                 else {
                     el.find('div.picChemTank[data-chemtype="acid"]').hide();
+                    el.find('div.daily-dose[data-chemtype="acid"]').hide();
                 }
             }
             // If we are dosing I need to kill the manual dose window as well as change the buttons
@@ -646,6 +650,14 @@
             var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
             $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
             $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
+            var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').addClass('ph').css({ textAlign: 'left' });
+            $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight:'1' });
+            $('<hr></hr>').appendTo(divTotal).css({ margin: '1px' });
+            $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'acid').appendTo(divTotal).staticField({ labelText: 'Acid', binding: 'ph.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
+            $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'orp').appendTo(divTotal).staticField({ labelText: 'Chlorine', binding: 'orp.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
+        
+
+
             // A good balanced saturationIndex is between +- 0.3
 
             divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign: 'center' }).appendTo(grpLevels);
