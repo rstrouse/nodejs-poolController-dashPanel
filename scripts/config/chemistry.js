@@ -121,8 +121,8 @@
                                 switch (type.name) {
                                     case 'rem':
                                         cc.lsiRange = { enabled: true, low: -0.5, high: 0.5 };
-                                        cc.ph = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5 };
-                                        cc.orp = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8 };
+                                        cc.ph = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5, tank: {alarmEmptyEnabled: true, alarmEmptyLevel: 20} };
+                                        cc.orp = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8, tank: {alarmEmptyEnabled: true, alarmEmptyLevel: 20} };
                                         break;
                                 }
                                 divController[0].dataBind(cc);
@@ -410,7 +410,8 @@
         },
         _buildRangePanel: function () {
             var self = this, o = self.options, el = self.element;
-            var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            var outer = $('<div></div>')
+            var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(outer);
             $('<legend></legend>').text(`Ideal Range Settings`).appendTo(grpAlarm);
             var line = $('<div></div>').appendTo(grpAlarm).css({ marginTop: '-7px', width: '17rem', fontSize:'.7rem' }).html(`Set the high and low ranges below.  Check the box if you would like these alerts to appear in the chemistry section of the dashboard.`);
             
@@ -436,7 +437,26 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'ORP', binding: 'orp.tolerance.enabled' }).css({ width: '5.7rem' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 400, max: 700, step: 1, fmtMask: "#,##0", binding: 'orp.tolerance.low' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, min: 700, max: 950, step: 1, fmtMask: "#,##0", binding: 'orp.tolerance.high' });
-            return grpAlarm;
+
+            var tankAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(outer);;
+            $('<legend></legend>').text(`Tank Alarm Settings`).appendTo(tankAlarm);
+            var tankLine = $('<div></div>').appendTo(tankAlarm).css({ marginTop: '-7px', width: '17rem', fontSize:'.7rem' }).html(`Set the % for which your tank will trigger the empty alarm.`);
+            
+
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<span></span>').appendTo(tankLine).css({ width: '5.7rem', display: 'inline-block' });
+            $('<label></label>').appendTo(tankLine).css({ width: '5.5rem', display: 'inline-block', textAlign: 'center', marginRight:'.15rem' }).text('Percentage');
+
+
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<hr></hr>').appendTo(tankLine).css({ margin: '2px' });
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<div></div>').appendTo(tankLine).checkbox({ labelText: 'pH Tank', binding: 'ph.tank.alarmEmptyEnabled' }).css({ width: '6.5rem' });
+            $('<div></div>').appendTo(tankLine).valueSpinner({ canEdit: true, min: 0, max: 100, step: 1, units: '%', binding: 'ph.tank.alarmEmptyLevel'});
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<div></div>').appendTo(tankLine).checkbox({ labelText: 'ORP Tank', binding: 'orp.tank.alarmEmptyEnabled' }).css({ width: '6.5rem' });
+            $('<div></div>').appendTo(tankLine).valueSpinner({ canEdit: true, min: 0, max: 100, step: 1, units: '%', binding: 'orp.tank.alarmEmptyLevel'});
+            return outer;
         },
         _buildControls: async function () {
             var self = this, o = self.options, el = self.element;
