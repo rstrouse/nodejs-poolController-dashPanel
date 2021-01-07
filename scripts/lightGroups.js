@@ -153,7 +153,7 @@ $.widget('pic.lightGroupPanel', {
             var obj = self.fromWindow();
             // Send this off to the server.
             //$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
-            $.putApiService('/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
+            $.putApiService('/config/lightGroup/' + obj.id + '/setColors', obj, 'Setting Light Group Colors...', function (data, status, xhr) {
 
             });
         });

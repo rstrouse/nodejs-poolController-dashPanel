@@ -301,24 +301,54 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
         },
+        _showOptions: function () {
+            var self = this, o = self.options, el = self.element;
+            var data = dataBinder.fromElement(el);
+            console.log(data);
+            if (!data.orp.enabled) {
+                el.find('div.pnl-dosing').hide();
+                el.find('div.picCheckbox[data-bind="orp.useChlorinator"]').hide();
+            }
+            else {
+                el.find('div.pnl-dosing').show();
+                el.find('div.picCheckbox[data-bind="orp.useChlorinator"]').show();
+                if (data.orp.useChlorinator) {
+                    // We need to hide the following:
+                    // DoseBy dropdown
+                    // Volume options
+                    // Max Limits
+                    el.find('div.picPickList[data-bind="orp.dosingMethod"]').each(function () {
+                        this.val(1);
+                        $(this).hide();
+                    });
+                    el.find('div.picValueSpinner[data-bind="orp.maxDailyVolume"]').hide();
+                }
+                else {
+                    el.find('div.picPickList[data-bind="orp.dosingMethod"]').show();
+                    el.find('div.picValueSpinner[data-bind="orp.maxDailyVolume"]').show();
+                }
+            }
+        },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('pnl-chemcontroller-orpsettings');
             var line = $('<div></div>').appendTo(el);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'ORP Enabled', binding: 'orp.enabled' });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'ORP Enabled', binding: 'orp.enabled' }).on('changed', function (evt) { self._showOptions(); });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Use Chlorinator', binding: 'orp.useChlorinator' }).css({ marginLeft: '2rem' })
                 .on('changed', function (evt) {
-                    if (evt.newVal) {
-                        el.find('div.pnl-dosing').hide();
-                    }
-                    else {
-                        el.find('div.pnl-dosing').show();
-                    }
+                    self._showOptions();
+                    
+                    //if (evt.newVal) {
+                    //    el.find('div.pnl-dosing').hide();
+                    //}
+                    //else {
+                    //    el.find('div.pnl-dosing').show();
+                    //}
                 });
             sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top', paddingRight: '1rem' }).addClass('pnl-dosing');
             line = $('<div></div>').appendTo(sec);
 
-            var grpDose = $('<fieldset></fieldset>').css({ display: 'block', verticalAlign: 'top' }).appendTo(line);
+            var grpDose = $('<fieldset></fieldset>').css({ display: 'block', verticalAlign: 'top' }).addClass('grp-dosingparams').appendTo(line);
             $('<legend></legend>').text('Dosing Parameters').appendTo(grpDose);
             line = $('<div></div>').appendTo(grpDose);
             $('<div></div>').appendTo(line).pickList({
@@ -357,8 +387,8 @@
                             el.find('.pnl-orpDose-mix').hide();
                             break;
                     }
-                });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.phLockout', labelText: 'pH Lockout', min: 7.2, max: 8.4, step: .1, dataType: 'number', fmtMask: '#,##0.0#', labelAttrs: { style: { width: '5.5rem', marginLeft: '1rem' } }, inputAttrs: { style: { width: '3.5rem' } } })
+                }).css({ marginRight: '1rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.phLockout', labelText: 'pH Lockout', min: 7.2, max: 8.4, step: .1, dataType: 'number', fmtMask: '#,##0.0#', labelAttrs: { style: { width: '5.5rem' } }, inputAttrs: { style: { width: '3.5rem' } } })
                 .addClass('pnl-orpDose-delay')
                 .attr('title', 'Set the minimum pH threshold where orp will not dose.\nIf the ph is higher than the lockout threshold orp dispensing will be suspended.');
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-delay').hide();
