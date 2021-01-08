@@ -585,7 +585,8 @@
                 console.log(data);
                 el.find('div.picTabPanel:first').find('div.picSystem').each(function () {
                     let $div = $('<div class="picFirmware"></div>').appendTo($(this));
-                    $('<div class="picOptionLine"><label>Version</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Bodies</label><span>' + data.bodies.length + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
