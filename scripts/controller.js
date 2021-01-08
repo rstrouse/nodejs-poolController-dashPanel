@@ -596,14 +596,25 @@
                     let $divMods = $('<div class="picModules"></div>').appendTo($(this));
                     let $hdr = $('<table><tbody><tr><td><label>Panel</label></td><td><label>Module</label></td></tr></tbody></table>').appendTo($divMods);
                     let $tbody = $divMods.find('table:first > tbody');
-                    if (data.equipment.modules === 'undefined') {
+                    if (typeof data.equipment.modules === 'undefined') {
                         $divMods.hide();
                     }
                     else {
                         $divMods.show();
                         for (let i = 0; i < data.equipment.modules.length; i++) {
                             let mod = data.equipment.modules[i];
-                            let $row = $('<tr><td><span>Master</span></td><td><div>' + mod.desc + '</div><div>P/N: ' + mod.part + '</div></td></tr>').appendTo($tbody);
+                            $('<tr><td><span>Master</span></td><td><div>' + mod.desc + '</div><div>P/N: ' + mod.part + '</div></td></tr>').appendTo($tbody);
+                        }
+                    }
+                    if (typeof data.equipment.expansions !== 'undefined') {
+                        for (var j = 0; j < data.equipment.expansions.length; j++) {
+                            var exp = data.equipment.expansions[j];
+                            if (typeof exp.modules !== 'undefined') {
+                                for (var k = 0; k < exp.modules.length; k++) {
+                                    var m = exp.modules[k];
+                                    $(`<tr><td><span>Exp ${j + 1}</span></td><td><div>${m.desc}</div><div>P/N: ${m.part}</div></td></tr>`).appendTo($tbody);
+                                }
+                            }
                         }
                     }
                     let btn = el.find('div[id$=btnReloadConfig]');
