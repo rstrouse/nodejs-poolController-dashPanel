@@ -3055,11 +3055,9 @@ $.ui.position.fieldTip = {
                 $('<div></div>').addClass('chemTank-scale-tick').css({ top: 'calc(' + (tickpos * i) + '% + 10.5px)' }).appendTo(liquid);
             }
             $('<label></label>').addClass('chemTank-label').text(o.labelText).appendTo(el);
-
-
+            $('<div></div>').addClass('chemTank-alarmEmptyLevel').css({ top: 'calc(100% + 0px)', position: 'relative', overflow: 'hidden'}).appendTo(liquid);
             if (o.required === true) self.required(true);
             if (o.binding) el.attr('data-bind', o.binding);
-            
             self.val(o.value || o.min);
             self._applyStyles();
         },
@@ -3118,6 +3116,7 @@ $.ui.position.fieldTip = {
                 //console.log(liquid);
                 liquid.find('div.chemTank-level-top').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)' });
                 liquid.find('div.chemTank-level').css({ top: 'calc(' + (100 - pct) + '% - 12.5px)', height: 'calc(' + pct + '% + 25px)' });
+                liquid.find('div.chemTank-alarmEmptyLevel').css({ top: 'calc(' + (100 - val.alarmEmptyLevel) + '%)' });
                 o.value = lvl;
             }
             else {

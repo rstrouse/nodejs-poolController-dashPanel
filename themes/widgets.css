@@ -833,6 +833,21 @@ div.chemTank-liquid {
     border-radius: 100%/25px;
     border-top: none;
 }
+.chemTank-alarmEmptyLevel {
+    height: 25px;
+    width: 100%;
+}
+.chemTank-alarmEmptyLevel:before {
+        height: inherit;
+        width: inherit;
+        position: absolute;
+        content: "";
+        border-radius: 100%;
+        border: dashed 1px red;
+        transform-origin: 50% 100%;   
+        transform: translate(0, -50%);
+        left: 0px;
+    }
 .chemTank-level-top {
     content: '';
     position: absolute;
