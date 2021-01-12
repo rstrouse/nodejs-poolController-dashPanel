@@ -417,7 +417,7 @@
             if (typeof data.ph !== 'undefined' && typeof data.ph.dosingStatus !== 'undefined') {
                 if (data.ph.dosingStatus.name !== 'dosing') {
                     // Change the button to stop dosing.
-                    if (data.flowDetected === false)
+                    if (data.flowDetected === false || data.isBodyOn === false)
                         el.find('div#btnDoseAcid').hide();
                     else
                         el.find('div#btnDoseAcid').show();
@@ -431,7 +431,7 @@
             if (typeof data.orp !== 'undefined' && typeof data.orp.dosingStatus !== 'undefined') {
                 if (data.orp.dosingStatus.name !== 'dosing') {
                     // Change the button to stop dosing.
-                    if (data.flowDetected === false)
+                    if (data.flowDetected === false || data.isBodyOn === false)
                         el.find('div#btnDoseOrp').hide();
                     else
                         el.find('div#btnDoseOrp').show();
