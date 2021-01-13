@@ -10,6 +10,7 @@
         setChlorinatorData: function (data) {
             var self = this, o = self.options, el = self.element;
             if (data.isActive !== false && el.find('div.picChlorinator[data-id=' + data.id + ']').length === 0) {
+                console.log(`RESETTING DIV`);
                 var div = $('<div></div>');
                 div.appendTo(el);
                 div.chlorinator(data);
@@ -69,15 +70,18 @@
                 let sc = el.find('div.picSuperChlor');
                 if (data.superChlor) {
                     sc.show();
-                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    console.log(`WHAT IS o.superChlorTimer: ${o.superChlorTimer}`);
+                    if (o.superChlorTimer) clearInterval(o.superChlorTimer);
+                    console.log(`superChlorRem: ${data.superChlorRemaining}`);
                     if (data.superChlorRemaining > 0) {
-                        o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        console.log(`STARTING TIMER WITH ${data.superChlorRemaining}`);
+                        o.superChlorTimer =  setInterval(function () { self.countdownSuperChlor(); }, 1000);
                         el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
                         el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
                     }
                 }
                 else {
-                    if (o.superChlorTimer) clearTimeout(o.superChlorTimer);
+                    if (o.superChlorTimer) clearInterval(o.superChlorTimer);
                     o.superChlorTimer = null;
                     sc.hide();
                     el.find('div.picSuperChlorBtn label.picSuperChlor').text('Super Chlorinate');
@@ -97,11 +101,14 @@
                 pnl.hide();
         },
         countdownSuperChlor: function () {
+            console.log(`countdownSuperChlor called!`)
             var self = this, o = self.options, el = self.element;
-            let rem = Math.max(el.data('remaining') - 1);
+            let rem = Math.max(el.data('remaining') - 1, 0);
+            if (rem === 0) {clearInterval(el.superChlorTimer); el.superChlorTimer = null;}
             el.find('span.picSuperChlorRemaining').each(function () {
                 $(this).text(dataBinder.formatDuration(rem));
             });
+            console.log(`Time remaining: ${rem}`);
             el.data('remaining', rem);
         },
         putPoolSetpoint: function (setPoint) {
