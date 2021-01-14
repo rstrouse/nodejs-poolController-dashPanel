@@ -1,6 +1,6 @@
 ﻿(function ($) {
     $.widget("pic.chemistry", {
-        options: { },
+        options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initChemistry = function (data) { self._initChemistry(data); };
@@ -10,7 +10,7 @@
         setChlorinatorData: function (data) {
             var self = this, o = self.options, el = self.element;
             if (data.isActive !== false && el.find('div.picChlorinator[data-id=' + data.id + ']').length === 0) {
-                console.log(`RESETTING DIV`);
+                console.log(`RESETTING CHLOR DIV`);
                 var div = $('<div></div>');
                 div.appendTo(el);
                 div.chlorinator(data);
@@ -29,10 +29,13 @@
                 el.find('div.picChemController[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
         },
 
-        _initChemistry: function(data) {
+        _initChemistry: function (data) {
             var self = this, o = self.options, el = self.element;
+            el.find('div.picChlorinator').each(function () {
+                this.stopCountdownSuperChlor();
+            })
             el.empty();
-            
+
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
@@ -47,7 +50,7 @@
                     $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
                 }
             }
-            else el.hide(); 
+            else el.hide();
         }
     });
     $.widget('pic.chlorinator', {
@@ -56,6 +59,7 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+            el[0].stopCountdownSuperChlor = function (data) { self.stopCountdownSuperChlor(); };
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -70,18 +74,15 @@
                 let sc = el.find('div.picSuperChlor');
                 if (data.superChlor) {
                     sc.show();
-                    console.log(`WHAT IS o.superChlorTimer: ${o.superChlorTimer}`);
-                    if (o.superChlorTimer) clearInterval(o.superChlorTimer);
-                    console.log(`superChlorRem: ${data.superChlorRemaining}`);
+                    if (o.superChlorTimer) this.stopCountdownSuperChlor();
                     if (data.superChlorRemaining > 0) {
-                        console.log(`STARTING TIMER WITH ${data.superChlorRemaining}`);
-                        o.superChlorTimer =  setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
                         el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
                         el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
                     }
                 }
                 else {
-                    if (o.superChlorTimer) clearInterval(o.superChlorTimer);
+                    if (o.superChlorTimer) this.stopCountdownSuperChlor();
                     o.superChlorTimer = null;
                     sc.hide();
                     el.find('div.picSuperChlorBtn label.picSuperChlor').text('Super Chlorinate');
@@ -101,15 +102,18 @@
                 pnl.hide();
         },
         countdownSuperChlor: function () {
-            console.log(`countdownSuperChlor called!`)
             var self = this, o = self.options, el = self.element;
             let rem = Math.max(el.data('remaining') - 1, 0);
-            if (rem === 0) {clearInterval(el.superChlorTimer); el.superChlorTimer = null;}
+            if (rem === 0 || isNaN(rem)) this.stopCountdownSuperChlor();
             el.find('span.picSuperChlorRemaining').each(function () {
                 $(this).text(dataBinder.formatDuration(rem));
             });
-            console.log(`Time remaining: ${rem}`);
             el.data('remaining', rem);
+        },
+        stopCountdownSuperChlor: function () {
+            var self = this, o = self.options, el = self.element;
+            clearInterval(o.superChlorTimer);
+            o.superChlorTimer = null;
         },
         putPoolSetpoint: function (setPoint) {
             var self = this, o = self.options, el = self.element;
@@ -125,6 +129,10 @@
             var self = this, o = self.options, el = self.element;
             $.putApiService('state/chlorinator/superChlorHours', { id: parseInt(el.attr('data-id'), 10), hours: hours }, function () { });
 
+        },
+        putChlorValues: function (hours) {
+            var self = this, o = self.options, el = self.element;
+            $.putApiService('config/chlorinator', { id: parseInt(el.attr('data-id'), 10), superChlorHours: o.superChlorHoursTarget, poolSetpoint: o.poolSetpointTarget, spaSetpoint: o.spaSetpointTarget }, function () { });
         },
         putSuperChlorinate: function (bSet) {
             var self = this, o = self.options, el = self.element;
@@ -143,7 +151,7 @@
                     divPopover.appendTo(el);
                     divPopover.on('initPopover', function (evt) {
                         let saltReqd = parseFloat(el.attr('data-saltrequired'));
-                        if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"></i><span> Add ' + (saltReqd/40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
+                        if (saltReqd > 0) $('<div class="picSaltReqd"><i class="fas fa-bell"></i><span> Add ' + (saltReqd / 40).toFixed(2) + ' 40lb bags of salt</span></div>').appendTo(evt.contents());
                         if (data.body.val === 32 || data.body.val === 0) {
                             //let divSetpoint = $('<div class="picPoolSetpoint picSetpoint"><label class="picInline-label picSetpointText">Pool Set Point</label><div class="picValueSpinner" data-bind="poolSetpoint"></div></div>');
                             //divSetpoint.appendTo(evt.contents());
@@ -151,13 +159,19 @@
                             //    $(this).valueSpinner({ val: data.poolSetpoint, min: 0, max: 100, step: 1 });
                             //    $(this).on('change', function (e) { self.putPoolSetpoint(e.value); });
                             //});
-                           
-                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({ binding: 'poolSetpoint',
+
+                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({
+                                binding: 'poolSetpoint',
                                 canEdit: true, labelText: 'Pool Setpoint', min: 0, max: 100, step: 1, units: '%',
-                                labelAttrs: { style: {width: '7rem'}}
+                                labelAttrs: { style: { width: '7rem' } }
                             }).on('change', function (e) {
-                                    self.putPoolSetpoint(e.value);
-                                });
+                                o.poolSetpointTarget = e.value;
+                                if (typeof o.putChlorValuesTimer !== 'undefined') {
+                                    clearTimeout(o.putChlorValuesTimer);
+                                    o.putChlorValuesTimer = null;
+                                }
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
+                            });
                         }
                         if (data.body.val === 32 || data.body.val === 1) {
                             // Add in the spa setpoint.
@@ -167,12 +181,18 @@
                             //    $(this).valueSpinner({ val: data.spaSetpoint, min: 0, max: 100, step: 1 });
                             //    $(this).on('change', function (e) { self.putSpaSetpoint(e.value); });
                             //});
-                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({ binding: 'spaSetpoint',
+                            $('<div></div>').appendTo(evt.contents()).css({ display: 'block' }).valueSpinner({
+                                binding: 'spaSetpoint',
                                 canEdit: true, labelText: 'Spa Setpoint', min: 0, max: 100, step: 1, units: '%',
                                 labelAttrs: { style: { width: '7rem' } }
                             }).on('change', function (e) {
-                                    self.putSpaSetpoint(e.value);
-                                });
+                                o.spaSetpointTarget = e.value;
+                                if (typeof o.putChlorValuesTimer !== 'undefined') {
+                                    clearTimeout(o.putChlorValuesTimer);
+                                    o.putChlorValuesTimer = null;
+                                }
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
+                            });
                         }
 
                         //let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
@@ -187,7 +207,12 @@
                             labelAttrs: { style: { width: '7rem' } }
                         }).addClass('picPoolSetpoint').addClass('picSetpoint').
                             on('change', function (e) {
-                                self.putSuperChlorHours(e.value);
+                                o.superChlorHoursTarget = e.value;
+                                if (typeof o.putChlorValuesTimer !== 'undefined') {
+                                    clearTimeout(o.putChlorValuesTimer);
+                                    o.putChlorValuesTimer = null;
+                                }
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
                             });
 
                         // Add in the super chlorinate button.
@@ -215,7 +240,7 @@
                 evt.stopImmediatePropagation();
             });
         },
-        _buildControls: function() {
+        _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picChlorinator');
             var div = $('<div class="picChlorinatorState picIndicator"></div>');
@@ -344,7 +369,7 @@
                     var divPopover = $('<div class="picChemControllerSettings"></div>');
                     divPopover.appendTo(el);
                     divPopover.on('initPopover', function (evt) {
-                        var divSettings = $('<div></div>').appendTo(evt.contents()).css({ display: 'inline-block', verticalAlign: 'top', width:'347px' }).chemControllerSettings(data);
+                        var divSettings = $('<div></div>').appendTo(evt.contents()).css({ display: 'inline-block', verticalAlign: 'top', width: '347px' }).chemControllerSettings(data);
                     });
                     divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
                     divPopover.popover({ title: 'Chemistry Settings', popoverStyle: 'modal', placement: { target: evt.target } });
@@ -566,12 +591,12 @@
             var line = $('<div></div>').appendTo(divPnl);
             $('<div></div>').appendTo(line).valueSpinner({
                 canEdit: true, labelText: 'Dose Amount', binding: 'volume', min: 0, max: 1000, step: 10,
-                fmtMask: '#,##0', units:'mL',
+                fmtMask: '#,##0', units: 'mL',
                 labelAttrs: { style: { marginRight: '.15rem' } },
                 inputAttrs: { style: { width: '7rem' } }
             }).on('change', function (e) {
 
-                });
+            });
             divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
             dlg.css({ overflow: 'visible' });
         },
@@ -658,11 +683,11 @@
             $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
             $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
             var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').addClass('ph').css({ textAlign: 'left' });
-            $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight:'1' });
+            $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight: '1' });
             $('<hr></hr>').appendTo(divTotal).css({ margin: '1px' });
             $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'acid').appendTo(divTotal).staticField({ labelText: 'Acid', binding: 'ph.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
             $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'orp').appendTo(divTotal).staticField({ labelText: 'Chlorine', binding: 'orp.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
-        
+
 
 
             // A good balanced saturationIndex is between +- 0.3
