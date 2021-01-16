@@ -219,7 +219,7 @@
             var arr = [];
             for (var i = 0; i < days.length; i++) {
                 var day = days[i];
-                var hasDay = (0xFF & bits & (1 << (day.val - 1))) > 0;
+                var hasDay = ((day.bitval || day.val) & 0xFF & bits) > 0;
                 if (hasDay) arr.push(day);
             }
             return arr.sort((a, b) => a.val - b.val);
@@ -295,8 +295,7 @@
                 var day = o.days[i];
                 $('<div></div>').addClass('table-cell').appendTo(rowHeader).addClass('dayheader').text(day.desc.substring(0, 3));
                 var td = $('<div></div>').addClass('table-cell').appendTo(rowDays).addClass('day');
-                //$('<i></i>').addClass('far').addClass('fa-circle').appendTo(td);
-                td.attr('data-bitval', 1 << (day.val - 1));
+                td.attr('data-bitval', day.bitval || val);
                 td.attr('data-selected', false);
             }
             el.on('click', 'div.table-cell.day', function (evt) {
@@ -353,12 +352,10 @@
                     var bitVal = parseInt(cell.attr('data-bitval'), 10);
                     if ((bitVal & val & 0xFF) === bitVal
                         && (!o.singleSelect || !hasSelection)) { // If we are a single selection only allow one.
-                        //cell.find('i').removeClass('far').addClass('fas').removeClass('fa-circle').addClass('fa-times-circle');
                         cell.attr('data-selected', true);
                         hasSelection = true;
                     }
                     else {
-                        //cell.find('i').removeClass('fas').addClass('far').removeClass('fa-times-circle').addClass('fa-circle');
                         cell.attr('data-selected', false);
                     }
                 });
