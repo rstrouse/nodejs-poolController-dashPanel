@@ -163,7 +163,7 @@
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
                 $.pic.modalDialog.createConfirm('dlgConfirmDeleteSchedule', {
-                    message: 'Are you sure you want to schedule ' + v.name + '?',
+                    message: 'Are you sure you want to delete schedule ' + v.id + '?',
                     width: '350px',
                     height: 'auto',
                     title: 'Confirm Delete Schedule',
