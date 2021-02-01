@@ -344,12 +344,14 @@
                 if (data.isActive === false) el.hide();
                 else el.show();
                 el.attr('data-active', data.isActive === false ? false : true);
+                var ph = typeof data.ph !== 'undefined' && typeof data.ph.pump !== 'undefined' && data.ph.pump.isDosing ? true : false;
+                var orp = typeof data.orp !== 'undefined' && typeof data.orp.pump !== 'undefined' && data.orp.pump.isDosing ? true : false;
                 el.find('div.picChemControllerState').attr('data-status', data.ph.pump.isDosing || data.orp.pump.isDosing ? 'on' : 'off');
                 dataBinder.bind(el, data);
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
                 else el.attr('data-status', '');
             }
-            catch (err) { console.log({ m: 'Error setting chem controller data', err: err, chlor: data }); }
+            catch (err) { console.log({ m: 'Error setting chem controller data', err: err, chem: data }); }
             var pnl = el.parents('div.picChemistry:first');
             if (pnl.find('div.picChlorinator[data-active=true], div.picChemController[data-active=true]').length > 0) {
                 pnl.show();
