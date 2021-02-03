@@ -27,7 +27,7 @@
     </style>
     <script type="text/javascript">
         // Add in the current theme for the pool controller.
-        var theme = getCookie('dashTheme', 'default');
+        var theme = getStorage('dashTheme', 'default');
         $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head'));
     </script>
 
@@ -50,7 +50,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            var background = getCookie('dashBackground', '');
+            var background = getStorage('dashBackground', '');
             if (typeof background !== 'undefined' && background !== '')
                 $(document.body).css('background-image', `url(${background})`);
             else

@@ -520,6 +520,21 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         });
     };
 });
+function getStorage(name, def) {
+    if (typeof Storage === 'undefined') return getCookie(name, def);
+    else {
+        var val = localStorage.getItem(name);
+        console.log(`Getting data using local storage method: ${name}/${val}`);
+        return typeof val === 'undefined' || !val ? def : val;
+    }
+}
+function setStorage(name, value) {
+    if (typeof Storage === 'undefined') return setCookie(name, val);
+    else {
+        console.log(`Setting data using local storage method: ${name}/${value}`);
+        localStorage.setItem(name, value);
+    }
+}
 function getCookie(name, def ) {
     var cooks = document.cookie.split(';');
     for (var i = 0; i < cooks.length; i++) {

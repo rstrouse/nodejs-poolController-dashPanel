@@ -411,7 +411,7 @@
                     ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '7rem' } }
                 }).on('selchanged', function (evt) {
                     if (evt.newItem) {
-                        setCookie('dashTheme', evt.newItem.code);
+                        setStorage('dashTheme', evt.newItem.code);
                         var ss = $(document).find('link[id="cssref_theme"]');
                         if (ss.length > 0) {
                             if (ss[0].href.indexOf('themes/' + evt.newItem.code + '/theme.css') === -1) { // Don't change the theme if it isn't changing.
@@ -424,7 +424,7 @@
                         else
                             $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head')).attr('data-theme', evt.newItem.code);
                     }
-                    })[0].val(getCookie('dashTheme', 'default'));
+                    })[0].val(getStorage('dashTheme', 'default'));
                 line = $('<div></div>').appendTo(divOuter);
                 $('<label></label>').appendTo(line).css({ width: '7rem', display: 'inline-block' }).addClass('field-label').text('Background');
                 settings.backgrounds.unshift({ name: 'Use Theme Default', url:'' });
@@ -437,12 +437,12 @@
                     labelAttrs: { style: { display: 'none' } },
                     items: settings.backgrounds
                 }).on('selchanged', function (evt) {
-                    setCookie('dashBackground', evt.newItem.url);
+                    setStorage('dashBackground', evt.newItem.url);
                     if (evt.newItem.url === 'undefined' || evt.newItem.url === '')
                         $(document.body).css('background-image', '');
                     else
                             $(document.body).css('background-image', `url(${evt.newItem.url})`);
-                    })[0].val(getCookie('dashBackground', ''));
+                    })[0].val(getStorage('dashBackground', ''));
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
                 $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Upload Background', icon: '<i class="fas fa-file-image"></i>' })
