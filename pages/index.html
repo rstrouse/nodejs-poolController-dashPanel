@@ -38,14 +38,16 @@
     <link id="cssref_config" rel="stylesheet" type="text/css" href="themes/configPage.css" />
     <link id="cssref_dash" rel="stylesheet" type="text/css" href="themes/dashboard.css" />
     <script type="text/javascript">
-        // Add in the current theme for the pool controller.
-        var background = getStorage('dashBackground', '');
-        if (typeof background !== 'undefined' && background !== '')
-            $(document.body).css('background-image', `url(${background})`);
-        else
-            $(document.body).css('background-image', '');
-        var theme = getStorage('dashTheme', 'default');
-        $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head')).attr('data-theme', theme);
+        $(document).ready(function () {
+            // Add in the current theme for the pool controller.
+            var background = getStorage('dashBackground', '');
+            if (typeof background !== 'undefined' && background !== '')
+                $(document.body).css('background-image', `url(${background})`);
+            else
+                $(document.body).css('background-image', '');
+            var theme = getStorage('dashTheme', 'default');
+            $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head')).attr('data-theme', theme);
+        });
     </script>
 </head>
 <body>
