@@ -91,7 +91,7 @@
 
                 + '<div class= "picBodySetPoints">'
                 + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span><div>'
-                + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span class="picModeData" data-bind="heatMode.desc">----</span>'
+                + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span style="max-width:5.1rem;display:inline-block;" class="picModeData" data-bind="heatMode.desc">----</span>'
                 + '<div><label class="picInline-label picSetPointText">Heater Status</label><span class="picStatusData" data-bind="heatStatus.desc">----</span>'
                 + '</div>'
             ).appendTo(el);
