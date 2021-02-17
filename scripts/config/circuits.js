@@ -710,7 +710,7 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
-            var eggTimer = obj.eggTimer || 12;
+            var eggTimer = obj.eggTimer || 720;
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
             var clist = el.find('div.picCircuitsList-list:first');
@@ -735,11 +735,17 @@
                 });
             });
             cols[1].elText().text(circuits);
-            cols[2].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
-            el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
-            el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
-            dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
             var type = obj.type || 1;
+            if (type === 3) {
+                cols[2].elText('');
+                dataBinder.bind(el, $.extend({}, obj));
+            }
+            else {
+                cols[2].elText().text(obj.dontStop ? 'Don\'t Stop' : hrs + 'h ' + mins + 'm');
+                el.find('div[data-bind=eggTimerHours]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
+                dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
+            }
             // Bind all the circuits.
             if (type === 3)
                 el.find('div.deleteGroup').hide();
