@@ -569,24 +569,21 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'type').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
             if (o.equipmentNames.length > 0) {
-                $('<div></div>').appendTo(line).pickList({
-                    bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
-                }).appendTo(line);
+                line.hide();
+                line = $('<div></div>');
             }
-            else
-                $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
-                var dontStop = evt.newVal;
-                el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
-                el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
-            });
-            line = $('<div><hr></hr></div>').appendTo(pnl);
-
+            else {
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Egg Timer', binding: binding + 'eggTimerHours', min: 0, max: 24, step: 1, units: 'hrs', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: '', binding: binding + 'eggTimerMinutes', min: 0, max: 59, step: 1, units: 'mins', inputAttrs: { maxlength: 3 }, labelAttrs: { style: { marginLeft: '.25rem' } } });
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Don\'t Stop', binding: binding + 'dontStop', style: { marginLeft: '.25rem' } }).on('changed', function (evt) {
+                    var dontStop = evt.newVal;
+                    el.find('div[data-bind=eggTimerHours]').css({ visibility: dontStop ? 'hidden' : '' });
+                    el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
+                });
+                line = $('<div><hr></hr></div>').appendTo(pnl);
+            }
             var pnlCircuits = $('<div class="cfgLightGroup-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
             line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Group Circuits</span></div>').appendTo(line);
