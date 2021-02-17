@@ -615,9 +615,11 @@
                 //$(this).find('i').addClass('burst-animated');
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                v.eggTimer = (v.eggTimerHours * 60) + v.eggTimerMinutes;
-                delete v.eggTimerHours;
-                delete v.eggTimerMinutes;
+                if (v.type !== 3) {
+                    v.eggTimer = (v.eggTimerHours * 60) + v.eggTimerMinutes;
+                    delete v.eggTimerHours;
+                    delete v.eggTimerMinutes;
+                }
                 if (typeof v.circuits === 'undefined') {
                     isValid = false;
                     $('<div></div>').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br></br>have been created.' });
