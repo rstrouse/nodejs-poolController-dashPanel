@@ -16,7 +16,7 @@
                     $('<div></div>').appendTo(el).pnlScheduleConfig({
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
                         scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
-                        tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode
+                        tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode, displayTypes: opts.displayTypes
                     })[0].dataBind(opts.schedules[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
@@ -26,13 +26,13 @@
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlScheduleConfig({
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
                         scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
-                        tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode
+                        tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode, displayTypes: opts.displayTypes
                     });
                     var st = opts.scheduleTypes.find(elem => elem.name === 'repeat') || opts.scheduleTypes[0];
                     var tt = opts.scheduleTimeTypes.find(elem => elem.name === 'manual') || opts.scheduleTimeTypes[0];
                     pnl[0].dataBind({
                         id: -1, startTime: 480, endTime: 1020,
-                        scheduleType: st.val, startTimeType: tt.val, endTimeType: tt.val, circuit: 0,
+                        scheduleType: st.val, startTimeType: tt.val, endTimeType: tt.val, circuit: 0, display: 0,
                         heatSetpoint: 78, heatSource: 0, scheduleDays: 127, startDate: new Date().toISOString()
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
@@ -72,7 +72,12 @@
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Occurance', binding: binding + 'scheduleType',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Occurance', style: { whiteSpace: 'nowrap' } }],
-                items: o.scheduleTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                items: o.scheduleTypes, inputAttrs: { style: { width: '5.4rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            });
+            $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Display', binding: binding + 'display',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Display', style: { whiteSpace: 'nowrap' } }],
+                items: o.displayTypes, inputAttrs: { style: { width: '6.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
 
             line = $('<div></div>').addClass('schedule-heatsource').appendTo(pnl).hide();
@@ -90,6 +95,7 @@
                 }
             });
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '.25rem', width: '3rem' } } });
+
             $('<hr></hr>').appendTo(pnl);
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
 
@@ -264,6 +270,7 @@
                 daysTitle = Date.format(obj.startDate, 'MM/dd/yyyy', '--/--/----');
             }
             cols[2].elText().text(daysTitle);
+            if (typeof obj.display === 'undefined') obj.display = 0;
             console.log(obj);
             dataBinder.bind(el, obj);
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);

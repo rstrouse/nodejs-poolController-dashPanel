@@ -76,9 +76,21 @@
                     el.remove();
                     return;
                 }
+                var disp = typeof data.display === 'object' ? data.display.val || 0 : 0;
+                switch (disp) {
+                    case 1:
+                        if (makeBool(data.isOn)) el.show();
+                        else el.hide();
+                        break;
+                    case 2:
+                        el.hide();
+                        break;
+                    default:
+                        el.show();
+                        break;
+                }
                 el.attr('data-active', true);
                 dataBinder.bind(el, data);
-                el.css({ display: '' });
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-id', data.id);
                 el.find('.picSchedDays').remove();
@@ -95,7 +107,6 @@
                 pnl.show();
             else
                 pnl.hide();
-
         },
        
         _buildControls: function() {
