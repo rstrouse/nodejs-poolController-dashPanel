@@ -193,6 +193,14 @@ div.picSelector {
 div.picOption {
     width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+div.picOption > label {
+    margin-right: auto;
+}
+div.picOption:first-child {
+    margin-top: 10px;
 }
 i.picDropdownButton {
     margin-right: 10px;
