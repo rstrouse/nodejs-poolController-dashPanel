@@ -54,11 +54,10 @@ div.picController {
 }
 
 div.picFeatures,
-div.picChemistry,
 div.picSchedule,
 div.picPump,
 div.picChlorinator,
-div.picChemController > div,
+div.chemControllerDiv,
 div.picPumpCircuit,
 div.picLightThemes {
   display: flex;

@@ -386,7 +386,7 @@
             el.addClass('picChemController');
             el.attr('data-id', o.id);
 
-            var line = $('<div></div>').appendTo(el);
+            var line = $('<div class="chemControllerDiv"></div>').appendTo(el);
             var div = $('<div class="picChemControllerState picIndicator"></div>');
             div.appendTo(line);
             $('<label></label>').addClass('picControllerName').attr('data-bind', 'name').appendTo(line);
