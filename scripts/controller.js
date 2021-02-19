@@ -407,7 +407,8 @@
                         { code: 'sketchy', name: 'Sketchy', desc: 'A whimsical display that looks like it is hand drawn.' },
                         { code: 'materia', name: 'Materia', desc: 'Material metaphor using bold colors and highlights.' },
                         { code: 'purple', name: 'Purple', desc: 'A mix or purple and teal.' },
-                        { code: 'nurple', name: 'Nurple', desc: 'A mix or purple and black.' }
+                        { code: 'nurple', name: 'Nurple', desc: 'A mix or purple and black.' },
+                        { code: 'bootstrap', name: 'Bootstrap', desc: 'Original Bootstrap inspired theme.' }
                     ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '7rem' } }
                 }).on('selchanged', function (evt) {
                     if (evt.newItem) {

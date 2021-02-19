@@ -1,0 +1,326 @@
+﻿@import "../mixins/gradients.scss";
+@import "./colors.scss";
+@import "./widgets.scss";
+@import "./intellibrite.scss";
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    background-image: url("background.jpg");
+    font-size: 1rem;
+}
+select,
+input[type="text"] {
+    font-size: 1rem;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-width: 1px;
+}
+
+fieldset {
+    font-size: 1rem;
+    border-radius: $border_radius;
+}
+.disabled {
+    opacity: 0.5;
+}
+.popover,
+.control-panel {
+    vertical-align: top;
+    /*max-width: 22rem;*/
+    display: inline-block;
+    margin-top: 0.4rem;
+    margin-right: 0.2rem;
+    padding: 0.4em;
+    border: $outline_border;
+    border-radius: $border_radius;
+    @include panel_background();
+    @include box_shadow(2px 2px 2px, rgba(27, 27, 27, 0.4), gainsboro);
+}
+.control-panel-title {
+    white-space: nowrap;
+    border-bottom: solid 1px gray;
+    margin-left: -0.4rem;
+    margin-right: -0.4rem;
+    margin-top: -0.4rem;
+    padding-top: 0.4rem;
+    color: white;
+    padding-left: 0.4rem;
+    padding-right: 0.2rem;
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.2rem;
+    border-top-left-radius: $border_radius;
+    border-top-right-radius: $border_radius;
+    @include panel_header_background();
+    @include box_shadow(2px 2px 5px, rgba(27, 27, 27, 0.4), gainsboro);
+}
+.status-text {
+}
+.body-text {
+    font-family: Arial;
+}
+.fld-value {
+    //border: solid 1px gray;
+    border-bottom: solid 1px gray;
+}
+.fld-value-combo {
+    border-bottom: solid 1px gray;
+    background-color: white;
+    color: black;
+}
+.fld-value-center {
+    border-bottom: solid 1px gray;
+}
+
+.btn-border {
+    white-space: nowrap;
+    border: solid 1px gray;
+    border-radius: $border_radius;
+    display: inline-block;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-right: 0.2rem;
+    padding-left: 0px;
+    margin: 0.1rem;
+    //    @include box_shadow(3px 3px 3px, rgba(127,127,127,0.5), gainsboro);
+}
+.btn {
+    white-space: nowrap;
+    border-bottom: solid 1px rgb(0, 0, 0, 0.125);
+    //border-radius: $border_radius;
+    display: inline-block;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-right: 0.2rem;
+    padding-left: 0.5rem;
+    margin: 0.1rem;
+    color: #212529;
+    @include button_background();
+    //    @include box_shadow(1px 1px 1px, rgba(127,127,127,0.5), gainsboro);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
+}
+.btn:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin-left: 0;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-size: 1000% 1000%;
+    background-position: 50%;
+    border: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: background 0.5s, opacity 1s;
+}
+.btn-stateonly {
+    @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
+    @include panel_background();
+}
+.btn-panel {
+    padding: 0.2rem;
+    margin-top: 0.2rem;
+    text-align: right;
+    border-top: solid 3px gainsboro;
+}
+.fld-btn-right {
+    color: #2196f3;
+    //border-radius:$border_radius;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    //border: solid 1px gray;
+    @include fldbutton_background();
+}
+.fld-btn-left {
+    color: #2196f3;
+}
+.btn-toggle:not([disabled]):not(.disabled):hover,
+.fld-btn-left:not([disabled]):not(.disabled):hover,
+.fld-btn-left:not([disabled]):not(.disabled).hover,
+.fld-btn-right:not([disabled]):not(.disabled):hover,
+.fld-btn-right:not([disabled]):not(.disabled).hover {
+    color: #0c7cd5;
+}
+
+.btn-border:not([disabled]):not(.disabled):hover,
+.btn-border:not([disabled]):not(.disabled).hover,
+.btn:not([disabled]):not(.disabled):hover,
+.btn:not([disabled]):not(.disabled).hover {
+    color: white;
+    @include hover_background();
+}
+.btn-toggle:not([disabled]):not(.disabled):active,
+.fld-btn-left:not([disabled]):not(.disabled):active,
+.fld-btn-left:not([disabled]):not(.disabled).active,
+.fld-btn-right:not([disabled]):not(.disabled):active,
+.fld-btn-right:not([disabled]):not(.disabled).active,
+.btn-border:not([disabled]):not(.disabled):active,
+.btn-border:not([disabled]):not(.disabled).active,
+.btn:not([disabled]):not(.disabled):active,
+.btn:not([disabled]):not(.disabled).active {
+    color: white;
+    @include active_background();
+    opacity: 0.5;
+}
+.tab-contents {
+    border: $outline_border;
+    border-bottom-right-radius: $border_radius;
+    border-bottom-left-radius: $border_radius;
+    border-top-right-radius: $border_radius;
+}
+.tab-item {
+    border: $outline_border;
+    border-top-right-radius: $border_radius;
+    border-top-left-radius: $border_radius;
+    background-color: white;
+}
+.dropdown-panel {
+    background-color: white;
+    border: $outline_border;
+    @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
+    border-radius: $border_radius;
+}
+.header-background {
+    color: white;
+    @include panel_header_background();
+}
+table.optOuter {
+    border-radius: $border_radius;
+    color: black;
+}
+
+tr.optHeader > td {
+    border-bottom: solid 2px black;
+    border-top-right-radius: $border_radius;
+    border-top-left-radius: $border_radius;
+}
+
+table.optBody > tbody > tr > td:last-child,
+table.optHeader > tbody > tr > td:last-child {
+    border: none;
+}
+table.optBody td,
+table.optHeader td {
+    border-right: solid 1px gray;
+}
+
+table.optBody > tbody > tr.selected {
+    @include selected_background();
+    color: white;
+}
+
+table.optBody > tbody > tr:hover {
+    @include hover_background();
+    color: white;
+}
+div.picBody{
+    display: flex;
+}
+
+div.picBodyTemp{
+    order: 1;
+}
+div.picBodySetPoints{
+    order: 2;
+}
+div.picBodyIcon{
+    order: 3;
+    margin-left: auto;
+}
+div.picControllerStatus > div.picIndicator {
+    display: inline-block;
+    border: solid 1px silver;
+    background: white;
+    vertical-align: text-top;
+    border-radius: 25%;
+    background-color: #007bff;
+    border-color: #007bff;
+    width: 1em;
+    height: 1em;
+}
+div.picIndicator {
+    display: inline-block;
+    vertical-align: text-top;
+    border-radius: 0.25rem;
+    width: 2.5em;
+    height: 2em;
+    color: white;
+    background-color: #007bff;
+    border-color: #007bff;
+    order: 10;
+}
+div.picIndicator[data-status="on"],
+div.picIndicator[data-status="ready"],
+div.picControllerStatus > div.picIndicator[data-status="ready"],
+div.picIndicator[data-status="selected"],
+div.picIndicator[data-status="true"] {
+    // @include radial_gradient(center, ellipse, farthest-corner, rgba(210,255,82,1) 0%,rgba(145,232,66,1) 100%);
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+div.picIndicator[data-status="selected"]::before{
+    content: "✔";
+    position: relative;
+    top: calc(0.5rem - 5px);
+    left: calc(0.8rem - 5px);
+}
+div.picIndicator[data-status="on"]::before,
+div.picIndicator[data-status="true"]::before {
+    content: "On";
+    position: relative;
+    top: calc(0.8rem - 5px);
+    left: calc(0.8rem - 5px);
+}
+div.picIndicator[data-status="off"]::before,
+div.picIndicator[data-status="false"]::before {
+    content: "Off";
+    position: relative;
+    top: calc(0.8rem - 5px);
+    left: calc(0.8rem - 5px);
+}
+div.picBodyIcon > div.picIndicator::before {
+    left: calc(0.3rem - 5px);
+}
+
+div.picIndicator[data-status="pending"],
+div.piscIndicator[data-status="timeout"] {
+    @include radial_gradient(
+        center,
+        ellipse,
+        farthest-corner,
+        rgba(255, 255, 28, 1) 0%,
+        rgba(204, 201, 73, 1) 85%,
+        rgba(196, 192, 81, 1) 100%
+    );
+}
+
+div.picIndicator[data-status="loading"] {
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(255, 175, 75, 1) 0%, rgba(255, 146, 10, 1) 100%);
+}
+
+div.picIndicator[data-status="error"] {
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(255, 173, 41, 1) 0%, rgba(255, 0, 0, 1) 100%);
+}
+.btn-toggle.fld-btn-left {
+    color: black;
+}
+
+.btn-toggle.fld-btn-right {
+    color: black;
+}
+
+.btn-toggle.fld-btn-center {
+    color: black;
+}
+
+.btn-toggle[data-selected="true"] {
+    color: cornflowerblue;
+    border-bottom: solid 1px black;
+}

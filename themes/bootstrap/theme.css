@@ -1,0 +1,609 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+label,
+span,
+div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
+  align-self: center;
+}
+
+div.picBody > div {
+  padding-right: 0;
+}
+
+div.picTabs {
+  background-color: white;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: none;
+  border-top: solid 1px silver;
+  border-left: solid 1px silver;
+  border-right: solid 1px silver;
+}
+
+div.picTab {
+  border: none;
+}
+
+div.picTab > .picTabText {
+  margin-bottom: 0.4rem;
+}
+
+div.tab-contents {
+  border-top: none;
+}
+
+div.picTab.picTabSelected > span.picTabText {
+  border-bottom: solid 2px teal;
+}
+
+div.picTab:not(.picTabSelected) {
+  border-color: silver;
+  color: silver;
+}
+
+div.picConfigTabContents {
+  background-color: white;
+}
+
+div.picConfigPage {
+  margin-top: 0.4rem;
+}
+
+div.picController {
+  padding: 0px;
+}
+
+div.picFeatures,
+div.picChemistry,
+div.picSchedule,
+div.picPump,
+div.picChlorinator,
+div.picChemController > div,
+div.picPumpCircuit,
+div.picLightThemes {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+div.picIBColorSelector {
+  display: flex;
+}
+
+div.picBody:not(:last-child),
+div.picChlorinator:not(:last-child),
+div.picSchedule:not(:last-child),
+div.picPump:not(:last-child) {
+  border-bottom: solid 1px rgba(0, 0, 0, 0.125);
+  margin-bottom: 5px;
+}
+
+span.picCurrentOutput,
+div.picEnergy,
+div.picBodySetPoints,
+label.picSchedDays,
+table.picSchedDays,
+span.saturationIndex,
+label.picIBThemeLabel {
+  margin-right: auto;
+}
+
+label.picIBThemeLabel {
+  width: 100%;
+  margin-left: 10px;
+}
+
+div.picChlorStatus,
+div.picSuperChlor {
+  order: 20;
+}
+
+div.picFeature {
+  display: flex;
+}
+
+div.picFeature > label {
+  top: 6px;
+  margin-right: auto;
+}
+
+div.picToggleButton {
+  order: 10;
+  margin-right: auto;
+}
+
+div.picPopoverHeader,
+div.picCircuitTitle {
+  flex: 1 1 100%;
+}
+
+div.picAmbientTemp label {
+  color: white;
+}
+
+div.picController > div.picControllerTitle {
+  margin: 0px;
+}
+
+div.pover-icon:hover {
+  color: orange;
+  text-shadow: 3px 3px 16px #272634;
+}
+
+div.picSaltReqd {
+  padding: 0.2rem;
+  border-bottom: solid 1px gainsboro;
+  margin-bottom: 0.4rem;
+}
+
+div.picBody[data-ison=false] div.picBodyTemp {
+  color: silver;
+}
+
+span.picUnits {
+  color: gray;
+}
+
+div.picAccordian-title {
+  border: solid 1px gray;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+div.pnl-scheduleDays {
+  margin-top: 0.2rem;
+}
+
+div.pnl-scheduleDays > div.table {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+div.pnl-scheduleDays div.table-caption {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: solid 1px gray;
+  color: white;
+  background: #007bff9d linear-gradient(180deg, #007bff9d, #007bff9d);
+}
+
+div.pnl-scheduleDays div.table-row.dayheader {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+div.pnl-scheduleDays div.table-cell.dayheader {
+  text-align: center;
+  width: 2.4rem;
+  border: solid 1px gray;
+  font-weight: bold;
+  color: white;
+}
+
+div.pnl-scheduleDays div.table-row.dayheader {
+  background: white;
+  background: #007bff linear-gradient(180deg, #007bff, #007bff);
+  color: black;
+  font-weight: bold;
+}
+
+div.pnl-scheduleDays div.table-cell.day:hover {
+  background: #88acda;
+}
+
+div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
+  color: white;
+  background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3);
+}
+
+div.pnl-scheduleDays div.table-cell.day {
+  text-align: center;
+  font-size: 2rem;
+  border: solid 1px gainsboro;
+  cursor: pointer;
+}
+
+div.pnl-scheduleDays div.table-cell.day {
+  text-align: center;
+  font-size: 2rem;
+  cursor: pointer;
+  font-family: "Font Awesome 5 Free";
+}
+
+div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
+  content: "";
+  font-weight: 900;
+}
+
+div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
+  content: "";
+  font-weight: 400;
+}
+
+div.picSelector {
+  display: flex;
+  flex-direction: column;
+}
+
+div.picOption {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+i.picDropdownButton {
+  margin-right: 10px;
+}
+
+div.picIBColor {
+  border-radius: 5px;
+  align-self: flex-end;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background-image: url("background.jpg");
+  font-size: 1rem;
+}
+
+select,
+input[type=text] {
+  font-size: 1rem;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-width: 1px;
+}
+
+fieldset {
+  font-size: 1rem;
+  border-radius: 3px;
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.popover,
+.control-panel {
+  vertical-align: top;
+  /*max-width: 22rem;*/
+  display: inline-block;
+  margin-top: 0.4rem;
+  margin-right: 0.2rem;
+  padding: 0.4em;
+  border: solid 1px silver;
+  border-radius: 3px;
+  background: white;
+  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
+  background: linear-gradient(0deg, white 0%, white 100%);
+  box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
+  -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
+  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
+  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
+}
+
+.control-panel-title {
+  white-space: nowrap;
+  border-bottom: solid 1px gray;
+  margin-left: -0.4rem;
+  margin-right: -0.4rem;
+  margin-top: -0.4rem;
+  padding-top: 0.4rem;
+  color: white;
+  padding-left: 0.4rem;
+  padding-right: 0.2rem;
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.2rem;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  background: #007bff linear-gradient(180deg, #007bff, #007bff);
+  box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
+  -webkit-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
+  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
+  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
+}
+
+.body-text {
+  font-family: Arial;
+}
+
+.fld-value {
+  border-bottom: solid 1px gray;
+}
+
+.fld-value-combo {
+  border-bottom: solid 1px gray;
+  background-color: white;
+  color: black;
+}
+
+.fld-value-center {
+  border-bottom: solid 1px gray;
+}
+
+.btn-border {
+  white-space: nowrap;
+  border: solid 1px gray;
+  border-radius: 3px;
+  display: inline-block;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
+  padding-left: 0px;
+  margin: 0.1rem;
+}
+
+.btn {
+  white-space: nowrap;
+  border-bottom: solid 1px rgba(0, 0, 0, 0.125);
+  display: inline-block;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
+  padding-left: 0.5rem;
+  margin: 0.1rem;
+  color: #212529;
+  box-shadow: 0 3px 0 0 #082fa6, 0 -4px -4px -1px rgba(0, 0, 0, 0.6), 0 -4px -6px 1px rgba(0, 0, 0, 0.3), 0 -1px -2px 1px rgba(0, 0, 0, 0) inset, 0 18px 32px -2px rgba(255, 255, 255, 0.1) inset;
+  transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  margin-left: 0;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-size: 1000% 1000%;
+  background-position: 50%;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: background 0.5s, opacity 1s;
+}
+
+.btn-stateonly {
+  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
+  background: white;
+  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
+  background: linear-gradient(0deg, white 0%, white 100%);
+}
+
+.btn-panel {
+  padding: 0.2rem;
+  margin-top: 0.2rem;
+  text-align: right;
+  border-top: solid 3px gainsboro;
+}
+
+.fld-btn-right {
+  color: #2196f3;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.fld-btn-left {
+  color: #2196f3;
+}
+
+.btn-toggle:not([disabled]):not(.disabled):hover,
+.fld-btn-left:not([disabled]):not(.disabled):hover,
+.fld-btn-left:not([disabled]):not(.disabled).hover,
+.fld-btn-right:not([disabled]):not(.disabled):hover,
+.fld-btn-right:not([disabled]):not(.disabled).hover {
+  color: #0c7cd5;
+}
+
+.btn-border:not([disabled]):not(.disabled):hover,
+.btn-border:not([disabled]):not(.disabled).hover,
+.btn:not([disabled]):not(.disabled):hover,
+.btn:not([disabled]):not(.disabled).hover {
+  color: white;
+  background: #88acda;
+}
+
+.btn-toggle:not([disabled]):not(.disabled):active,
+.fld-btn-left:not([disabled]):not(.disabled):active,
+.fld-btn-left:not([disabled]):not(.disabled).active,
+.fld-btn-right:not([disabled]):not(.disabled):active,
+.fld-btn-right:not([disabled]):not(.disabled).active,
+.btn-border:not([disabled]):not(.disabled):active,
+.btn-border:not([disabled]):not(.disabled).active,
+.btn:not([disabled]):not(.disabled):active,
+.btn:not([disabled]):not(.disabled).active {
+  color: white;
+  background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3);
+  opacity: 0.5;
+}
+
+.tab-contents {
+  border: solid 1px silver;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.tab-item {
+  border: solid 1px silver;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  background-color: white;
+}
+
+.dropdown-panel {
+  background-color: white;
+  border: solid 1px silver;
+  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
+  border-radius: 3px;
+}
+
+.header-background {
+  color: white;
+  background: #007bff linear-gradient(180deg, #007bff, #007bff);
+}
+
+table.optOuter {
+  border-radius: 3px;
+  color: black;
+}
+
+tr.optHeader > td {
+  border-bottom: solid 2px black;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+table.optBody > tbody > tr > td:last-child,
+table.optHeader > tbody > tr > td:last-child {
+  border: none;
+}
+
+table.optBody td,
+table.optHeader td {
+  border-right: solid 1px gray;
+}
+
+table.optBody > tbody > tr.selected {
+  background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3);
+  color: white;
+}
+
+table.optBody > tbody > tr:hover {
+  background: #88acda;
+  color: white;
+}
+
+div.picBody {
+  display: flex;
+}
+
+div.picBodyTemp {
+  order: 1;
+}
+
+div.picBodySetPoints {
+  order: 2;
+}
+
+div.picBodyIcon {
+  order: 3;
+  margin-left: auto;
+}
+
+div.picControllerStatus > div.picIndicator {
+  display: inline-block;
+  border: solid 1px silver;
+  background: white;
+  vertical-align: text-top;
+  border-radius: 25%;
+  background-color: #007bff;
+  border-color: #007bff;
+  width: 1em;
+  height: 1em;
+}
+
+div.picIndicator {
+  display: inline-block;
+  vertical-align: text-top;
+  border-radius: 0.25rem;
+  width: 2.5em;
+  height: 2em;
+  color: white;
+  background-color: #007bff;
+  border-color: #007bff;
+  order: 10;
+}
+
+div.picIndicator[data-status=on],
+div.picIndicator[data-status=ready],
+div.picControllerStatus > div.picIndicator[data-status=ready],
+div.picIndicator[data-status=selected],
+div.picIndicator[data-status=true] {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+div.picIndicator[data-status=selected]::before {
+  content: "✔";
+  position: relative;
+  top: calc(0.5rem - 5px);
+  left: calc(0.8rem - 5px);
+}
+
+div.picIndicator[data-status=on]::before,
+div.picIndicator[data-status=true]::before {
+  content: "On";
+  position: relative;
+  top: calc(0.8rem - 5px);
+  left: calc(0.8rem - 5px);
+}
+
+div.picIndicator[data-status=off]::before,
+div.picIndicator[data-status=false]::before {
+  content: "Off";
+  position: relative;
+  top: calc(0.8rem - 5px);
+  left: calc(0.8rem - 5px);
+}
+
+div.picBodyIcon > div.picIndicator::before {
+  left: calc(0.3rem - 5px);
+}
+
+div.picIndicator[data-status=pending],
+div.piscIndicator[data-status=timeout] {
+  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
+
+div.picIndicator[data-status=loading] {
+  background: -moz-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
+  background: -o-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
+  background: -ms-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
+  background: radial-gradient(ellipse farthest-corner at center, #ffaf4b 0%, #ff920a 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
+
+div.picIndicator[data-status=error] {
+  background: -moz-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
+  background: -o-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
+  background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
+  background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
+
+.btn-toggle.fld-btn-left {
+  color: black;
+}
+
+.btn-toggle.fld-btn-right {
+  color: black;
+}
+
+.btn-toggle.fld-btn-center {
+  color: black;
+}
+
+.btn-toggle[data-selected=true] {
+  color: cornflowerblue;
+  border-bottom: solid 1px black;
+}
+
+/*# sourceMappingURL=theme.css.map */

@@ -7,12 +7,12 @@ $outline_border: solid 1px silver;
     @include linear_gradient(0deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 100%);
 }
 @mixin panel_header_background() {
-    background: #4CAF50 linear-gradient(180deg, #67bb6a, #4CAF50);
+    background: #007bff linear-gradient(180deg, #007bff, #007bff);
     //  @include linear_gradient(0deg, #673ab7 0%, #673ab7 100%);
 }
 
 @mixin button_background() {
-    background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3) repeat-x;
+    //background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3) repeat-x;
     //@include linear_gradient(-45deg, #0B44EF 0%, #007dfa 100%);
     @include btn_shadow();
     transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
@@ -24,11 +24,11 @@ $outline_border: solid 1px silver;
     //transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
 }
 @mixin header_background() {
-    background: #4caf50 linear-gradient(180deg, #91d293e0, #59b55d)
+    background: #007bff9d linear-gradient(180deg, #007bff9d, #007bff9d);
     //@include linear_gradient(180deg, #D500F9 0%, #D500F9 100%);
 }
 @mixin hover_background() {
-    background:#4DB6AC;
+    background:#88acda;
     //@include linear_gradient(180deg, rgba(123,31,162,1) 0%,rgba(123,31,162,1) 100%);
 }
 @mixin active_background() {

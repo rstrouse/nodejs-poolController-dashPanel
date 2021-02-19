@@ -530,14 +530,14 @@
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature"></div>').appendTo(el);
+                if (!bAdded) div = $('<div class="picFeature btn"></div>').appendTo(el);
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
                         div.circuit(data);
                         break;
                     case 'feature':
-                        div.addClass('picCircuit');
+                        div.addClass('picCircuit');;
                         div.feature(data);
                         break;
                     case 'circuitGroup':

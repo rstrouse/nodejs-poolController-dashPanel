@@ -38,6 +38,10 @@
   {
     "outputFile": "themes/nurple/theme.css",
     "inputFile": "themes/nurple/theme.scss"
+  },
+  {
+    "outputFile": "themes/bootstrap/theme.css",
+    "inputFile": "themes/bootstrap/theme.scss"
   }
 
 ]
