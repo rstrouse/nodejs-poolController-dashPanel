@@ -358,8 +358,6 @@ div.picPump, div.picChlorinator, div.picSchedule, div.picChemController {
     div.picChlorinator > label.picChlorinatorName,
     div.picChemController label.picControllerName {
         display: inline-block;
-        text-overflow: ellipsis;
-        display: inline-block;
         width: 30%;
         text-overflow: ellipsis;
         white-space: nowrap;

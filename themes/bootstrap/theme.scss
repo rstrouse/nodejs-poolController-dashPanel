@@ -131,8 +131,12 @@ fieldset {
     transition: background 0.5s, opacity 1s;
 }
 .btn-stateonly {
-    @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
-    @include panel_background();
+     // @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
+     @include panel_background();
+}
+.btn-stateonly > label {
+     color: gray;
+     font-style: italic;
 }
 .btn-panel {
     padding: 0.2rem;
@@ -194,7 +198,7 @@ fieldset {
 .dropdown-panel {
     background-color: white;
     border: $outline_border;
-    @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
+    // @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
     border-radius: $border_radius;
 }
 .header-background {
@@ -298,6 +302,7 @@ div.picIndicator[data-status="false"]::before {
 }
 div.picBodyIcon > div.picIndicator::before {
     left: calc(0.3rem - 5px);
+    top: .75em;
 }
 
 div.picIndicator[data-status="pending"],

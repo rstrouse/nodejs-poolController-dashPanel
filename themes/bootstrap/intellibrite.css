@@ -3,4 +3,12 @@ div.picIBColor {
   align-self: flex-end;
 }
 
+div.picFeatures > div.picFeature > div.picIBColor {
+  width: 6.25rem;
+}
+
+div.picLight > label {
+  align-self: initial;
+}
+
 /*# sourceMappingURL=intellibrite.css.map */

@@ -4,6 +4,7 @@ label,
 span,
 div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
   align-self: center;
+  line-height: 1;
 }
 
 div.picBody > div {
@@ -96,11 +97,13 @@ div.picSuperChlor {
   order: 20;
 }
 
-div.picFeature {
+div.picFeature,
+div.picCircuit {
   display: flex;
 }
 
-div.picFeature > label {
+div.picFeature > label,
+div.picCircuit > label {
   top: 6px;
   margin-right: auto;
 }
@@ -240,6 +243,15 @@ div.picOption:first-child {
 
 i.picDropdownButton {
   margin-right: 10px;
+}
+
+div.picVirtualCircuit {
+  padding-left: 0.5em;
+}
+
+div.picChlorinator > label.picChlorinatorName,
+div.picChemController label.picControllerName {
+  overflow-x: unset;
 }
 
 /*# sourceMappingURL=widgets.css.map */

@@ -2,3 +2,9 @@ div.picIBColor {
   border-radius: 5px;
   align-self:flex-end;
 }
+div.picFeatures > div.picFeature > div.picIBColor {
+  width: 6.25rem;
+}
+div.picLight > label {
+  align-self: initial;
+}

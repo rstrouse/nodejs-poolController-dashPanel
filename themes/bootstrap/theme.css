@@ -5,6 +5,7 @@ label,
 span,
 div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
   align-self: center;
+  line-height: 1;
 }
 
 div.picBody > div {
@@ -97,11 +98,13 @@ div.picSuperChlor {
   order: 20;
 }
 
-div.picFeature {
+div.picFeature,
+div.picCircuit {
   display: flex;
 }
 
-div.picFeature > label {
+div.picFeature > label,
+div.picCircuit > label {
   top: 6px;
   margin-right: auto;
 }
@@ -243,9 +246,26 @@ i.picDropdownButton {
   margin-right: 10px;
 }
 
+div.picVirtualCircuit {
+  padding-left: 0.5em;
+}
+
+div.picChlorinator > label.picChlorinatorName,
+div.picChemController label.picControllerName {
+  overflow-x: unset;
+}
+
 div.picIBColor {
   border-radius: 5px;
   align-self: flex-end;
+}
+
+div.picFeatures > div.picFeature > div.picIBColor {
+  width: 6.25rem;
+}
+
+div.picLight > label {
+  align-self: initial;
 }
 
 @media screen and (max-width: 744px) {
@@ -388,13 +408,14 @@ fieldset {
 }
 
 .btn-stateonly {
-  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
   background: white;
   background: -webkit-linear-gradient(90deg, white 0%, white 100%);
   background: linear-gradient(0deg, white 0%, white 100%);
+}
+
+.btn-stateonly > label {
+  color: gray;
+  font-style: italic;
 }
 
 .btn-panel {
@@ -461,10 +482,6 @@ fieldset {
 .dropdown-panel {
   background-color: white;
   border: solid 1px silver;
-  box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
   border-radius: 3px;
 }
 
@@ -579,6 +596,7 @@ div.picIndicator[data-status=false]::before {
 
 div.picBodyIcon > div.picIndicator::before {
   left: calc(0.3rem - 5px);
+  top: 0.75em;
 }
 
 div.picIndicator[data-status=pending],

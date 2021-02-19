@@ -1,0 +1,77 @@
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+.header {
+  display: block;
+  opacity: 1;
+  grid-area: header;
+  background-color: #ffd800;
+  border: solid 1px green;
+}
+
+[tabindex="-1"]:focus {
+  outline: none !important;
+}
+
+.text-instructions {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+
+.btn-panel {
+  padding: 0.2rem;
+  margin-top: 0.2rem;
+}
+
+.btn {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: pointer;
+}
+
+.btn > * {
+  cursor: pointer;
+}
+
+.btn-stateonly {
+  pointer-events: none;
+  cursor: no-drop;
+}
+
+.btnarray {
+  display: inline-block;
+}
+
+.btnarray > div {
+  display: inline-block;
+}
+
+.btn-toggle {
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=default.css.map */

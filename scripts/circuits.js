@@ -411,6 +411,7 @@
                 el.find('label.picFeatureLabel').text(data.name);
                 if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
                 if (self.isLight(data)) {
+                    el.addClass('picLight');
                     // Alright we are a light.  Make sure we have an entry in the lights panel.
                     if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
                         let divLight = $('<div class="picLight picFeature picCircuit"></div>').appendTo('div.picLights');
