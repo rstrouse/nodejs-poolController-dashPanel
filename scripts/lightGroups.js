@@ -14,6 +14,7 @@
         toggle.toggleButton();
         el.attr('data-groupid', o.id);
         el.attr('data-eqid', o.id);
+        el.attr('data-haslighttheme', true);
 
         var lbl = $('<label class="picFeatureLabel"></label>');
         lbl.appendTo(el);

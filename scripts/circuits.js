@@ -265,6 +265,7 @@
             var self = this, o = self.options, el = self.element;
             if (self.hasPopover(o)) {
                 if (self.hasLightThemes(o)) {
+                    el.attr('data-haslighttheme', true);
                     var color = $('<i class="fas fa-palette picDropdownButton"></i>');
                     color.appendTo(el);
                     var theme = $('<div class="picIBColor" data-color="none"></div>');
@@ -304,6 +305,7 @@
                 }
                 if (self.hasDimmer(o)) {
                     var dim = $('<i class="fas fa-sliders-h picDropdownButton"></i>');
+                    el.attr('data-hasdimmer', true);
                     dim.appendTo(el);
                     dim.on('click', function (evt) {
                         evt.stopImmediatePropagation();
