@@ -7,8 +7,12 @@ div.picFeatures > div.picFeature > div.picIBColor {
   width: 6.25rem;
 }
 
-div.picLight > label {
-  align-self: initial;
+div.picDashboard[data-hidethemes=false] div.picLight > label,
+div.picDashboard[data-hidethemes=false] div.picLight > i,
+div.picLightGroup > label,
+div.picLightGroup > i {
+  align-self: center;
+  margin-top: -10px;
 }
 
 /*# sourceMappingURL=intellibrite.css.map */

@@ -251,7 +251,15 @@ div.picVirtualCircuit {
 
 div.picChlorinator > label.picChlorinatorName,
 div.picChemController label.picControllerName {
-  overflow-x: unset;
+  overflow-y: hidden;
+}
+
+div.picSpinner-up, div.picSpinner-down {
+  line-height: 1.4rem !important;
+}
+
+div.picCircuit.btn {
+  align-items: center;
 }
 
 /*# sourceMappingURL=widgets.css.map */

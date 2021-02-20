@@ -252,7 +252,15 @@ div.picVirtualCircuit {
 
 div.picChlorinator > label.picChlorinatorName,
 div.picChemController label.picControllerName {
-  overflow-x: unset;
+  overflow-y: hidden;
+}
+
+div.picSpinner-up, div.picSpinner-down {
+  line-height: 1.4rem !important;
+}
+
+div.picCircuit.btn {
+  align-items: center;
 }
 
 div.picIBColor {
@@ -264,8 +272,12 @@ div.picFeatures > div.picFeature > div.picIBColor {
   width: 6.25rem;
 }
 
-div.picLight > label {
-  align-self: initial;
+div.picDashboard[data-hidethemes=false] div.picLight > label,
+div.picDashboard[data-hidethemes=false] div.picLight > i,
+div.picLightGroup > label,
+div.picLightGroup > i {
+  align-self: center;
+  margin-top: -10px;
 }
 
 @media screen and (max-width: 744px) {

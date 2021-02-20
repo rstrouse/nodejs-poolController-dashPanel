@@ -3,7 +3,7 @@
 
 label, 
 span,
-div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor){
+div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
     align-self: center;
     line-height: 1;
 }
@@ -198,6 +198,7 @@ div.picOption {
     margin-bottom: 10px;
     display: flex;
     align-items: center;
+    // line-height: unset !important;
 }
 div.picOption > label {
     margin-right: auto;
@@ -213,5 +214,11 @@ div.picVirtualCircuit {
 }
 div.picChlorinator > label.picChlorinatorName,
 div.picChemController label.picControllerName {
-    overflow-x: unset;
+    overflow-y: hidden;
 }
+div.picSpinner-up, div.picSpinner-down {
+    line-height: 1.4rem!important
+}
+div.picCircuit.btn {
+    align-items: center;
+ }

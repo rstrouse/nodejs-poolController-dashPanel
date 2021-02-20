@@ -74,7 +74,7 @@
                 let div = $('<div class="picFeature picCircuit btn"></div>');
                 let circuit = data.circuits[i];
                 div.appendTo(el);
-                div.circuit(data.circuits[i]);
+                div.circuit(circuit, {controllerType: data.equipment.controllerType});
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
@@ -359,7 +359,7 @@
         hasPopover: function (circuit) { return this.hasLightThemes(circuit) || this.hasDimmer(circuit); },
         hasLightThemes: function (circuit) {
             var self = this, o = self.options, el = self.element;
-            if (makeBool(el.attr('data-hidethemes'))) return false;
+            if (makeBool($('div.picDashboard').attr('data-hidethemes'))) return false;
             switch (circuit.type.name) {
                 case 'intellibrite':
                 case 'globrite':
