@@ -5,8 +5,8 @@ div.picIBColor {
 div.picFeatures > div.picFeature > div.picIBColor {
   width: 6.25rem;
 }
-div.picDashboard[data-hidethemes=false] div.picLight > label, 
-div.picDashboard[data-hidethemes=false] div.picLight > i, 
+div.picDashboard[data-hidethemes=false] div.picLight[data-haslighttheme=true] > label, 
+div.picDashboard[data-hidethemes=false] div.picLight[data-haslighttheme=true] > i, 
 div.picLightGroup > label,
 div.picLightGroup > i {
   align-self: center;
