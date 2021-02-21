@@ -74,12 +74,13 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Occurance', style: { whiteSpace: 'nowrap' } }],
                 items: o.scheduleTypes, inputAttrs: { style: { width: '5.4rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
-            $('<div></div>').appendTo(line).pickList({
-                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Display', binding: binding + 'display',
-                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Display', style: { whiteSpace: 'nowrap' } }],
-                items: o.displayTypes, inputAttrs: { style: { width: '6.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
-            });
-
+            if (typeof o.displayTypes !== 'undefined') {
+                $('<div></div>').appendTo(line).pickList({
+                    required: true, bindColumn: 0, displayColumn: 1, labelText: 'Display', binding: binding + 'display',
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Display', style: { whiteSpace: 'nowrap' } }],
+                    items: o.displayTypes, inputAttrs: { style: { width: '6.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                });
+            }
             line = $('<div></div>').addClass('schedule-heatsource').appendTo(pnl).hide();
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Heat Source', binding: binding + 'heatSource',
