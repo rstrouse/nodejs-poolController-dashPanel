@@ -16,6 +16,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.2",
     "express": "^4.17.1",
     "extend": "^3.0.2",
     "jquery": "^3.5.1",
@@ -28,7 +29,6 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.13.0",
     "@types/express": "^4.17.1",
     "@types/extend": "^3.0.1",
     "@types/multer": "^1.4.3",
