@@ -173,9 +173,24 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('pnl-chemcontroller-setpoints');
             var binding = o.binding || '';
+            var line = $('<div></div>').appendTo(el);
+            if (typeof o.siCalcTypes !== 'undefined') {
+                // If this is not a REM Chem the siCalcTypes are not passed into this widget.  This will only create the option when it is a REM Chem.
+                $('<div></div>').appendTo(line).pickList({
+                    binding: 'siCalcType',
+                    bindColumn: 0, displayColumn: 2,
+                    labelText: 'Balance Calculation',
+                    columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Calculation Type', style: { whiteSpace: 'nowrap' } }],
+                    items: o.siCalcTypes,
+                    inputAttrs: { style: { width: '12.5rem' } },
+                    labelAttrs: { style: { marginLeft: '.25rem' } }
+                });
+            }
+
+            
             var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(el);
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
-            var line = $('<div></div>').appendTo(grpSetpoints);
+            line = $('<div></div>').appendTo(grpSetpoints);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'pH Setpoint', binding: binding + 'ph.setpoint', fmtMask: "#,##0.#", emptyMask: "-.-", min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
             line = $('<div></div>').appendTo(grpSetpoints);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'ORP Setpoint', binding: binding + 'orp.setpoint', fmtMask: "#,##0", emptyMask: "---", min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
@@ -440,7 +455,7 @@
         },
         _buildRangePanel: function () {
             var self = this, o = self.options, el = self.element;
-            var outer = $('<div></div>')
+            var outer = $('<div></div>');
             var grpAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(outer);
             $('<legend></legend>').text(`Ideal Range Settings`).appendTo(grpAlarm);
             var line = $('<div></div>').appendTo(grpAlarm).css({ marginTop: '-7px', width: '17rem', fontSize:'.7rem' }).html(`Set the high and low ranges below.  Check the box if you would like these alerts to appear in the chemistry section of the dashboard.`);
@@ -470,7 +485,7 @@
 
             var tankAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(outer);;
             $('<legend></legend>').text(`Tank Alarm Settings`).appendTo(tankAlarm);
-            var tankLine = $('<div></div>').appendTo(tankAlarm).css({ marginTop: '-7px', width: '17rem', fontSize:'.7rem' }).html(`Set the % for which your tank will trigger the empty alarm.`);
+            var tankLine = $('<div></div>').appendTo(tankAlarm).css({ marginTop: '-7px', width: '16rem', fontSize:'.7rem' }).html(`Set the % for which your tank will trigger the empty alarm.`);
             
 
             tankLine = $('<div></div>').appendTo(tankAlarm);
@@ -902,7 +917,7 @@
                     console.log(obj);
                     var tabBar = $('<div></div>').appendTo(pnl).tabBar();
                     var tab = tabBar[0].addTab({ id: 'tabSetpoints', text: 'Setpoints' });
-                    $('<div></div>').appendTo(tab).pnlChemSetpoints();
+                    $('<div></div>').appendTo(tab).pnlChemSetpoints(o);
                     tab = tabBar[0].addTab({ id: 'tabPhSettings', text: 'pH Settings' });
                     el.find('div[data-bind="borates"]').show();
                     $('<div></div>').appendTo(tab).pnlChemPhSettings(o);
