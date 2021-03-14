@@ -1466,6 +1466,8 @@ $.ui.position.fieldTip = {
             el[0].selectTabById = function (tabId) { return self.selectTabById(tabId); };
             el[0].selectedTabId = function (tabId) { return self.selectedTabId(tabId); };
             el[0].addTab = function (tabObj) { return self.addTab(tabObj); };
+            el[0].showTab = function (tabId, show) { return self.showTab(tabId, show); }
+
             if (typeof o.style !== 'undefined') el.css(o.style);
             var evt = $.Event('initTabs');
             evt.contents = function () { return self.contents(); };
@@ -1473,6 +1475,17 @@ $.ui.position.fieldTip = {
 
         },
         isInDOM: function () { return $.contains(this.element[0].ownerDocument.documentElement, this.element[0]); },
+        showTab: function (tabId, show) {
+            var self = this, o = self.options, el = self.element;
+            var tab = el.find('div.picTabs:first').children('div.picTab[data-tabid="' + tabId + '"]');
+            //console.log({ msg: 'Showing tab', tab: tab, show: show });
+            if (show) tab.show();
+            else tab.hide();
+            if (tab.hasClass('picTabSelected')) {
+                if (show) self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').show();
+                else self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').hide();
+            }
+        },
         selectTabById: function (tabId) {
             var self = this, o = self.options, el = self.element;
             var evt = $.Event('tabchange');

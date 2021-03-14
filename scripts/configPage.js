@@ -88,6 +88,13 @@
                 o.cfg = data;
                 var evt = $.Event('loaded');
                 var tab;
+                tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
+                    [{ id: 'tabControllerType', text: 'Type', cssClass: 'cfgControllerType' },
+                        { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
+                        { id: 'tabFilter', text: 'Filter', cssClass: 'cfgFilter'},
+                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces'}]
+                );
+                tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });
                 tab = self._addConfigTab({ id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' });
                 tab = self._addConfigTab({ id: 'tabCircuits', text: 'Circuits', cssClass: 'cfgCircuits' },
