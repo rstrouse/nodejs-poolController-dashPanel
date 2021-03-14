@@ -158,6 +158,7 @@ var mhelper = {
             case 23: return 'Get[pumpStatus]';
             case 24: return 'Get[pumpConfig]';
             case 25: return 'Get[chlor]';
+            case 27: return 'Get[pumpConfig-ext]';
             case 29: return 'Get[valves]';
             case 30: return 'Get[hs-circuits]';
             case 32: return 'Get[remote]';

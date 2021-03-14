@@ -48,6 +48,11 @@
             "defaultType": "Response"
           },
           {
+            "val": 27,
+            "desc": "Response Pumps Config Extended",
+            "defaultType": "Response"
+          },
+          {
             "val": 29,
             "desc": "Response Valves Config",
             "defaultType": "Response"
