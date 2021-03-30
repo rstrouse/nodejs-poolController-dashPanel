@@ -420,6 +420,7 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
+            console.log(data);
             el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
                 this.val(data.ph.level);
             });
@@ -446,34 +447,112 @@
                     el.find('div.daily-dose[data-chemtype="acid"]').hide();
                 }
             }
-            // If we are dosing I need to kill the manual dose window as well as change the buttons
-            // to stop dosing.
-            if (typeof data.ph !== 'undefined' && typeof data.ph.dosingStatus !== 'undefined') {
-                if (data.ph.dosingStatus.name !== 'dosing') {
-                    // Change the button to stop dosing.
-                    if (data.flowDetected === false || data.isBodyOn === false)
-                        el.find('div#btnDoseAcid').hide();
-                    else
-                        el.find('div#btnDoseAcid').show();
-                    el.find('div#btnCancelAcid').hide();
-                }
-                else {
-                    el.find('div#btnCancelAcid').show();
-                    el.find('div#btnDoseAcid').hide();
-                }
+            // If this is IntelliChem then all the manual dosing buttons need to go away.  We don't have
+            // control over this for IntelliChem.
+            if (typeof data.type === 'undefined' || data.type.name === 'intellichem') {
+                el.find('div#btnCancelAcid').hide();
+                el.find('div#btnCancelMixAcid').hide();
+                el.find('div#btnMixAcid').hide();
+                el.find('div#btnDoseAcid').hide();
+                el.find('div#btnCancelOrp').hide();
+                el.find('div#btnCancelMixOrp').hide();
+                el.find('div#btnMixOrp').hide();
+                el.find('div#btnDoseOrp').hide();
             }
-            if (typeof data.orp !== 'undefined' && typeof data.orp.dosingStatus !== 'undefined') {
-                if (data.orp.dosingStatus.name !== 'dosing') {
-                    // Change the button to stop dosing.
-                    if (data.flowDetected === false || data.isBodyOn === false)
-                        el.find('div#btnDoseOrp').hide();
-                    else
-                        el.find('div#btnDoseOrp').show();
-                    el.find('div#btnCancelOrp').hide();
+            else {
+                // If we are dosing I need to kill the manual dose window as well as change the buttons
+                // to stop dosing.
+                if (typeof data.ph !== 'undefined' && typeof data.ph.dosingStatus !== 'undefined') {
+                    // We can be monitoring, mixing, or dosing.
+                    // If we are monitoring we can mix or dose.
+                    if (data.ph.dosingStatus.name === 'monitoring') {
+                        el.find('div#btnCancelAcid').hide();
+                        el.find('div#btnCancelMixAcid').hide();
+                        // Don't let an idiot dose when the pool is off or flow is not detected.
+                        if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDoseAcid').show();
+                        else el.find('div#btnDoseAcid').hide();
+                        // The chem controller will take care of the countdown for mixing if the
+                        // settings are to mix only when flow is detected in the specified body.
+                        el.find('div#btnMixAcid').show();
+                    }
+                    else if (data.ph.dosingStatus.name === 'dosing') {
+                        el.find('div#btnCancelAcid').show();
+                        el.find('div#btnCancelMixAcid').hide();
+                        el.find('div#btnDoseAcid').hide();
+                        // If we are dosing the user can cancel the dose by starting the mix.
+                        el.find('div#btnMixAcid').show();
+                    }
+                    else if (data.ph.dosingStatus.name === 'mixing') {
+                        el.find('div#btnCancelAcid').hide();
+                        el.find('div#btnCancelMixAcid').show();
+                        el.find('div#btnMixAcid').hide();
+                        if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDoseAcid').show();
+                    }
+                    else {
+                        // No one knows what is going on so hide all the manual buttons.
+                        el.find('div#btnCancelAcid').hide();
+                        el.find('div#btnCancelMixAcid').hide();
+                        el.find('div#btnMixAcid').hide();
+                        el.find('div#btnDoseAcid').hide();
+                    }
+
+                    //if (data.ph.dosingStatus.name !== 'dosing') {
+                    //    // Change the button to stop dosing.
+                    //    if (data.flowDetected === false || data.isBodyOn === false)
+                    //        el.find('div#btnDoseAcid').hide();
+                    //    else
+                    //        el.find('div#btnDoseAcid').show();
+                    //    el.find('div#btnCancelAcid').hide();
+                    //}
+                    //else {
+                    //    el.find('div#btnCancelAcid').show();
+                    //    el.find('div#btnDoseAcid').hide();
+                    //}
                 }
-                else {
-                    el.find('div#btnCancelOrp').show();
-                    el.find('div#btnDoseOrp').hide();
+                if (typeof data.orp !== 'undefined' && typeof data.orp.dosingStatus !== 'undefined') {
+                    if (data.orp.dosingStatus.name === 'monitoring') {
+                        el.find('div#btnCancelOrp').hide();
+                        el.find('div#btnCancelMixOrp').hide();
+                        // Don't let an idiot dose when the pool is off or flow is not detected.
+                        if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDoseOrp').show();
+                        else el.find('div#btnDoseOrp').hide();
+                        // The chem controller will take care of the countdown for mixing if the
+                        // settings are to mix only when flow is detected in the specified body.
+                        el.find('div#btnMixOrp').show();
+                    }
+                    else if (data.orp.dosingStatus.name === 'dosing') {
+                        el.find('div#btnCancelOrp').show();
+                        el.find('div#btnCancelMixOrp').hide();
+                        el.find('div#btnDoseOrp').hide();
+                        // If we are dosing the user can cancel the dose by starting the mix.
+                        el.find('div#btnMixOrp').show();
+                    }
+                    else if (data.orp.dosingStatus.name === 'mixing') {
+                        el.find('div#btnCancelOrp').hide();
+                        el.find('div#btnCancelMixOrp').show();
+                        el.find('div#btnMixOrp').hide();
+                        if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDoseOrp').show();
+                    }
+                    else {
+                        // No one knows what is going on so hide all the manual buttons.
+                        el.find('div#btnCancelOrp').hide();
+                        el.find('div#btnCancelMixOrp').hide();
+                        el.find('div#btnMixOrp').hide();
+                        el.find('div#btnDoseOrp').hide();
+                    }
+
+                    //if (data.orp.dosingStatus.name !== 'dosing') {
+                    //    // Change the button to stop dosing.
+                    //    if (data.flowDetected === false || data.isBodyOn === false)
+                    //        el.find('div#btnDoseOrp').hide();
+                    //    else
+                    //        el.find('div#btnDoseOrp').show();
+                    //    el.find('div#btnCancelOrp').hide();
+                    //}
+                    //else {
+                    //    el.find('div#btnCancelOrp').show();
+                    //    el.find('div#btnDoseOrp').hide();
+                    //}
                 }
             }
             self.dataBind(data);
@@ -602,6 +681,57 @@
             divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
             dlg.css({ overflow: 'visible' });
         },
+        _createManualMixDialog(chemical, chemType, elBtn) {
+            var self = this, o = self.options, el = self.element;
+            var chemName = chemical.charAt(0).toUpperCase() + chemical.slice(1);
+            var dlg = $.pic.modalDialog.createDialog('dlgManualChemMix', {
+                width: '357px',
+                height: 'auto',
+                title: `Start Manual ${chemName} Mix`,
+                position: { my: "center top", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Start Mixing', icon: '<i class="fas fa-blender"></i>',
+                        click: function (e) {
+                            var d = dataBinder.fromElement(dlg);
+                            d = $.extend(true, d, { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType });
+                            console.log(d);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemController/manualMix', d, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Supply the ${chemName.toLowerCase()} mixing time in hours and minutes.  Then press the Start Mixing button.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Mixing Time', binding: 'hours', min: 0, max: 48, step: 1,
+                fmtMask: '#,##0', units: 'hrs',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '3rem' } }
+            }).on('change', function (e) {
+
+                });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: '', binding: 'minutes', min: 0, max: 59, step: 1,
+                fmtMask: '#,##0', units: 'min',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '3rem' } }
+            }).on('change', function (e) {
+
+            });
+
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            dlg.css({ overflow: 'visible' });
+        },
         _confirmCancelDose: function (chemical, chemType) {
             var self = this, o = self.options, el = self.element;
             $.pic.modalDialog.createConfirm('dlgConfirmCancelDosing', {
@@ -616,6 +746,30 @@
                         console.log(d);
                         $.pic.modalDialog.closeDialog(this);
                         $.putApiService('/state/chemController/cancelDosing', d, function (c, status, xhr) {
+                            self.setEquipmentData(c);
+                        });
+                    }
+                },
+                {
+                    text: 'No', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+        },
+        _confirmCancelMix: function (chemical, chemType) {
+            var self = this, o = self.options, el = self.element;
+            $.pic.modalDialog.createConfirm('dlgConfirmCancelDosing', {
+                message: `Are you sure you want to Cancel ${chemical} mixing?`,
+                width: '350px',
+                height: 'auto',
+                title: 'Confirm Cancel Mixing',
+                buttons: [{
+                    text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                    click: function () {
+                        var d = { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType };
+                        console.log(d);
+                        $.pic.modalDialog.closeDialog(this);
+                        $.putApiService('/state/chemController/cancelMixing', d, function (c, status, xhr) {
                             self.setEquipmentData(c);
                         });
                     }
@@ -689,11 +843,7 @@
             $('<hr></hr>').appendTo(divTotal).css({ margin: '1px' });
             $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'acid').appendTo(divTotal).staticField({ labelText: 'Acid', binding: 'ph.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
             $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'orp').appendTo(divTotal).staticField({ labelText: 'Chlorine', binding: 'orp.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
-
-
-
             // A good balanced saturationIndex is between +- 0.3
-
             divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign: 'center' }).appendTo(grpLevels);
             $('<div></div>').chemTank({
                 chemType: 'acid', labelText: 'Acid Tank',
@@ -702,8 +852,6 @@
                 .on('click', function (evt) {
                     self._createTankAttributesDialog('pH', $(evt.currentTarget));
                 }).hide();
-
-
             $('<div></div>').chemTank({
                 chemType: 'orp', labelText: 'ORP Tank',
                 max: data.orp.tank.capacity || 0
@@ -722,6 +870,15 @@
                     .on('click', function (evt) {
                         self._confirmCancelDose('Acid', 'ph');
                     }).hide();
+                $('<div></div>').appendTo(divBtnAcidCont).actionButton({ id: 'btnMixAcid', text: 'Mix Acid', icon: '<i class="fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualMixDialog('Acid', 'ph');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnAcidCont).actionButton({ id: 'btnCancelMixAcid', text: 'Stop Acid Mix', icon: '<i class="burst-animated fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelMix('Acid', 'ph');
+                    }).hide();
+
             }
             if (data.orp.enabled === true && data.orp.pump.type.val !== 0 && data.orp.useChlorinator !== true) {
                 var divBtnOrpCont = $('<div></div>').appendTo(divLine).addClass('divDoseOrp').css({ display: 'inline-block' });
@@ -732,6 +889,14 @@
                 $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnCancelOrp', text: 'Stop Chlorine', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
                     .on('click', function (evt) {
                         self._confirmCancelDose('Chlorine', 'orp');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnMixOrp', text: 'Mix Chlorine', icon: '<i class="fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualMixDialog('Chlorine', 'orp');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnCancelMixOrp', text: 'Stop Chlor Mix', icon: '<i class="burst-animated fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelMix('Chlorine', 'orp');
                     }).hide();
             }
             divLine = $('<div></div>').appendTo(grpLevels);
