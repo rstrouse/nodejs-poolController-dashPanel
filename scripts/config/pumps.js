@@ -183,8 +183,8 @@
             pnl.empty();
             var line = $('<div></div>').appendTo(pnl);
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
-            if (typeof type.maxPrimeTime !== 'undefined') {
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimeTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+            if (typeof type.maxPrimingTime !== 'undefined') {
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
                 $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             }
             else {

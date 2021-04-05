@@ -189,7 +189,7 @@
     });
 })(jQuery);
 (function ($) {  // Controller Type display.
-    $.widget('pic.tabControllerType', {
+    $.widget('pic.configControllerType', {
         options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -208,7 +208,7 @@
             //});
         }
     });
-    $.widget('pic.tabRS485', {
+    $.widget('pic.configRS485', {
         options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -217,7 +217,40 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            el.empty();
+            el.addClass('picConfigCategory');
+            el.addClass('cfgRS485');
+            var port = {
+                "enabled": true,
+                "rs485Port": "/dev/ttyUSB0",
+                "mockPort": false,
+                "netConnect": true,
+                "netHost": "raspberrypi",
+                "netPort": 9801,
+                "inactivityRetry": 10,
+                "portSettings": {
+                    "baudRate": 9600,
+                    "dataBits": 8,
+                    "parity": "none",
+                    "stopBits": 1,
+                    "flowControl": false,
+                    "autoOpen": false,
+                    "lock": false
+                }
+            };
+            var line = $('<div></div>').appendTo(el);
+            var binding = '';
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
+            $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+            });
+
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Port Name', binding: 'name', inputAttrs: { maxlength: 32}, labelAttrs: { style: { marginRight: '.25rem' } } });
+
+
         //    el.addClass('picConfigCategory cfgBody');
         //    var binding = '';
         //    var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: '', style: { width: '10rem' }, binding: 'name' }, { binding: 'capacity', text: '', style: { width: '10rem', textAlign: 'right' } }] });

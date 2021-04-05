@@ -22,6 +22,21 @@
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
+                case 'tabController':
+                    self._buildControllerTab(evt.newTab.contents);
+                    break;
+                case 'tabControllerType':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configControllerType();
+                    break;
+                case 'tabRS485':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configRS485();
+                    break;
+                case 'tabFilter':
+                case 'tabInterfaces':
+                    break;
+
                 case 'tabEquipment':
                     self._buildEquipmentTab(evt.newTab.contents);
                     break;
@@ -104,6 +119,12 @@
                 o.cfg = data;
                 var evt = $.Event('loaded');
                 var tab;
+                tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
+                    [{ id: 'tabControllerType', text: 'Controller Type', cssClass: 'cfgControllerType' },
+                    { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
+                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' }]
+                );
+                //tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });
                 tab = self._addConfigTab({ id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' });
                 tab = self._addConfigTab({ id: 'tabCircuits', text: 'Circuits', cssClass: 'cfgCircuits' },
@@ -124,7 +145,7 @@
                 tab = self._addConfigTab({ id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' });
                 tab = self._addConfigTab({ id: 'tabChemistry', text: 'Chemistry', cssClass: 'cfgChemistry' });
                 tab = self._addConfigTab({ id: 'tabHeaters', text: 'Heaters', cssClass: 'cfgHeaters' });
-                tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
+                //tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
 
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
                 
@@ -180,6 +201,24 @@
                     break;
             }
         },
+        _buildControllerTab: function (contents) {
+            var self = this, o = self.options, el = self.element;
+            // Find the currently selected tab.  We want to reload it.
+            var tabs = contents.find('div.picTabBar:first')[0];
+            var tabId = tabs.selectedTabId();
+            switch (tabId) {
+                case 'tabControllerType':
+                case 'tabRS485':
+                case 'tabFilter':
+                case 'tabInterfaces':
+                    //tabs.selectedTabId(tabId);
+                    break;
+                default:
+                    tabs.selectTabById('tabControllerType');
+                    break;
+            }
+        },
+
         _buildEquipmentTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             // Find the currently selected tab.  We want to reload it.
