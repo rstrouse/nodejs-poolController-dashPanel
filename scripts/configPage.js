@@ -69,10 +69,12 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configSchedules();
                     break;
-                case 'tabDashboard':
+                case 'tabController':
+                    self._buildControllerTab(evt.newTab.contents);
+                    break;
                 case 'tabInterfaces':
                     evt.newTab.contents.empty();
-                    $('<div></div>').appendTo(evt.newTab.contents);
+                    $('<div></div>').appendTo(evt.newTab.contents).configInterfaces();
                     break;
             }
         },
@@ -83,18 +85,25 @@
             tabs.tabBar();
             tabs.find('div.picTabContents').addClass('picConfigTabContents');
             tabs.on('tabchange', function (evt) { self._onTabChanged(evt); });
+            $.getApiService('/app/all', null, function (data, status, xhr) {
+                o.app = data;
+                var tab;
+                tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
+                    [
+                        // { id: 'tabControllerType', text: 'Type', cssClass: 'cfgControllerType' },
+                        // { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
+                        // { id: 'tabFilter', text: 'Filter', cssClass: 'cfgFilter'},
+                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces'}]
+                )
+
+                // tabs[0].showTab('tabController', false);
+            });
+
             $.getApiService('/config/all', null, function (data, status, xhr) {
                 console.log(data);
                 o.cfg = data;
                 var evt = $.Event('loaded');
                 var tab;
-                tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
-                    [{ id: 'tabControllerType', text: 'Type', cssClass: 'cfgControllerType' },
-                        { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
-                        { id: 'tabFilter', text: 'Filter', cssClass: 'cfgFilter'},
-                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces'}]
-                );
-                tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });
                 tab = self._addConfigTab({ id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' });
                 tab = self._addConfigTab({ id: 'tabCircuits', text: 'Circuits', cssClass: 'cfgCircuits' },
@@ -118,6 +127,7 @@
                 tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
 
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
+                
 
                 //tab = self._addConfigTab({ id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' });
                 //tab = self._addConfigTab({ id: 'tabDashboard', text: 'Dashboard', cssClass: 'cfgDashboard' });
@@ -188,6 +198,14 @@
                     tabs.selectTabById('tabValves');
                     break;
             }
+        },
+        _buildControllerTab: function (contents) {
+            var self = this, o = self.options, el = self.element;
+            // Find the currently selected tab.  We want to reload it.
+            var tabs = contents.find('div.picTabBar:first')[0];
+            // var tabId = tabs.selectedTabId();
+            console.log({ msg: 'Building Controller Tab'});
+            tabs.selectTabById('tabInterfaces');
         },
 
         _buildSchedulesTab: function (contents) {
