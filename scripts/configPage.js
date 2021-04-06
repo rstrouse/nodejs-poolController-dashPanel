@@ -93,21 +93,7 @@
             tabs.tabBar();
             tabs.find('div.picTabContents').addClass('picConfigTabContents');
             tabs.on('tabchange', function (evt) { self._onTabChanged(evt); });
-            //$.getApiService('/app/all', null, function (data, status, xhr) {
-            //    o.app = data;
-            //    var tab;
-            //    tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
-            //        [
-            //            // { id: 'tabControllerType', text: 'Type', cssClass: 'cfgControllerType' },
-            //            // { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
-            //            // { id: 'tabFilter', text: 'Filter', cssClass: 'cfgFilter'},
-            //            { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' }]
-            //    );
-
-            //    // tabs[0].showTab('tabController', false);
-            //});
-
-            $.getApiService('/app/config/all', null, function (data, status, xhr) {
+            $.getApiService('/config/all', null, function (data, status, xhr) {
                 console.log(data);
                 o.cfg = data;
                 var evt = $.Event('loaded');
@@ -141,11 +127,6 @@
                 //tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
 
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
-                
-
-                //tab = self._addConfigTab({ id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' });
-                //tab = self._addConfigTab({ id: 'tabDashboard', text: 'Dashboard', cssClass: 'cfgDashboard' });
-
                 tabs[0].selectTabById('tabGeneral');
                 el.trigger(evt);
             });
@@ -232,131 +213,5 @@
                     break;
             }
         }
-        //,
-        //_buildControllerTab: function (contents) {
-        //    var self = this, o = self.options, el = self.element;
-        //    // Find the currently selected tab.  We want to reload it.
-        //    var tabs = contents.find('div.picTabBar:first')[0];
-        //    // var tabId = tabs.selectedTabId();
-        //    console.log({ msg: 'Building Controller Tab'});
-        //    tabs.selectTabById('tabInterfaces');
-        //},
-
-        //_buildSchedulesTab: function (contents) {
-        //    var self = this, o = self.options, el = self.element;
-        //    contents.empty();
-        //    var divOuter = $('<div class="picConfigCategory cfgSchedules"></div>').appendTo(contents);
-        //    $.getApiService('/config/options/schedules', null, function (opts, status, xhr) {
-        //        console.log(opts);
-        //        var schedules = opts.schedules;
-        //        for (var i = 0; i < schedules.length; i++) {
-        //            var sched = schedules[i];
-        //        }
-        //    });
-        //},
-        //_buildRemotesTab: function (contents) {
-        //    var self = this, o = self.options, el = self.element;
-        //    contents.empty();
-        //    var divOuter = $('<div class="picConfigCategory cfgOther"></div>').appendTo(contents);
-        //},
-        //_buildHeatersTab: function (contents) {
-        //    var self = this, o = self.options, el = self.element;
-        //    contents.empty();
-        //    var divOuter = $('<div class="picConfigCategory cfgHeaters"></div>').appendTo(contents);
-        //},
-        //_buildChemistryTab: function (contents) {
-        //    var self = this, o = self.options, el = self.element;
-        //    contents.empty();
-        //    var divOuter = $('<div class="picConfigCategory cfgChemistry"></div>').appendTo(contents);
-        //},
-        //_getCircuitReferences(circuits, features, virtual, groups) {
-        //    var self = this, o = self.options, el = self.element;
-        //    var arr = [];
-        //    for (var i = 0; i < o.circuitReferences.length; i++) {
-        //        var ref = o.circuitReferences[i];
-        //        if (ref.equipmentType === 'circuit' && !circuits) continue;
-        //        if (ref.equipmentType === 'feature' && !features) continue;
-        //        if (ref.equipmentType === 'virtual' && !virtual) continue;
-        //        if ((ref.equipmentType === 'lightGroup' || ref.equipmentType === 'circuitGroup') && !groups) continue;
-        //        arr.push(o.circuitReferences[i]);
-        //    }
-        //    return arr;
-        //},
-        //_buildLine: function () { return $('<div class="picOptionLine"></div>'); },
-        //_buildCircuitList: function (attrs) {
-        //    var div = $('<div class="picCircuitsList"></div>');
-        //    var pnl = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(div);
-        //    $('<div><label>' + attrs.labelText + '</label></div>').appendTo(pnl);
-        //    var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-        //    var btnAddCircuit = $('<div></div>').appendTo(btnCPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
-        //    var list = $('<div class="picCircuitsList-list"></div>').appendTo(div);
-        //    return div;
-        //},
-        //_buildAccordian: function (cssClass, opts) {
-        //    var div = $('<div class="picAccordian"></div>').accordian(opts);
-        //    div.addClass(cssClass);
-        //    return div;
-        //},
-        //_buildOptionDropdown: function (cssClass, ddAttrs) {
-        //    var div = $('<div class="picOptionDropdown"></div>');
-        //    if (cssClass) div.addClass(cssClass);
-        //    div.attr('data-bind', ddAttrs.binding);
-        //    var dd = $('<div class="picPickList"></div>').appendTo(div).pickList(ddAttrs)[0];
-        //    return div;
-        //},
-        //_buildOptionField: function (cssClass, lblText, binding, text, fldAttrs, lblAttrs) {
-        //    var div = $('<div class="picOptionField"></div>');
-        //    if (cssClass) div.addClass(cssClass);
-        //    div.attr('data-bind', binding);
-        //    var fld = $('<div class="picInputField"></div>').appendTo(div);
-        //    fld.attr('data-bind', binding);
-        //    fld.inputField({ labelText: lblText, value: text, inputAttrs: fldAttrs, labelAttrs: lblAttrs });
-        //    return div;
-        //},
-        //_buildOptionCheckbox: function (cssClass, lblText, binding, text, fldAttrs, lblAttrs) {
-        //    var div = $('<div class="picOptionCheckbox"></div>');
-        //    if (cssClass) div.addClass(cssClass);
-        //    var fld = $('<div class="picCheckbox"></div>').appendTo(div);
-        //    fld.attr('data-bind', binding);
-        //    fld.checkbox({ labelText: lblText, value: text, inputAttrs: fldAttrs, labelAttrs: lblAttrs });
-        //    return div;
-
-        //    //var id = 'cfgField_' + binding.replace('.', '_').replace('[', '_').replace(']', '_');
-        //    //var fld = $('<input type="checkbox"></input>').appendTo(div);
-        //    //fld.prop('id', id);
-        //    //fld.val(text);
-        //    //fld.attr('data-bind', binding);
-        //    //if (makeBool(text)) fld.attr('checked', 'checked');
-        //    //var lbl = $('<label></label>').appendTo(div);
-        //    //lbl.attr('for', id);
-        //    //lbl.text(lblText);
-        //    //div.attr('data-bind', binding);
-        //    //if (typeof fldAttrs !== 'undefined') {
-        //    //    for (var fprop in fldAttrs) {
-        //    //        if (fprop.startsWith('style_'))
-        //    //            fld.css(fprop.replace('style_', ''), fldAttrs[fprop]);
-        //    //        else {
-        //    //            fld.attr(fprop, fldAttrs[fprop]);
-        //    //        }
-        //    //    }
-        //    //}
-        //    //if (typeof lblAttrs !== 'undefined') {
-        //    //    for (var lprop in lblAttrs) {
-        //    //        if (lprop.startsWith('style_'))
-        //    //            fld.css(lprop.replace('style_', ''), lblAttrs[lprop]);
-        //    //        else
-        //    //            fld.attr(lprop, lblAttrs[lprop]);
-        //    //    }
-        //    //}
-        //    //return div;
-        //},
-        //_buildOptionSpinner: function (cssClass, lblText, binding, value, spinAttrs, lblAttrs) {
-        //    var div = $('<div class="picOptionField"></div>');
-        //    if (cssClass) div.addClass(cssClass);
-        //    var fld = $('<div class="picValueSpinner"></div>').appendTo(div);
-        //    fld.attr('data-bind', binding);
-        //    fld.valueSpinner({ labelText: lblText, value: value, inputAttrs: spinAttrs, labelAttrs: lblAttrs });
-        //    return div;
-        //}
     });
 })(jQuery);
