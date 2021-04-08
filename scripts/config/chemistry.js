@@ -596,7 +596,7 @@
                 binding: `${binding}type`, value: 0,
                 bindColumn: 0, displayColumn: 2,
                 labelText: 'Type',
-                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Probe Type', style: { whiteSpace: 'nowrap' } }],
                 items: type === 'pH' ? o.phProbeTypes : o.orpProbeTypes,
                 inputAttrs: { style: { width: '8.5rem' } }
             }).on('selchanged', function (evt) {
@@ -634,6 +634,8 @@
                 line = $('<div></div>').appendTo(grpProbe);
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Feed Body Temperature', binding: `${binding}feedBodyTemp` }).attr('title', 'Check if you want to feed the temperature from the currently running body for temp compensation.').hide().addClass('pnl-rem-address');
             }
+            line = $('<div></div>').appendTo(line);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'REM Feed', binding: `${binding}remFeedEnabled` }).attr('title', 'This box will be checked if the feed for this probe is enabled in REM.  If this box is not checked, and you check it, the feed will be created for you.  Unchecking the feed will set it as disabled on REM.');
             return grpProbe;
         },
         _buildPumpPanel: function (remServers, type) {
