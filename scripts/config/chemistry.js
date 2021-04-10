@@ -628,14 +628,14 @@
                 inputAttrs: { style: { width: '8.5rem' } },
                 labelAttrs: { style: { width: '5.4rem' } }
             }).hide().addClass('pnl-rem-address');
-            line = $('<div></div>').appendTo(line);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Flow Readings Only', binding: `${type.toLowerCase()}.flowReadingsOnly` }).attr('title', 'Check if you want to ignore readings from the probe when no flow is detected.');
+            line = $('<div></div>').appendTo(grpProbe);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Flow Readings Only', binding: `${type.toLowerCase()}.flowReadingsOnly` }).attr('title', 'Check if you want to ignore readings from the probe when no flow is detected.').addClass('pnl-rem-address').hide();
             if (type === 'pH') {
                 line = $('<div></div>').appendTo(grpProbe);
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Feed Body Temperature', binding: `${binding}feedBodyTemp` }).attr('title', 'Check if you want to feed the temperature from the currently running body for temp compensation.').hide().addClass('pnl-rem-address');
             }
-            line = $('<div></div>').appendTo(line);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'REM Feed', binding: `${binding}remFeedEnabled` }).attr('title', 'This box will be checked if the feed for this probe is enabled in REM.  If this box is not checked, and you check it, the feed will be created for you.  Unchecking the feed will set it as disabled on REM.');
+            line = $('<div></div>').appendTo(grpProbe)
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'REM Feed', binding: `${binding}remFeedEnabled` }).attr('title', 'This box will be checked if the feed for this probe is enabled in REM.  If this box is not checked, and you check it, the feed will be created for you.  Unchecking the feed will set it as disabled on REM.').addClass('pnl-rem-address').hide();
             return grpProbe;
         },
         _buildPumpPanel: function (remServers, type) {
