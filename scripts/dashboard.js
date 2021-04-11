@@ -126,7 +126,7 @@
         _initSockets: function () {
             var self = this, o = self.options, el = self.element;
             console.log({ msg: 'Checking Url', url: o.apiServiceUrl });
-            o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000 });
+            o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
                 var circs = $('div.picCircuit[data-eqid=' + data.id + ']');

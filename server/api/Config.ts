@@ -8,7 +8,7 @@ import { logger } from "../logger/Logger";
 export class ConfigRoute {
     public static initRoutes(app: express.Application) {
         app.get('/config/findPoolControllers', async (req, res, next) => {
-            let prom = new Promise((resolve, reject) => {
+            let prom = new Promise<void>((resolve, reject) => {
                 let ssdpClient = new Client({});
                 let servers = [];
                 try {
@@ -31,7 +31,7 @@ export class ConfigRoute {
             });
         });
         app.get('/config/findREMControllers', async (req, res, next) => {
-            let prom = new Promise((resolve, reject) => {
+            let prom = new Promise<void>((resolve, reject) => {
                 let ssdpClient = new Client({});
                 let servers = [];
                 try {
