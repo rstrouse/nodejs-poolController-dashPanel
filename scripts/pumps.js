@@ -10,7 +10,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             if (typeof data !== 'undefined') {
-                el.show();
+                
                 let div = $('<div class="picCircuitTitle control-panel-title"></div>');
                 div.appendTo(el);
                 let span = $('<span class="picCircuitTitle"></span>');
@@ -23,6 +23,10 @@
                     div.appendTo(el);
                     div.pump(data.pumps[i]);
                 }
+                if (el.find('div.picPump[data-active=true]').length > 0)
+                    el.show();
+                else
+                    el.hide();
             }
             else {
                 el.hide();

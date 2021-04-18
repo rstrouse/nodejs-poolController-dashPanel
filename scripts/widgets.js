@@ -3272,6 +3272,71 @@ $.ui.position.fieldTip = {
             else return o.target;
         }
     });
+    $.widget("pic.REMBinding", {
+        options: {binding:''},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initREMBinding();
+        },
+        _initREMBinding: function () {
+            var self = this, o = self.options, el = self.element;
+            line = $('<div></div>').appendTo(el);
+            var binding;
+            if (typeof o.binding !== 'undefined' && o.binding.length > 0) binding = `${o.binding}.`;
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}connectionId`,
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Connection',
+                columns: [{ binding: 'uuid', text: 'uuid', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                items: o.servers,
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).on('selchanged', function (evt) {
+                el.find('div[data-bind$="deviceBinding"]').each(function () {
+                    this.items(evt.newItem.devices);
+                });
+            }).addClass('pnl-rem-address');
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}deviceBinding`,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Device',
+                columns: [{ binding: 'binding', text: 'binding', hidden: true }, { binding: 'category', text: 'Category', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Device', style: { whiteSpace: 'nowrap' } }],
+                items: [],
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).addClass('pnl-rem-address');
+
+        },
+        isEmpty: function () {
+            var self = this, o = self.options, el = self.element;
+            return self.val() === 'undefined';
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                var lvl = el.find('div.chemLevel-level');
+                // Find the target div.
+                var pin = lvl.find('div.chemLevel-value');
+                if (pin.length === 0) {
+                    pin = $('<div></div>').addClass('chemLevel-value').appendTo(lvl);
+                    $('<div></div>').addClass('chemLevel-value-label').appendTo(pin);
+                    pin.append('<i class="fas fa-map-marker-alt"></i>');
+                }
+                var maxWidth = lvl.width();
+                var tot = o.max - o.min;
+                var minval = o.scales[0].min;
+                var maxval = o.scales[o.scales.length - 1].max;
+                // Calculate the left value.
+                var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
+                //console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
+                pin.css({ left: left + '%' });
+                pin.find('div.chemLevel-value-label').text(typeof val === 'number' ? val.format(o.fmtMask) : o.emptyMask);
+                o.value = val;
+            }
+            else return o.value;
+        }
+    });
     $.widget("pic.buttonOptions", {
         options: { items:[], selectionType:'single', toggleType:'' },
         _create: function () {

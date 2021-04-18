@@ -115,6 +115,7 @@
                         if (typeof type.maxCircuits !== 'undefined' && type.maxCircuits > 0) {
                             // If we have circuits then we need to verify that there are no duplicates.
                             var hash = {};
+                            if (typeof v.circuits === 'undefined') v.circuits = [];
                             for (var i = 0; i < v.circuits.length; i++) {
                                 var c = v.circuits[i];
                                 if (typeof hash['c' + c.circuit] !== 'undefined') {

@@ -15,7 +15,6 @@
             span.appendTo(div);
             span.text('Schedules');
             if (typeof data !== 'undefined' && typeof data.schedules !== 'undefined') {
-                el.show();
                 var schedules = data.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     // Create a new schedule for each installed schedule.
@@ -23,6 +22,13 @@
                     divSched.appendTo(el);
                     divSched.schedule(data.schedules[i]);
                 }
+                if (el.find('div.picSchedule[data-active=true]').length > 0)
+                    el.show();
+                else
+                    el.hide();
+
+                if (schedules.length > 0) el.show();
+                else el.hide();
             }
             else el.hide();
         },

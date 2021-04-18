@@ -10,10 +10,18 @@
             el.addClass('picConfigCategory');
             el.addClass('cfgAuxCircuits');
             $.getApiService('/config/options/circuits', null, function (opts, status, xhr) {
-                console.log(opts);
                 for (var i = 0; i < opts.circuits.length; i++) {
-                    $('<div></div>').appendTo(el).pnlAuxCircuitConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions })[0].dataBind(opts.circuits[i]);
+                    $('<div></div>').appendTo(el).pnlAuxCircuitConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions, servers: opts.circuits[i].master === 1 ? opts.servers : [] })[0].dataBind(opts.circuits[i]);
                 }
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el).hide();
+                var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
+                btnAdd.on('click', function (e) {
+                    var newId = el.find('div.cfgAuxCircuit input[data-bind=id]').length + 1;
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlAuxCircuitConfig({ equipmentNames: [], functions: opts.functions, servers: opts.servers });
+                    pnl[0].dataBind({ id: -1, eggTimer: 720, name: 'Circuit ' + (newId), type: 0, showInFeatures: true, master: 1 });
+                    pnl.find('div.picAccordian:first')[0].expanded(true);
+                });
+
             });
         }
     });
@@ -178,6 +186,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
             if (o.equipmentNames.length > 0) {
                 $('<div></div>').appendTo(line).pickList({
                     required: true,
@@ -206,6 +215,10 @@
                 el.find('div[data-bind=eggTimerMinutes]').css({ visibility: dontStop ? 'hidden' : '' });
             });
 
+            var bindpnl = $('<div></div>').addClass('pnlDeviceBinding').REMBinding({ servers: o.servers }).appendTo(pnl).hide();
+            $('<hr></hr>').prependTo(bindpnl);
+
+
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Circuit', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
@@ -225,6 +238,34 @@
                 //$(this).find('span.picButtonText').text('Loading Config...');
                 //$.putApiService('/app/config/reload', function (data, status, xhr) {
             });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({id:'btnDeleteCircuit', text: 'Delete Circuit', icon: '<i class="fas fa-trash"></i>' }).hide();
+            btnDelete.on('click', function (e) {
+                var p = $(e.target).parents('div.picAccordian-contents:first');
+                var v = dataBinder.fromElement(p);
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteCircuit', {
+                    message: 'Are you sure you want to delete Circuit ' + v.name + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Circuit',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            if (v.id <= 0) p.parents('div.picConfigCategory.cfgAuxCircuit:first').remove();
+                            else {
+                                $.deleteApiService('/config/feature', v, 'Deleting Circuit...', function (c, status, xhr) {
+                                    p.parents('div.picConfigCategory.cfgAuxCircuit:first').remove();
+                                });
+                            }
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+            });
+
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -245,6 +286,14 @@
             el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
+            if (obj.master === 1 && obj.id !== 1 && obj.id !== 6) { // Can only delete and set address on REM circuits.
+                el.find('div#btnDeleteCircuit').show();
+                el.find('div.pnlDeviceBinding').show();
+            }
+            else {
+                el.find('div#btnDeleteCircuit').hide();
+                el.find('div.pnlDeviceBinding').hide();
+            }
         }
     });
 })(jQuery); // Aux Circuit Panel
