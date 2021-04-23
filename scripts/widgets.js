@@ -337,7 +337,7 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             }
         };
         var cbShowError = function (jqXHR, status, error) {
-            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON };
+            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON, message: error };
             if (err.httpCode >= 299) {
                 $.pic.modalDialog.createApiError(err);
             }
@@ -420,7 +420,7 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             }
         };
         var cbShowError = function (jqXHR, status, error) {
-            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON };
+            var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON, message: error };
             console.log(err);
             if (err.httpCode >= 299) {
                 $.pic.modalDialog.createApiError(err);
@@ -2736,6 +2736,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el.addClass('picErrorPanel');
             var line = $('<div></div>').appendTo(el);
+            console.log(o);
             if (typeof o.error !== 'undefined') {
                 $('<label></label>').appendTo(line).addClass('errorLabel').text('Message');
                 $('<span></span>').appendTo(line).addClass('errorMessage').text(o.error.message);
@@ -2763,6 +2764,10 @@ $.ui.position.fieldTip = {
                     var pnl = acc.find('div.picAccordian-contents');
                     var div = $('<div></div>').appendTo(pnl).addClass('picStackTrace').html(o.error.stack);
                 }
+            }
+            else {
+                $('<label></label>').appendTo(line).addClass('errorLabel').text('Message');
+                if (typeof o.httpCode !== 'undefined') $('<span></span>').appendTo(line).addClass('errorMessage').text(`HTTP ${o.httpCode}: ${o.message}`);
             }
         }
     });
@@ -3281,7 +3286,7 @@ $.ui.position.fieldTip = {
         _initREMBinding: function () {
             var self = this, o = self.options, el = self.element;
             line = $('<div></div>').appendTo(el);
-            var binding;
+            var binding = '';
             if (typeof o.binding !== 'undefined' && o.binding.length > 0) binding = `${o.binding}.`;
             $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}connectionId`,
@@ -3572,7 +3577,6 @@ $.pic.modalDialog.createApiError = function (err, options) {
         opt.title += err.error.name;
     else
         opt.title += 'General Error';
-    console.log(opt);
     var id = 'errorDialog' + _uniqueId++;
     if (typeof opt.autoOpen === 'undefined') opt.autoOpen = false;
     var dlg = $('div#' + id);

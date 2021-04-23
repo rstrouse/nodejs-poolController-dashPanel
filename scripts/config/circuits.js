@@ -9,11 +9,11 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgAuxCircuits');
-            $.getApiService('/config/options/circuits', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/circuits', null, `Loading Options...`, function (opts, status, xhr) {
                 for (var i = 0; i < opts.circuits.length; i++) {
                     $('<div></div>').appendTo(el).pnlAuxCircuitConfig({ equipmentNames: opts.equipmentNames, functions: opts.functions, servers: opts.circuits[i].master === 1 ? opts.servers : [] })[0].dataBind(opts.circuits[i]);
                 }
-                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el).hide();
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Circuit', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
                     var newId = el.find('div.cfgAuxCircuit input[data-bind=id]').length + 1;
@@ -253,7 +253,7 @@
                             $.pic.modalDialog.closeDialog(this);
                             if (v.id <= 0) p.parents('div.picConfigCategory.cfgAuxCircuit:first').remove();
                             else {
-                                $.deleteApiService('/config/feature', v, 'Deleting Circuit...', function (c, status, xhr) {
+                                $.deleteApiService('/config/circuit', v, 'Deleting Circuit...', function (c, status, xhr) {
                                     p.parents('div.picConfigCategory.cfgAuxCircuit:first').remove();
                                 });
                             }
@@ -278,6 +278,7 @@
             var hrs = Math.floor(eggTimer / 60);
             var mins = eggTimer - (hrs * 60);
             cols[0].elText().text(obj.name);
+            cols[0].elGlyph().attr('class', obj.master === 1 ? 'fas fa-cube' : 'fas fa-code-branch');
             cols[1].elGlyph().attr('class', obj.freeze ? 'fas fa-icicles' : '');
             cols[2].elText().text(func.desc);
             cols[3].elText().text(obj.showInFeatures ? 'Feature' : '');

@@ -15,10 +15,18 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configGeneral();
                     break;
+                case 'tabBodySetup':
+                    self._buildBodySetupTab(evt.newTab.contents);
+                    break;
                 case 'tabBodies':
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configBodies();
                     break;
+                case 'tabFilters':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configFilters();
+                    break;
+
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
@@ -99,13 +107,17 @@
                 var evt = $.Event('loaded');
                 var tab;
                 tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
-                    [{ id: 'tabControllerType', text: 'Controller Type', cssClass: 'cfgControllerType', hidden: true },
+                    [{ id: 'tabControllerType', text: 'Model', cssClass: 'cfgControllerType' },
                     { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
                     { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' }]
                 );
                 //tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });
-                tab = self._addConfigTab({ id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' });
+                tab = self._addConfigTab({ id: 'tabBodySetup', text: 'Bodies', cssClass: 'cfgTabBodies' },
+                    [
+                        { id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' },
+                        { id: 'tabFilters', text: 'Filters', cssClass: 'cfgFiters' }
+                    ]);
                 tab = self._addConfigTab({ id: 'tabCircuits', text: 'Circuits', cssClass: 'cfgCircuits' },
                     [{ id: 'tabAuxCircuits', text: 'Aux-Circuits', cssClass: 'cfgAuxCircuits' },
                     { id: 'tabFeatures', text: 'Features', cssClass: 'cfgFeatures' },
@@ -175,13 +187,30 @@
                     break;
             }
         },
+        _buildBodySetupTab: function (contents) {
+            var self = this, o = self.options, el = self.element;
+            // Find the currently selected tab.  We want to reload it.
+            var tabs = contents.find('div.picTabBar:first')[0];
+            var tabId = tabs.selectedTabId();
+            console.log({ msg: 'Building Body Setup Tab', tabId: tabId });
+            switch (tabId) {
+                case 'tabBodies':
+                case 'tabFilters':
+                    //tabs.selectedTabId(tabId);
+                    break;
+                default:
+                    tabs.selectTabById('tabBodies');
+                    break;
+            }
+        },
+
         _buildControllerTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             // Find the currently selected tab.  We want to reload it.
             var tabs = contents.find('div.picTabBar:first')[0];
             var tabId = tabs.selectedTabId();
-            tabs.showTab('tabControllerType', false);
-            tabs.showTab('tabRS485', false);
+            //tabs.showTab('tabControllerType', false);
+            //tabs.showTab('tabRS485', false);
             switch (tabId) {
                 case 'tabControllerType':
                 case 'tabRS485':

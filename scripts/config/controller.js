@@ -120,23 +120,23 @@
             $('<hr></hr>').appendTo(pnl);
             $('<div></div>').appendTo(pnl).addClass('pnl-appSettings-type');
 
-            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Interface', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                console.log(o.interfaces)
-                let interface = {} // capture any items not data bound
+                console.log(o.interfaces);
+                var iface = {}; // capture any items not data bound
                 for (var i in o.interfaces) {
                     if (o.interfaces[i].uuid === v.uuid) {
-                        interface = o.interfaces[i];
+                        iface = o.interfaces[i];
                         break;
                     }
                 }
-                interface = $.extend(true, interface, v);
+                iface = $.extend(true, iface, v);
                 console.log(v);
                 if (dataBinder.checkRequired(p)) {
-                    $.putApiService('/app/interface', interface, 'Saving interface...', function (c, status, xhr) {
+                    $.putApiService('/app/interface', iface, 'Saving interface...', function (c, status, xhr) {
                         self.dataBind(c);
                     });
                 }
@@ -199,14 +199,67 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgControllerType');
-            //$.getApiService('/config/options/bodies', null, function (opts, status, xhr) {
-            //    console.log(opts);
-            //    var bodies = opts.bodies;
-            //    for (var i = 0; i < bodies.length; i++) {
-            //        $('<div></div>').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies })[0].dataBind(opts.bodies[i]);
-            //    }
-            //});
+            // Alright so now we need to allow the user to select a controller type but only if we are a 
+            $.getApiService('/config/options/controllerType', null, function (opts, status, xhr) {
+                console.log(opts);
+                var type = opts.controllerTypes.find(elem => elem.type === opts.controllerType);
+                var model = type.models.find(elem => elem.val === opts.equipment.modules[0].type);
+                var line = $('<div></div>').appendTo(el);
+                console.log(type);
+                $('<input type="hidden" data-bind="controllerType"></input>').appendTo(line).val(opts.controllerType);
+                $('<div></div>').staticField({ labelText: `Panel Type`, value: type.name }).appendTo(line);
+                $('<div></div>').pickList({
+                    required: true, value: opts.equipment.modules[0].type,
+                    bindColumn: 0, displayColumn: 2, labelText: 'Model', binding: 'model',
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Model', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                    items: type.models, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                }).appendTo(line).on('selchanged', function (evt) {
+                    self._setModelAttributes(evt.newItem);
+
+                })[0].disabled(!makeBool(type.canChange));
+                $('<div></div>').appendTo(el).addClass('ct-narrative');
+                self._setModelAttributes(model);
+                if (type.canChange) {
+                    btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
+                    var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Model', icon: '<i class="fas fa-save"></i>' });
+                    btnSave.on('click', function (e) {
+                        var v = dataBinder.fromElement(el);
+                        console.log(v);
+                        if (dataBinder.checkRequired(el)) {
+                            $.putApiService('/config/controllerType', v, 'Saving Controller Type...', function (c, status, xhr) {
+                                
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        _setModelAttributes: function(model) {
+            var self = this, o = self.options, el = self.element;
+            var narr = el.find('div.ct-narrative');
+            narr.empty();
+            var bdy = model.shared || model.dual ? 'dual' : model.bodies === 0 ? 'zero' : 'single';
+            $('<div></div>').appendTo(narr).html(`The ${model.desc} controller is a ${bdy} body controller.`);
+            $('<hr></hr>').appendTo(narr);
+            switch (bdy) {
+                case 'zero':
+                    $('<div></div>').appendTo(narr).html(`Zero body controllers provide no control over body features or filters.  As a result, features such as heaters, water temperature, and chemistry controllers are not defined for this type of controller.`);
+                    break;
+                case 'single':
+                    $('<div></div>').appendTo(narr).html(`Single body controllers are capable of controlling only a single body of water.  For instance a stand-alone pool or spa.`);
+                    break;
+                case 'dual':
+                    if (model.shared) {
+                        $('<div></div>').appendTo(narr).html(`This controller is capable of controlling two bodies of water in a shared mode.  This gives you the capability of controlling a pool/spa, pool/pool, or spa/spa combination where there is shared equipment.  An intake and return valve is used to redirect the water through a single filter to the appropriate body depending on which mode is selected.`);
+                    }
+                    else {
+                        $('<div></div>').appendTo(narr).html(`This controller is capable of controlling two bodies of water separately.  The bodies are separate and use their own filtration system and pumps.`);
+                    }
+                    break;
+            }
+
         }
+
     });
     $.widget('pic.configRS485', {
         options: {},

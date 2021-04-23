@@ -48,6 +48,50 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picChemistry').each(function () { this.initChemistry(data); });
         },
+        _setControllerType: function (type) {
+            var self = this, o = self.options, el = self.element;
+            $('body').attr('data-controllertype', type);
+            switch (type.toLowerCase()) {
+                case 'intellicenter':
+                    $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
+                    $('div.picDashboard').attr('data-hidethemes', 'false');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    $('div.picDashboard').attr('data-masterid', '0');
+                    break;
+                case 'virtual':
+                case 'nixie':
+                    $('div.picDashboard').attr('data-controllertype', 'Nixie');
+                    $('div.picDashboard').attr('data-hidethemes', 'false');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    $('div.picDashboard').attr('data-masterid', '1');
+                    break;
+                case 'intellitouch':
+                    $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
+                    $('div.picDashboard').attr('data-hidethemes', 'true');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'false');
+                    $('div.picDashboard').attr('data-masterid', '0');
+                    break;
+                case 'easytouch':
+                    $('div.picDashboard').attr('data-controllertype', 'EasyTouch');
+                    $('div.picDashboard').attr('data-hidethemes', 'true');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'false');
+                    $('div.picDashboard').attr('data-masterid', '0');
+                    break;
+                case 'suntouch':
+                    $('div.picDashboard').attr('data-controllertype', 'SunTouch');
+                    $('div.picDashboard').attr('data-hidethemes', 'true');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    $('div.picDashboard').attr('data-masterid', '0');
+                    break;
+                default:
+                    $('div.picDashboard').attr('data-controllertype', type);
+                    $('div.picDashboard').attr('data-hidethemes', 'true');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    $('div.picDashboard').attr('data-masterid', '1');
+                    break;
+            }
+
+        },
         _resetState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('resetting state');
@@ -56,22 +100,22 @@
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
-                    $('body').attr('data-controllertype', data.controllerType);
-                    if (data.equipment.model.startsWith('IntelliCenter')) {
-                        $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
-                        $('div.picDashboard').attr('data-hidethemes', 'false');
-                    }
-                    else {
-                        $('div.picDashboard').attr('data-hidethemes', 'true');
-                        if (data.equipment.model.startsWith('IntelliTouch'))
-                            $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
-                        else if (data.equipment.model.startsWith('EasyTouch'))
-                            $('div.picDashboard').attr('data-controllertype', 'EasyTouch');
-                        else
-                            $('div.picDashboard').attr('data-controllertype', 'SunTouch');
-                        $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    self._setControllerType(data.controllerType);
+                    //if (data.equipment.model.startsWith('IntelliCenter')) {
+                    //    $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
+                    //    $('div.picDashboard').attr('data-hidethemes', 'false');
+                    //}
+                    //else {
+                    //    $('div.picDashboard').attr('data-hidethemes', 'true');
+                    //    if (data.equipment.model.startsWith('IntelliTouch'))
+                    //        $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
+                    //    else if (data.equipment.model.startsWith('EasyTouch'))
+                    //        $('div.picDashboard').attr('data-controllertype', 'EasyTouch');
+                    //    else
+                    //        $('div.picDashboard').attr('data-controllertype', 'SunTouch');
+                    //    $('div.picDashboard').attr('data-hideintellibrite', 'true');
 
-                    }
+                    //}
                     self._createControllerPanel(data);
                     self._createCircuitsPanel(data);
                     self._createPumpsPanel(data);

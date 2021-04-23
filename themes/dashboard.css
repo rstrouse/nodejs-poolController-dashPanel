@@ -214,6 +214,16 @@ div.picAmbientTemp label {
 div.picBodyTemp > div:nth-child(2) {
   font-size: 2em; }
 
+div.ct-narrative {
+  width: 100%;
+  overflow: hidden;
+  font-size: .8em;
+  margin-top: 1em;
+  max-width: 37rem; }
+
+div.ct-narrative > hr {
+  margin: 1px; }
+
 div.dashOuter {
   width: 100%;
   display: grid;

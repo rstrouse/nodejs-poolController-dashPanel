@@ -9,9 +9,7 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgHeaters');
-            var chlorOpts;
-            var chemOpts;
-            $.getApiService('/config/options/heaters', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/heaters', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
                 for (var i = 0; i < opts.heaters.length; i++) {
                     $('<div></div>').appendTo(el).pnlHeaterConfig(opts)[0].dataBind(opts.heaters[i]);
@@ -23,7 +21,7 @@
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlHeaterConfig(opts);
-                    pnl[0].dataBind({ id: -1, name: 'Heater ' + (heaters.length + 1) });
+                    pnl[0].dataBind({ id: -1, name: 'Heater ' + (heaters.length + 1), master: parseInt($('div.picDashboard').attr('data-masterid') || 0, 10) });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
             });
@@ -55,16 +53,18 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heater Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.heaterTypes, inputAttrs: { style: { width: '7.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             }).on('selchanged', function (evt) { self._setOptionsPanel(evt.newItem); });
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the heater is not being controlled by\r\na pool automation system.');
-            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the heater is not being controlled by\r\na pool automation system.').hide();
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
-                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width:'4rem' } }
+                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft:'1rem' } }
             });
             $('<hr></hr>').appendTo(pnl);
             $('<div></div>').appendTo(pnl).addClass('pnl-heater-options');
+            line = $('<div></div>').appendTo(pnl);
+            var bindpnl = $('<div></div>').addClass('pnlDeviceBinding').REMBinding({ servers: o.servers }).appendTo(pnl).hide();
+            $('<hr></hr>').prependTo(bindpnl);
 
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -162,6 +162,7 @@
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             cols[0].elText().text(obj.name || 'Heater');
+
            
             var htype = o.heaterTypes.find(elem => elem.val === obj.type) || { val: 0, name: 'unknown', desc: 'Unknown' };
             var body = o.bodies.find(elem => elem.val === obj.body) || { val: 0, name: '', desc: 'No Body' };
@@ -172,6 +173,8 @@
             el.find('div[data-bind="type"]').each(function () { this.disabled(hasId); });
             el.find('div[data-bind="isVirtual"]').each(function () { this.disabled(hasId); });
             self._setOptionsPanel(htype);
+            if (obj.master === 1) el.find('div.pnlDeviceBinding').show();
+            else el.find('div.pnlDeviceBinding').hide();
             dataBinder.bind(el, obj);
         }
     });

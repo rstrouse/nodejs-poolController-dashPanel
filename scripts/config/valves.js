@@ -9,12 +9,12 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgValves');
-            $.getApiService('/config/options/valves', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/valves', null, `Loading Options...`, function (opts, status, xhr) {
                 console.log(opts);
                 var valves = opts.valves;
                 var pnl = $('<div></div>').addClass('pnlValves').appendTo(el);
                 for (var i = 0; i < valves.length; i++) {
-                    $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits })[0].dataBind(valves[i]);
+                    $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits, servers: opts.servers })[0].dataBind(valves[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 $('<div id="btnAddValve"></div>').appendTo(btnPnl).actionButton({ text: 'Add Valve', icon: '<i class="fas fa-plus"></i>' })
@@ -23,12 +23,13 @@
                         el.find('input[data-bind=isVirtual]').each(function () {
                             if ($(this).val()) id++;
                         });
-                        var acc = $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits });
+                        var acc = $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits, servers: opts.servers });
                         acc[0].dataBind({
                             isIntake: false,
                             isReturn: false,
                             isVirtual: true,
                             isActive: true,
+                            master: 1,
                             type: 0,
                             id: -1,
                             name: 'Valve V' + (id + 1),
@@ -75,6 +76,9 @@
             });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Pin Id', binding: binding + 'pinId', min: 0, max: 100, step: 1, units: '', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { marginLeft: '.25rem', width: '3rem'  } } });
+            line = $('<div></div>').appendTo(pnl);
+            var bindpnl = $('<div></div>').addClass('pnlDeviceBinding').REMBinding({ servers: o.servers }).appendTo(pnl).hide();
+            $('<hr></hr>').prependTo(bindpnl);
 
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -135,10 +139,9 @@
                 ddCircuit.hide()[0].required(false);
                 fldName[0].disabled(true);
                 cols[2].elText().text('Pool/Spa');
-                el.find('div.picBtnPanel').hide();
+                //el.find('div.picBtnPanel').hide();
             }
             else {
-                el.find('div.picBtnPanel').show();
                 ddCircuit.show()[0].required(true);
                 fldName[0].disabled(false);
                 if (typeof circuit !== 'undefined')
@@ -146,11 +149,14 @@
                 else
                     cols[2].elText().text('');
             }
+            el.find('div.picBtnPanel').show();
+            if (obj.master === 1) el.find('div.pnlDeviceBinding').show();
+            else el.find('div.pnlDeviceBinding').hide();
             if (makeBool(obj.isIntake)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-arrow-circle-right').css('color', 'red');
             else if (makeBool(obj.isReturn)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-arrow-circle-left').css('color', 'red');
-            else if (makeBool(obj.isVirtual)) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'far fa-compass').css('color', '');
+            else if (makeBool(obj.isVirtual) || obj.master === 1) el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'far fa-compass').css('color', '');
             else el.find('div.picAccordian-titlecol:first > i:first').attr('class', 'fas fa-compass').css('color', '');
-            if (obj.isVirtual) {
+            if (obj.isVirtual || obj.master === 1) {
                 el.find('div.picValueSpinner[data-bind=pinId]').show();
                 el.find('div.picActionButton#btnDeleteValve').show();
             }
