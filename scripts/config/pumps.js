@@ -9,11 +9,11 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgBodies');
-            $.getApiService('/config/options/pumps', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/pumps', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
                 var pumps = opts.pumps;
                 for (var i = 0; i < pumps.length; i++) {
-                    $('<div></div>').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models })[0].dataBind(pumps[i]);
+                    $('<div></div>').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models, servers: opts.servers })[0].dataBind(pumps[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" ></i>' });
@@ -21,7 +21,7 @@
                     var groups = el.find('div.picConfigCategory.cfgPump');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models, servers: opts.servers });
                     var pt = opts.pumpTypes[0];
                     pnl[0].dataBind({
                         id: -1, name: 'Pump ' + (groups.length + 1),
@@ -58,6 +58,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'3.25rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
@@ -132,11 +133,6 @@
                                 console.log(data);
                                 self.dataBind(data);
                             });
-                            // Save the pump to the server.
-                            //$.putApiService('/config/pump', v, function (data, status, xhr) {
-                            //    console.log({ data: data, status: status, xhr: xhr });
-                            //    self.dataBind(data);
-                            //});
                         }
                     });
                 }
@@ -177,6 +173,10 @@
                 });
             });
         },
+        _buildRelayPanel: function (type) {
+            var self = this, o = self.options, el = self.element;
+
+        },
         _resetPumpPanel: function (type) {
             var self = this, o = self.options, el = self.element;
             var binding = '';
@@ -185,14 +185,14 @@
             var line = $('<div></div>').appendTo(pnl);
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
             if (typeof type.maxPrimingTime !== 'undefined') {
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ canEdit:true, labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
                 $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             }
             else {
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingTime').appendTo(line);
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingSpeed').appendTo(line);
             }
-            line = $('<div></div>').appendTo(pnl);
+            line = $('<div></div>').appendTo(pnl).css({ margin: '3px' });
             if (typeof type.minSpeed !== 'undefined') 
                 $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
             else
@@ -211,10 +211,11 @@
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxFlow').appendTo(line);
 
+            if ((type.maxCircuits > 0) || (type.maxRelays > 0)) $('<hr></hr>').appendTo(pnl).css({ margin: '3px' });
+            var tabs = $('<div></div>').appendTo(pnl).tabBar();
+            var tab = tabs[0].addTab({ id: 'tabPumpCircuits', text: 'Circuits' });
 
-
-            var pnlCircuits = $('<div class="cfgPump-pnlCircuits" style="text-align:right;"></div>').appendTo(pnl);
-            $('<div><hr></hr></div>').appendTo(pnlCircuits);
+            var pnlCircuits = $('<div class="cfgPump-pnlCircuits" style="text-align:right;"></div>').appendTo(tab);
             line = $('<div class="picCircuitsList-btnPanel"></div>').appendTo(pnlCircuits);
             $('<div><span>Pump Circuits</span></div>').appendTo(line);
             var btnCPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(line);
@@ -243,6 +244,28 @@
                     self.dataBind(pmp);
                 }
             });
+            tab = tabs[0].addTab({ id: 'tabPumpRelays', text: 'Relays' });
+            tabs[0].showTab('tabPumpRelays', type.maxRelays > 0);
+            if (!(type.maxCircuits > 0)) tabs[0].selectTabById('tabPumpRelays');
+            if (!(type.maxCircuits > 0) && !(type.maxRelays > 0)) tabs.hide();
+            if (type.maxRelays > 0) {
+                // Add us in some relay entries.  There will be one entry for each relay.
+                var pnlRelays = $('<div class="cfgPump-pnlRelays"></div>').appendTo(tab).css({ paddingLeft: '.25rem' });
+                var hdr = $('<div></div>').appendTo(pnlRelays);
+                $('<span></span>').appendTo(hdr).css({ width: '7rem', display:'inline-block' });
+                $('<span></span>').appendTo(hdr).css({ width: '10.25rem', display: 'inline-block', textAlign:'center' }).text('Connection');
+                $('<span></span>').appendTo(hdr).css({ width: '10.25rem', display: 'inline-block', textAlign: 'center' }).text('Device');
+                $('<hr></hr>').appendTo(pnlRelays).css({ margin: '3px' });
+                for (var i = 0; i < type.maxRelays; i++) {
+                    var l = $('<div></div>').appendTo(pnlRelays).addClass('pmprelay-line').attr('data-relayid', i + 1);
+                    //if (i !== 0) $('<hr></hr>').appendTo(l).css({ margin: '3px' });
+                    $('<input type="hidden"></input>').attr('data-datatype', 'int').attr('data-bind', `relays[${i}].id`).val(i + 1);
+                    $('<span></span>').appendTo(l).text(`Relay #${i + 1}`).css({ display: 'inline-block', width: '7rem' });
+                    $('<div></div>').appendTo(l).REMBinding({ binding: `relays[${i}]`, servers: o.servers, horizontal: true, showLabel: false }).css({ marginLeft: '.25rem', display: 'inline-block' });
+                }
+            }
+            tabs[0].selectTabById('tabPumpCircuits');
+            if (!(type.maxCircuits > 0)) tabs[0].showTab('tabPumpRelays');
         },
         addCircuit: function (type, circ) {
             var self = this, o = self.options, el = self.element;
@@ -298,6 +321,17 @@
                     labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem', display: 'none' } }
                 });
             }
+            else if (type.maxRelays > 0) {
+                $('<div></div>').appendTo(line).valueSpinner({
+                    labelText: unitsType,
+                    binding: binding + 'relay', min: 1, max: type.maxRelays, step: 1,
+                    value: circ.relay,
+                    style: { marginLeft: '.25rem' },
+                    inputAttrs: { maxlength: 5 },
+                    labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem', display: 'none' } }
+                });
+
+            }
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', binding + unitsType.toLowerCase()).val(units.val).appendTo(line);
             if (hasMultiUnits) {
@@ -334,6 +368,7 @@
             var ddBody = el.find('div.picPickList[data-bind$=body]');
             var ddModel = el.find('div.picPickList[data-bind$=model]');
             var models = o.models[type.name];
+            if (typeof type.equipmentMaster !== 'undefined') obj.master = type.equipmentMaster;
             if (typeof models === 'undefined' || models.length <= 1) {
                 ddModel.hide();
                 ddModel[0].items([]);
@@ -368,7 +403,16 @@
             var clist = el.find('div.cfgPump-pnlCircuits:first');
             if (type.maxCircuits > 0) clist.show();
             else clist.hide();
+            if (typeof obj.relays !== 'undefined') {
+                for (var k = 0; k < obj.relays.length; k++) {
+                    // Bind the relay to the line.
+                    let r = obj.relays[k];
+                    let l = el.find(`div.pmprelay-line[data-relayid=${k + 1}]`);
 
+                    l.find('div[data-bind$=connectionId]').each(function () { this.val(r.connectionId); });
+                    l.find('div[data-bind$=deviceBinding]').each(function () { this.val(r.deviceBinding); });
+                }
+            }
             dataBinder.bind(el, obj);
         }
     });

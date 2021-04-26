@@ -253,12 +253,13 @@
         }
     });
     $.widget('pic.circuit', {
-        options: {},
+        options: { popoverEnabled: true },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+            el[0].enablePopover = function (val) { return self.enablePopover(val); };
             o = {};
         },
         _buildPopover: function () {
@@ -329,6 +330,7 @@
 
                     });
                 }
+                self.enablePopover(o.popoverEnabled);
             }
         },
         _buildControls: function () {
@@ -431,6 +433,15 @@
         resetState: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+        },
+        enablePopover: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return o.popoverEnabled;
+            else {
+                if (makeBool(val)) el.find('i.picDropdownButton').show();
+                else el.find('i.picDropdownButton').hide();
+                o.popoverEnabled = makeBool(val);
+            }
         }
     });
     $.widget('pic.lights', {

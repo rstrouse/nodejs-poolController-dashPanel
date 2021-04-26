@@ -83,7 +83,7 @@
                     el.attr('data-active', true);
                     dataBinder.bind(el, data);
                     el.css({ display: '' });
-                    el.find('div.picIndicator').attr('data-status', data.command === 10 ? 'on' : 'off');
+                    el.find('div.picIndicator').attr('data-status', data.command === 10 || data.relay > 0 ? 'on' : 'off');
                 }
                 el.attr('data-pumptype', data.type.val);
                 el.attr('data-id', data.id);
@@ -93,22 +93,33 @@
                         el.find('div.picSpeed').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
+                        el.find('div.picRelay').hide();
                         break;
                     case 'vs':
                     case 'vs+svrs':
                         el.find('div.picFlow').hide();
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
+                        el.find('div.picRelay').hide();
                         break;
                     case 'vsf':
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
+                        el.find('div.picRelay').hide();
                         break;
                     case 'vf':
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').hide();
                         el.find('div.picEnergy').show();
+                        el.find('div.picRelay').hide();
+                        break;
+                    case 'sf':
+                        el.find('div.picSpeed').hide();
+                        el.find('div.picFlow').hide();
+                        el.find('div.picEnergy').hide();
+                        el.find('div.picRelay').show();
+                        if (typeof data.relay === 'undefined') data.relay = 0;
                         break;
                     default:
                         el.hide();
@@ -139,6 +150,7 @@
             $('<div class="picSpeed picData"><span class="picRpm" data-bind="rpm" data-fmttype="number" data-fmtmask="#,##0" data=fmtempty="-,---"></span><label class="picUnits">rpm</label></div>').appendTo(el);
             $('<div class="picFlow picData"><span class="picGpm" data-bind="flow" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">gpm</label></div>').appendTo(el);            
             $('<div class="picEnergy picData"><span class="picWatts" data-bind="watts" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">watts</label></div>').appendTo(el);
+            $('<div class="picRelay picData"><span class="picRelay" data-bind="relay" data-fmttype="number" data-fmtmask="#" data-fmtempty="---"></span></div>').appendTo(el);
             el.on('click', function (evt) {
                 let type = parseInt(el.attr('data-pumptype'), 10);
                 evt.stopImmediatePropagation();
@@ -154,7 +166,6 @@
                         for (let i = 0; i < data.circuits.length; i++) {
                             let circuit = data.circuits[i];
                             if (typeof circuit.circuit.type === 'undefined') continue;
-
                             let div = $('<div class="picPumpCircuit"></div>');
                             div.attr('data-id', i + 1);
                             let btn = $('<div class="picCircuit" data-hidethemes="true"></div>');
@@ -180,19 +191,27 @@
                                 div.attr('data-eqid', circuit.circuit.id);
                                 btn.circuit(circuit.circuit);
                                 btn.addClass('picFeature');
+                                btn[0].enablePopover(false);
                             }
-                            if (circuit.units.val === 0) spin.attr('data-bind', 'speed');
-                            else spin.attr('data-bind', 'flow');
+                            
                             spin.attr('data-units', circuit.units.val);
-                            spin.valueSpinner({
-                                val: circuit.units.val === 0 ? circuit.speed : circuit.flow,
-                                min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
-                                max: circuit.units.val === 0 ? data.maxSpeed : data.maxFlow,
-                                step: circuit.units.val === 0 ? 50 : data.flowStepSize,
-                                units: circuit.units.name
-                            });
+                            if (data.type.maxRelays > 0) {
+                                spin.valueSpinner({ val: circuit.relay, min: 1, max: data.type.maxRelays, step: 1, binding: 'relay' });
+                                spin.find('div.picSpinner-value').css({ width: '3.5rem' });
+                            }
+                            else {
+                                if (circuit.units.val === 0) spin.attr('data-bind', 'speed');
+                                else spin.attr('data-bind', 'flow');
+                                spin.valueSpinner({
+                                    val: circuit.units.val === 0 ? circuit.speed : circuit.flow,
+                                    min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
+                                    max: circuit.units.val === 0 ? data.maxSpeed : data.maxFlow,
+                                    step: circuit.units.val === 0 ? 50 : data.flowStepSize,
+                                    units: circuit.units.name
+                                });
+                                spin.find('div.picSpinner-value').css({ width: '4.5rem' });
+                            }
                             spin.attr('data-id', i + 1);
-                            spin.find('div.picSpinner-value').css({ width: '4.5rem' });
                             spin.on('change', function (e) { self.setCircuitRates(divPopover); });
                         }
                     });

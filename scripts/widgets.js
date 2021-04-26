@@ -3287,8 +3287,9 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             line = $('<div></div>').appendTo(el);
             var binding = '';
+            el.addClass('picREMBinding');
             if (typeof o.binding !== 'undefined' && o.binding.length > 0) binding = `${o.binding}.`;
-            $('<div></div>').appendTo(line).pickList({
+            var conn = $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}connectionId`,
                 bindColumn: 0, displayColumn: 1,
                 labelText: 'Connection',
@@ -3301,8 +3302,9 @@ $.ui.position.fieldTip = {
                     this.items(evt.newItem.devices);
                 });
             }).addClass('pnl-rem-address');
-            line = $('<div></div>').appendTo(el);
-            $('<div></div>').appendTo(line).pickList({
+            if (o.showLabel === false) conn.find('.field-label').css({ display: 'none' });
+            if(o.horizontal !== true) line = $('<div></div>').appendTo(el);
+            var bind = $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}deviceBinding`,
                 bindColumn: 0, displayColumn: 2,
                 labelText: 'Device',
@@ -3311,35 +3313,7 @@ $.ui.position.fieldTip = {
                 inputAttrs: { style: { width: '8.5rem' } },
                 labelAttrs: { style: { width: '5.4rem' } }
             }).addClass('pnl-rem-address');
-
-        },
-        isEmpty: function () {
-            var self = this, o = self.options, el = self.element;
-            return self.val() === 'undefined';
-        },
-        val: function (val) {
-            var self = this, o = self.options, el = self.element;
-            if (typeof val !== 'undefined') {
-                var lvl = el.find('div.chemLevel-level');
-                // Find the target div.
-                var pin = lvl.find('div.chemLevel-value');
-                if (pin.length === 0) {
-                    pin = $('<div></div>').addClass('chemLevel-value').appendTo(lvl);
-                    $('<div></div>').addClass('chemLevel-value-label').appendTo(pin);
-                    pin.append('<i class="fas fa-map-marker-alt"></i>');
-                }
-                var maxWidth = lvl.width();
-                var tot = o.max - o.min;
-                var minval = o.scales[0].min;
-                var maxval = o.scales[o.scales.length - 1].max;
-                // Calculate the left value.
-                var left = Math.max(0, Math.min(100, ((val - minval) / (tot)) * 100));
-                //console.log({ val: val, minval: minval, maxval: maxval, tot: tot, left: left });
-                pin.css({ left: left + '%' });
-                pin.find('div.chemLevel-value-label').text(typeof val === 'number' ? val.format(o.fmtMask) : o.emptyMask);
-                o.value = val;
-            }
-            else return o.value;
+            if (o.showLabel === false) bind.find('.field-label').css({ display: 'none' });
         }
     });
     $.widget("pic.buttonOptions", {
