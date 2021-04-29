@@ -229,7 +229,7 @@
                             let bSet = makeBool(btn.find('div.picIndicator').attr('data-status') !== 'on');
                             self.putSuperChlorinate(bSet);
                         });
-                        if (data.status.val === 128) btn.hide();
+                        if (typeof data.status === 'undefined' || data.status.val === 128) btn.hide();
                         self.setEquipmentData(data);
                     });
                     divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
