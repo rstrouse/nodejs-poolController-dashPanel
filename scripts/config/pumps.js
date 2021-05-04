@@ -245,6 +245,7 @@
                 }
             });
             tab = tabs[0].addTab({ id: 'tabPumpRelays', text: 'Relays' });
+            console.log(type);
             tabs[0].showTab('tabPumpRelays', type.maxRelays > 0);
             if (!(type.maxCircuits > 0)) tabs[0].selectTabById('tabPumpRelays');
             if (!(type.maxCircuits > 0) && !(type.maxRelays > 0)) tabs.hide();
@@ -252,20 +253,26 @@
                 // Add us in some relay entries.  There will be one entry for each relay.
                 var pnlRelays = $('<div class="cfgPump-pnlRelays"></div>').appendTo(tab).css({ paddingLeft: '.25rem' });
                 var hdr = $('<div></div>').appendTo(pnlRelays);
-                $('<span></span>').appendTo(hdr).css({ width: '7rem', display:'inline-block' });
+                $('<span></span>').appendTo(hdr).css({ width: '7rem', display:'inline-block' }).text('Relay');
                 $('<span></span>').appendTo(hdr).css({ width: '10.25rem', display: 'inline-block', textAlign:'center' }).text('Connection');
                 $('<span></span>').appendTo(hdr).css({ width: '10.25rem', display: 'inline-block', textAlign: 'center' }).text('Device');
                 $('<hr></hr>').appendTo(pnlRelays).css({ margin: '3px' });
                 for (var i = 0; i < type.maxRelays; i++) {
                     var l = $('<div></div>').appendTo(pnlRelays).addClass('pmprelay-line').attr('data-relayid', i + 1);
                     //if (i !== 0) $('<hr></hr>').appendTo(l).css({ margin: '3px' });
-                    $('<input type="hidden"></input>').attr('data-datatype', 'int').attr('data-bind', `relays[${i}].id`).val(i + 1);
-                    $('<span></span>').appendTo(l).text(`Relay #${i + 1}`).css({ display: 'inline-block', width: '7rem' });
+                    $('<input type="hidden"></input>').appendTo(l).attr('data-datatype', 'int').attr('data-bind', `relays[${i}].id`).val(i + 1);
+                    var relayName = `Program #${i + 1}`;
+                    if (type.maxRelays === 1) relayName = 'Pump';
+                    else if (type.maxRelays === 2) relayName = i === 0 ? 'Low Speed' : 'High Speed';
+                    $('<span></span>').appendTo(l).text(relayName).css({ display: 'inline-block', width: '7rem' });
                     $('<div></div>').appendTo(l).REMBinding({ binding: `relays[${i}]`, servers: o.servers, horizontal: true, showLabel: false }).css({ marginLeft: '.25rem', display: 'inline-block' });
                 }
             }
-            tabs[0].selectTabById('tabPumpCircuits');
-            if (!(type.maxCircuits > 0)) tabs[0].showTab('tabPumpRelays');
+            tabs[0].showTab('tabPumpRelays', type.maxRelays > 0);
+            tabs[0].showTab('tabPumpCircuits', type.maxCircuits > 0);
+            if (type.maxCircuits > 0) tabs[0].selectTabById('tabPumpCircuits');
+            else if (type.maxRelays > 0) tabs[0].selectTabById('tabPumpRelays');
+            else tabs[0].selectTabById('tabPumpCircuits');
         },
         addCircuit: function (type, circ) {
             var self = this, o = self.options, el = self.element;
