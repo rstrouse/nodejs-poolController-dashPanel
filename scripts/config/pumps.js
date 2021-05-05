@@ -186,7 +186,7 @@
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
             if (typeof type.maxPrimingTime !== 'undefined') {
                 $('<div></div>').appendTo(line).valueSpinner({ canEdit:true, labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             }
             else {
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingTime').appendTo(line);
@@ -194,20 +194,20 @@
             }
             line = $('<div></div>').appendTo(pnl).css({ margin: '3px' });
             if (typeof type.minSpeed !== 'undefined') 
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minSpeed').appendTo(line);
             if (typeof type.maxSpeed !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxSpeed').appendTo(line);
             line = $('<div></div>').appendTo(pnl);
             if (typeof type.minFlow !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minFlow').appendTo(line);
             if (typeof type.maxFlow !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxFlow').appendTo(line);
 
@@ -325,7 +325,8 @@
                     value: val,
                     style: { marginLeft: '.25rem' },
                     inputAttrs: { maxlength: 5 },
-                    labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem', display: 'none' } }
+                    labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem', display: 'none' } },
+                    canEdit: true
                 });
             }
             else if (type.maxRelays > 0) {

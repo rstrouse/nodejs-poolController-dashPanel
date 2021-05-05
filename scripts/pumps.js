@@ -207,7 +207,8 @@
                                     min: circuit.units.val === 0 ? data.minSpeed : data.minFlow,
                                     max: circuit.units.val === 0 ? data.maxSpeed : data.maxFlow,
                                     step: circuit.units.val === 0 ? 50 : data.flowStepSize,
-                                    units: circuit.units.name
+                                    units: circuit.units.name,
+                                    canEdit: true
                                 });
                                 spin.find('div.picSpinner-value').css({ width: '4.5rem' });
                             }
