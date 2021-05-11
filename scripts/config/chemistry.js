@@ -754,7 +754,7 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
                 items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the chlorinator is not being controlled by\r\na pool automation system.');
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the chlorinator is not being controlled by\r\na pool automation system.').hide();
             $('<hr></hr>').appendTo(pnl);
 
             line = $('<div></div>').appendTo(pnl);
@@ -770,11 +770,12 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                console.log(v);
-                $.putApiService('/config/chlorinator', v, 'Saving Chlorinator...', function (c, status, xhr) {
-                    console.log(c);
-                    self.dataBind(c);
-                });
+                if (dataBinder.checkRequired(p, true)) {
+                    $.putApiService('/config/chlorinator', v, 'Saving Chlorinator...', function (c, status, xhr) {
+                        console.log(c);
+                        self.dataBind(c);
+                    });
+                }
             });
             var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Chlorinator', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
@@ -809,6 +810,8 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
+            if (typeof obj.master === 'undefined') el.find('div[data-bind=isVirtual]').show();
+
             cols[0].elText().text(obj.name || 'Chlorinator');
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
             dataBinder.bind(el, obj);

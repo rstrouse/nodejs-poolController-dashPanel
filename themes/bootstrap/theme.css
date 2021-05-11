@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 label,
@@ -84,6 +84,7 @@ div.picBodySetPoints,
 label.picSchedDays,
 table.picSchedDays,
 span.saturationIndex,
+table.picPumpPrograms,
 label.picIBThemeLabel {
   margin-right: auto;
 }

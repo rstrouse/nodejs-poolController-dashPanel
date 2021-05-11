@@ -16,7 +16,6 @@
                 let span = $('<span class="picCircuitTitle"></span>');
                 span.appendTo(div);
                 span.text('Pumps');
-
                 for (let i = 0; i < data.pumps.length; i++) {
                     // Create a new pump for each installed pump.
                     let div = $('<div class="picPump"></div>');
@@ -32,7 +31,6 @@
                 el.hide();
             }
         },
-      
         setPumpData: function (data) {
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picPump[data-id=' + data.id + ']');
@@ -55,6 +53,23 @@
             self._buildControls();
             self.setEquipmentData(o);
             el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+        },
+        _createPrograms: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var tbl = $('<table></table>').addClass('picPumpPrograms');
+            var tbody = $('<tbody></tbody>').appendTo(tbl);
+            var header = $('<tr></tr>').appendTo(tbody);
+            var progs = $('<tr></tr>').appendTo(tbody);
+            for (let i = 0; i < 4; i++) {
+                $('<td></td>').appendTo(header).text(i + 1);
+                var td = $('<td></td>').appendTo(progs);
+                var circ = $('<i></i>').appendTo(td);
+                if (((1 << i) & data.relay) > 0)
+                    circ.addClass('fas').addClass('fa-times-circle');
+                else
+                    circ.addClass('far').addClass('fa-circle');
+            }
+            return tbl;
         },
         setCircuitRates: function (elPump) {
             var self = this, o = self.options, el = self.element;
@@ -89,11 +104,23 @@
                 el.attr('data-id', data.id);
                 switch (data.type.name) {
                     case 'ss':
-                    case 'ds':
                         el.find('div.picSpeed').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').hide();
+                        break;
+                    case 'ds':
+                        el.find('div.picSpeed').hide();
+                        el.find('div.picFlow').hide();
+                        el.find('div.picEnergy').hide();
+                        if (typeof data.relay !== 'undefined') {
+                            el.find('div.picRelay').show();
+                            if (data.relay === 0) el.find('div.picRelay').text('Off');
+                            else if (data.relay === 1) el.find('div.picRelay').text('Low Speed');
+                            else el.find('div.picRelay').text('High Speed');
+                        }
+                        else
+                            el.find('div.picRelay').hide();
                         break;
                     case 'vs':
                     case 'vs+svrs':
@@ -120,6 +147,9 @@
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').show();
                         if (typeof data.relay === 'undefined') data.relay = 0;
+                        el.find('div.picRelay').html(self._createPrograms(data)[0].outerHTML);
+
+                        // Alright lets show our
                         break;
                     default:
                         el.hide();

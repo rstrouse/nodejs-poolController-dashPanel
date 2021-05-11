@@ -122,19 +122,24 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
 div.picLightThemes {
   width: 22rem; }
 
+table.picPumpPrograms > tbody > tr:nth-child(1),
 table.picSchedDays > tbody > tr:nth-child(1) {
   background-color: #701c7c !important;
   background-image: none; }
 
+table.picPumpPrograms > tbody > tr:nth-child(1) > td,
 table.picSchedDays > tbody > tr:nth-child(1) > td {
   border-top: solid 1px white; }
 
+table.picPumpPrograms > tbody > tr:nth-child(1) > td:nth-child(1)
 table.picSchedDays > tbody > tr:nth-child(1) > td:nth-child(1) {
   border-left: solid 1px white; }
 
+table.picPumpPrograms > tbody > tr:nth-child(1) > td:last-child,
 table.picSchedDays > tbody > tr:nth-child(1) > td:last-child {
   border-right: solid 1px white; }
 
+table.picPumpPrograms > tbody > tr:nth-child(2) > td,
 table.picSchedDays > tbody > tr:nth-child(2) > td {
   border: solid 1px white;
   background-color: black; }
@@ -432,3 +437,25 @@ tr.msgRow.selected, tr.msgApiRow.selected {
   background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
   background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%);
   border-color: white; }
+
+table.picPumpPrograms > tbody > tr:nth-child(1),
+table.picSchedDays > tbody > tr:nth-child(1) {
+  background-color: #701c7c !important;
+  background-image: none; }
+
+table.picPumpPrograms > tbody > tr:nth-child(1) > td,
+table.picSchedDays > tbody > tr:nth-child(1) > td {
+  border-top: solid 1px white; }
+
+table.picPumpPrograms > tbody > tr:nth-child(1) > td:nth-child(1),
+table.picSchedDays > tbody > tr:nth-child(1) > td:nth-child(1) {
+  border-left: solid 1px white; }
+
+table.picPumpPrograms > tbody > tr:nth-child(1) > td:last-child,
+table.picSchedDays > tbody > tr:nth-child(1) > td:last-child {
+  border-right: solid 1px white; }
+
+table.picPumpPrograms > tbody > tr:nth-child(2) > td,
+table.picSchedDays > tbody > tr:nth-child(2) > td {
+  border: solid 1px white;
+  background-color: black; }
