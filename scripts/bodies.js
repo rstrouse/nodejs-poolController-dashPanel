@@ -72,6 +72,13 @@
                 + '<i class="fas fa-stack-2x fa-fire-alt flicker1-animated" style="color:orangered;font-size:1em;vertical-align:bottom;margin-top:.15em;text-shadow: 0 0 .2em orange;"></i>'
                 + '</span > ');
         },
+        _createCoolingIcon: function () {
+            return $('<span class="fa-stack fa-2x picHeaterStatusIcon picCoolingOn" style="vertical-align:middle;line-height:1em;font-size:inherit;">'
+                + '<i class="fas burst-animated fa-snowflake fa-stack-1x fa-spin" style="color:blue;vertical-align:middle;font-size:1.4em;"></i>'
+                + '<i class="fas fa-stack-2x fa-snowflake" style="color:blue;font-size:1em;vertical-align:middle;"></i>'
+                + '<i class="fas flicker1-animated fa-stack-2x fa-snowflake" style="color:lightblue;font-size:1em;vertical-align:middle;"></i>'
+                + '</span > ');
+        },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picBody');
@@ -97,6 +104,7 @@
             ).appendTo(el);
             self._createSolarIcon(1).appendTo(el);
             self._createHeaterIcon(1).appendTo(el);
+            self._createCoolingIcon(1).appendTo(el);
             el.on('click', 'div.picIndicator', function (evt) {
                 let ind = $(evt.target);
                 ind.attr('data-status', 'pending');
@@ -156,13 +164,21 @@
                 switch (data.heatStatus.name) {
                     case 'solar':
                         el.find('span.picSolarOn').css('display', 'inline-block');
+                        el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').hide();
                         break;
                     case 'heater':
                         el.find('span.picSolarOn').hide();
+                        el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').css('display', 'inline-block');
                         break;
+                    case 'cooling':
+                        el.find('span.picSolarOn').hide();
+                        el.find('span.picHeaterOn').hide();
+                        el.find('span.picCoolingOn').css('display', 'inline-block');
+                        break;
                     default:
+                        el.find('span.picCoolingOn').hide();
                         el.find('span.picSolarOn').hide();
                         el.find('span.picHeaterOn').hide();
                         break;
