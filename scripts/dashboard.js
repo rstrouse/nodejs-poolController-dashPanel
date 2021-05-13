@@ -136,6 +136,7 @@
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
+                    if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') {self._clearPanels(); return;}
                     if (data.equipment.model.startsWith('IntelliCenter')) {
                         $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                         $('div.picDashboard').attr('data-hidethemes', 'false');
