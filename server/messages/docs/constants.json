@@ -540,6 +540,118 @@
       "key": "P"
     },
     {
+      "val": 112,
+      "name": "Heater[1]",
+      "desc": "Heater #1",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 113,
+      "name": "Heater[2]",
+      "desc": "Heater #2",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 114,
+      "name": "Heater[3]",
+      "desc": "Heater #3",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 115,
+      "name": "Heater[4]",
+      "desc": "Heater #4",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 116,
+      "name": "Heater[5]",
+      "desc": "Heater #5",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 117,
+      "name": "Heater[6]",
+      "desc": "Heater #6",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 118,
+      "name": "Heater[7]",
+      "desc": "Heater #7",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 119,
+      "name": "Heater[8]",
+      "desc": "Heater #8",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 120,
+      "name": "Heater[9]",
+      "desc": "Heater #9",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 121,
+      "name": "Heater[10]",
+      "desc": "Heater #10",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 122,
+      "name": "Heater[11]",
+      "desc": "Heater #11",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 123,
+      "name": "Heater[12]",
+      "desc": "Heater #12",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 124,
+      "name": "Heater[13]",
+      "desc": "Heater #13",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 125,
+      "name": "Heater[14]",
+      "desc": "Heater #14",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 126,
+      "name": "Heater[15]",
+      "desc": "Heater #15",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
+      "val": 127,
+      "name": "Heater[16]",
+      "desc": "Heater #16",
+      "protocol": "heater",
+      "key": "H"
+    },
+    {
       "val": 144,
       "name": "Chem[1]",
       "desc": "IntelliChem #1",

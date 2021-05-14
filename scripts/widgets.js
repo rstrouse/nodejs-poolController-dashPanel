@@ -1078,6 +1078,9 @@ $.ui.position.fieldTip = {
             el[0].options = function (opts) { return self.opts(opts); };
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
+            el[0].minVal = function (val) { return self.minVal(val); };
+            el[0].maxVal = function (val) { return self.maxVal(val); }
+
             if (o.required === true) self.required(true);
             //$('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             $('<label></label>').addClass('picSpinner-label').appendTo(el);
@@ -1202,6 +1205,18 @@ $.ui.position.fieldTip = {
         isEmpty: function () {
             var self = this, o = self.options, el = self.element;
             return isNaN(self.val());
+        },
+        minVal: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return o.min;
+            o.min = val;
+            if (o.val < o.min) self.val(o.min);
+        },
+        maxVal: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return o.max;
+            o.max = val;
+            if (o.val > o.max) self.val(o.max);
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;

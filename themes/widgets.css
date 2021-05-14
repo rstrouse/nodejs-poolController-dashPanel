@@ -237,7 +237,7 @@ div.picBody {
 }
 div.picBody > div {
     display:inline-block;
-    padding:.55em;
+    padding:.35em;
     vertical-align:middle;
 }
 div.picBody > div.picBodyTemp {
@@ -246,10 +246,10 @@ div.picBody > div.picBodyTemp {
 label {
     cursor:inherit;
 }
-div.picBodySetPoints {
+div.picBodySetpoints {
     cursor:pointer;
 }
-div.picBodySetPoints label.picInline-label {
+div.picBodySetpoints label.picInline-label {
     min-width:7em;
     display:inline-block;
 }

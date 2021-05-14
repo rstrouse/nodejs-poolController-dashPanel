@@ -87,21 +87,59 @@
             el.attr('data-id', o.id);
             el.attr('data-circuitid', o.circuit);
             el.attr('data-ison', o.isOn);
-            $('<div class="picBodyIcon">'
-                + '<div><label class="picBodyText"></label></div>'
-                + '<div class="picIndicator"></div></div>'
+            var bodyIcon = $('<div></div>').addClass('picBodyIcon');
+            var line = $('<div></div').appendTo(bodyIcon);
+            $('<label></label>').addClass('picBodyText').appendTo(line);
+            $('<div></div>').addClass('picIndicator').appendTo(bodyIcon);
+            bodyIcon.appendTo(el);
 
-                + '<div class="picBodyTemp">'
-                + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-                + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
-                + '</div>'
+            var bodyTemp = $('<div></div>').addClass('picBodyTemp');
+            line = $('<div></div').appendTo(bodyTemp);
+            $('<label></label>').attr('data-bind', 'name').appendTo(line);
+            $('<label></label>').text(' Temp').appendTo(line);
+            line = $('<div></div>').addClass('body-temp').appendTo(bodyTemp);
+            $('<span></span>').addClass('picTempData').attr('data-bind', 'temp').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-fmtempty', '--.-').appendTo(line);
+            $('<label></label>').addClass('picUnitSymbol').html('&deg').css({ fontSize: '.4em', verticalAlign:'top', display:'inline-block', paddingTop:'.25em' }).appendTo(line);
+            $('<span></span>').addClass('picTempUnits').text('-').css({ fontSize: '.4em', verticalAlign: 'top', display: 'inline-block', paddingTop: '.25em'}).appendTo(line);
+            bodyTemp.appendTo(el);
 
-                + '<div class= "picBodySetPoints">'
-                + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span><div>'
-                + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span style="max-width:5.1rem;display:inline-block;" class="picModeData" data-bind="heatMode.desc">----</span>'
-                + '<div><label class="picInline-label picSetPointText">Heater Status</label><span class="picStatusData" data-bind="heatStatus.desc">----</span>'
-                + '</div>'
-            ).appendTo(el);
+            var setpoints = $('<div></div>').addClass('picBodySetpoints');
+            line = $('<div></div>').addClass('heatSetpoint').appendTo(setpoints);
+            $('<label></label>').addClass('picInline-label').addClass('picSetpointText').addClass('heatSetpoint').text('Set Point').appendTo(line);
+            $('<span></span>').addClass('picSetpointData').attr('data-bind', 'setPoint').text('--.-').appendTo(line);
+            $('<label></label>').addClass('picUnitSymbol').html('&deg;').appendTo(line);
+            $('<span></span>').addClass('picTempUnits').text('-').appendTo(line);
+
+            line = $('<div></div>').addClass('coolSetpoint').appendTo(setpoints).hide();
+            $('<label></label>').addClass('picInline-label').addClass('picSetpointText').addClass('coolSetpoint').text('Cool Point').appendTo(line);
+            $('<span></span>').addClass('picSetpointData').attr('data-bind', 'coolSetPoint').text('--.-').appendTo(line);
+            $('<label></label>').addClass('picUnitSymbol').html('&deg;').appendTo(line);
+            $('<span></span>').addClass('picTempUnits').text('-').appendTo(line);
+
+            line = $('<div></div>').appendTo(setpoints);
+            $('<label></label>').addClass('picInline-label').addClass('picSetpointText').text('Heat Mode').appendTo(line);
+            $('<span></span>').addClass('picModeData').css({ maxWidth: '5.1rem', display:'inline-block'}).attr('data-bind', 'heatMode.desc').text('----').appendTo(line);
+            line = $('<div></div>').appendTo(setpoints);
+            $('<label></label>').addClass('picInline-label').addClass('picSetpointText').text('Heater Status').appendTo(line);
+            $('<span></span>').addClass('picStatusData').attr('data-bind', 'heatStatus.desc').text('----').appendTo(line);
+            setpoints.appendTo(el);
+
+
+            //$('<div class="picBodyIcon">'
+            //    + '<div><label class="picBodyText"></label></div>'
+            //    + '<div class="picIndicator"></div></div>'
+
+            //    + '<div class="picBodyTemp">'
+            //    + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
+            //    + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
+            //    + '</div>'
+
+            //    + '<div class= "picBodySetPoints">'
+            //    + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span><div>'
+            //    + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span style="max-width:5.1rem;display:inline-block;" class="picModeData" data-bind="heatMode.desc">----</span>'
+            //    + '<div><label class="picInline-label picSetPointText">Heater Status</label><span class="picStatusData" data-bind="heatStatus.desc">----</span>'
+            //    + '</div>'
+            //).appendTo(el);
             self._createSolarIcon(1).appendTo(el);
             self._createHeaterIcon(1).appendTo(el);
             self._createCoolingIcon(1).appendTo(el);
@@ -111,12 +149,14 @@
                 $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(ind.attr('data-state')) }, function () { });
                 setTimeout(function () { ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off'); }, 3000);
             });
-            el.on('click', 'div.picBodySetPoints', function (evt) {
+            el.on('click', 'div.picBodySetpoints', function (evt) {
                 var body = el;
                 var settings = {
                     name: body.attr('data-body'),
                     heatMode: parseInt(body.attr('data-heatmode'), 10),
-                    setPoint: parseInt(body.attr('data-setpoint'), 10)
+                    setPoint: parseInt(body.attr('data-setpoint'), 10),
+                    coolSetpoint: parseInt(body.attr('data-coolsetpoint'), 10),
+                    hasCooling: makeBool(body.attr('data-hascooling'))
                 };
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
                     //console.log(data);
@@ -124,19 +164,20 @@
                     var divPopover = $('<div></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
-                        $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Set Point', val: settings.setPoint, min: units === "F" ? 65 : 5, max: units === "F" ? 104 : 41, step: 1, bind:'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } });
+                        if (!settings.hasCooling) {
+                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Heat Point', val: settings.setPoint, min: units === "F" ? 65 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
+                                .on('change', function (e) {
+                                    var coolSetpoint;
+                                    divPopover.find('div[data-bind="coolSetpoint"]').each(function () { this.minVal(e.value + 1); coolSetpoint = this.val(); });
+                                    self.putSetpoints(e.value, coolSetpoint);
+                                });
+                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Cool Point', val: settings.coolSetpoint || settings.setPoint + 1, min: settings.setPoint + 1, max: units === "F" ? 104 : 41, step: 1, binding: 'coolSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
+                                .on('change', function (e) { self.putSetpoints(undefined, e.value); });
+                        }
+                        else
+                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Set Point', val: settings.setPoint, min: units === "F" ? 65 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } })
+                                .on('change', function (e) { self.putSetpoint(e.value); });
                         $('<div></div>').appendTo(evt.contents()).selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data, bind: 'heatMode' });
-                        //console.log(settings);
-                        //$('<div><label class="picInline-label picSetpointText">' + body.attr('data-body') + ' Set Point</label><div class="picValueSpinner" data-bind="heatSetpoint"></div></div>'
-                        //    + '<div class= "picSelector" data-bind="heatMode"></div>').appendTo(evt.contents());
-                        //evt.contents().find('div.picValueSpinner').each(function () {
-                        //    $(this).valueSpinner({ val: settings.setPoint, min: 65, max: 104, step: 1 });
-                        //});
-                        evt.contents().find('div.picValueSpinner').on('change', function (e) {
-                            //console.log(e);
-                            self.putSetpoint(e.value);
-                        });
-                        //evt.contents().find('div.picSelector').selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data });
                         evt.contents().find('div.picSelector').on('selchange', function (e) {
                             self.putHeatMode(parseInt(e.newVal, 10));
                         });
@@ -158,8 +199,26 @@
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-ison', data.isOn);
                 el.attr('data-setpoint', data.setPoint);
-                if (typeof data.heaterOptions === 'undefined' || data.heaterOptions.total < 1) el.find('div.picBodySetPoints').hide();
-                else el.find('div.picBodySetPoints').show();
+                el.attr('data-coolsetpoint', data.coolSetpoint);
+                if (typeof data.heaterOptions === 'undefined' || data.heaterOptions.total < 1) {
+                    el.find('div.picBodySetpoints').hide();
+                    el.find('div.picSetpointText').text('Set Point');
+                    el.find('div.coolSetpoint').hide();
+                    el.attr('data-hascooling', false);
+                }
+                else {
+                    el.find('div.picBodySetpoints').show();
+                    if (data.heaterOptions.hasCooling) {
+                        el.find('label.picSetpointText.heatSetpoint').text('Heat Point');
+                        el.find('div.coolSetpoint').show();
+                        el.attr('data-hascooling', true);
+                    }
+                    else {
+                        el.find('label.picSetpointText.heatSetpoint').text('Set Point');
+                        el.find('div.coolSetpoint').hide();
+                        el.attr('data-hascooling', false);
+                    }
+                }
                 el.attr('data-heatmode', data.heatMode.val);
                 switch (data.heatStatus.name) {
                     case 'solar':
@@ -202,7 +261,11 @@
         },
         putSetpoint: function (setPoint) {
             var self = this, o = self.options, el = self.element;
-            $.putApiService('state/body/setPoint', { id: parseInt(el.attr('data-id'), 10), setPoint: setPoint }, function () { });
+            $.putApiService('state/body/setPoint', { id: parseInt(el.attr('data-id'), 10), heatSetpoint: setPoint }, function () {});
+        },
+        putSetpoints: function (heatSetpoint, coolSetpoint) {
+            var self = this, o = self.options, el = self.element;
+            $.putApiService('state/body/setPoint', { id: parseInt(el.attr('data-id'), 10), heatSetpoint: heatSetpoint, coolSetpoint: coolSetpoint }, function () { });
         }
     });
 

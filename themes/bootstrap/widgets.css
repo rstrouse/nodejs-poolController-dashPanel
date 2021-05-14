@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 label,
 span,
@@ -79,7 +79,7 @@ div.picPump:not(:last-child) {
 
 span.picCurrentOutput,
 div.picEnergy,
-div.picBodySetPoints,
+div.picBodySetpoints,
 label.picSchedDays,
 table.picSchedDays,
 span.saturationIndex,

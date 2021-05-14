@@ -49,6 +49,10 @@ div.picDashboard span.picIntelliBriteIcon {
 .control-panel-title {
     white-space: nowrap;
 }
+div.picBodyTemp > div:nth-child(2) {
+    font-size: 2.5em;
+    min-width:2.25em;
+}
 
 @media screen and (max-width: 744px) {
     div.picController {
