@@ -50,6 +50,20 @@ var msgManager = {
         key = key.replace(/\<dest\>/g, context.destAddr.key);
         key = key.replace(/\<action\>/g, context.actionByte);
         key = key.replace(/\<length\>/g, context.payloadLength);
+        var ms = key.match(/\<payload\[\d+\]\>/g);
+        if (key.indexOf('payload') !== -1) {
+            console.log(ms);
+            console.log(key);
+        }
+        if (ms && typeof ms !== 'undefined') {
+            console.log(ms);
+            for (var i = 0; i < ms.length; i++) {
+                var m = ms[i];
+                var ndx = parseInt(m.match(/\d+/));
+                console.log(`Making payload key ${m} ndx: ${ndx}`);
+                if (!isNaN(ndx) && msg.payload.length > ndx) key = key.replace(new RegExp(`\<payload[${ndx}]\>`, 'g'), msg.payload[ndx]);
+            }
+        }
         return key;
     },
     makeMessageKey: function (msg, context) {

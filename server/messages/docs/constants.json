@@ -202,7 +202,7 @@
         ]
       },
       "length": false,
-      "keyFormat":  "165_<controller>_<dest>_<source>_<action>"
+      "keyFormat": "165_<controller>_<dest>_<source>_<action>"
     },
     {
       "name": "chlorinator",
@@ -288,6 +288,27 @@
           {
             "val": 82,
             "desc": "Hail Address",
+            "defaultType": "Broadcast"
+          }
+        ]
+      },
+      "controller": false,
+      "length": false,
+      "keyFormat": "165_P_<dest>_<source>_<action>"
+    },
+    {
+      "name": "heater",
+      "desc": "Heater",
+      "actions": {
+        "all": [
+          {
+            "val": 114,
+            "desc": "Request Status",
+            "defaultType": "Broadcast"
+          },
+          {
+            "val": 115,
+            "desc": "Status Response",
             "defaultType": "Broadcast"
           }
         ]

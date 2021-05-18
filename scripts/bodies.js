@@ -112,7 +112,7 @@
 
             line = $('<div></div>').addClass('coolSetpoint').appendTo(setpoints).hide();
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').addClass('coolSetpoint').text('Cool Point').appendTo(line);
-            $('<span></span>').addClass('picSetpointData').attr('data-bind', 'coolSetPoint').text('--.-').appendTo(line);
+            $('<span></span>').addClass('picSetpointData').attr('data-bind', 'coolSetpoint').text('--.-').appendTo(line);
             $('<label></label>').addClass('picUnitSymbol').html('&deg;').appendTo(line);
             $('<span></span>').addClass('picTempUnits').text('-').appendTo(line);
 
@@ -169,7 +169,7 @@
                                 .on('change', function (e) {
                                     var coolSetpoint;
                                     divPopover.find('div[data-bind="coolSetpoint"]').each(function () { this.minVal(e.value + 1); coolSetpoint = this.val(); });
-                                    self.putSetpoints(e.value, coolSetpoint);
+                                    self.putSetpoints(e.value, undefined);
                                 });
                             $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Cool Point', val: settings.coolSetpoint || settings.setPoint + 1, min: settings.setPoint + 1, max: units === "F" ? 104 : 41, step: 1, binding: 'coolSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
                                 .on('change', function (e) { self.putSetpoints(undefined, e.value); });
@@ -208,7 +208,7 @@
                 }
                 else {
                     el.find('div.picBodySetpoints').show();
-                    if (data.heaterOptions.hasCooling) {
+                    if (data.heaterOptions.hasCoolSetpoint) {
                         el.find('label.picSetpointText.heatSetpoint').text('Heat Point');
                         el.find('div.coolSetpoint').show();
                         el.attr('data-hascooling', true);
@@ -226,11 +226,13 @@
                         el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').hide();
                         break;
+                    case 'hpheat':
                     case 'heater':
                         el.find('span.picSolarOn').hide();
                         el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').css('display', 'inline-block');
                         break;
+                    case 'hpcool':
                     case 'cooling':
                         el.find('span.picSolarOn').hide();
                         el.find('span.picHeaterOn').hide();

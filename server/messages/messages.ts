@@ -159,6 +159,7 @@ export class Message {
             case 'intelliChem':
             case 'intelliValve':
             case 'broadcast':
+            case 'heater':
             case 'unidentified':
                 ndx = this.pushBytes(this.preamble, bytes, ndx, 3);
                 ndx = this.pushBytes(this.header, bytes, ndx, 6);
@@ -167,6 +168,8 @@ export class Message {
                 else if (this.dest >= 144 && this.dest <= 158) this.proto = 'intelliChem';
                 else if (this.source >= 144 && this.source <= 158) this.proto = 'intelliChem';
                 else if (this.source == 12 || this.dest == 12) this.proto = 'intelliValve';
+                else if (this.source >= 112 || this.source <= 127) this.proto = 'heater';
+                else if (this.dest >= 112 || this.dest <= 127) this.proto = 'heater';
                 if (this.datalen > 75) {
                     this.isValid = false;
                 }
@@ -212,6 +215,7 @@ export class Message {
             case 'pump':
             case 'intelliChem':
             case 'intelliValve':
+            case 'heater':
             case 'unidentified':
                 if (this.datalen - this.payload.length <= 0) return ndx; // We don't need any more payload.
                 ndx = this.pushBytes(this.payload, bytes, ndx, this.datalen - this.payload.length);
@@ -239,6 +243,7 @@ export class Message {
             case 'pump':
             case 'intelliValve':
             case 'intelliChem':
+            case 'heater':
             case 'unidentified':
                 // If we don't have enough bytes to make the terminator then continue on and
                 // hope we get them on the next go around.
