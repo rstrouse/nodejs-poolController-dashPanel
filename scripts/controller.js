@@ -160,14 +160,14 @@
         setEquipmentState: function (data) {
             var self = this, o = self.options, el = self.element;
             if (typeof data !== 'undefined') {
-                el.attr('data-maxbodies', data.maxBodies);
+                el.attr('data-maxschedules', data.maxSchedules);
                 el.attr('data-maxvalves', data.maxValves);
                 el.attr('data-maxcircuits', data.maxCircuits);
                 el.attr('data-shared', data.shared);
                 el.find('div.picModel > span.picModelData').text(data.model);
             }
             else {
-                el.attr('data-maxbodies', 0);
+                el.attr('data-maxschedules', 0);
                 el.attr('data-maxvalves', 0);
                 el.attr('data-maxcircuits', 0);
                 el.attr('data-shared', false);
@@ -398,7 +398,6 @@
                 var tabObj = { id: 'tabAppearance', text: 'Appearance' };
                 var contents = this.addTab(tabObj);
                 var divOuter = $('<div class="picAppearance"></div>');
-
                 divOuter.appendTo(contents);
                 var line = $('<div></div>').appendTo(divOuter);
                 $('<div></div>').appendTo(line).pickList({
@@ -477,7 +476,209 @@
                         line = $('<div></div>').appendTo(div);
                         dlg.css({ overflow: 'visible' });
                     });
+                    self._setOrder(settings).appendTo(contents);
             });
+        },
+        _setOrder: function (settings) {
+            var self = this, o = self.options, el = self.element;
+            var grp = $('<fieldset></fieldset>');
+            $('<legend>Order of Elements</legend>').appendTo(grp);
+            
+            var outerDivLg = $('<div></div>').addClass('lgOrderInstructions').appendTo(grp);;
+            var divLgLabel = $('<label>These are the settings for a large screen (>744px).  To set the order for a smaller screen size, view this page on a smaller screen<p>Screen elements go in a Z-pattern; left to right and then down to the next row.</label>').addClass('orderInstructions');
+            divLgLabel.appendTo(outerDivLg);
+            var innerDivLg = $('<div></div>').appendTo(outerDivLg).addClass('lgOrderDiv');
+            var divLgOrderBodies = $('<div></div>').css('order', 'var(--bodies-order-lg)').appendTo(innerDivLg);
+            $('<div></div>').appendTo(divLgOrderBodies).valueSpinner({
+                canEdit: true, labelText: 'Bodies',min: 0, max: 100, step: 1,
+                value:  getStorage('bodies-order-lg', parseInt($(':root').css('--bodies-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('bodies-order-lg', e.target.val());
+                $(':root').css('--bodies-order-lg', e.target.val());
+            })
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-lg',  $(':root').css('--bodies-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderBodies).on('changed', function (evt) { 
+                setStorage('bodies-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--bodies-display-lg', evt.target.val()?'none':'block');
+             });
+            var divLgOrderCircuits = $('<div></div>').css('order', 'var(--circuits-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderCircuits).valueSpinner({
+                canEdit: true, labelText: 'Circuits',min: 0, max: 100, step: 1,
+                value:  getStorage('circuits-order-lg',  parseInt($(':root').css('--circuits-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('circuits-order-lg', e.target.val());
+                $(':root').css('--circuits-order-lg', e.target.val());
+            });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-lg',  $(':root').css('--circuits-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderCircuits).on('changed', function (evt) { 
+                setStorage('circuits-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--circuits-display-lg', evt.target.val()?'none':'block');
+             });
+            var divLgOrderPumps = $('<div></div>').css('order', 'var(--pumps-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderPumps).valueSpinner({
+                canEdit: true, labelText: 'Pumps',min: 0, max: 100, step: 1,
+                value:  getStorage('pumps-order-lg',  parseInt($(':root').css('--pumps-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('pumps-order-lg', e.target.val());
+                $(':root').css('--pumps-order-lg', e.target.val());
+            });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-lg',  $(':root').css('--pumps-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderPumps).on('changed', function (evt) { 
+                setStorage('pumps-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--pumps-display-lg', evt.target.val()?'none':'block');
+             });
+            var divLgOrderChemistry = $('<div></div>').css('order', 'var(--chemistry-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderChemistry).valueSpinner({
+                canEdit: true, labelText: 'Chemistry',min: 0, max: 100, step: 1,
+                value:  getStorage('chemistry-order-lg',  parseInt($(':root').css('--chemistry-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('chemistry-order-lg', e.target.val());
+                $(':root').css('--chemistry-order-lg', e.target.val());
+            });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-lg',  $(':root').css('--chemistry-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderChemistry).on('changed', function (evt) { 
+                setStorage('chemistry-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--chemistry-display-lg', evt.target.val()?'none':'block');
+             });
+            var divLgOrderSchedules = $('<div></div>').css('order', 'var(--schedules-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderSchedules).valueSpinner({
+                canEdit: true, labelText: 'Schedules',min: 0, max: 100, step: 1,
+                value:  getStorage('schedules-order-lg',  parseInt($(':root').css('--schedules-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('schedules-order-lg', e.target.val());
+                $(':root').css('--schedules-order-lg', e.target.val());
+            });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-lg',  $(':root').css('--schedules-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderSchedules).on('changed', function (evt) { 
+                setStorage('schedules-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--schedules-display-lg', evt.target.val()?'none':'block');
+             });
+            var divLgOrderEmpty = $('<div></div>').css('order', 'var(--empty-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderEmpty).valueSpinner({
+                canEdit: true, labelText: 'Empty',min: 0, max: 100, step: 1,
+                value:  getStorage('empty-order-lg',  parseInt($(':root').css('--empty-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+            .on('change', function (e) {
+                setStorage('empty-order-lg', e.target.val());
+                $(':root').css('--empty-order-lg', e.target.val());
+            });
+             
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-lg', $(':root').css('--empty-display-lg').trim())==='none'?true:false}).appendTo(divLgOrderEmpty).on('changed', function (evt) { 
+                setStorage('empty-display-lg', evt.target.val()?'none':'block');
+                $(':root').css('--empty-display-lg', evt.target.val()?'none':'block');
+             });
+
+
+             var outerDivSm = $('<div></div>').addClass('smOrderInstructions').appendTo(grp);
+             $('<div></div>').appendTo(outerDivSm);
+             var divSm = $('<label>These are the settings for a small screen (<744px).  To set the order for a larger screen size, view this page on a larger screen.</label>').addClass('smOrderInstructions').addClass('orderInstructions');
+             divSm.appendTo(outerDivSm);
+             var innerDivSm = $('<div></div>').appendTo(outerDivSm).addClass('smOrderDiv');
+             var divSmOrderBodies = $('<div></div>').css('order', 'var(--bodies-order-sm)').appendTo(innerDivSm);
+             $('<div></div>').appendTo(divSmOrderBodies).valueSpinner({
+                 canEdit: true, labelText: 'Bodies',min: 0, max: 100, step: 1,
+                 value:  getStorage('bodies-order-sm',  parseInt($(':root').css('--bodies-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('bodies-order-sm', e.target.val());
+                 $(':root').css('--bodies-order-sm', e.target.val());
+             })
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-sm', $(':root').css('--bodies-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderBodies).on('changed', function (evt) { 
+                 setStorage('bodies-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--bodies-display-sm', evt.target.val()?'none':'block');
+              });
+             var divSmOrderCircuits = $('<div></div>').css('order', 'var(--circuits-order-sm)').appendTo(innerDivSm)
+             $('<div></div>').appendTo(divSmOrderCircuits).valueSpinner({
+                 canEdit: true, labelText: 'Circuits',min: 0, max: 100, step: 1,
+                 value:  getStorage('circuits-order-sm', parseInt($(':root').css('--circuits-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('circuits-order-sm', e.target.val());
+                 $(':root').css('--circuits-order-sm', e.target.val());
+             });
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-sm', $(':root').css('--circuits-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderCircuits).on('changed', function (evt) { 
+                 setStorage('circuits-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--circuits-display-sm', evt.target.val()?'none':'block');
+              });
+             var divSmOrderPumps = $('<div></div>').css('order', 'var(--pumps-order-sm)').appendTo(innerDivSm)
+             $('<div></div>').appendTo(divSmOrderPumps).valueSpinner({
+                 canEdit: true, labelText: 'Pumps',min: 0, max: 100, step: 1,
+                 value:  getStorage('pumps-order-sm', parseInt($(':root').css('--pumps-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('pumps-order-sm', e.target.val());
+                 $(':root').css('--pumps-order-sm', e.target.val());
+             });
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-sm', $(':root').css('--pumps-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderPumps).on('changed', function (evt) { 
+                 setStorage('pumps-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--pumps-display-sm', evt.target.val()?'none':'block');
+              });
+             var divSmOrderChemistry = $('<div></div>').css('order', 'var(--chemistry-order-sm)').appendTo(innerDivSm)
+             $('<div></div>').appendTo(divSmOrderChemistry).valueSpinner({
+                 canEdit: true, labelText: 'Chemistry',min: 0, max: 100, step: 1,
+                 value:  getStorage('chemistry-order-sm', parseInt($(':root').css('--chemistry-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('chemistry-order-sm', e.target.val());
+                 $(':root').css('--chemistry-order-sm', e.target.val());
+             });
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-sm', $(':root').css('--chemistry-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderChemistry).on('changed', function (evt) { 
+                 setStorage('chemistry-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--chemistry-display-sm', evt.target.val()?'none':'block');
+              });
+             var divSmOrderSchedules = $('<div></div>').css('order', 'var(--schedules-order-sm)').appendTo(innerDivSm)
+             $('<div></div>').appendTo(divSmOrderSchedules).valueSpinner({
+                 canEdit: true, labelText: 'Schedules',min: 0, max: 100, step: 1,
+                 value:  getStorage('schedules-order-sm', parseInt($(':root').css('--schedules-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('schedules-order-sm', e.target.val());
+                 $(':root').css('--schedules-order-sm', e.target.val());
+             });
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-sm', $(':root').css('--schedules-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderSchedules).on('changed', function (evt) { 
+                 setStorage('schedules-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--schedules-display-sm', evt.target.val()?'none':'block');
+              });
+             var divSmOrderEmpty = $('<div></div>').css('order', 'var(--empty-order-sm)').appendTo(innerDivSm)
+             $('<div></div>').appendTo(divSmOrderEmpty).valueSpinner({
+                 canEdit: true, labelText: 'Empty',min: 0, max: 100, step: 1,
+                 value:  getStorage('empty-order-sm', parseInt($(':root').css('--empty-order-sm'))),
+                 labelAttrs: { style: { width: '4.7rem' } },
+                 inputAttrs: { style: { width: '2rem' } }
+             })
+             .on('change', function (e) {
+                 setStorage('empty-order-sm', e.target.val());
+                 $(':root').css('--empty-order-sm', e.target.val());
+             });
+              
+             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-sm', $(':root').css('--empty-display-sm').trim())==='none'?true:false}).appendTo(divSmOrderEmpty).on('changed', function (evt) { 
+                 setStorage('empty-display-sm', evt.target.val()?'none':'block');
+                 $(':root').css('--empty-display-sm', evt.target.val()?'none':'block');
+              });
+
+            return grp;
         },
         _buildConnectionsTab: function (settings) {
             var self = this, o = self.options, el = self.element;
@@ -591,7 +792,7 @@
                     let $div = $('<div class="picFirmware"></div>').appendTo($(this));
                     $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Bodies</label><span>' + data.bodies.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
                     $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo($div);

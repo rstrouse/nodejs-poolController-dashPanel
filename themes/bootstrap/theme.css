@@ -1,10 +1,9 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 label,
 span,
-div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
-  align-self: center;
+div:not(.picIBColor) {
   line-height: 1;
 }
 
@@ -55,6 +54,11 @@ div.picController {
   padding: 0px;
 }
 
+div.picFeatureGrid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: grid;
+}
+
 div.picFeatures,
 div.picSchedule,
 div.picPump,
@@ -64,6 +68,14 @@ div.picPumpCircuit,
 div.picLightThemes {
   display: flex;
   flex-wrap: wrap;
+}
+
+div.picChlorinator {
+  justify-content: space-between;
+}
+
+div.picChemistry {
+  width: 100%;
 }
 
 div.picIBColorSelector {
@@ -83,8 +95,9 @@ div.picEnergy,
 div.picBodySetpoints,
 label.picSchedDays,
 table.picSchedDays,
-span.saturationIndex,
+label.picPumpPrograms,
 table.picPumpPrograms,
+span.saturationIndex,
 label.picIBThemeLabel {
   margin-right: auto;
 }
@@ -280,7 +293,12 @@ div.picLightGroup > i {
   align-self: center;
   margin-top: -10px;
 }
-
+div.picChlorinator > label, div.picChlorinator > span,
+div.picPump > label, div.picPump > span,
+div.picSchedule > label,
+div.picSchedule > span {
+  align-self: center;
+}
 @media screen and (max-width: 744px) {
   div.picChlorStatus,
 div.picSuperChlor {
@@ -327,7 +345,6 @@ fieldset {
   border: solid 1px silver;
   border-radius: 3px;
   background: white;
-  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
   background: linear-gradient(0deg, white 0%, white 100%);
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
@@ -422,7 +439,6 @@ fieldset {
 
 .btn-stateonly {
   background: white;
-  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
   background: linear-gradient(0deg, white 0%, white 100%);
 }
 
@@ -614,28 +630,16 @@ div.picBodyIcon > div.picIndicator::before {
 
 div.picIndicator[data-status=pending],
 div.piscIndicator[data-status=timeout] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=loading] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffaf4b 0%, #ff920a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=error] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
   background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
@@ -655,6 +659,4 @@ div.picIndicator[data-status=error] {
 .btn-toggle[data-selected=true] {
   color: cornflowerblue;
   border-bottom: solid 1px black;
-}
-
-/*# sourceMappingURL=theme.css.map */
+}/*# sourceMappingURL=theme.css.map */

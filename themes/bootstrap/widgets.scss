@@ -3,8 +3,7 @@
 
 label, 
 span,
-div:not(.dashContainer-col1):not(.dashContainer-col2):not(.picIBColor) {
-    align-self: center;
+div:not(.picIBColor) {
     line-height: 1;
 }
 div.picBody > div {
@@ -17,7 +16,7 @@ div.picTabs {
     border:none;
     border-top:$outline_border;
     border-left:$outline_border;
-    border-right:$outline_border;
+    border-right:$outline_border; 
 
 }
 div.picTab {
@@ -46,7 +45,11 @@ div.picConfigPage {
 div.picController {
     padding:0px;
 }
-div.picFeatures,
+div.picFeatureGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    display: grid;
+}
+div.picFeatures, 
 div.picSchedule,
 div.picPump,
 div.picChlorinator,
@@ -57,6 +60,12 @@ div.picLightThemes {
     // padding-bottom:.4rem;
     display: flex;
     flex-wrap: wrap;
+}
+div.picChlorinator {
+    justify-content: space-between;
+}
+div.picChemistry {
+    width: 100%;
 }
 div.picIBColorSelector{
     display: flex;

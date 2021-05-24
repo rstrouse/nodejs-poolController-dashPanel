@@ -68,23 +68,24 @@
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Features');
+            let inner = $('<div></div>').addClass('picFeatureGrid').appendTo(el);
             for (let i = 0; i < data.circuits.length; i++) {
                 // Create a new feature for each of the circuits.  We will hide them if they
                 // are not to be shown in the features menu.
                 let div = $('<div class="picFeature picCircuit btn"></div>');
                 let circuit = data.circuits[i];
-                div.appendTo(el);
+                div.appendTo(inner);
                 div.circuit(circuit, {controllerType: data.equipment.controllerType});
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
                 let div = $('<div class="picFeature picCircuit btn"></div>');
-                div.appendTo(el);
+                div.appendTo(inner);
                 div.feature(data.features[i]);
             }
             for (let i = 0; i < data.circuitGroups.length; i++) {
                 let div = $('<div class="picFeature picCircuitGroup btn"></div>');
-                div.appendTo(el);
+                div.appendTo(inner);
                 div.circuitGroup(data.circuitGroups[i]);
             }
         },

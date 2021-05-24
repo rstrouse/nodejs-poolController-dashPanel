@@ -1,84 +1,105 @@
-﻿div.configContainer {
-  min-width: 627px; }
+div.configContainer {
+  min-width: 627px;
+}
 
 div.inline-line {
   display: inline-block;
-  vertical-align: top; }
+  vertical-align: top;
+}
 
 div.picOptionField, div.picOptionDropdown, div.picOptionCheckbox {
   display: inline-block;
-  line-height: 1.4rem; }
+  line-height: 1.4rem;
+}
 
 div.picOptionLine > div {
-  margin-right: .5rem; }
+  margin-right: 0.5rem;
+}
 
 div.picOptionLine {
-  padding-bottom: 2px; }
+  padding-bottom: 2px;
+}
 
 div.picOptionField > label,
 div.picOptionDropdown > label {
-  padding-right: .25rem;
-  margin-left: .4rem; }
+  padding-right: 0.25rem;
+  margin-left: 0.4rem;
+}
 
 div.cfgGeneralDate > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picPickList > label,
 div.cfgGeneralPersonal > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picPickList > label,
 div.cfgGeneralPersonal > div.picAccordian-contents > div.picOptionLine > div:nth-child(1) > div.picInputField > label {
   display: inline-block;
-  width: 5.5rem; }
+  width: 5.5rem;
+}
 
 div.picOptionField[data-bind$="owner.name"] > div > label,
 div.picOptionField[data-bind$=email] > div > label,
 div.picOptionField[data-bind$=email2] > div > label {
   display: inline-block;
-  width: 4.25rem; }
+  width: 4.25rem;
+}
 
 div.picCircuitsList {
-  display: inline-block; }
+  display: inline-block;
+}
 
 div.picCircuitsList, div.picCircuitsList-list, div.picCircuitsList-btnPanel {
   display: inline-block;
   text-align: left;
   vertical-align: top;
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 div.picCircuitsList-list {
-  border-left: solid 3px gainsboro; }
+  border-left: solid 3px gainsboro;
+}
 
 div.picCircuitOption {
   text-align: left;
   margin-top: 1px;
-  margin-bottom: 1px; }
+  margin-bottom: 1px;
+}
 
 div.picCircuitOption i.picRemoveOption {
   cursor: pointer;
-  margin-left: .15rem; }
+  margin-left: 0.15rem;
+}
 
 div.picCircuitOption i.picRemoveOption:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.pnl-scheduleDays div.table {
-  display: table; }
+  display: table;
+}
 
 div.pnl-scheduleDays div.table-body {
-  display: table-row-group; }
+  display: table-row-group;
+}
 
 div.pnl-scheduleDays div.table-row {
-  display: table-row; }
+  display: table-row;
+}
 
 div.pnl-scheduleDays div.table-cell {
-  display: table-cell; }
+  display: table-cell;
+}
 
 div.pnl-scheduleDays > div.table {
   border-collapse: collapse;
   display: inline-block;
-  margin: 0px auto; }
+  margin: 0px auto;
+}
 
 div.pnl-scheduleDays div.table-caption {
   display: table-caption;
-  text-align: center; }
+  text-align: center;
+}
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
-  font-weight: bold; }
+  font-weight: bold;
+}/*# sourceMappingURL=configPage.css.map */

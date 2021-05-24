@@ -160,6 +160,32 @@
                     self._createSchedulesPanel(data);
                     self._initSockets();
                     console.log(data);
+                    console.log('initializing element order');
+                    if (typeof getStorage('bodies-order-lg') !== 'undefined') $(':root').css('--bodies-order-lg', getStorage('bodies-order-lg'));
+                    if (typeof getStorage('bodies-display-lg') !== 'undefined') $(':root').css('--bodies-display-lg', getStorage('bodies-display-lg'));
+                    if (typeof getStorage('circuits-order-lg') !== 'undefined') $(':root').css('--circuits-order-lg', getStorage('circuits-order-lg'));
+                    if (typeof getStorage('circuits-display-lg') !== 'undefined') $(':root').css('--circuits-display-lg', getStorage('circuits-display-lg'));
+                    if (typeof getStorage('pumps-order-lg') !== 'undefined') $(':root').css('--pumps-order-lg', getStorage('pumps-order-lg'));
+                    if (typeof getStorage('pumps-display-lg') !== 'undefined') $(':root').css('--pumps-display-lg', getStorage('pumps-display-lg'));
+                    if (typeof getStorage('schedules-order-lg') !== 'undefined') $(':root').css('--schedules-order-lg', getStorage('schedules-order-lg'));
+                    if (typeof getStorage('schedules-display-lg') !== 'undefined') $(':root').css('--schedules-display-lg', getStorage('schedules-display-lg'));
+                    if (typeof getStorage('chemistry-order-lg') !== 'undefined') $(':root').css('--chemistry-order-lg', getStorage('chemistry-order-lg'));
+                    if (typeof getStorage('chemistry-display-lg') !== 'undefined') $(':root').css('--chemistry-display-lg', getStorage('chemistry-display-lg'));
+                    if (typeof getStorage('empty-order-lg') !== 'undefined') $(':root').css('--empty-order-lg', getStorage('empty-order-lg'));
+                    if (typeof getStorage('empty-display-lg') !== 'undefined') $(':root').css('--empty-display-lg', getStorage('empty-display-lg'));
+
+                    if (typeof getStorage('bodies-order-sm') !== 'undefined') $(':root').css('--bodies-order-sm', getStorage('bodies-order-sm'));
+                    if (typeof getStorage('bodies-display-sm') !== 'undefined') $(':root').css('--bodies-display-sm', getStorage('bodies-display-sm'));
+                    if (typeof getStorage('circuits-order-sm') !== 'undefined') $(':root').css('--circuits-order-sm', getStorage('circuits-order-sm'));
+                    if (typeof getStorage('circuits-display-sm') !== 'undefined') $(':root').css('--circuits-display-sm', getStorage('circuits-display-sm'));
+                    if (typeof getStorage('pumps-order-sm') !== 'undefined') $(':root').css('--pumps-order-sm', getStorage('pumps-order-sm'));
+                    if (typeof getStorage('pumps-display-sm') !== 'undefined') $(':root').css('--pumps-display-sm', getStorage('pumps-display-sm'));
+                    if (typeof getStorage('schedules-order-sm') !== 'undefined') $(':root').css('--schedules-order-sm', getStorage('schedules-order-sm'));
+                    if (typeof getStorage('schedules-display-sm') !== 'undefined') $(':root').css('--schedules-display-sm', getStorage('schedules-display-sm'));
+                    if (typeof getStorage('chemistry-order-sm') !== 'undefined') $(':root').css('--chemistry-order-sm', getStorage('chemistry-order-sm'));
+                    if (typeof getStorage('chemistry-display-sm') !== 'undefined') $(':root').css('--chemistry-display-sm', getStorage('chemistry-display-sm'));
+                    if (typeof getStorage('empty-order-sm') !== 'undefined') $(':root').css('--empty-order-sm', getStorage('empty-order-sm'));
+                    if (typeof getStorage('empty-display-sm') !== 'undefined') $(':root').css('--empty-display-sm', getStorage('empty-display-sm'));
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })
                     .fail(function (xhr, status, error) {

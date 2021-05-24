@@ -1,15 +1,5 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
-label,
-span,
-div:not(.picIBColor) {
-  line-height: 1;
-}
-
-div.picBody > div {
-  padding-right: 0;
-}
-
 div.picTabs {
   background-color: white;
   border-top-left-radius: 3px;
@@ -53,83 +43,8 @@ div.picController {
   padding: 0px;
 }
 
-div.picFeatureGrid {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  display: grid;
-}
-
-div.picFeatures,
-div.picSchedule,
-div.picPump,
-div.picChlorinator,
-div.chemControllerDiv,
-div.picPumpCircuit,
-div.picLightThemes {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-div.picChlorinator {
-  justify-content: space-between;
-}
-
-div.picChemistry {
-  width: 100%;
-}
-
-div.picIBColorSelector {
-  display: flex;
-}
-
-div.picBody:not(:last-child),
-div.picChlorinator:not(:last-child),
-div.picSchedule:not(:last-child),
-div.picPump:not(:last-child) {
-  border-bottom: solid 1px rgba(0, 0, 0, 0.125);
-  margin-bottom: 5px;
-}
-
-span.picCurrentOutput,
-div.picEnergy,
-div.picBodySetpoints,
-label.picSchedDays,
-table.picSchedDays,
-label.picPumpPrograms,
-table.picPumpPrograms,
-span.saturationIndex,
-label.picIBThemeLabel {
-  margin-right: auto;
-}
-
-label.picIBThemeLabel {
-  width: 100%;
-  margin-left: 10px;
-}
-
-div.picChlorStatus,
-div.picSuperChlor {
-  order: 20;
-}
-
-div.picFeature,
-div.picCircuit {
-  display: flex;
-}
-
-div.picFeature > label,
-div.picCircuit > label {
-  top: 6px;
-  margin-right: auto;
-}
-
-div.picToggleButton {
-  order: 10;
-  margin-right: auto;
-}
-
-div.picPopoverHeader,
-div.picCircuitTitle {
-  flex: 1 1 100%;
+div.picFeatures {
+  padding-bottom: 0.4rem;
 }
 
 div.picAmbientTemp label {
@@ -179,7 +94,7 @@ div.pnl-scheduleDays div.table-caption {
   border-top-right-radius: 3px;
   border: solid 1px gray;
   color: white;
-  background: #007bff9d linear-gradient(180deg, #007bff9d, #007bff9d);
+  background: #4caf50 linear-gradient(180deg, #91d293e0, #59b55d);
 }
 
 div.pnl-scheduleDays div.table-row.dayheader {
@@ -197,13 +112,13 @@ div.pnl-scheduleDays div.table-cell.dayheader {
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: white;
-  background: #007bff linear-gradient(180deg, #007bff, #007bff);
+  background: #4caf50 linear-gradient(180deg, #91d293e0, #59b55d);
   color: black;
   font-weight: bold;
 }
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: #88acda;
+  background: #4DB6AC;
 }
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
@@ -233,45 +148,4 @@ div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "";
   font-weight: 400;
-}
-
-div.picSelector {
-  display: flex;
-  flex-direction: column;
-}
-
-div.picOption {
-  width: 100%;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-}
-
-div.picOption > label {
-  margin-right: auto;
-}
-
-div.picOption:first-child {
-  margin-top: 10px;
-}
-
-i.picDropdownButton {
-  margin-right: 10px;
-}
-
-div.picVirtualCircuit {
-  padding-left: 0.5em;
-}
-
-div.picChlorinator > label.picChlorinatorName,
-div.picChemController label.picControllerName {
-  overflow-y: hidden;
-}
-
-div.picSpinner-up, div.picSpinner-down {
-  line-height: 1.4rem !important;
-}
-
-div.picCircuit.btn {
-  align-items: center;
 }/*# sourceMappingURL=widgets.css.map */

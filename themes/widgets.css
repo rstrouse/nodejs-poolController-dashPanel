@@ -1,4 +1,31 @@
-﻿div.picOptionButton > span,
+﻿:root {
+    --bodies-order-lg: 1;
+    --circuits-order-lg: 2;
+    --pumps-order-lg: 3;
+    --chemistry-order-lg: 4;
+    --schedules-order-lg: 5;
+    --empty-order-lg: 6;
+    --bodies-display-lg: block;
+    --circuits-display-lg: block;
+    --pumps-display-lg: block;
+    --chemistry-display-lg: block;
+    --schedules-display-lg: block;
+    --empty-display-lg: none;
+    --bodies-order-sm: 1;
+    --circuits-order-sm: 2;
+    --pumps-order-sm: 3;
+    --chemistry-order-sm: 4;
+    --schedules-order-sm: 5;
+    --empty-order-sm: 6;
+    --bodies-display-sm: block;
+    --circuits-display-sm: block;
+    --pumps-display-sm: block;
+    --chemistry-display-sm: block;
+    --schedules-display-sm: block;
+    --empty-display-sm: none;
+}
+
+div.picOptionButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
     margin-left: .2rem;
@@ -7,6 +34,9 @@ div.picActionButton > span {
 }
 div.picFeature, div.picVirtualCircuit {
     min-width:10.4rem;
+}
+div.picFeatureGrid {
+    width: 100%;
 }
 div.picFeatures > div.picCircuit[data-showinfeatures=false],
 div.picFeatures > div.picCircuitGroup[data-showinfeatures=false] {
@@ -66,8 +96,13 @@ div.picPopover {
 div.picControlPanelTitle {
     white-space: nowrap;
 }
-div.picController, div.picChemistry {
+div.picChemistry {
+    order:var(--chemistry-order-lg);
+    display: var(--chemistry-display-lg) !important;
+}
+div.picController {
     min-width:14.7rem;
+    width: 99vw;
 }
 div.picChemistry label.picInline-label {
     min-width:2rem;
@@ -193,6 +228,10 @@ div.picController > div.picControllerLine label {
 div.picFeatures, div.picLights {
     display:block;
 }
+div.picCircuits{
+    order :var(--circuits-order-lg);
+    display: var(--circuits-display-lg) !important;
+}
 div.picCircuits > div:nth-child(n+2) {
     margin-top:.3rem;
 }
@@ -225,8 +264,14 @@ div.picFeature > div.picToggleButton, div.picVirtualCircuit > div.picToggleButto
     vertical-align:middle;
 }
 div.picBodies {
-    max-width: 40rem;
-    min-width: 22rem;
+/*     max-width: 40rem;
+    min-width: 22rem; */
+    order: var(--bodies-order-lg);
+    display: var(--bodies-display-lg) !important;
+}
+div.picEmpty{
+    order: var(--empty-order-lg);
+    display: var(--empty-display-lg) !important;
 }
 label.picInline-label {
     padding-right:.5em;
@@ -261,9 +306,17 @@ div.picBodyIcon div.picIndicator {
     width:2.5em;
     cursor:pointer;
 }
+div.picPumps {
+    order:var(--pumps-order-lg);
+    display: var(--pumps-display-lg) !important;
+}
 div.picPumps, div.picChemistry {
     vertical-align: top;
-    max-width: 35rem;
+    /* max-width: 35rem; */
+}
+div.picSchedules{
+    order:var(--schedules-order-lg);
+    display :var(--schedules-display-lg) !important;
 }
 div.picPump, div.picSchedule {
     padding-top: .1rem;
@@ -783,7 +836,6 @@ div.picChemTank {
     border: solid 1px gray;
     text-align: center;
     z-index: 1;
-    border-top: none;
     border-top-left-radius: 100%/15px;
     border-top-right-radius: 100%/15px;
     margin-left: 24px;

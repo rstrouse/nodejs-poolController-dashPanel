@@ -8,15 +8,19 @@ div.dashOuter {
     box-sizing: border-box;
     grid-auto-rows: auto;
     grid-row-gap: 0px;
+    margin: auto;
+    max-width: 1240px;
 }
 
 div.dashContainer {
-    display: inline-grid;
-    grid-template-columns: 377px 22.4rem;
+     display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(377px, 1fr)); 
+/*     column-count: 2;
+    column-width: 377px; */
 }
 
 div.dashOuter[data-panel=dashboard] > div.configContainer {
-    display: none;
+    display: none; 
 }
 
 div.dashOuter[data-panel=configuration] > div.dashContainer {
@@ -53,10 +57,40 @@ div.picBodyTemp > div:nth-child(2) {
     font-size: 2.5em;
     min-width:2.25em;
 }
+.orderInstructions {
+    margin-top: -7px; 
+    font-size: 0.7rem;
+ }
+ 
+ @media screen and (min-width: 745px){
+   div.lgOrderInstructions {
+     display: block;
+   }
+   div.lgOrderDiv {
+     width: 90vw;
+     max-width: 1277px;
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(339px, 1fr));
+   }
+   div.smOrderInstructions {
+     display: none;
+   }
+ }
 
 @media screen and (max-width: 744px) {
+    div.lgOrderInstructions {
+        display: none;
+      }
+      div.smOrderInstructions {
+        display: block;
+      }
+      div.smOrderDiv {
+        display: flex;
+        flex-direction: column;
+      }
+
     div.picController {
-        width: 100%;
+        // width: 100%;
         min-width: 100%;
         max-width: 100%;
     }
@@ -66,9 +100,11 @@ div.picBodyTemp > div:nth-child(2) {
         width: auto;
     }
 
-    div.picCircuits {
-        width: 100%;
-    }
+  div.picCircuits {
+    width: 100%;
+    order: var(--circuits-order-sm);
+    display:var(--circuits-display-sm) !important;
+  }
 
     div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
         display: contents !important;
@@ -79,19 +115,6 @@ div.picBodyTemp > div:nth-child(2) {
         margin-right: 0px;
     }
 
-    div.dashContainer-col1 {
-        order: 2;
-        display: block;
-        padding-left: 2px;
-        padding-right: 2px;
-    }
-
-    div.dashContainer-col2 {
-        display: block;
-        padding-left: 2px;
-        padding-right: 2px;
-    }
-
     div.picBodyTemp .picTempText,
     div.picBodyTemp .picTempUnits {
         display: none;
@@ -99,10 +122,27 @@ div.picBodyTemp > div:nth-child(2) {
 
     div.picBodies {
         max-width: 100%;
-    }
-
-    div.picPumps, div.picChemistry {
+        order: var(--bodies-order-sm);
+        display:var(--bodies-display-sm) !important;
+      }
+    
+      div.picPumps {
         max-width: 100%;
+        order: var(--pumps-order-sm);
+        display:var(--pumps-display-sm) !important;
+      }
+      div.picChemistry {
+        max-width: 100%;
+        order: var(--chemistry-order-sm);
+        display:var(--chemistry-display-sm) !important;
+      }
+      div.picSchedules {
+        order: var(--schedules-order-sm);
+        display:var(--schedules-display-sm) !important;
+      }
+      div.picEmpty{
+        order: var(--empty-order-sm);
+        display:var(--empty-display-sm) !important;
     }
 }
 
