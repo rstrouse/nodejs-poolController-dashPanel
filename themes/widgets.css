@@ -38,8 +38,8 @@ div.picFeature, div.picVirtualCircuit {
 div.picFeatureGrid {
     width: 100%;
 }
-div.picFeatures > div.picCircuit[data-showinfeatures=false],
-div.picFeatures > div.picCircuitGroup[data-showinfeatures=false] {
+div.picFeatures div.picFeatureGrid > div.picCircuit[data-showinfeatures=false],
+div.picFeatures div.picFeatureGrid > div.picCircuitGroup[data-showinfeatures=false] {
     display: none;
 }
 select, input[type=text], fieldset {
