@@ -293,12 +293,7 @@ div.picLightGroup > i {
   align-self: center;
   margin-top: -10px;
 }
-div.picChlorinator > label, div.picChlorinator > span,
-div.picPump > label, div.picPump > span,
-div.picSchedule > label,
-div.picSchedule > span {
-  align-self: center;
-}
+
 @media screen and (max-width: 744px) {
   div.picChlorStatus,
 div.picSuperChlor {
@@ -558,7 +553,7 @@ div.picBodyTemp {
   order: 1;
 }
 
-div.picBodySetPoints {
+div.picBodySetpoints {
   order: 2;
 }
 

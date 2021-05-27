@@ -1,37 +1,41 @@
-﻿@import 'default.scss';
-@import 'controller.scss';
+﻿@import "default.scss";
+@import "controller.scss";
+
+header.picHeader {
+}
 
 div.dashOuter {
-    width: 100%;
-    display: grid;
-    justify-content: center;
-    box-sizing: border-box;
-    grid-auto-rows: auto;
-    grid-row-gap: 0px;
-    margin: auto;
-    max-width: 1240px;
+  width: 100%;
+  display: grid;
+  justify-content: center;
+  box-sizing: border-box;
+  grid-auto-rows: auto;
+  grid-row-gap: 0px;
+  margin: auto;
+  max-width: 1240px;
 }
 
 div.dashContainer {
-     display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(377px, 1fr)); 
-/*     column-count: 2;
-    column-width: 377px; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(377px, 1fr)); 
 }
 
-div.dashOuter[data-panel=dashboard] > div.configContainer {
-    display: none; 
+div.dashOuter[data-panel="dashboard"] > div.configContainer {
+  display: none;
 }
 
-div.dashOuter[data-panel=configuration] > div.dashContainer {
-    display: none;
+div.dashOuter[data-panel="configuration"] > div.dashContainer {
+  display: none;
 }
 
-div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picLight i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picIBColor,
-div.picDashboard[data-hidethemes=true] div.picCircuit[data-type="circuit"] div.picLight div.picIBColor {
-    display: none;
+div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes="true"]
+  div.picCircuit[data-type="circuit"]
+  div.picLight
+  i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] div.picIBColor,
+div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] div.picLight div.picIBColor {
+  display: none;
 }
 /*
 div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
@@ -39,137 +43,138 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
 }
 */
 div.picDashboard span.picIntelliBriteIcon {
-    display: none;
+  display: none;
 }
 .control-panel {
-    vertical-align: top;
-    display: inline-block;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  height: fit-content;
+  vertical-align: top;
+  display: inline-block;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .control-panel-title {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 div.picBodyTemp > div:nth-child(2) {
-    font-size: 2.5em;
-    min-width:2.25em;
+  font-size: 2.5em;
+  min-width: 2.25em;
 }
 .orderInstructions {
-    margin-top: -7px; 
-    font-size: 0.7rem;
- }
- 
- @media screen and (min-width: 745px){
-   div.lgOrderInstructions {
-     display: block;
-   }
-   div.lgOrderDiv {
-     width: 90vw;
-     max-width: 1277px;
-     display: grid;
-     grid-template-columns: repeat(auto-fill, minmax(339px, 1fr));
-   }
-   div.smOrderInstructions {
-     display: none;
-   }
- }
+  margin-top: -7px;
+  font-size: 0.7rem;
+}
+
+@media screen and (min-width: 745px) {
+  div.lgOrderInstructions {
+    display: block;
+  }
+  div.lgOrderDiv {
+    width: 90vw;
+    max-width: 1277px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(339px, 1fr));
+  }
+  div.smOrderInstructions {
+    display: none;
+  }
+}
 
 @media screen and (max-width: 744px) {
-    div.lgOrderInstructions {
-        display: none;
-      }
-      div.smOrderInstructions {
-        display: block;
-      }
-      div.smOrderDiv {
-        display: flex;
-        flex-direction: column;
-      }
+  div.lgOrderInstructions {
+    display: none;
+  }
+  div.smOrderInstructions {
+    display: block;
+  }
+  div.smOrderDiv {
+    display: flex;
+    flex-direction: column;
+  }
 
-    div.picController {
-        // width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-    }
+  div.picController {
+    // width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
 
-    div.picController div.picModel {
-        min-width: 0px;
-        width: auto;
-    }
+  div.picController div.picModel {
+    min-width: 0px;
+    width: auto;
+  }
 
   div.picCircuits {
     width: 100%;
     order: var(--circuits-order-sm);
-    display:var(--circuits-display-sm) !important;
+    display: var(--circuits-display-sm) !important;
   }
 
-    div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
-        display: contents !important;
-        overflow-y: auto;
-    }
+  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
+    display: contents !important;
+    overflow-y: auto;
+  }
 
-    div.control-panel {
-        margin-right: 0px;
-    }
+  div.control-panel {
+    margin-right: 0px;
+  }
 
-    div.picBodyTemp .picTempText,
-    div.picBodyTemp .picTempUnits {
-        display: none;
-    }
+  div.picBodyTemp .picTempText,
+  div.picBodyTemp .picTempUnits {
+    display: none;
+  }
 
-    div.picBodies {
-        max-width: 100%;
-        order: var(--bodies-order-sm);
-        display:var(--bodies-display-sm) !important;
-      }
-    
-      div.picPumps {
-        max-width: 100%;
-        order: var(--pumps-order-sm);
-        display:var(--pumps-display-sm) !important;
-      }
-      div.picChemistry {
-        max-width: 100%;
-        order: var(--chemistry-order-sm);
-        display:var(--chemistry-display-sm) !important;
-      }
-      div.picSchedules {
-        order: var(--schedules-order-sm);
-        display:var(--schedules-display-sm) !important;
-      }
-      div.picEmpty{
-        order: var(--empty-order-sm);
-        display:var(--empty-display-sm) !important;
-    }
+  div.picBodies {
+    max-width: 100%;
+    order: var(--bodies-order-sm);
+    display: var(--bodies-display-sm) !important;
+  }
+
+  div.picPumps {
+    max-width: 100%;
+    order: var(--pumps-order-sm);
+    display: var(--pumps-display-sm) !important;
+  }
+  div.picChemistry {
+    max-width: 100%;
+    order: var(--chemistry-order-sm);
+    display: var(--chemistry-display-sm) !important;
+  }
+  div.picSchedules {
+    order: var(--schedules-order-sm);
+    display: var(--schedules-display-sm) !important;
+  }
+  div.picEmpty {
+    order: var(--empty-order-sm);
+    display: var(--empty-display-sm) !important;
+  }
 }
 
 @media screen and (max-width: 540px) {
-    div.picController span.picModelData {
-        display: none;
-    }
+  div.picController span.picModelData {
+    display: none;
+  }
 
-    div.picController div.picModel {
-        min-width: 0px;
-        width: auto;
-    }
+  div.picController div.picModel {
+    min-width: 0px;
+    width: auto;
+  }
 }
 
 @media screen and (max-width: 370px) {
-    div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
-        display: contents !important;
-        overflow-x: auto;
-        width: 100%;
-    }
+  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
+    display: contents !important;
+    overflow-x: auto;
+    width: 100%;
+  }
 
-    div.picBodies {
-        min-width: 100%;
-    }
+  div.picBodies {
+    min-width: 100%;
+  }
 
-    div.picChlorinator > label.picChlorinatorName,
-    div.picChemController > label.picControllerName {
-        max-width: 25%;
-    }
+  div.picChlorinator > label.picChlorinatorName,
+  div.picChemController > label.picControllerName {
+    max-width: 25%;
+  }
 }

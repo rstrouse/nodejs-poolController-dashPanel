@@ -1,6 +1,6 @@
 ﻿(function ($) {
     $.widget("pic.controller", {
-        options: { },
+        options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initController = function (data) { self._initController(data); };
@@ -8,7 +8,7 @@
             el[0].setEquipmentState = function (data) { self.setEquipmentState(data); };
             el[0].setConnectionError = function (data) { self.setConnectionError(data); };
         },
-        _initController: function(data) {
+        _initController: function (data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
 
@@ -135,7 +135,7 @@
                 }
                 else {
                     el.find('span.picControllerTime').each(function () {
-                            $(this).text('--/--/---- --:--');
+                        $(this).text('--/--/---- --:--');
                     });
                     el.find('div.picControllerStatus').each(function () {
                         let ln = $(this);
@@ -219,7 +219,7 @@
                         var obj = dataBinder.fromElement(opt);
                         $.putApiService('app/logger/setOptions', obj);
                     }
-                    });
+                });
                 divLine = $('<div class="picAppLogging"></div>').appendTo(grp);
                 $('<label></label>').appendTo(divLine).text('Log to');
                 btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'File', bind: 'app.logToFile' });
@@ -427,15 +427,15 @@
                         else
                             $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head')).attr('data-theme', evt.newItem.code);
                     }
-                    })[0].val(getStorage('dashTheme', 'default'));
+                })[0].val(getStorage('dashTheme', 'default'));
                 line = $('<div></div>').appendTo(divOuter);
                 $('<label></label>').appendTo(line).css({ width: '7rem', display: 'inline-block' }).addClass('field-label').text('Background');
-                settings.backgrounds.unshift({ name: 'Use Theme Default', url:'' });
+                settings.backgrounds.unshift({ name: 'Use Theme Default', url: '' });
                 $('<div></div>').appendTo(line).pickList({
-                    id:'dashBackground',
+                    id: 'dashBackground',
                     binding: 'background',
                     bindColumn: 1, displayColumn: 0,
-                    columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'url', text: 'Url', style: { whiteSpace: 'nowrap' }, hidden:true }],
+                    columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'url', text: 'Url', style: { whiteSpace: 'nowrap' }, hidden: true }],
                     inputAttrs: { style: { width: '14rem' } },
                     labelAttrs: { style: { display: 'none' } },
                     items: settings.backgrounds
@@ -444,8 +444,8 @@
                     if (evt.newItem.url === 'undefined' || evt.newItem.url === '')
                         $(document.body).css('background-image', '');
                     else
-                            $(document.body).css('background-image', `url(${evt.newItem.url})`);
-                    })[0].val(getStorage('dashBackground', ''));
+                        $(document.body).css('background-image', `url(${evt.newItem.url})`);
+                })[0].val(getStorage('dashBackground', ''));
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
                 $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Upload Background', icon: '<i class="fas fa-file-image"></i>' })
@@ -462,7 +462,8 @@
                                     self.uploadBackgroundFile(dlg.find('div[data-bind=backgroundFile]'), bg);
                                 }
                             },
-                                { text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                            {
+                                text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
                                 click: function () { $.pic.modalDialog.closeDialog(this); }
                             }]
                         });
@@ -476,207 +477,240 @@
                         line = $('<div></div>').appendTo(div);
                         dlg.css({ overflow: 'visible' });
                     });
-                    self._setOrder(settings).appendTo(contents);
+                self._setOrder(settings).appendTo(contents);
             });
         },
         _setOrder: function (settings) {
             var self = this, o = self.options, el = self.element;
             var grp = $('<fieldset></fieldset>');
             $('<legend>Order of Elements</legend>').appendTo(grp);
-            
+
             var outerDivLg = $('<div></div>').addClass('lgOrderInstructions').appendTo(grp);;
             var divLgLabel = $('<label>These are the settings for a large screen (>744px).  To set the order for a smaller screen size, view this page on a smaller screen<p>Screen elements go in a Z-pattern; left to right and then down to the next row.</label>').addClass('orderInstructions');
             divLgLabel.appendTo(outerDivLg);
             var innerDivLg = $('<div></div>').appendTo(outerDivLg).addClass('lgOrderDiv');
             var divLgOrderBodies = $('<div></div>').css('order', 'var(--bodies-order-lg)').appendTo(innerDivLg);
             $('<div></div>').appendTo(divLgOrderBodies).valueSpinner({
-                canEdit: true, labelText: 'Bodies',min: 0, max: 100, step: 1,
-                value:  getStorage('bodies-order-lg', parseInt($(':root').css('--bodies-order-lg'))),
+                canEdit: true, labelText: 'Bodies', min: 0, max: 100, step: 1,
+                value: getStorage('bodies-order-lg', parseInt($(':root').css('--bodies-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('bodies-order-lg', e.target.val());
-                $(':root').css('--bodies-order-lg', e.target.val());
-            })
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-lg',  $(':root').css('--bodies-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderBodies).on('changed', function (evt) { 
-                setStorage('bodies-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--bodies-display-lg', evt.target.val()?'none':'block');
-             });
+                .on('change', function (e) {
+                    setStorage('bodies-order-lg', e.target.val());
+                    $(':root').css('--bodies-order-lg', e.target.val());
+                })
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-lg', $(':root').css('--bodies-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderBodies).on('changed', function (evt) {
+                setStorage('bodies-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--bodies-display-lg', evt.target.val() ? 'none' : 'block');
+            });
             var divLgOrderCircuits = $('<div></div>').css('order', 'var(--circuits-order-lg)').appendTo(innerDivLg)
             $('<div></div>').appendTo(divLgOrderCircuits).valueSpinner({
-                canEdit: true, labelText: 'Circuits',min: 0, max: 100, step: 1,
-                value:  getStorage('circuits-order-lg',  parseInt($(':root').css('--circuits-order-lg'))),
+                canEdit: true, labelText: 'Circuits', min: 0, max: 100, step: 1,
+                value: getStorage('circuits-order-lg', parseInt($(':root').css('--circuits-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('circuits-order-lg', e.target.val());
-                $(':root').css('--circuits-order-lg', e.target.val());
+                .on('change', function (e) {
+                    setStorage('circuits-order-lg', e.target.val());
+                    $(':root').css('--circuits-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-lg', $(':root').css('--circuits-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderCircuits).on('changed', function (evt) {
+                setStorage('circuits-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--circuits-display-lg', evt.target.val() ? 'none' : 'block');
             });
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-lg',  $(':root').css('--circuits-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderCircuits).on('changed', function (evt) { 
-                setStorage('circuits-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--circuits-display-lg', evt.target.val()?'none':'block');
-             });
             var divLgOrderPumps = $('<div></div>').css('order', 'var(--pumps-order-lg)').appendTo(innerDivLg)
             $('<div></div>').appendTo(divLgOrderPumps).valueSpinner({
-                canEdit: true, labelText: 'Pumps',min: 0, max: 100, step: 1,
-                value:  getStorage('pumps-order-lg',  parseInt($(':root').css('--pumps-order-lg'))),
+                canEdit: true, labelText: 'Pumps', min: 0, max: 100, step: 1,
+                value: getStorage('pumps-order-lg', parseInt($(':root').css('--pumps-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('pumps-order-lg', e.target.val());
-                $(':root').css('--pumps-order-lg', e.target.val());
+                .on('change', function (e) {
+                    setStorage('pumps-order-lg', e.target.val());
+                    $(':root').css('--pumps-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-lg', $(':root').css('--pumps-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderPumps).on('changed', function (evt) {
+                setStorage('pumps-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--pumps-display-lg', evt.target.val() ? 'none' : 'block');
             });
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-lg',  $(':root').css('--pumps-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderPumps).on('changed', function (evt) { 
-                setStorage('pumps-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--pumps-display-lg', evt.target.val()?'none':'block');
-             });
             var divLgOrderChemistry = $('<div></div>').css('order', 'var(--chemistry-order-lg)').appendTo(innerDivLg)
             $('<div></div>').appendTo(divLgOrderChemistry).valueSpinner({
-                canEdit: true, labelText: 'Chemistry',min: 0, max: 100, step: 1,
-                value:  getStorage('chemistry-order-lg',  parseInt($(':root').css('--chemistry-order-lg'))),
+                canEdit: true, labelText: 'Chemistry', min: 0, max: 100, step: 1,
+                value: getStorage('chemistry-order-lg', parseInt($(':root').css('--chemistry-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('chemistry-order-lg', e.target.val());
-                $(':root').css('--chemistry-order-lg', e.target.val());
+                .on('change', function (e) {
+                    setStorage('chemistry-order-lg', e.target.val());
+                    $(':root').css('--chemistry-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-lg', $(':root').css('--chemistry-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderChemistry).on('changed', function (evt) {
+                setStorage('chemistry-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--chemistry-display-lg', evt.target.val() ? 'none' : 'block');
             });
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-lg',  $(':root').css('--chemistry-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderChemistry).on('changed', function (evt) { 
-                setStorage('chemistry-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--chemistry-display-lg', evt.target.val()?'none':'block');
-             });
             var divLgOrderSchedules = $('<div></div>').css('order', 'var(--schedules-order-lg)').appendTo(innerDivLg)
             $('<div></div>').appendTo(divLgOrderSchedules).valueSpinner({
-                canEdit: true, labelText: 'Schedules',min: 0, max: 100, step: 1,
-                value:  getStorage('schedules-order-lg',  parseInt($(':root').css('--schedules-order-lg'))),
+                canEdit: true, labelText: 'Schedules', min: 0, max: 100, step: 1,
+                value: getStorage('schedules-order-lg', parseInt($(':root').css('--schedules-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('schedules-order-lg', e.target.val());
-                $(':root').css('--schedules-order-lg', e.target.val());
+                .on('change', function (e) {
+                    setStorage('schedules-order-lg', e.target.val());
+                    $(':root').css('--schedules-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-lg', $(':root').css('--schedules-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderSchedules).on('changed', function (evt) {
+                setStorage('schedules-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--schedules-display-lg', evt.target.val() ? 'none' : 'block');
             });
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-lg',  $(':root').css('--schedules-display-lg').trim())==='none'?true:false }).appendTo(divLgOrderSchedules).on('changed', function (evt) { 
-                setStorage('schedules-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--schedules-display-lg', evt.target.val()?'none':'block');
-             });
             var divLgOrderEmpty = $('<div></div>').css('order', 'var(--empty-order-lg)').appendTo(innerDivLg)
             $('<div></div>').appendTo(divLgOrderEmpty).valueSpinner({
-                canEdit: true, labelText: 'Empty',min: 0, max: 100, step: 1,
-                value:  getStorage('empty-order-lg',  parseInt($(':root').css('--empty-order-lg'))),
+                canEdit: true, labelText: 'Break (1)', min: 0, max: 100, step: 1,
+                value: getStorage('empty-order-lg', parseInt($(':root').css('--empty-order-lg'))),
                 labelAttrs: { style: { width: '4.7rem' } },
                 inputAttrs: { style: { width: '2rem' } }
             })
-            .on('change', function (e) {
-                setStorage('empty-order-lg', e.target.val());
-                $(':root').css('--empty-order-lg', e.target.val());
+                .on('change', function (e) {
+                    setStorage('empty-order-lg', e.target.val());
+                    $(':root').css('--empty-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-lg', $(':root').css('--empty-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderEmpty).on('changed', function (evt) {
+                setStorage('empty-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--empty-display-lg', evt.target.val() ? 'none' : 'block');
             });
-             
-            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-lg', $(':root').css('--empty-display-lg').trim())==='none'?true:false}).appendTo(divLgOrderEmpty).on('changed', function (evt) { 
-                setStorage('empty-display-lg', evt.target.val()?'none':'block');
-                $(':root').css('--empty-display-lg', evt.target.val()?'none':'block');
-             });
+            var divLgOrderEmpty2 = $('<div></div>').css('order', 'var(--empty2-order-lg)').appendTo(innerDivLg)
+            $('<div></div>').appendTo(divLgOrderEmpty2).valueSpinner({
+                canEdit: true, labelText: 'Break (2)', min: 0, max: 100, step: 1,
+                value: getStorage('empty2-order-lg', parseInt($(':root').css('--empty2-order-lg'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('empt2-order-lg', e.target.val());
+                    $(':root').css('--empty2-order-lg', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty2-display-lg', $(':root').css('--empty2-display-lg').trim()) === 'none' ? true : false }).appendTo(divLgOrderEmpty2).on('changed', function (evt) {
+                setStorage('empty2-display-lg', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--empty2-display-lg', evt.target.val() ? 'none' : 'block');
+            });
 
 
-             var outerDivSm = $('<div></div>').addClass('smOrderInstructions').appendTo(grp);
-             $('<div></div>').appendTo(outerDivSm);
-             var divSm = $('<label>These are the settings for a small screen (<744px).  To set the order for a larger screen size, view this page on a larger screen.</label>').addClass('smOrderInstructions').addClass('orderInstructions');
-             divSm.appendTo(outerDivSm);
-             var innerDivSm = $('<div></div>').appendTo(outerDivSm).addClass('smOrderDiv');
-             var divSmOrderBodies = $('<div></div>').css('order', 'var(--bodies-order-sm)').appendTo(innerDivSm);
-             $('<div></div>').appendTo(divSmOrderBodies).valueSpinner({
-                 canEdit: true, labelText: 'Bodies',min: 0, max: 100, step: 1,
-                 value:  getStorage('bodies-order-sm',  parseInt($(':root').css('--bodies-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('bodies-order-sm', e.target.val());
-                 $(':root').css('--bodies-order-sm', e.target.val());
-             })
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-sm', $(':root').css('--bodies-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderBodies).on('changed', function (evt) { 
-                 setStorage('bodies-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--bodies-display-sm', evt.target.val()?'none':'block');
-              });
-             var divSmOrderCircuits = $('<div></div>').css('order', 'var(--circuits-order-sm)').appendTo(innerDivSm)
-             $('<div></div>').appendTo(divSmOrderCircuits).valueSpinner({
-                 canEdit: true, labelText: 'Circuits',min: 0, max: 100, step: 1,
-                 value:  getStorage('circuits-order-sm', parseInt($(':root').css('--circuits-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('circuits-order-sm', e.target.val());
-                 $(':root').css('--circuits-order-sm', e.target.val());
-             });
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-sm', $(':root').css('--circuits-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderCircuits).on('changed', function (evt) { 
-                 setStorage('circuits-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--circuits-display-sm', evt.target.val()?'none':'block');
-              });
-             var divSmOrderPumps = $('<div></div>').css('order', 'var(--pumps-order-sm)').appendTo(innerDivSm)
-             $('<div></div>').appendTo(divSmOrderPumps).valueSpinner({
-                 canEdit: true, labelText: 'Pumps',min: 0, max: 100, step: 1,
-                 value:  getStorage('pumps-order-sm', parseInt($(':root').css('--pumps-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('pumps-order-sm', e.target.val());
-                 $(':root').css('--pumps-order-sm', e.target.val());
-             });
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-sm', $(':root').css('--pumps-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderPumps).on('changed', function (evt) { 
-                 setStorage('pumps-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--pumps-display-sm', evt.target.val()?'none':'block');
-              });
-             var divSmOrderChemistry = $('<div></div>').css('order', 'var(--chemistry-order-sm)').appendTo(innerDivSm)
-             $('<div></div>').appendTo(divSmOrderChemistry).valueSpinner({
-                 canEdit: true, labelText: 'Chemistry',min: 0, max: 100, step: 1,
-                 value:  getStorage('chemistry-order-sm', parseInt($(':root').css('--chemistry-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('chemistry-order-sm', e.target.val());
-                 $(':root').css('--chemistry-order-sm', e.target.val());
-             });
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-sm', $(':root').css('--chemistry-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderChemistry).on('changed', function (evt) { 
-                 setStorage('chemistry-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--chemistry-display-sm', evt.target.val()?'none':'block');
-              });
-             var divSmOrderSchedules = $('<div></div>').css('order', 'var(--schedules-order-sm)').appendTo(innerDivSm)
-             $('<div></div>').appendTo(divSmOrderSchedules).valueSpinner({
-                 canEdit: true, labelText: 'Schedules',min: 0, max: 100, step: 1,
-                 value:  getStorage('schedules-order-sm', parseInt($(':root').css('--schedules-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('schedules-order-sm', e.target.val());
-                 $(':root').css('--schedules-order-sm', e.target.val());
-             });
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-sm', $(':root').css('--schedules-display-sm').trim())==='none'?true:false }).appendTo(divSmOrderSchedules).on('changed', function (evt) { 
-                 setStorage('schedules-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--schedules-display-sm', evt.target.val()?'none':'block');
-              });
-             var divSmOrderEmpty = $('<div></div>').css('order', 'var(--empty-order-sm)').appendTo(innerDivSm)
-             $('<div></div>').appendTo(divSmOrderEmpty).valueSpinner({
-                 canEdit: true, labelText: 'Empty',min: 0, max: 100, step: 1,
-                 value:  getStorage('empty-order-sm', parseInt($(':root').css('--empty-order-sm'))),
-                 labelAttrs: { style: { width: '4.7rem' } },
-                 inputAttrs: { style: { width: '2rem' } }
-             })
-             .on('change', function (e) {
-                 setStorage('empty-order-sm', e.target.val());
-                 $(':root').css('--empty-order-sm', e.target.val());
-             });
-              
-             $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-sm', $(':root').css('--empty-display-sm').trim())==='none'?true:false}).appendTo(divSmOrderEmpty).on('changed', function (evt) { 
-                 setStorage('empty-display-sm', evt.target.val()?'none':'block');
-                 $(':root').css('--empty-display-sm', evt.target.val()?'none':'block');
-              });
+
+            var outerDivSm = $('<div></div>').addClass('smOrderInstructions').appendTo(grp);
+            $('<div></div>').appendTo(outerDivSm);
+            var divSm = $('<label>These are the settings for a small screen (<744px).  To set the order for a larger screen size, view this page on a larger screen.</label>').addClass('smOrderInstructions').addClass('orderInstructions');
+            divSm.appendTo(outerDivSm);
+            var innerDivSm = $('<div></div>').appendTo(outerDivSm).addClass('smOrderDiv');
+            var divSmOrderBodies = $('<div></div>').css('order', 'var(--bodies-order-sm)').appendTo(innerDivSm);
+            $('<div></div>').appendTo(divSmOrderBodies).valueSpinner({
+                canEdit: true, labelText: 'Bodies', min: 0, max: 100, step: 1,
+                value: getStorage('bodies-order-sm', parseInt($(':root').css('--bodies-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('bodies-order-sm', e.target.val());
+                    $(':root').css('--bodies-order-sm', e.target.val());
+                })
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('bodies-display-sm', $(':root').css('--bodies-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderBodies).on('changed', function (evt) {
+                setStorage('bodies-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--bodies-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+            var divSmOrderCircuits = $('<div></div>').css('order', 'var(--circuits-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderCircuits).valueSpinner({
+                canEdit: true, labelText: 'Circuits', min: 0, max: 100, step: 1,
+                value: getStorage('circuits-order-sm', parseInt($(':root').css('--circuits-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('circuits-order-sm', e.target.val());
+                    $(':root').css('--circuits-order-sm', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('circuits-display-sm', $(':root').css('--circuits-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderCircuits).on('changed', function (evt) {
+                setStorage('circuits-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--circuits-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+            var divSmOrderPumps = $('<div></div>').css('order', 'var(--pumps-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderPumps).valueSpinner({
+                canEdit: true, labelText: 'Pumps', min: 0, max: 100, step: 1,
+                value: getStorage('pumps-order-sm', parseInt($(':root').css('--pumps-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('pumps-order-sm', e.target.val());
+                    $(':root').css('--pumps-order-sm', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('pumps-display-sm', $(':root').css('--pumps-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderPumps).on('changed', function (evt) {
+                setStorage('pumps-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--pumps-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+            var divSmOrderChemistry = $('<div></div>').css('order', 'var(--chemistry-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderChemistry).valueSpinner({
+                canEdit: true, labelText: 'Chemistry', min: 0, max: 100, step: 1,
+                value: getStorage('chemistry-order-sm', parseInt($(':root').css('--chemistry-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('chemistry-order-sm', e.target.val());
+                    $(':root').css('--chemistry-order-sm', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('chemistry-display-sm', $(':root').css('--chemistry-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderChemistry).on('changed', function (evt) {
+                setStorage('chemistry-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--chemistry-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+            var divSmOrderSchedules = $('<div></div>').css('order', 'var(--schedules-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderSchedules).valueSpinner({
+                canEdit: true, labelText: 'Schedules', min: 0, max: 100, step: 1,
+                value: getStorage('schedules-order-sm', parseInt($(':root').css('--schedules-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('schedules-order-sm', e.target.val());
+                    $(':root').css('--schedules-order-sm', e.target.val());
+                });
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('schedules-display-sm', $(':root').css('--schedules-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderSchedules).on('changed', function (evt) {
+                setStorage('schedules-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--schedules-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+            var divSmOrderEmpty = $('<div></div>').css('order', 'var(--empty-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderEmpty).valueSpinner({
+                canEdit: true, labelText: 'Break (1)', min: 0, max: 100, step: 1,
+                value: getStorage('empty-order-sm', parseInt($(':root').css('--empty-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('empty-order-sm', e.target.val());
+                    $(':root').css('--empty-order-sm', e.target.val());
+                });
+
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty-display-sm', $(':root').css('--empty-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderEmpty).on('changed', function (evt) {
+                setStorage('empty-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--empty-display-sm', evt.target.val() ? 'none' : 'block');
+            });
+
+
+            var divSmOrderEmpty2 = $('<div></div>').css('order', 'var(--empty2-order-sm)').appendTo(innerDivSm)
+            $('<div></div>').appendTo(divSmOrderEmpty2).valueSpinner({
+                canEdit: true, labelText: 'Break (2)', min: 0, max: 100, step: 1,
+                value: getStorage('empty2-order-sm', parseInt($(':root').css('--empty2-order-sm'))),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '2rem' } }
+            })
+                .on('change', function (e) {
+                    setStorage('empty2-order-sm', e.target.val());
+                    $(':root').css('--empty2-order-sm', e.target.val());
+                });
+
+            $('<div></div>').checkbox({ labelText: 'Hidden', value: getStorage('empty2-display-sm', $(':root').css('--empty2-display-sm').trim()) === 'none' ? true : false }).appendTo(divSmOrderEmpty2).on('changed', function (evt) {
+                setStorage('empty2-display-sm', evt.target.val() ? 'none' : 'block');
+                $(':root').css('--empty2-display-sm', evt.target.val() ? 'none' : 'block');
+            });
 
             return grp;
         },
@@ -689,14 +723,15 @@
                 divOuter.appendTo(contents);
                 var line = $('<div></div>').appendTo(divOuter);
                 var binding = 'services.';
-                $('<div></div>').appendTo(line).pickList({ labelText: 'Server', binding: binding + 'protocol', required:true,
+                $('<div></div>').appendTo(line).pickList({
+                    labelText: 'Server', binding: binding + 'protocol', required: true,
                     inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.25rem' } },
                     columns: [{ binding: 'val', hidden: true, text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
-                    bindColumn: 0, displayColumn: 1, items: [{ val: 'http://', name:'http:', desc: 'The nodejs-PoolController is communicating without an SSL certificate' },
-                        { val: 'https://', name: 'https:', desc: 'The nodejs-PoolController is communicating using an SSL certificate.' }]
+                    bindColumn: 0, displayColumn: 1, items: [{ val: 'http://', name: 'http:', desc: 'The nodejs-PoolController is communicating without an SSL certificate' },
+                    { val: 'https://', name: 'https:', desc: 'The nodejs-PoolController is communicating using an SSL certificate.' }]
                 });
                 $('<div></div>').appendTo(line).inputField({ labelText: '', binding: binding + 'ip', inputAttrs: { maxlength: 20 } });
-                $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType:'int', binding: binding + 'port', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight:'.15rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType: 'int', binding: binding + 'port', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight: '.15rem' } } });
 
                 //$('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
@@ -725,7 +760,7 @@
                                 searchStatus.text(servers.length + ' Running nodejs-PoolController server(s) found.');
                                 for (var i = 0; i < servers.length; i++) {
                                     var server = servers[i];
-                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth:'210px' }).appendTo(line);
+                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
                                     $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Pool Controller</span>');
                                     $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(server.origin);
                                     divSelection.data('server', server);
@@ -778,8 +813,8 @@
                     $(this).find('i').addClass('fa-spin');
                     // Send this off to the server.
                     $(this).find('span.picButtonText').text('Loading Config...');
-                    $.putApiService('/app/config/reload', function(data, status, xhr) {
-                        
+                    $.putApiService('/app/config/reload', function (data, status, xhr) {
+
                     });
                     ///$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
 
@@ -859,7 +894,7 @@
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
         },
-        uploadBackgroundFile: function(uploader, opts) {
+        uploadBackgroundFile: function (uploader, opts) {
             var self = this, o = self.options, el = self.element;
             var divPopover = $('<div></div>');
             divPopover.appendTo(document.body);
@@ -901,7 +936,7 @@
             self._buildControls();
             o = { processing: false };
         },
-        _buildActionTab: function(op, actions) {
+        _buildActionTab: function (op, actions) {
             var self = this, o = self.options, el = self.element;
             var ucase = op[0].toUpperCase() + op.slice(1);
             el.find('div.picTabPanel:first').each(function () {
@@ -928,7 +963,7 @@
                     var b = makeBool(e.currentTarget.val());
                     var obj = { packet: {} };
                     obj.packet[o.protocol] = {};
-                    
+
                     //console.log({ actid: actid, b: b });
                     if (actid === 'all') {
                         // Deselect/select everything else.

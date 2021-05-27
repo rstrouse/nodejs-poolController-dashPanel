@@ -5,25 +5,34 @@
     --chemistry-order-lg: 4;
     --schedules-order-lg: 5;
     --empty-order-lg: 6;
+    --empty2-order-lg: 7;
     --bodies-display-lg: block;
     --circuits-display-lg: block;
     --pumps-display-lg: block;
     --chemistry-display-lg: block;
     --schedules-display-lg: block;
     --empty-display-lg: none;
+    --empty2-display-lg: none;
     --bodies-order-sm: 1;
     --circuits-order-sm: 2;
     --pumps-order-sm: 3;
     --chemistry-order-sm: 4;
     --schedules-order-sm: 5;
     --empty-order-sm: 6;
+    --empty2-order-sm: 7;
     --bodies-display-sm: block;
     --circuits-display-sm: block;
     --pumps-display-sm: block;
     --chemistry-display-sm: block;
     --schedules-display-sm: block;
     --empty-display-sm: none;
+    --empty2-display-sm: none;
 }
+
+.break {
+    flex-basis: 100%;
+    height: 0;
+  }
 
 div.picOptionButton > span,
 div.picActionButton > span {
@@ -102,7 +111,6 @@ div.picChemistry {
 }
 div.picController {
     min-width:14.7rem;
-    width: 99vw;
 }
 div.picChemistry label.picInline-label {
     min-width:2rem;
@@ -272,6 +280,10 @@ div.picBodies {
 div.picEmpty{
     order: var(--empty-order-lg);
     display: var(--empty-display-lg) !important;
+}
+div.picEmpty2 {
+    order: var(--empty2-order-lg);
+    display: var(--empty2-display-lg) !important;
 }
 label.picInline-label {
     padding-right:.5em;

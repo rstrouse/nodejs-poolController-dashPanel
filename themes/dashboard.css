@@ -286,8 +286,6 @@ div.dashOuter {
 div.dashContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(377px, 1fr));
-  /*     column-count: 2;
-      column-width: 377px; */
 }
 
 div.dashOuter[data-panel=dashboard] > div.configContainer {
@@ -315,6 +313,9 @@ div.picDashboard span.picIntelliBriteIcon {
 }
 
 .control-panel {
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
   vertical-align: top;
   display: inline-block;
   user-select: none;
