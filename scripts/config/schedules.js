@@ -9,11 +9,12 @@
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgSchedules');
-            $.getApiService('/config/options/schedules', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/schedules', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
                 var schedules = opts.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     $('<div></div>').appendTo(el).pnlScheduleConfig({
+                        bodies: opts.bodies,
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
                         scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
                         tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode, displayTypes: opts.displayTypes
@@ -25,7 +26,7 @@
                     var groups = el.find('div.picConfigCategory.cfgSchedule');
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlScheduleConfig({
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
-                        scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
+                        scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources, bodies: opts.bodies,
                         tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode, displayTypes: opts.displayTypes
                     });
                     var st = opts.scheduleTypes.find(elem => elem.name === 'repeat') || opts.scheduleTypes[0];
@@ -33,7 +34,8 @@
                     pnl[0].dataBind({
                         id: -1, startTime: 480, endTime: 1020,
                         scheduleType: st.val, startTimeType: tt.val, endTimeType: tt.val, circuit: 0, display: 0,
-                        heatSetpoint: 78, heatSource: 0, scheduleDays: 127, startDate: new Date().toISOString()
+                        heatSetpoint: 78, coolSetpoint: 100, heatSource: 0, scheduleDays: 127, startDate: new Date().toISOString()
+                       
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -90,12 +92,19 @@
                 var p = el.find('div.schedule-heatsource');
                 if (typeof evt.newItem === 'undefined' || evt.newItem.name === 'nochange' || evt.newItem.name === 'off') {
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').hide()[0].required(false);
+                    p.find('div.picValueSpinner[data-bind=coolSetpoint]').hide()[0].required(false);
                 }
                 else {
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
+                    if (evt.newItem.hasCoolSetpoint === true)
+                        p.find('div.picValueSpinner[data-bind=coolSetpoint]').show()[0].required(true);
+                    else
+                        p.find('div.picValueSpinner[data-bind=coolSetpoint]').hide()[0].required(false);
+
                 }
             });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Temp', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '.25rem', width: '3rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Heat', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cool', binding: binding + 'coolSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } }).hide();
 
             $('<hr></hr>').appendTo(pnl);
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
@@ -129,17 +138,14 @@
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
                 var p = el.find('div.schedule-heatsource');
-                // When the user selects a non-body we need to hide the heat source panel.  The schedule type
-                // hides/shows the individual items in the panel.  Perhaps in the future we need a better way to
-                // determine which circuits are body circuits but 1 and 6 work for now.
-                if (evt.newItem.id === 6 || evt.newItem.id === 1) {
-                    p.show();
-                    p.find('div.picPickList[data-bind=heatSource]')[0].required(true);
-                }
-                else {
-                    p.hide();
-                    p.find('div.picPickList[data-bind=heatSource]')[0].required(false);
-                }
+                var body = o.bodies.find(elem => elem.circuit === evt.newItem.id);
+                p.find('div.picPickList[data-bind=heatSource]').each(function () {
+                    this.required(typeof body !== 'undefined');
+                    this.items(typeof body !== 'undefined' ? body.heatSources : o.heatSources);
+                    // Check to see if we have a valid selection if not set it to 0.
+                    if (this.val() === null) this.val(0);
+                });
+                typeof body !== 'undefined' ? p.show() : p.hide();
             });
             el.on('selchanged', 'div.picPickList[data-bind$=TimeType]', function (evt) {
                 var p = $(evt.currentTarget).parents('div.schedule-time:first');
