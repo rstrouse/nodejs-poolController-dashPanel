@@ -273,7 +273,7 @@ div.ct-narrative > hr {
 }
 
 div.dashOuter {
-  width: 100%;
+  width: calc(var(--number-of-columns)*377) px;
   display: grid;
   justify-content: center;
   box-sizing: border-box;
@@ -284,8 +284,10 @@ div.dashOuter {
 }
 
 div.dashContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(377px, 1fr));
+  /*   display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(377px, 1fr));  */
+  display: flex;
+  flex-flow: column wrap;
 }
 
 div.dashOuter[data-panel=dashboard] > div.configContainer {
@@ -344,10 +346,7 @@ div.picBodyTemp > div:nth-child(2) {
   }
 
   div.lgOrderDiv {
-    width: 90vw;
-    max-width: 1277px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(339px, 1fr));
+    display: block;
   }
 
   div.smOrderInstructions {
@@ -380,8 +379,8 @@ div.picBodyTemp > div:nth-child(2) {
 
   div.picCircuits {
     width: 100%;
-    order: var(--circuits-order-sm);
-    display: var(--circuits-display-sm) !important;
+    order: var(--picCircuits-order-sm);
+    display: var(--picCircuits-display-sm) !important;
   }
 
   div.dashOuter:not([data-panel=configuration]) div.dashContainer {
@@ -400,30 +399,30 @@ div.picBodyTemp .picTempUnits {
 
   div.picBodies {
     max-width: 100%;
-    order: var(--bodies-order-sm);
-    display: var(--bodies-display-sm) !important;
+    order: var(--picBodies-order-sm);
+    display: var(--picBodies-display-sm) !important;
   }
 
   div.picPumps {
     max-width: 100%;
-    order: var(--pumps-order-sm);
-    display: var(--pumps-display-sm) !important;
+    order: var(--picPumps-order-sm);
+    display: var(--picPumps-display-sm) !important;
   }
 
   div.picChemistry {
     max-width: 100%;
-    order: var(--chemistry-order-sm);
-    display: var(--chemistry-display-sm) !important;
+    order: var(--picChemistry-order-sm);
+    display: var(--picChemistry-display-sm) !important;
   }
 
   div.picSchedules {
-    order: var(--schedules-order-sm);
-    display: var(--schedules-display-sm) !important;
+    order: var(--picSchedules-order-sm);
+    display: var(--picSchedules-display-sm) !important;
   }
 
   div.picEmpty {
-    order: var(--empty-order-sm);
-    display: var(--empty-display-sm) !important;
+    order: var(--picEmpty-order-sm);
+    display: var(--picEmpty-display-sm) !important;
   }
 }
 @media screen and (max-width: 540px) {

@@ -1,39 +1,42 @@
 ﻿:root {
-    --bodies-order-lg: 1;
-    --circuits-order-lg: 2;
-    --pumps-order-lg: 3;
-    --chemistry-order-lg: 4;
-    --schedules-order-lg: 5;
-    --empty-order-lg: 6;
-    --empty2-order-lg: 7;
-    --bodies-display-lg: block;
-    --circuits-display-lg: block;
-    --pumps-display-lg: block;
-    --chemistry-display-lg: block;
-    --schedules-display-lg: block;
-    --empty-display-lg: none;
-    --empty2-display-lg: none;
-    --bodies-order-sm: 1;
-    --circuits-order-sm: 2;
-    --pumps-order-sm: 3;
-    --chemistry-order-sm: 4;
-    --schedules-order-sm: 5;
-    --empty-order-sm: 6;
-    --empty2-order-sm: 7;
-    --bodies-display-sm: block;
-    --circuits-display-sm: block;
-    --pumps-display-sm: block;
-    --chemistry-display-sm: block;
-    --schedules-display-sm: block;
-    --empty-display-sm: none;
-    --empty2-display-sm: none;
+    --picBodies-order-lg: 1;
+    --picCircuits-order-lg: 2;
+    --picPumps-order-lg: 3;
+    --picChemistry-order-lg: 4;
+    --picSchedules-order-lg: 5;
+    --picEmpty-order-lg: 99;
+    --picEmpty2-order-lg: 199;
+    --picBodies-display-lg: block;
+    --picCircuits-display-lg: block;
+    --picPumps-display-lg: block;
+    --picChemistry-display-lg: block;
+    --picSchedules-display-lg: block;
+    --picEmpty-display-lg: none;
+    --picEmpty2-display-lg: none;
+    --picBodies-order-sm: 1;
+    --picCircuits-order-sm: 2;
+    --picPumps-order-sm: 3;
+    --picChemistry-order-sm: 4;
+    --picSchedules-order-sm: 5;
+    --picEmpty-order-sm: 6;
+    --picEmpty2-order-sm: 7;
+    --picBodies-display-sm: block;
+    --picCircuits-display-sm: block;
+    --picPumps-display-sm: block;
+    --picChemistry-display-sm: block;
+    --picSchedules-display-sm: block;
+    --picEmpty-display-sm: none;
+    --picEmpty2-display-sm: none;
+    --number-of-columns: 2;
 }
 
 .break {
     flex-basis: 100%;
-    height: 0;
+    width: 0;
   }
-
+div.picAppSettings {
+    max-width: unset;
+}
 div.picOptionButton > span,
 div.picActionButton > span {
     margin-right: .2rem;
@@ -106,11 +109,11 @@ div.picControlPanelTitle {
     white-space: nowrap;
 }
 div.picChemistry {
-    order:var(--chemistry-order-lg);
-    display: var(--chemistry-display-lg) !important;
+    order:var(--picChemistry-order-lg);
+    display: var(--picChemistry-display-lg) !important;
 }
 div.picController {
-    min-width:14.7rem;
+    min-width:calc(377px*var(--number-of-columns));
 }
 div.picChemistry label.picInline-label {
     min-width:2rem;
@@ -237,8 +240,8 @@ div.picFeatures, div.picLights {
     display:block;
 }
 div.picCircuits{
-    order :var(--circuits-order-lg);
-    display: var(--circuits-display-lg) !important;
+    order :var(--picCircuits-order-lg);
+    display: var(--picCircuits-display-lg) !important;
 }
 div.picCircuits > div:nth-child(n+2) {
     margin-top:.3rem;
@@ -274,16 +277,16 @@ div.picFeature > div.picToggleButton, div.picVirtualCircuit > div.picToggleButto
 div.picBodies {
 /*     max-width: 40rem;
     min-width: 22rem; */
-    order: var(--bodies-order-lg);
-    display: var(--bodies-display-lg) !important;
+    order: var(--picBodies-order-lg);
+    display: var(--picBodies-display-lg) !important;
 }
 div.picEmpty{
-    order: var(--empty-order-lg);
-    display: var(--empty-display-lg) !important;
+    order: var(--picEmpty-order-lg);
+    display: var(--picEmpty-display-lg) !important;
 }
 div.picEmpty2 {
-    order: var(--empty2-order-lg);
-    display: var(--empty2-display-lg) !important;
+    order: var(--picEmpty2-order-lg);
+    display: var(--picEmpty2-display-lg) !important;
 }
 label.picInline-label {
     padding-right:.5em;
@@ -319,16 +322,16 @@ div.picBodyIcon div.picIndicator {
     cursor:pointer;
 }
 div.picPumps {
-    order:var(--pumps-order-lg);
-    display: var(--pumps-display-lg) !important;
+    order:var(--picPumps-order-lg);
+    display: var(--picPumps-display-lg) !important;
 }
 div.picPumps, div.picChemistry {
     vertical-align: top;
     /* max-width: 35rem; */
 }
 div.picSchedules{
-    order:var(--schedules-order-lg);
-    display :var(--schedules-display-lg) !important;
+    order:var(--picSchedules-order-lg);
+    display :var(--picSchedules-display-lg) !important;
 }
 div.picPump, div.picSchedule {
     padding-top: .1rem;
@@ -1104,3 +1107,19 @@ div.warning-message {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85032', endColorstr='#e73827', GradientType=1 );
 }
 
+  #lg-col-1, #lg-col-2, #lg-col-3, #lg-col-hidden {
+    border: 1px solid #eee;
+    width: 142px;
+    min-height: 20px;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 0 0 0;
+    float: left;
+    margin-right: 10px;
+  }
+  #lg-col-1 li, #lg-col-2 li, #lg-col-3 li, #lg-col-hidden li {
+    margin: 0 5px 5px 5px;
+    padding: 5px;
+    font-size: 1.2em;
+    width: 120px;
+  }

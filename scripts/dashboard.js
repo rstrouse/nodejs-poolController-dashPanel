@@ -161,31 +161,36 @@
                     self._initSockets();
                     console.log(data);
                     console.log('initializing element order');
-                    if (typeof getStorage('bodies-order-lg') !== 'undefined') $(':root').css('--bodies-order-lg', getStorage('bodies-order-lg'));
-                    if (typeof getStorage('bodies-display-lg') !== 'undefined') $(':root').css('--bodies-display-lg', getStorage('bodies-display-lg'));
-                    if (typeof getStorage('circuits-order-lg') !== 'undefined') $(':root').css('--circuits-order-lg', getStorage('circuits-order-lg'));
-                    if (typeof getStorage('circuits-display-lg') !== 'undefined') $(':root').css('--circuits-display-lg', getStorage('circuits-display-lg'));
-                    if (typeof getStorage('pumps-order-lg') !== 'undefined') $(':root').css('--pumps-order-lg', getStorage('pumps-order-lg'));
-                    if (typeof getStorage('pumps-display-lg') !== 'undefined') $(':root').css('--pumps-display-lg', getStorage('pumps-display-lg'));
-                    if (typeof getStorage('schedules-order-lg') !== 'undefined') $(':root').css('--schedules-order-lg', getStorage('schedules-order-lg'));
-                    if (typeof getStorage('schedules-display-lg') !== 'undefined') $(':root').css('--schedules-display-lg', getStorage('schedules-display-lg'));
-                    if (typeof getStorage('chemistry-order-lg') !== 'undefined') $(':root').css('--chemistry-order-lg', getStorage('chemistry-order-lg'));
-                    if (typeof getStorage('chemistry-display-lg') !== 'undefined') $(':root').css('--chemistry-display-lg', getStorage('chemistry-display-lg'));
-                    if (typeof getStorage('empty-order-lg') !== 'undefined') $(':root').css('--empty-order-lg', getStorage('empty-order-lg'));
-                    if (typeof getStorage('empty-display-lg') !== 'undefined') $(':root').css('--empty-display-lg', getStorage('empty-display-lg'));
 
-                    if (typeof getStorage('bodies-order-sm') !== 'undefined') $(':root').css('--bodies-order-sm', getStorage('bodies-order-sm'));
-                    if (typeof getStorage('bodies-display-sm') !== 'undefined') $(':root').css('--bodies-display-sm', getStorage('bodies-display-sm'));
-                    if (typeof getStorage('circuits-order-sm') !== 'undefined') $(':root').css('--circuits-order-sm', getStorage('circuits-order-sm'));
-                    if (typeof getStorage('circuits-display-sm') !== 'undefined') $(':root').css('--circuits-display-sm', getStorage('circuits-display-sm'));
-                    if (typeof getStorage('pumps-order-sm') !== 'undefined') $(':root').css('--pumps-order-sm', getStorage('pumps-order-sm'));
-                    if (typeof getStorage('pumps-display-sm') !== 'undefined') $(':root').css('--pumps-display-sm', getStorage('pumps-display-sm'));
-                    if (typeof getStorage('schedules-order-sm') !== 'undefined') $(':root').css('--schedules-order-sm', getStorage('schedules-order-sm'));
-                    if (typeof getStorage('schedules-display-sm') !== 'undefined') $(':root').css('--schedules-display-sm', getStorage('schedules-display-sm'));
-                    if (typeof getStorage('chemistry-order-sm') !== 'undefined') $(':root').css('--chemistry-order-sm', getStorage('chemistry-order-sm'));
-                    if (typeof getStorage('chemistry-display-sm') !== 'undefined') $(':root').css('--chemistry-display-sm', getStorage('chemistry-display-sm'));
-                    if (typeof getStorage('empty-order-sm') !== 'undefined') $(':root').css('--empty-order-sm', getStorage('empty-order-sm'));
-                    if (typeof getStorage('empty-display-sm') !== 'undefined') $(':root').css('--empty-display-sm', getStorage('empty-display-sm'));
+
+                    if (typeof getStorage('--number-of-columns') !== 'undefined') $(':root').css('--number-of-columns', getStorage('--number-of-columns'));
+                    
+                    
+                    if (typeof getStorage('--picBodies-order-lg') !== 'undefined') $(':root').css('--picBodies-order-lg', getStorage('--picBodies-order-lg'));
+                    if (typeof getStorage('--picBodies-display-lg') !== 'undefined') $(':root').css('--picBodies-display-lg', getStorage('--picBodies-display-lg'));
+                    if (typeof getStorage('--picCircuits-order-lg') !== 'undefined') $(':root').css('--picCircuits-order-lg', getStorage('--picCircuits-order-lg'));
+                    if (typeof getStorage('--picCircuits-display-lg') !== 'undefined') $(':root').css('--picCircuits-display-lg', getStorage('--picCircuits-display-lg'));
+                    if (typeof getStorage('--picPumps-order-lg') !== 'undefined') $(':root').css('--picPumps-order-lg', getStorage('--picPumps-order-lg'));
+                    if (typeof getStorage('--picPumps-display-lg') !== 'undefined') $(':root').css('--picPumps-display-lg', getStorage('--picPumps-display-lg'));
+                    if (typeof getStorage('--picSchedules-order-lg') !== 'undefined') $(':root').css('--picSchedules-order-lg', getStorage('--picSchedules-order-lg'));
+                    if (typeof getStorage('--picSchedules-display-lg') !== 'undefined') $(':root').css('--picSchedules-display-lg', getStorage('--picSchedules-display-lg'));
+                    if (typeof getStorage('--picChemistry-order-lg') !== 'undefined') $(':root').css('--picChemistry-order-lg', getStorage('--picChemistry-order-lg'));
+                    if (typeof getStorage('--picChemistry-display-lg') !== 'undefined') $(':root').css('--picChemistry-display-lg', getStorage('--picChemistry-display-lg'));
+                    if (typeof getStorage('--picEmpty-order-lg') !== 'undefined') $(':root').css('--picEmpty-order-lg', getStorage('--picEmpty-order-lg'));
+                    if (typeof getStorage('--picEmpty-display-lg') !== 'undefined') $(':root').css('--picEmpty-display-lg', getStorage('--picEmpty-display-lg'));
+
+                    if (typeof getStorage('--picBodies-order-sm') !== 'undefined') $(':root').css('--picBodies-order-sm', getStorage('--picBodies-order-sm'));
+                    if (typeof getStorage('--picBodies-display-sm') !== 'undefined') $(':root').css('--picBodies-display-sm', getStorage('--picBodies-display-sm'));
+                    if (typeof getStorage('--picCircuits-order-sm') !== 'undefined') $(':root').css('--picCircuits-order-sm', getStorage('--picCircuits-order-sm'));
+                    if (typeof getStorage('--picCircuits-display-sm') !== 'undefined') $(':root').css('--picCircuits-display-sm', getStorage('--picCircuits-display-sm'));
+                    if (typeof getStorage('--picPumps-order-sm') !== 'undefined') $(':root').css('--picPumps-order-sm', getStorage('--picPumps-order-sm'));
+                    if (typeof getStorage('--picPumps-display-sm') !== 'undefined') $(':root').css('--picPumps-display-sm', getStorage('--picPumps-display-sm'));
+                    if (typeof getStorage('--picSchedules-order-sm') !== 'undefined') $(':root').css('--picSchedules-order-sm', getStorage('--picSchedules-order-sm'));
+                    if (typeof getStorage('--picSchedules-display-sm') !== 'undefined') $(':root').css('--picSchedules-display-sm', getStorage('--picSchedules-display-sm'));
+                    if (typeof getStorage('--picChemistry-order-sm') !== 'undefined') $(':root').css('--picChemistry-order-sm', getStorage('--picChemistry-order-sm'));
+                    if (typeof getStorage('--picChemistry-display-sm') !== 'undefined') $(':root').css('--picChemistry-display-sm', getStorage('--picChemistry-display-sm'));
+                    if (typeof getStorage('--picEmpty-order-sm') !== 'undefined') $(':root').css('--picEmpty-order-sm', getStorage('--picEmpty-order-sm'));
+                    if (typeof getStorage('--picEmpty-display-sm') !== 'undefined') $(':root').css('--picEmpty-display-sm', getStorage('--picEmpty-display-sm'));
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })
                     .fail(function (xhr, status, error) {
