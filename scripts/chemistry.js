@@ -28,12 +28,11 @@
             else
                 el.find('div.picChemController[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
         },
-
         _initChemistry: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picChlorinator').each(function () {
                 this.stopCountdownSuperChlor();
-            })
+            });
             el.empty();
 
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
