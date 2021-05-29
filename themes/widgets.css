@@ -28,6 +28,9 @@
     --picEmpty-display-sm: none;
     --picEmpty2-display-sm: none;
     --number-of-columns: 2;
+    --container1-display-lg: block;
+    --container2-display-lg: block;
+    --container3-display-lg: block;
 }
 
 .break {

@@ -502,7 +502,8 @@
                     col3ullg.css('display', 'block');
                     col2ullg.css('display', 'block');
                     setStorage('--picEmpty-display-lg', 'block');
-                    setStorage('--picEmpty2-display-lg', 'block');
+                    setStorage('--container2-display-lg', 'block');
+                    setStorage('--container3-display-lg', 'block');
                 }
                 else if (numCols === 2) {
                     col3ullg.css('display', 'none');
@@ -511,62 +512,66 @@
                     // $('.picEmpty2').css('display', 'none');
                     setStorage('--picEmpty-display-lg', 'block');
                     setStorage('--picEmpty2-display-lg', 'none');
-                    
+                    setStorage('--container2-display-lg', 'block');
+                    setStorage('--container3-display-lg', 'none');
                 }
                 else {
                     col3ullg.css('display', 'none');
                     col2ullg.css('display', 'none');
                     setStorage('--picEmpty-display-lg', 'none');
                     setStorage('--picEmpty2-display-lg', 'none');
+                    setStorage('--container2-display-lg', 'none');
+                    setStorage('--container3-display-lg', 'none');
                 }
 
-                let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps', 'picEmpty', 'picEmpty2'];
-                $(':root').find('.dashContainer').children().each(function () {
+                let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps']//, 'picEmpty', 'picEmpty2'];
+                
+                arr.forEach(id => {
+                // $(':root').find('.dashContainer').children().each(function () {
                     // which class/element are we looking at?
-                    let el = '';
+                    let el = $(`.${id}`);
+                    let elVarName = '';
                     let disp = '';
-                    let pic = '';
-                    arr.forEach(desc => {
-                        if ($(this).hasClass(desc)) {
-                            el = `--${desc}-order-lg`;
-                            disp = desc.substring(3);
-                            pic = desc;
-                        }
-                    })
-                    switch (pic) {
-                        case 'picEmpty':
-                            setStorage(el, 99);
-                            $(':root').css(el, 99);
-                            return;
-                        case 'picEmpty2':
-                            setStorage(el, 199);
-                            $(':root').css(el, 199);
-                            return;
-                    }
-                    console.log(el);
-                    let orderLg = getStorage(el, parseInt($(':root').css(el)));
+                    elVarName = `--${id}-order-lg`;
+                    disp = id.substring(3);
+                    // ({
+                    //     if ($(this).hasClass(desc)) {
+                    //     }
+                    // })
+                    // switch (id) {
+                    //     case 'picEmpty':
+                    //         setStorage(elVarName, 99);
+                    //         $(':root').css(elVarName, 99);
+                    //         return;
+                    //     case 'picEmpty2':
+                    //         setStorage(elVarName, 199);
+                    //         $(':root').css(elVarName, 199);
+                    //         return;
+                    // }
+                    console.log(elVarName);
+                    let orderLg = getStorage(elVarName, parseInt($(':root').css(elVarName)));
                     if (orderLg >= 400) {
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(colhiddenullg);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(colhiddenullg);
                     }
                     else if (orderLg >= 200 && numCols === 3) {
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(col3ullg);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(col3ullg);
                     }
                     else if (orderLg >= 200 && numCols < 3) {
                         // less columns than currently displayed; set to col 1
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(col1ullg);
-                        setStorage(el, 90);
-                        $(':root').css(el, 90);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(col1ullg);
+                        setStorage(elVarName, 90);
+                        $(':root').css(elVarName, 90);
                     }
                     else if (orderLg >= 100 && numCols > 1) {
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(col2ullg);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(col2ullg);
                     }
                     else if (orderLg >= 100 && numCols === 1) {
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(col1ullg);
-                        setStorage(el, 90);
-                        $(':root').css(el, 90);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(col1ullg);
+                        setStorage(elVarName, 90);
+                        $(':root').css(elVarName, 90);
                     }
                     else {
-                        $(`<li>${disp}</li>`).addClass('btn').attr('data-orderLg', el).appendTo(col1ullg);
+                        $(`<li>${disp}</li>`).addClass('btn').attr({'data-orderLg': elVarName, 'data-id': id }).appendTo(col1ullg);
                     }
                 })
             }
@@ -617,38 +622,44 @@
                         let colhiddenids = $('#lg-col-hidden').sortable('toArray', { attribute: 'data-orderLg' });
                         var numberCols = col1ids.length > 0 ? 1 : 0 + col2ids.length > 0 ? 1 : 0 + col3ids.length > 0 ? 1 : 0;
                         for (let i = 0; i < col3ids.length; i++) {
-                            let id = col3ids[i];
+                            let elVarName = col3ids[i];
                             let order = (i * 5) + 200;
-                            setStorage(id, order);
-                            $(':root').css(id, order);
-                            let disp = id.replace('order', 'display');
+                            setStorage(elVarName, order);
+                            $(':root').css(elVarName, order);
+                            let disp = elVarName.replace('order', 'display');
                             $(':root').css(disp, 'block');
                             setStorage(disp, 'block');
+                            let el = $(`.${elVarName.substring(2).split('-')[0]}`)
+                            $(el).appendTo($('.container3'));
                         }
                         for (let i = 0; i < col2ids.length; i++) {
-                            let id = col2ids[i];
+                            let elVarName = col2ids[i];
                             let order = (i * 5) + 100;
-                            setStorage(id, order);
-                            $(':root').css(id, order);
-                            let disp = id.replace('order', 'display');
+                            setStorage(elVarName, order);
+                            $(':root').css(elVarName, order);
+                            let disp = elVarName.replace('order', 'display');
                             $(':root').css(disp, 'block');
                             setStorage(disp, 'block');
+                            let el = $(`.${elVarName.substring(2).split('-')[0]}`)
+                            $(el).appendTo($('.container2'));
                         }
                         for (let i = 0; i < col1ids.length; i++) {
-                            let id = col1ids[i];
+                            let elVarName = col1ids[i];
                             let order = (i * 5);
-                            setStorage(id, order);
-                            $(':root').css(id, order);
-                            let disp = id.replace('order', 'display');
+                            setStorage(elVarName, order);
+                            $(':root').css(elVarName, order);
+                            let disp = elVarName.replace('order', 'display');
                             $(':root').css(disp, 'block');
                             setStorage(disp, 'block');
+                            let el = $(`.${elVarName.substring(2).split('-')[0]}`)
+                            $(el).appendTo($('.container1'));
                         }
                         for (let i = 0; i < colhiddenids.length; i++) {
-                            let id = colhiddenids[i];
+                            let elVarName = colhiddenids[i];
                             let order = (i * 5) + 400;
-                            setStorage(id, order);
-                            $(':root').css(id, order);
-                            let disp = id.replace('order', 'display');
+                            setStorage(elVarName, order);
+                            $(':root').css(elVarName, order);
+                            let disp = elVarName.replace('order', 'display');
                             $(':root').css(disp, 'none');
                             setStorage(disp, 'none');
                         }

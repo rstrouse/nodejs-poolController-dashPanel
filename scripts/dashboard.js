@@ -32,7 +32,7 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picPumps').each(function () { this.initPumps(data); });
         },
-        _reset: function() {
+        _reset: function () {
             var self = this, o = self.options, el = self.element;
             if (o.socket && typeof o.socket !== 'undefined' && o.socket.connected) {
                 o.socket.close();
@@ -136,7 +136,7 @@
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
-                    if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') {self._clearPanels(); return;}
+                    if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
                     if (data.equipment.model.startsWith('IntelliCenter')) {
                         $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                         $('div.picDashboard').attr('data-hidethemes', 'false');
@@ -164,8 +164,8 @@
 
 
                     if (typeof getStorage('--number-of-columns') !== 'undefined') $(':root').css('--number-of-columns', getStorage('--number-of-columns'));
-                    
-                    
+
+
                     if (typeof getStorage('--picBodies-order-lg') !== 'undefined') $(':root').css('--picBodies-order-lg', getStorage('--picBodies-order-lg'));
                     if (typeof getStorage('--picBodies-display-lg') !== 'undefined') $(':root').css('--picBodies-display-lg', getStorage('--picBodies-display-lg'));
                     if (typeof getStorage('--picCircuits-order-lg') !== 'undefined') $(':root').css('--picCircuits-order-lg', getStorage('--picCircuits-order-lg'));
@@ -191,6 +191,25 @@
                     if (typeof getStorage('--picChemistry-display-sm') !== 'undefined') $(':root').css('--picChemistry-display-sm', getStorage('--picChemistry-display-sm'));
                     if (typeof getStorage('--picEmpty-order-sm') !== 'undefined') $(':root').css('--picEmpty-order-sm', getStorage('--picEmpty-order-sm'));
                     if (typeof getStorage('--picEmpty-display-sm') !== 'undefined') $(':root').css('--picEmpty-display-sm', getStorage('--picEmpty-display-sm'));
+
+                    // put elements in correct container div
+                    let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps']//, 'picEmpty', 'picEmpty2'];
+
+                    arr.forEach(id => {
+                        // $(':root').find('.dashContainer').children().each(function () {
+                        // which class/element are we looking at?
+                        let el = $(`.${id}`);
+                        let elVarName = `--${id}-order-lg`;
+                        if (getStorage(elVarName)>=200){
+                            $(el).appendTo('.container3');
+                        }
+                        else if (getStorage(elVarName)>=100){
+                            $(el).appendTo('.container2');
+                        } 
+                        else {
+                            $(el).appendTo('.container1');
+                        } 
+                    });
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })
                     .fail(function (xhr, status, error) {
