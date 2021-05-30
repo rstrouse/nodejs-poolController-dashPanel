@@ -21,6 +21,9 @@ div.dashContainer {
   display: flex;
   /* flex-flow: column wrap; */
 }
+div.dashContainer > div > div.control-panel {
+    width:23.5rem;
+}
 
 div.dashOuter[data-panel="dashboard"] > div.configContainer {
   display: none;
