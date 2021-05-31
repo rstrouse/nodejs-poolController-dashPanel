@@ -97,7 +97,7 @@ div.picChemistry {
     display: var(--picChemistry-display) !important;
 }
 div.picController {
-    min-width:calc(22.5rem*var(--number-of-columns));
+    /*min-width:calc(22.5rem*var(--number-of-columns));*/
 }
 div.picChemistry label.picInline-label {
     min-width:2rem;

@@ -19,6 +19,7 @@ div.dashContainer {
 /*   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(377px, 1fr));  */
   display: flex;
+  flex-flow: row wrap;
   /* flex-flow: column wrap; */
 }
 div.dashContainer > div > div.control-panel {
