@@ -163,52 +163,45 @@
                     console.log('initializing element order');
 
 
-                    if (typeof getStorage('--number-of-columns') !== 'undefined') $(':root').css('--number-of-columns', getStorage('--number-of-columns'));
+                    if (typeof getStorage('--number-of-columns') === 'undefined') setStorage('--number-of-columns', $(':root').css('--number-of-columns'));
+                    $(':root').css('--number-of-columns', getStorage('--number-of-columns'));
 
+                    if (typeof getStorage('--picBodies-order') === 'undefined') setStorage('--picBodies-order', $(':root').css('--picBodies-order'));
+                    $(':root').css('--picBodies-order', getStorage('--picBodies-order'));
+                    if (typeof getStorage('--picBodies-display') === 'undefined') setStorage('--picBodies-display', $(':root').css('--picBodies-display'));
+                    $(':root').css('--picBodies-display', getStorage('--picBodies-display'));
+                    if (typeof getStorage('--picCircuits-order') === 'undefined') setStorage('--picCircuits-order', $(':root').css('--picCircuits-order'));
+                    $(':root').css('--picCircuits-order', getStorage('--picCircuits-order'));
+                    if (typeof getStorage('--picCircuits-display') === 'undefined') setStorage('--picCircuits-display', $(':root').css('--picCircuits-display'));
+                    $(':root').css('--picCircuits-display', getStorage('--picCircuits-display'));
+                    if (typeof getStorage('--picPumps-order') === 'undefined') setStorage('--picPumps-order', $(':root').css('--picPumps-order'));
+                    $(':root').css('--picPumps-order', getStorage('--picPumps-order'));
+                    if (typeof getStorage('--picPumps-display') === 'undefined') setStorage('--picPumps-display', $(':root').css('--picPumps-display'));
+                    $(':root').css('--picPumps-display', getStorage('--picPumps-display'));
+                    if (typeof getStorage('--picSchedules-order') === 'undefined') setStorage('--picSchedules-order', $(':root').css('--picSchedules-order'));
+                    $(':root').css('--picSchedules-order', getStorage('--picSchedules-order'));
+                    if (typeof getStorage('--picSchedules-display') === 'undefined') setStorage('--picSchedules-display', $(':root').css('--picSchedules-display'));
+                    $(':root').css('--picSchedules-display', getStorage('--picSchedules-display'));
+                    if (typeof getStorage('--picChemistry-order') === 'undefined') setStorage('--picChemistry-order', $(':root').css('--picChemistry-order'));
+                    $(':root').css('--picChemistry-order', getStorage('--picChemistry-order'));
+                    if (typeof getStorage('--picChemistry-display') === 'undefined') setStorage('--picChemistry-display', $(':root').css('--picChemistry-display'));
+                    $(':root').css('--picChemistry-display', getStorage('--picChemistry-display'));
 
-                    if (typeof getStorage('--picBodies-order-lg') !== 'undefined') $(':root').css('--picBodies-order-lg', getStorage('--picBodies-order-lg'));
-                    if (typeof getStorage('--picBodies-display-lg') !== 'undefined') $(':root').css('--picBodies-display-lg', getStorage('--picBodies-display-lg'));
-                    if (typeof getStorage('--picCircuits-order-lg') !== 'undefined') $(':root').css('--picCircuits-order-lg', getStorage('--picCircuits-order-lg'));
-                    if (typeof getStorage('--picCircuits-display-lg') !== 'undefined') $(':root').css('--picCircuits-display-lg', getStorage('--picCircuits-display-lg'));
-                    if (typeof getStorage('--picPumps-order-lg') !== 'undefined') $(':root').css('--picPumps-order-lg', getStorage('--picPumps-order-lg'));
-                    if (typeof getStorage('--picPumps-display-lg') !== 'undefined') $(':root').css('--picPumps-display-lg', getStorage('--picPumps-display-lg'));
-                    if (typeof getStorage('--picSchedules-order-lg') !== 'undefined') $(':root').css('--picSchedules-order-lg', getStorage('--picSchedules-order-lg'));
-                    if (typeof getStorage('--picSchedules-display-lg') !== 'undefined') $(':root').css('--picSchedules-display-lg', getStorage('--picSchedules-display-lg'));
-                    if (typeof getStorage('--picChemistry-order-lg') !== 'undefined') $(':root').css('--picChemistry-order-lg', getStorage('--picChemistry-order-lg'));
-                    if (typeof getStorage('--picChemistry-display-lg') !== 'undefined') $(':root').css('--picChemistry-display-lg', getStorage('--picChemistry-display-lg'));
-                    if (typeof getStorage('--picEmpty-order-lg') !== 'undefined') $(':root').css('--picEmpty-order-lg', getStorage('--picEmpty-order-lg'));
-                    if (typeof getStorage('--picEmpty-display-lg') !== 'undefined') $(':root').css('--picEmpty-display-lg', getStorage('--picEmpty-display-lg'));
-
-                    if (typeof getStorage('--picBodies-order-sm') !== 'undefined') $(':root').css('--picBodies-order-sm', getStorage('--picBodies-order-sm'));
-                    if (typeof getStorage('--picBodies-display-sm') !== 'undefined') $(':root').css('--picBodies-display-sm', getStorage('--picBodies-display-sm'));
-                    if (typeof getStorage('--picCircuits-order-sm') !== 'undefined') $(':root').css('--picCircuits-order-sm', getStorage('--picCircuits-order-sm'));
-                    if (typeof getStorage('--picCircuits-display-sm') !== 'undefined') $(':root').css('--picCircuits-display-sm', getStorage('--picCircuits-display-sm'));
-                    if (typeof getStorage('--picPumps-order-sm') !== 'undefined') $(':root').css('--picPumps-order-sm', getStorage('--picPumps-order-sm'));
-                    if (typeof getStorage('--picPumps-display-sm') !== 'undefined') $(':root').css('--picPumps-display-sm', getStorage('--picPumps-display-sm'));
-                    if (typeof getStorage('--picSchedules-order-sm') !== 'undefined') $(':root').css('--picSchedules-order-sm', getStorage('--picSchedules-order-sm'));
-                    if (typeof getStorage('--picSchedules-display-sm') !== 'undefined') $(':root').css('--picSchedules-display-sm', getStorage('--picSchedules-display-sm'));
-                    if (typeof getStorage('--picChemistry-order-sm') !== 'undefined') $(':root').css('--picChemistry-order-sm', getStorage('--picChemistry-order-sm'));
-                    if (typeof getStorage('--picChemistry-display-sm') !== 'undefined') $(':root').css('--picChemistry-display-sm', getStorage('--picChemistry-display-sm'));
-                    if (typeof getStorage('--picEmpty-order-sm') !== 'undefined') $(':root').css('--picEmpty-order-sm', getStorage('--picEmpty-order-sm'));
-                    if (typeof getStorage('--picEmpty-display-sm') !== 'undefined') $(':root').css('--picEmpty-display-sm', getStorage('--picEmpty-display-sm'));
 
                     // put elements in correct container div
-                    let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps']//, 'picEmpty', 'picEmpty2'];
-
+                    let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps']
                     arr.forEach(id => {
-                        // $(':root').find('.dashContainer').children().each(function () {
-                        // which class/element are we looking at?
                         let el = $(`.${id}`);
-                        let elVarName = `--${id}-order-lg`;
-                        if (getStorage(elVarName)>=200){
+                        let elVarName = `--${id}-order`;
+                        if (getStorage(elVarName) >= 200) {
                             $(el).appendTo('.container3');
                         }
-                        else if (getStorage(elVarName)>=100){
+                        else if (getStorage(elVarName) >= 100) {
                             $(el).appendTo('.container2');
-                        } 
+                        }
                         else {
                             $(el).appendTo('.container1');
-                        } 
+                        }
                     });
                 })
                     .done(function (status, xhr) { console.log('Done:' + status); })

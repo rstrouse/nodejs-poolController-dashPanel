@@ -76,7 +76,7 @@ div.picBodyTemp > div:nth-child(2) {
   div.lgOrderInstructions {
     display: block;
   }
-  div.lgOrderDiv {
+  div.orderDiv {
     display: block
   }
   div.smOrderInstructions {
@@ -147,10 +147,6 @@ div.picBodyTemp > div:nth-child(2) {
   div.picSchedules {
     order: var(--picSchedules-order-sm);
     display: var(--picSchedules-display-sm) !important;
-  }
-  div.picEmpty {
-    order: var(--picEmpty-order-sm);
-    display: var(--picEmpty-display-sm) !important;
   }
 }
 

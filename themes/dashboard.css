@@ -287,21 +287,13 @@ div.picBodyTemp > div:nth-child(2) {
   font-size: 0.7rem; }
 
 @media screen and (min-width: 745px) {
-  div.lgOrderInstructions {
-    display: block; }
-  div.lgOrderDiv {
-    display: block; }
-  div.smOrderInstructions {
-    display: none; } }
+  div.outerOrderDiv {
+    display: block; }}
 
 @media screen and (max-width: 744px) {
-  div.lgOrderInstructions {
-    display: none; }
-  div.smOrderInstructions {
-    display: block; }
-  div.smOrderDiv {
-    display: flex;
-    flex-direction: column; }
+  div.outerOrderDiv {
+    display: contents !important;
+    overflow-y: auto; }
   div.picController {
     min-width: 100%;
     max-width: 100%; }
@@ -309,9 +301,7 @@ div.picBodyTemp > div:nth-child(2) {
     min-width: 0px;
     width: auto; }
   div.picCircuits {
-    width: 100%;
-    order: var(--picCircuits-order-sm);
-    display: var(--picCircuits-display-sm) !important; }
+    width: 100%; }
   div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
     display: contents !important;
     overflow-y: auto; }
@@ -321,23 +311,15 @@ div.picBodyTemp > div:nth-child(2) {
   div.picBodyTemp .picTempUnits {
     display: none; }
   div.picBodies {
-    max-width: 100%;
-    order: var(--picBodies-order-sm);
-    display: var(--picBodies-display-sm) !important; }
+    max-width: 100%; }
   div.picPumps {
-    max-width: 100%;
-    order: var(--picPumps-order-sm);
-    display: var(--picPumps-display-sm) !important; }
+    max-width: 100%; }
   div.picChemistry {
-    max-width: 100%;
-    order: var(--picChemistry-order-sm);
-    display: var(--picChemistry-display-sm) !important; }
+    max-width: 100%; }
   div.picSchedules {
-    order: var(--picSchedules-order-sm);
-    display: var(--picSchedules-display-sm) !important; }
-  div.picEmpty {
-    order: var(--picEmpty-order-sm);
-    display: var(--picEmpty-display-sm) !important; } }
+    max-width: 100%;
+ }}
+
 
 @media screen and (max-width: 540px) {
   div.picController span.picModelData {
