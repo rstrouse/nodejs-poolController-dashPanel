@@ -112,7 +112,7 @@ div.picBodyTemp > div:nth-child(2) {
   div.picCircuits {
     width: 100%;
     order: var(--picCircuits-order-sm);
-    display: var(--picCircuits-display-sm) !important;
+    /*display: var(--picCircuits-display-sm) !important;*/
   }
 
   div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
@@ -132,22 +132,25 @@ div.picBodyTemp > div:nth-child(2) {
   div.picBodies {
     max-width: 100%;
     order: var(--picBodies-order-sm);
-    display: var(--picBodies-display-sm) !important;
+    /*display: var(--picBodies-display-sm) !important;*/
   }
-
+  div.control-panel {
+      width:100% !important;
+      margin:0px !important;
+  }
   div.picPumps {
     max-width: 100%;
     order: var(--picPumps-order-sm);
-    display: var(--picPumps-display-sm) !important;
+    /*display: var(--picPumps-display-sm) !important;*/
   }
   div.picChemistry {
     max-width: 100%;
     order: var(--picChemistry-order-sm);
-    display: var(--picChemistry-display-sm) !important;
+    /*display: var(--picChemistry-display-sm) !important;*/
   }
   div.picSchedules {
     order: var(--picSchedules-order-sm);
-    display: var(--picSchedules-display-sm) !important;
+    /*display: var(--picSchedules-display-sm) !important;*/
   }
 }
 
