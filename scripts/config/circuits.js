@@ -430,7 +430,7 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
-                    { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
+                    { binding: 'circuits', style: { width: '15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign:'center' } },
                     { binding: 'eggTimer', style: { width: '5.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
@@ -612,7 +612,7 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-sitemap', style: { width: '10.5rem' } },
-                { binding: 'circuits', style: { width: '20rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } },
+                { binding: 'circuits', style: { width: '15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } },
                     { binding: 'eggTimer', style: { width: '5.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle'} }]
             });
             var pnl = acc.find('div.picAccordian-contents');

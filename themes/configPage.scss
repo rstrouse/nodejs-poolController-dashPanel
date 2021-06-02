@@ -1,6 +1,23 @@
 ﻿div.configContainer {
     min-width:627px;
 }
+@media screen and (max-width: 540px) {
+    div.configContainer {
+        min-width:unset;
+    } 
+    i.picAccordian-title-expand {
+        width:unset;
+    }
+    .picCircuitsList-list {
+        min-width: 100% !important;
+    }
+    .picCircuitOption > div > .picPickList-value {
+        width: 7rem !important;
+    }
+    .picPickList[data-bind$="ph.phSupply"] > *, .picPickList[data-bind$="orp.phSupply"] > * {
+        /* display: block !important; */
+    }
+}
 div.inline-line {
     display:inline-block;
     vertical-align:top;

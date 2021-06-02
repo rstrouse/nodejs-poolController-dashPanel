@@ -54,12 +54,12 @@ div.picController {
   padding: 0px;
 }
 
-div.picFeatureGrid {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  display: grid;
-}
-
-div.picFeatures,
+/* div.picFeatureGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    display: grid; 
+    width: 100%;
+} */
+/* div.picFeatures, */
 div.picSchedule,
 div.picPump,
 div.picChlorinator,
@@ -303,6 +303,10 @@ div.picSuperChlor {
 
   span.picCurrentOutput {
     margin-right: inherit;
+  }
+
+  div.dashOuter {
+    justify-content: unset;
   }
 }
 body {

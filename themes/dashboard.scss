@@ -5,7 +5,7 @@ header.picHeader {
 }
 
 div.dashOuter {
-  width: calc(var(--number-of-columns)*377)px;
+  /* width: calc(var(--number-of-columns)*377)px; */
   display: grid;
   justify-content: center;
   box-sizing: border-box;
@@ -16,14 +16,14 @@ div.dashOuter {
 }
 
 div.dashContainer {
-/*   display: grid;
+  /*   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(377px, 1fr));  */
   display: flex;
   flex-flow: row wrap;
   /* flex-flow: column wrap; */
 }
 div.dashContainer > div > div.control-panel {
-    width:23.5rem;
+  width: 23.5rem;
 }
 
 div.dashOuter[data-panel="dashboard"] > div.configContainer {
@@ -78,26 +78,11 @@ div.picBodyTemp > div:nth-child(2) {
     display: block;
   }
   div.orderDiv {
-    display: block
+    display: block;
   }
-  div.smOrderInstructions {
-    display: none;
-  }
-
 }
 
 @media screen and (max-width: 744px) {
-  div.lgOrderInstructions {
-    display: none;
-  }
-  div.smOrderInstructions {
-    display: block;
-  }
-  div.smOrderDiv {
-    display: flex;
-    flex-direction: column;
-  }
-
   div.picController {
     // width: 100%;
     min-width: 100%;
@@ -108,13 +93,9 @@ div.picBodyTemp > div:nth-child(2) {
     min-width: 0px;
     width: auto;
   }
-
-  div.picCircuits {
-    width: 100%;
-    order: var(--picCircuits-order-sm);
-    /*display: var(--picCircuits-display-sm) !important;*/
+  div.dashOuter {
+    justify-content: unset;
   }
-
   div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
     display: contents !important;
     overflow-y: auto;
@@ -129,28 +110,16 @@ div.picBodyTemp > div:nth-child(2) {
     display: none;
   }
 
-  div.picBodies {
+  div.picBodies,
+  div.picPumps,
+  div.picChemistry,
+  div.picSchedules,
+  div.picCircuits {
     max-width: 100%;
-    order: var(--picBodies-order-sm);
-    /*display: var(--picBodies-display-sm) !important;*/
   }
   div.control-panel {
-      width:100% !important;
-      margin:0px !important;
-  }
-  div.picPumps {
-    max-width: 100%;
-    order: var(--picPumps-order-sm);
-    /*display: var(--picPumps-display-sm) !important;*/
-  }
-  div.picChemistry {
-    max-width: 100%;
-    order: var(--picChemistry-order-sm);
-    /*display: var(--picChemistry-display-sm) !important;*/
-  }
-  div.picSchedules {
-    order: var(--picSchedules-order-sm);
-    /*display: var(--picSchedules-display-sm) !important;*/
+    width: 100% !important;
+    margin: 0px !important;
   }
 }
 

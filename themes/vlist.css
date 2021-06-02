@@ -17,17 +17,16 @@ table.vlist-outer {
 }
 
 table.vlist-header {
-    box-sizing: border-box;
-    font-size: 8pt;
-    color: white;
-    font-weight: bold;
-    width: 100%;
-    table-layout: auto;
-    border-spacing: 0px;
-    border-collapse: collapse;
-    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-    background: -webkit-linear-gradient(top, #159FCF, #13647F);
-    background: linear-gradient(top, #159FCF, #13647F);
+  box-sizing: border-box;
+  font-size: 8pt;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  table-layout: auto;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background-image: linear-gradient(top, #159FCF, #13647F);
 }
 
 td.vlist-header {

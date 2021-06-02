@@ -32,8 +32,10 @@ div.picFeature, div.picVirtualCircuit {
     min-width:10.4rem;
 }
 div.picFeatureGrid {
-    width: 100%;
-}
+    /* width: 100%; */
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    display: grid;
+  }
 div.picFeatures div.picFeatureGrid > div.picCircuit[data-showinfeatures=false],
 div.picFeatures div.picFeatureGrid > div.picCircuitGroup[data-showinfeatures=false] {
     display: none;

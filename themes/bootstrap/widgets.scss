@@ -45,11 +45,14 @@ div.picConfigPage {
 div.picController {
     padding:0px;
 }
-div.picFeatureGrid {
+/* div.picFeatureGrid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    display: grid;
+    display: grid; 
+    width: 100%;
+} */
+div.picFeatures{
+    display: block;
 }
-div.picFeatures, 
 div.picSchedule,
 div.picPump,
 div.picChlorinator,

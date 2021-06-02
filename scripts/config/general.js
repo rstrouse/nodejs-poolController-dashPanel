@@ -33,7 +33,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgPersonalInfo');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Personal Information', glyph: 'far fa-newspaper', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Personal Information', glyph: 'far fa-newspaper', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Pool Alias', binding: 'alias', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
@@ -111,7 +111,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgTimeDate');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Time & Date', glyph: 'far fa-clock', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Time & Date', glyph: 'far fa-clock', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
@@ -169,7 +169,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgDelays');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Delays', glyph: 'fas fa-stopwatch', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Delays', glyph: 'fas fa-stopwatch', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual OP Priority', binding: 'options.manualPriority' });
@@ -208,7 +208,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgSensorCalibration');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Sensor Calibration', glyph: 'fas fa-balance-scale-right', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Sensor Calibration', glyph: 'fas fa-balance-scale-right', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<span style="margin-left:8.5rem"></span><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;"></span><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
@@ -271,7 +271,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgAlerts');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Alerts', glyph: 'far fa-bell', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Alerts', glyph: 'far fa-bell', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -302,7 +302,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgSecurity');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Security', glyph: 'fas fa-user-secret', style: { width: '20rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Security', glyph: 'fas fa-user-secret', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
