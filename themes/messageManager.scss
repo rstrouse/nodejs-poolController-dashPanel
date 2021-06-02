@@ -182,10 +182,10 @@ tr.msgApiRow:hover,
 tr.msgRow:hover {
     color: white;
     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-    background-image: -ms-linear-gradient(top, #159FCF, #13647F);
-    background-image: -moz-linear-gradient(top, #159FCF, #13647F);
-    background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
-    background-image: linear-gradient(top, #159FCF, #13647F);
+    background: -ms-linear-gradient(top, #159FCF, #13647F);
+    background: -moz-linear-gradient(top, #159FCF, #13647F);
+    background: -webkit-linear-gradient(top, #159FCF, #13647F);
+    background: linear-gradient(top, #159FCF, #13647F);
 }
 tr.msgRow > td > span {
     padding-left:2px;
