@@ -682,3 +682,7 @@ div.ct-narrative {
 
 div.ct-narrative > hr {
   margin: 1px; }
+
+#orderOfElements {
+  display: none;
+}/*# sourceMappingURL=messageManager.css.map */

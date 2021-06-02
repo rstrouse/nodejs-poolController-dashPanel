@@ -483,7 +483,7 @@
 
         _setOrder: function () {
             var self = this, o = self.options, el = self.element;
-            var grp = $('<fieldset></fieldset>');
+            var grp = $('<fieldset></fieldset>').attr('id', 'orderOfElements');
             let _setDefaultOrder = function () {
                 col1ullg.empty().text('Column 1');
                 col2ullg.empty().text('Column 2');
