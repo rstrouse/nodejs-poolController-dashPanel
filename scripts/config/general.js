@@ -51,7 +51,7 @@
                 items: o.countries, inputAttrs: { style: { width: '7rem' } }, bindColumn: 1, labelAttrs: { style: { width: '5.7rem' } }
             });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Addresss', binding: 'location.address', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '5.7rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Address', binding: 'location.address', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '5.7rem' } } });
 
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'City', binding: 'location.city', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
