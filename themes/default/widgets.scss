@@ -1,5 +1,5 @@
 ﻿@import '../mixins/gradients.scss';
-@import 'colors.scss';
+@import './colors.scss';
 
 div.picConfigTabContents {
     @include linear_gradient(0deg, rgba(240,240,240,1) 0%, rgba(249,249,249,1) 15%, rgba(255,255,255,1) 24%, rgba(255,255,255,1) 82%, rgba(222,222,222,1) 100%);

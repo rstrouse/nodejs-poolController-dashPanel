@@ -1,10 +1,9 @@
-﻿@import '../mixins/gradients.scss';
-@import './colors.scss';
-@import './widgets.scss';
-
+﻿@import "../mixins/gradients.scss";
+@import "./colors.scss";
+@import "./widgets.scss";
 body {
     font-family: Roboto;
-    background-image: url('background.jpg');
+    //background-image: url('background.jpg');
 }
 select, input[type=text] {
     font-size: 1rem;

@@ -42,6 +42,25 @@
   {
     "outputFile": "themes/bootstrap/theme.css",
     "inputFile": "themes/bootstrap/theme.scss"
+  },
+  {
+    "outputFile": "themes/bootstrap/intellibrite.css",
+    "inputFile": "themes/bootstrap/intellibrite.scss"
+  },
+  {
+    "outputFile": "themes/bootstrap/widgets.css",
+    "inputFile": "themes/bootstrap/widgets.scss"
+  },
+  {
+    "outputFile": "themes/bootstrap/colors.css",
+    "inputFile": "themes/bootstrap/colors.scss"
+  },
+  {
+    "outputFile": "themes/default/widgets.css",
+    "inputFile": "themes/default/widgets.scss"
+  },
+  {
+    "outputFile": "themes/materia/colors.css",
+    "inputFile": "themes/materia/colors.scss"
   }
-
 ]

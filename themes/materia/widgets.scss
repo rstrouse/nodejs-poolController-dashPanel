@@ -1,6 +1,5 @@
 ﻿@import '../mixins/gradients.scss';
 @import 'colors.scss';
-
 div.picTabs {
     background-color:white;
     border-top-left-radius:$border_radius;
@@ -93,7 +92,7 @@ div.pnl-scheduleDays div.table-cell.dayheader {
 }
 div.pnl-scheduleDays div.table-row.dayheader {
     background: white;
-    background: #4caf50 linear-gradient(180deg, #91d293e0, #59b55d);
+    background: linear-gradient(180deg, #91d293, #59b55d);
     color: black;
     font-weight: bold;
 }

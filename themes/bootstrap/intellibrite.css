@@ -1,16 +1,13 @@
-div.picIBColor {
+﻿div.picIBColor {
   border-radius: 5px;
-  align-self: flex-end;
-}
+  align-self: flex-end; }
 
-div.picFeatures > div.picFeature > div.picIBColor {
-  width: 6.25rem;
-}
+div.picFeature div.picIBColor {
+  width: calc(100% - 3.75rem); }
 
 div.picDashboard[data-hidethemes=false] div.picLight[data-haslighttheme=true] > label,
 div.picDashboard[data-hidethemes=false] div.picLight[data-haslighttheme=true] > i,
 div.picLightGroup > label,
 div.picLightGroup > i {
   align-self: center;
-  margin-top: -10px;
-}/*# sourceMappingURL=intellibrite.css.map */
+  margin-top: -10px; }

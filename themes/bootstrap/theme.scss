@@ -1,8 +1,11 @@
 ﻿@import "../mixins/gradients.scss";
 @import "./colors.scss";
-@import "./widgets.scss";
 @import "./intellibrite.scss";
+@import "./widgets.scss";
 
+.test {
+    color:white;
+}
 @media screen and (max-width: 744px) {
     div.picChlorStatus,
     div.picSuperChlor {
@@ -85,7 +88,6 @@ fieldset {
 .fld-value-center {
     border-bottom: solid 1px gray;
 }
-
 .btn-border {
     white-space: nowrap;
     border: solid 1px gray;
@@ -98,10 +100,10 @@ fieldset {
     margin: 0.1rem;
     //    @include box_shadow(3px 3px 3px, rgba(127,127,127,0.5), gainsboro);
 }
+
 .btn {
     white-space: nowrap;
-    border-bottom: solid 1px rgb(0, 0, 0, 0.125);
-    //border-radius: $border_radius;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.125);
     display: inline-block;
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
@@ -110,9 +112,7 @@ fieldset {
     margin: 0.1rem;
     color: #212529;
     @include button_background();
-    //    @include box_shadow(1px 1px 1px, rgba(127,127,127,0.5), gainsboro);
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
-        box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .btn:after {
     content: "";
@@ -132,6 +132,7 @@ fieldset {
     pointer-events: none;
     transition: background 0.5s, opacity 1s;
 }
+
 .btn-stateonly {
      // @include box_shadow(3px 3px 3px, rgba(127, 127, 127, 0.5), gainsboro);
      @include panel_background();

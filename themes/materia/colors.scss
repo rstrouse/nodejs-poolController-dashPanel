@@ -1,21 +1,27 @@
 ﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
-@import '../mixins/gradients.scss';
+@import "../mixins/gradients.scss";
+
 $border_radius: 3px;
 $outline_border: solid 1px silver;
-
 @mixin panel_background() {
-    @include linear_gradient(0deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 100%);
+    background:white;
 }
 @mixin panel_header_background() {
-    background: #4CAF50 linear-gradient(180deg, #67bb6a, #4CAF50);
+    background: #4CAF50;
+    background: linear-gradient(180deg, #67bb6a, #4CAF50);
     //  @include linear_gradient(0deg, #673ab7 0%, #673ab7 100%);
 }
 
+@mixin btn_shadow() {
+    box-shadow: 0 3px 0 0 #082fa6, 0 -4px -4px -1px rgba(0, 0, 0, 0.6), 0 -4px -6px 1px rgba(0, 0, 0, 0.3), 0 -1px -2px 1px rgba(0, 0, 0, 0) inset, 0 18px 32px -2px rgba(255, 255, 255, 0.1) inset;
+}
 @mixin button_background() {
-    background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3) repeat-x;
+    background: #2196F3;
+    //background: linear-gradient(180deg, #42a6f5, #2196F3);
+    background-repeat: repeat-x;
     //@include linear_gradient(-45deg, #0B44EF 0%, #007dfa 100%);
     @include btn_shadow();
-    transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
+    transition: box-shadow ease-in 0.2s, transform ease-in 0.2s, color ease-in 0.2s;
 }
 @mixin fldbutton_background() {
     //background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3) repeat-x;
@@ -24,7 +30,8 @@ $outline_border: solid 1px silver;
     //transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
 }
 @mixin header_background() {
-    background: #4caf50 linear-gradient(180deg, #91d293e0, #59b55d)
+    background: #4caf50;
+    background: linear-gradient(180deg, #91d293, #59b55d)
     //@include linear_gradient(180deg, #D500F9 0%, #D500F9 100%);
 }
 @mixin hover_background() {
@@ -32,13 +39,13 @@ $outline_border: solid 1px silver;
     //@include linear_gradient(180deg, rgba(123,31,162,1) 0%,rgba(123,31,162,1) 100%);
 }
 @mixin active_background() {
-    background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3);
+    background: #2196F3;
+    background: linear-gradient(180deg, #42a6f5, #2196F3);
     //@include linear_gradient(180deg, rgba(123,31,162,1) 0%,rgba(123,31,162,1) 100%);
 }
+
 @mixin selected_background() {
-    background: #2196F3 linear-gradient(180deg, #42a6f5, #2196F3);
+    background: #2196F3;
+    background: linear-gradient(180deg, #42a6f5, #2196F3);
     //@include linear_gradient(180deg, #159FCF, #13647F);
-}
-@mixin btn_shadow() {
-    box-shadow: 0 3px 0 0 #082fa6, 0 -4px -4px -1px rgba(0, 0, 0, 0.6), 0 -4px -6px 1px rgba(0, 0, 0, 0.3), 0 -1px -2px 1px rgba(0, 0, 0, 0) inset, 0 18px 32px -2px rgba(255, 255, 255, 0.1) inset;
 }

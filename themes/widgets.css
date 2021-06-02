@@ -225,6 +225,9 @@ div.picController > div.picControllerLine label {
 div.picFeatures, div.picLights {
     display:block;
 }
+div.picFeature.btn {
+    position: relative;
+}
 div.picCircuits{
     order :var(--picCircuits-order);
     display: var(--picCircuits-display) !important;

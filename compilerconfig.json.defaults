@@ -50,7 +50,7 @@
   },
   "minifiers": {
     "css": {
-      "enabled": true,
+      "enabled": false,
       "termSemicolons": true,
       "gzip": false
     },

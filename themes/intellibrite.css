@@ -80,7 +80,8 @@ div.picCSColor {
 }
 div.picIBColor {
     height: 7px;
-    width: 10.25rem;
+    /*width: 10.25rem;*/
+    width:100%;
     display: block;
     position: absolute;
     margin-top: .07rem;

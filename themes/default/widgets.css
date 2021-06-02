@@ -1,115 +1,99 @@
-@charset "UTF-8";
-div.picConfigTabContents {
+﻿div.picConfigTabContents {
   background: #f0f0f0;
-  background: linear-gradient(0deg, #f0f0f0 0%, #f9f9f9 15%, white 24%, white 82%, #dedede 100%);
-}
+  background: -webkit-linear-gradient(90deg, #f0f0f0 0%, #f9f9f9 15%, white 24%, white 82%, #dedede 100%);
+  background: linear-gradient(0deg, #f0f0f0 0%, #f9f9f9 15%, white 24%, white 82%, #dedede 100%); }
 
 div.picTab:not(.picTabSelected) {
   border-color: silver;
   color: slategray;
-  text-shadow: 1px 1px 2px gainsboro;
-}
+  text-shadow: 1px 1px 2px gainsboro; }
 
 div.picTab.picTabSelected {
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634;
-}
+  text-shadow: 3px 3px 16px #272634; }
 
 div.picSaltReqd {
-  padding: 0.2rem;
+  padding: .2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: 0.4rem;
-}
+  margin-bottom: .4rem; }
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver;
-}
+  color: silver; }
 
 span.picUnits {
-  color: gray;
-}
+  color: gray; }
 
 div.picAccordian-title {
   border: solid 1px gray;
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   border: solid 1px gray;
   background: #f6f8f9;
-  background: linear-gradient(180deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
-}
+  background: -webkit-linear-gradient(-90deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%);
+  background: linear-gradient(180deg, #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%); }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white;
-}
+  color: white; }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 div.pnl-scheduleDays div.table-cell.day:hover {
   background: #ffaf4b;
-  background: linear-gradient(180deg, #ffaf4b, #ff920a);
-}
+  background: -webkit-linear-gradient(-90deg, #ffaf4b, #ff920a);
+  background: linear-gradient(180deg, #ffaf4b, #ff920a); }
 
 .disabled {
   pointer-events: none;
   cursor: no-drop;
-  opacity: 0.7;
-}
+  opacity: .7; }
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: #159FCF;
-  background: linear-gradient(180deg, #159FCF, #13647F);
-}
+  background: -webkit-linear-gradient(-90deg, #159FCF, #13647F);
+  background: linear-gradient(180deg, #159FCF, #13647F); }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: "Font Awesome 5 Free";
-}
+  font-family: 'Font Awesome 5 Free'; }
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
-  content: "";
-  font-weight: 900;
-}
+  content: "\f057";
+  font-weight: 900; }
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
-  content: "";
-  font-weight: 400;
-}/*# sourceMappingURL=widgets.css.map */
+  content: "\f111";
+  font-weight: 400; }
