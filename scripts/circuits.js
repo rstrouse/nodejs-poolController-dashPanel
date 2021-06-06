@@ -14,8 +14,9 @@
                 div = $('<div class="picFeatures"></div>');
                 div.appendTo(el);
                 div.features(data);
-                div = $('<div class="picLights"></div>');
-                div.appendTo(el);
+                // div = $('<div class="picLights"></div>');
+                div = $('.picLights');
+                // div.appendTo(el);
                 div.lights(data);
             }
             else {

@@ -1,6 +1,7 @@
 ﻿:root {
     --picBodies-order: 0;
     --picCircuits-order: 100;
+    --picLights-order: 105;
     --picPumps-order: 5;
     --picChemistry-order: 10;
     --picSchedules-order: 15;

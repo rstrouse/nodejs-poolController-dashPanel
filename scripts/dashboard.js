@@ -174,6 +174,10 @@
                     $(':root').css('--picCircuits-order', getStorage('--picCircuits-order'));
                     if (typeof getStorage('--picCircuits-display') === 'undefined') setStorage('--picCircuits-display', $(':root').css('--picCircuits-display'));
                     $(':root').css('--picCircuits-display', getStorage('--picCircuits-display'));
+                    if (typeof getStorage('--picLights-order') === 'undefined') setStorage('--picLights-order', $(':root').css('--picLights-order'));
+                    $(':root').css('--picLights-order', getStorage('--picLights-order'));
+                    if (typeof getStorage('--picLights-display') === 'undefined') setStorage('--picLights-display', $(':root').css('--picLights-display'));
+                    $(':root').css('--picLights-display', getStorage('--picLights-display'));
                     if (typeof getStorage('--picPumps-order') === 'undefined') setStorage('--picPumps-order', $(':root').css('--picPumps-order'));
                     $(':root').css('--picPumps-order', getStorage('--picPumps-order'));
                     if (typeof getStorage('--picPumps-display') === 'undefined') setStorage('--picPumps-display', $(':root').css('--picPumps-display'));
@@ -189,7 +193,7 @@
 
 
                     // put elements in correct container div
-                    let arr = ['picBodies', 'picCircuits', 'picSchedules', 'picChemistry', 'picPumps']
+                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps']
                     arr.forEach(id => {
                         let el = $(`.${id}`);
                         let elVarName = `--${id}-order`;
