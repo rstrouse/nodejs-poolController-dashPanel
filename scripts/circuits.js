@@ -14,10 +14,10 @@
                 div = $('<div class="picFeatures"></div>');
                 div.appendTo(el);
                 div.features(data);
-                // div = $('<div class="picLights"></div>');
                 div = $('.picLights');
-                // div.appendTo(el);
                 div.lights(data);
+                div = $('.picVirtualCircuits');
+                div.virtualCircuits(data);
             }
             else {
                 el.hide();
@@ -65,7 +65,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
-            div.appendTo(el);
+            div.prependTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Features');
@@ -125,10 +125,10 @@
                 }
 
                 // Remove it from the lights section if it existed there before.
-                el.parents('div.picCircuits.picControlPanel:first').find('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
-
-
+                // el.parents('div.picCircuits.picControlPanel:first').find('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
+                // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
+            $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
     });
     $.widget('pic.feature', {
@@ -219,6 +219,52 @@
         resetState: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+        }
+    });
+    $.widget("pic.virtualCircuits", {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self.initVirtualCircuits(o);
+            el[0].setItem = function (type, data) { self.setItem(type, data); };
+            o = {};
+        },
+        initVirtualCircuits: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            let div = $('<div class="picCircuitTitle control-panel-title"></div>');
+            div.appendTo(el);
+            let span = $('<span class="picCircuitTitle"></span>');
+            span.appendTo(div);
+            span.text('Virtual Circuits');
+            let inner = $('<div></div>').addClass('picFeatureGrid').appendTo(el);
+            for (let i = 0; i < data.virtualCircuits.length; i++) {
+                // Create a new feature for each of the virtualCircuits. 
+                let div = $('<div class="picVirtualCircuit btn"></div>');
+                let vcircuit = data.virtualCircuits[i];
+                div.appendTo(inner);
+                div.virtualCircuit(data.virtualCircuits[i])
+            }
+        },
+        setItem: function (type, data) {
+            var self = this, o = self.options, el = self.element;
+            // See if the item exists.
+            var selector = '';
+            var div = el.find('div.picVirtualCircuit[data-eqid=' + data.id + ']');
+            if (div.length === 0) {
+                // We need to add it.
+                var bAdded = false;
+                var id = parseInt(data.id, 10);
+                el.children('div.picVirtualCircuit').each(function () {
+                    //console.log({ msg: 'Found Feature', id: this.equipmentId() });
+                    if (this.equipmentId() > id) {
+                        //console.log({ msg: 'Setting Item', type: type, data: data });
+                        div = $('<div class="picVirtualCircuit"></div>').insertBefore($(this));
+                        bAdded = true;
+                        return false;
+                    }
+                });
+            }
         }
     });
     $.widget('pic.virtualCircuit', {
@@ -457,7 +503,7 @@
         _buildControls: function (data) {
             var self = this, o = self.options, el = self.element;
             let div = $('<div class="picCircuitTitle control-panel-title"><div>');
-            div.appendTo(el);
+            div.prependTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Lights');
@@ -500,6 +546,7 @@
                             div.appendTo(el);
                             if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
                             div.circuit(data.circuits[i]);
+                            self.setItem(data.circuits[i].type.name, data.circuits[i]);
                             break;
                     }
                 } catch (err) { console.error(err); }
@@ -567,8 +614,10 @@
                 }
 
                 // Remove it from the lights section if it existed there before.
-                el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
+                // el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
+                // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
+            $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
 
     });

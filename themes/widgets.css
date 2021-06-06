@@ -2,12 +2,14 @@
     --picBodies-order: 0;
     --picCircuits-order: 100;
     --picLights-order: 105;
+    --picVirtualCircuits-order: 110;
     --picPumps-order: 5;
     --picChemistry-order: 10;
     --picSchedules-order: 15;
     --picBodies-display: block;
     --picCircuits-display: block;
     --picLights-display: block;
+    --picVirtualCircuits-display: block;
     --picPumps-display: block;
     --picChemistry-display: block;
     --picSchedules-display: block;
@@ -233,6 +235,10 @@ div.picFeature.btn {
 div.picCircuits{
     order :var(--picCircuits-order);
     display: var(--picCircuits-display) !important;
+}
+div.picVirtualCircuits{
+    order :var(--picVirtualCircuits-order);
+    display: var(--picVirtualCircuits-display) !important;
 }
 div.picLights{
     order :var(--picLights-order);
