@@ -161,6 +161,13 @@
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
                     //console.log(data);
                     var units = el.parents('div.picBodies:first').attr('data-unitsname');
+                    // https://github.com/tagyoureit/nodejs-poolController/issues/314
+                    // setPoint was null; added error checking if this is not set; also added server side validation
+                    if (typeof settings.setPoint === 'undefined' || isNaN(settings.setPoint)) {
+                        var d = dataBinder.fromElement(el.find('.picTempData'));
+                        if (typeof d.temp === 'undefined' || isNaN(d.temp)) settings.setPoint = units === "F" ? 65 : 5;
+                        else settings.setPoint = parseInt(d.temp, 10);
+                    }
                     var divPopover = $('<div></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
