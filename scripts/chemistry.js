@@ -73,9 +73,9 @@
                 let sc = el.find('div.picSuperChlor');
                 if (data.superChlor) {
                     sc.show();
-                    if (o.superChlorTimer) this.stopCountdownSuperChlor();
+                    // if (o.superChlorTimer) this.stopCountdownSuperChlor();
                     if (data.superChlorRemaining > 0) {
-                        o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        if (o.superChlorTimer === null || typeof o.superChlorTimer === 'undefined')  o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
                         el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
                         el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
                     }
@@ -89,7 +89,11 @@
                 }
                 if (typeof data.status !== 'object' || data.status.val === 128) el.find('div.picSuperChlorBtn').hide();
                 else el.find('div.picSuperChlorBtn').show();
-                el.data('remaining', data.superChlorRemaining);
+                // due to granularity of chlor time remaining, if we are <1 min off then don't reset the counter.
+                // this caused a small but annoying bug where if you opened the chlorinator settings it would reset the counter to the prev value
+                if (data.superChlorRemaining - el.data('remaining')  <= 0 || data.superChlorRemaining - el.data('remaining') >= 60 || isNaN(el.data('remaining'))) {
+                    el.data('remaining', data.superChlorRemaining);
+                } 
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
                 else el.attr('data-status', '');
             }
@@ -221,6 +225,10 @@
                         let toggle = $('<div class="picToggleSuperChlor"></div>');
                         toggle.appendTo(btn);
                         toggle.toggleButton();
+                        // if current countdown timer is between 0-60s, don't reset the display
+                        if (data.superChlorRemaining - el.data('remaining')  > 0 && data.superChlorRemaining - el.data('remaining') < 60) {
+                            data.superChlorRemaining = el.data('remaining');
+                        } 
                         let lbl = $('<div><div><label class="picSuperChlor">Super Chlorinate</label></div><div class="picSuperChlorRemaining"><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div></div>');
                         lbl.appendTo(btn);
                         btn.on('click', function (e) {
