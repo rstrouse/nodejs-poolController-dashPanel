@@ -574,7 +574,7 @@
                     connectWith: ".connectedSortable",
                     placeholder: "ui-state-highlight",
                     stop: function (event, ui) {
-                        console.log(`moving element ${ui.item[0].id} from ${event.target.id} to ${ui.item[0].parentElement.id}`);
+                        console.log(`moving element ${ui.item.data('id')} from ${event.target.id} to ${ui.item[0].parentElement.id}`);
                         let col1ids = $('#appearance-order-col-1').sortable('toArray', { attribute: 'data-orderLg' });
                         let col2ids = $('#appearance-order-col-2').sortable('toArray', { attribute: 'data-orderLg' });
                         let col3ids = $('#appearance-order-col-3').sortable('toArray', { attribute: 'data-orderLg' });
