@@ -64,6 +64,9 @@ div.picLightThemes {
     display: flex;
     flex-wrap: wrap;
 }
+div.picSchedule > span, div.picSchedule > label, div.picChemistry label, div.picChemistry span {
+    line-height: 2;
+}
 div.picChlorinator {
     justify-content: space-between;
 }

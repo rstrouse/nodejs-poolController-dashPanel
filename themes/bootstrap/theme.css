@@ -90,6 +90,10 @@ div.picLightThemes {
   flex-wrap: wrap;
 }
 
+div.picSchedule > span, div.picSchedule > label, div.picChemistry label, div.picChemistry span {
+  line-height: 2;
+}
+
 div.picChlorinator {
   justify-content: space-between;
 }
@@ -574,6 +578,10 @@ div.picBodyIcon {
   margin-left: auto;
 }
 
+div.picBodyIcon > div:first-child {
+  margin-bottom: 2px;
+}
+
 div.picControllerStatus > div.picIndicator {
   display: inline-block;
   border: solid 1px silver;
@@ -670,4 +678,9 @@ div.picIndicator[data-status=error] {
 
 .picHeaterStatusIcon {
   order: 2;
+  margin-top: 20px;
+}
+
+div.picModules {
+  margin-bottom: 5px;
 }/*# sourceMappingURL=theme.css.map */

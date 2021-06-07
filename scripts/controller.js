@@ -733,20 +733,42 @@
 
                 });
             });
+            let njsPcInfo = $('<div class="picFirmware"></div>').attr('id', 'picNjsPCInfo').appendTo($('div.picSystem'));
+            let dpInfo = $('<div class="picFirmware"></div>').attr('id', 'picdpInfo').appendTo($('div.picSystem'));
+            $.getApiService('/state/appVersion', null, function (sdata, status, xhr) {
+                console.log('getting the state from the server');
+                console.log(sdata);
+                if (sdata.hasOwnProperty('gitLocalBranch')){
+                    $('<div class="picOptionLine"><label>git branch</label><span>' + sdata.gitLocalBranch + '</span></div>').appendTo(njsPcInfo);
+                    $('<div class="picOptionLine"><label>git commit</label><span>' + sdata.gitLocalCommit.substring(sdata.gitLocalCommit.length-7) + '</span></div>').appendTo(njsPcInfo);
+                }
+                else {
+                    $('<div class="picOptionLine"><label>git status</label><span>Git is not in use</span></div>').appendTo(njsPcInfo);
+                }
+                $('<hr></hr>').appendTo(njsPcInfo);
+            });
+            $.getLocalService('/config/appVersion', null,  function (data, status, xhr) {
+                console.log(`getting dashPanel version info`);
+                console.log(data);
+                $('<div class="picOptionLine dashPanelVersion"><label>dashPanel</label><span>' + data.installed + '</span></div>').prependTo(dpInfo);
+                if (data.hasOwnProperty('gitLocalBranch')){
+                    $('<div class="picOptionLine"><label>git branch</label><span>' + data.gitLocalBranch + '</span></div>').appendTo(dpInfo);
+                    $('<div class="picOptionLine"><label>git commit</label><span>' + data.gitLocalCommit.substring(data.gitLocalCommit.length-7) + '</span></div>').appendTo(dpInfo);
+                }
+                else {
+                    $('<div class="picOptionLine"><label>git status</label><span>Git is not in use</span></div>').appendTo(dpInfo);
+                }
+                $('<hr></hr>').appendTo(dpInfo);
+            })
             $.getApiService('/config/all', null, function (data, status, xhr) {
                 console.log('getting the configuration from the server');
                 console.log(data);
+                $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').prependTo(njsPcInfo);
+               
                 el.find('div.picTabPanel:first').find('div.picSystem').each(function () {
                     let $div = $('<div class="picFirmware"></div>').appendTo($(this));
-                    $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Pumps</label><span>' + data.pumps.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
-                    let $divMods = $('<div class="picModules"></div>').appendTo($(this));
+                    
+                    let $divMods = $('<div class="picModules"></div>').appendTo($div);
                     let $hdr = $('<table><tbody><tr><td><label>Panel</label></td><td><label>Module</label></td></tr></tbody></table>').appendTo($divMods);
                     let $tbody = $divMods.find('table:first > tbody');
                     if (typeof data.equipment.modules === 'undefined') {
@@ -770,6 +792,13 @@
                             }
                         }
                     }
+                    $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Pumps</label><span>' + data.pumps.length + '</span></div>').appendTo($div);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
                     let btn = el.find('div[id$=btnReloadConfig]');
                     let status = parseInt($('div.picController').attr('data-status'), 10);
                     if (status === 1) {

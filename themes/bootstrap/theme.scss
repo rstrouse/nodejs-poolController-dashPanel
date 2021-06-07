@@ -71,8 +71,6 @@ fieldset {
     @include panel_header_background();
     @include box_shadow(2px 2px 5px, rgba(27, 27, 27, 0.4), gainsboro);
 }
-.status-text {
-}
 .body-text {
     font-family: Arial; 
 }
@@ -251,6 +249,9 @@ div.picBodyIcon {
     order: 3;
     margin-left: auto;
 }
+div.picBodyIcon > div:first-child{
+    margin-bottom: 2px;
+}
 div.picControllerStatus > div.picIndicator {
     display: inline-block;
     border: solid 1px silver;
@@ -345,4 +346,9 @@ div.picIndicator[data-status="error"] {
 }
 .picHeaterStatusIcon {
     order: 2;
+    margin-top: 20px;
+}
+
+div.picModules {
+    margin-bottom: 5px;
 }

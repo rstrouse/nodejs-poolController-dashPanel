@@ -13,7 +13,7 @@ class Config {
             this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8")) : {};
             const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").trim());
             const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").trim());
-            this._cfg = extend(true, {}, def, this._cfg, { appVersion: packageJson.version });
+            this._cfg = extend(true, {}, def, this._cfg, { appVersion: {installed: packageJson.version }});
             this._isInitialized = true;
             this.update();
         } catch (err) {

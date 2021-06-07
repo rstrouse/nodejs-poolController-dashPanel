@@ -1,84 +1,103 @@
-﻿@import url("https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch");
+@import url("https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver; }
+  color: silver;
+}
 
 div.picConfigTabContents {
-  background-color: white; }
+  background-color: white;
+}
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.picSaltReqd {
-  padding: .2rem;
+  padding: 0.2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: .4rem; }
+  margin-bottom: 0.4rem;
+}
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver; }
+  color: silver;
+}
 
 div.picBodyTemp > div.body-temp {
   font-family: cabin sketch;
-  font-weight: 400; }
+  font-weight: 400;
+}
 
 span.picUnits {
-  color: gray; }
+  color: gray;
+}
 
 div.picAccordian-title {
   border: solid 1px gray;
-  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px; }
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px;
+}
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 25px 5px;
   border-top-right-radius: 5px 25px;
-  border-collapse: separate; }
+  border-collapse: separate;
+}
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 25px 5px;
   border-top-right-radius: 5px 25px;
   font-family: "cabin sketch";
   border: solid 1px gray;
-  background: url("pencilshade-gray.png"); }
+  background: url("pencilshade-gray.png");
+}
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white; }
+  color: white;
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: url("pencilshade-orange.png");
   color: black;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: url("highlighter-yellow.png"); }
+  background: url("highlighter-yellow.png");
+}
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
-  background: url("pencilshade-blue.png"); }
+  background: url("pencilshade-blue.png");
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.pnl-scheduleDays div.table-cell.day:first-child {
-  border-bottom-left-radius: 25px 4px; }
+  border-bottom-left-radius: 25px 4px;
+}
 
 div.pnl-scheduleDays div.table-cell.day:last-child {
-  border-bottom-right-radius: 25px 4px; }
+  border-bottom-right-radius: 25px 4px;
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 1.5rem;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.pnl-scheduleDays div.table-row.days {
-  height: 2rem; }
+  height: 2rem;
+}
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: " ";
@@ -88,7 +107,8 @@ div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   display: inline-block;
   border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
   margin: 1px;
-  vertical-align: middle; }
+  vertical-align: middle;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: " ";
@@ -98,7 +118,8 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   right: 0px;
   bottom: 0px;
   width: 1rem;
-  height: 1rem; }
+  height: 1rem;
+}
 
 body {
   margin: 0;
@@ -109,20 +130,25 @@ body {
   color: #212529;
   text-align: left;
   background-color: #fff;
-  background: url(poolsketch.png); }
+  background: url(poolsketch.png);
+}
 
 [tabindex="-1"]:focus {
-  outline: none !important; }
+  outline: none !important;
+}
 
 select, input[type=text] {
   font-family: "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px; }
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px;
+}
 
 fieldset {
-  border-radius: 5px 25px 5px 25px/25px 5px 25px 5px; }
+  border-radius: 5px 25px 5px 25px/25px 5px 25px 5px;
+}
 
 legend {
-  font-family: cabin sketch; }
+  font-family: cabin sketch;
+}
 
 input[type=checkbox] {
   position: relative;
@@ -134,7 +160,9 @@ input[type=checkbox] {
   -webkit-appearance: none;
   -mos-appearance: none;
   outline: 0px;
-  appearance: none; }
+  -moz-appearance: none;
+       appearance: none;
+}
 
 input[type=checkbox]:before {
   content: "";
@@ -146,7 +174,8 @@ input[type=checkbox]:before {
   left: 0;
   background-color: white;
   border: solid 1px black;
-  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important; }
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
+}
 
 input[type=checkbox]:checked:before {
   content: "";
@@ -158,7 +187,8 @@ input[type=checkbox]:checked:before {
   left: 0;
   background-color: white;
   border: solid 1px black;
-  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important; }
+  border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
+}
 
 input[type=checkbox]:checked:after {
   content: "";
@@ -172,20 +202,22 @@ input[type=checkbox]:checked:after {
   position: absolute;
   background: url("pencilshade-green.png") !important;
   border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
-  overflow: hidden; }
+  overflow: hidden;
+}
 
 div.chem-balance-value {
-  font-family: "cabin sketch"; }
+  font-family: "cabin sketch";
+}
 
 .popover,
 .control-panel {
   vertical-align: top;
   display: inline-block;
-  margin-top: .4rem;
-  margin-right: .2rem;
-  padding-left: .4em;
-  padding-right: .4em;
-  padding-bottom: .4em;
+  margin-top: 0.4rem;
+  margin-right: 0.2rem;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-bottom: 0.4em;
   padding-top: 0px;
   border: solid 1px gray;
   border-radius: 5px 25px 5px 25px/25px 5px 25px 5px;
@@ -194,7 +226,8 @@ div.chem-balance-value {
   box-shadow: 3px 3px 3px #7f7f7f;
   -webkit-box-shadow: 3px 3px 3px #7f7f7f;
   -moz-box-shadow: 3px 3px 3px #7f7f7f;
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px; }
+  filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color="gainsboro",strength=nth($thickness, 1));
+}
 
 .control-panel-title {
   font-family: cabin sketch;
@@ -203,33 +236,39 @@ div.chem-balance-value {
   border-top: solid 1px gainsboro;
   border-radius: 5px 25px 5px 25px/25px 5px 2px 5px;
   margin-bottom: 2px;
-  padding-left: .4em;
-  padding-right: .4em;
-  margin-left: -.4em;
-  margin-right: -.4em; }
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  margin-left: -0.4em;
+  margin-right: -0.4em;
+}
 
 div.picPopover {
   padding-top: 0px;
-  padding-right: .4em; }
+  padding-right: 0.4em;
+}
 
 .picController > .control-panel-title {
   background: white !important;
   margin-left: 0px;
-  margin-right: 0px; }
+  margin-right: 0px;
+}
 
 .status-text {
   font-family: "cabin sketch", "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 400; }
+  font-weight: 400;
+}
 
 .body-text {
   font-family: "Neucha", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 700; }
+  font-weight: 700;
+}
 
 .btn-panel {
-  padding: .2rem;
-  margin-top: .2rem;
+  padding: 0.2rem;
+  margin-top: 0.2rem;
   text-align: right;
-  border-top: solid 3px gainsboro; }
+  border-top: solid 3px gainsboro;
+}
 
 .btn-border {
   display: inline-block;
@@ -245,18 +284,16 @@ div.picPopover {
   user-select: none;
   border: 2px solid transparent;
   font-size: 1rem;
-  padding-top: .4rem;
-  padding-bottom: .4rem;
-  padding-right: .2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
   padding-left: 0px;
   line-height: 1rem;
   border-radius: 555px 55px 525px 55px/35px 225px 45px 125px;
   border: solid 1px gray;
-  margin: .1rem;
-  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  margin: 0.1rem;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out; }
+}
 
 .btn {
   display: inline-block;
@@ -271,60 +308,64 @@ div.picPopover {
   user-select: none;
   border: 2px solid transparent;
   font-size: 1rem;
-  padding-top: .4rem;
-  padding-bottom: .4rem;
-  padding-right: .2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
   padding-left: 0px;
   line-height: 1rem;
   border-radius: 555px 55px 525px 55px/35px 225px 45px 125px;
   border: solid 1px gray;
-  margin: .1rem;
+  margin: 0.1rem;
   background: ghostwhite;
-  background: -webkit-linear-gradient(-90deg, ghostwhite, 1deg, #f0f0f0 0%, #f9f9f9 15%, white 24%, white 82%, #dedede 100%);
   background: linear-gradient(180deg, ghostwhite, 1deg, #f0f0f0 0%, #f9f9f9 15%, white 24%, white 82%, #dedede 100%);
-  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out; }
+}
 
 .fld-value {
   border: solid 1px gray;
-  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px !important; }
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px !important;
+}
 
 .fld-value-center {
   border-top-left-radius: 12px 5px !important;
   border-bottom-left-radius: 3px 4px !important;
   border-top-right-radius: 3px 29px !important;
   border-bottom-right-radius: 12px 3px !important;
-  border: solid 1px gray !important; }
+  border: solid 1px gray !important;
+}
 
 .fld-value-combo {
   border-top-left-radius: 4px 15px;
   border-bottom-left-radius: 4px;
   border-top-right-radius: 4px 10px;
-  border: solid 1px gray; }
+  border: solid 1px gray;
+}
 
 .btn:focus, .btn:hover {
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 .btn:focus, .btn.focus {
   outline: 0;
-  -webkit-box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
-  box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25); }
+  box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
+}
 
 .btn.disabled, .btn:disabled {
-  opacity: .65;
+  opacity: 0.65;
   background: url(scratchout.png);
   background-repeat: no-repeat;
-  background-size: 100%; }
+  background-size: 100%;
+}
 
 .btn:not([disabled]):not(.disabled):active, .btn:not([disabled]):not(.disabled).active {
-  background-image: none; }
+  background-image: none;
+}
 
 .btn-stateonly {
   background: url(scratchout.png);
   background-repeat: no-repeat;
-  background-size: 100%; }
+  background-size: 100%;
+}
 
 .fld-btn-right {
   border-top-right-radius: 15px 5px;
@@ -333,7 +374,8 @@ div.picPopover {
   border: solid 1px gray;
   background: url("pencilshade-gray.png") !important;
   background-repeat: no-repeat;
-  background-size: 100%; }
+  background-size: 100%;
+}
 
 .fld-btn-left {
   border-top-left-radius: 15px 5px;
@@ -342,7 +384,8 @@ div.picPopover {
   border: solid 1px gray;
   background: url("pencilshade-gray.png") !important;
   background-repeat: no-repeat;
-  background-size: 100%; }
+  background-size: 100%;
+}
 
 .btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
@@ -353,7 +396,8 @@ div.picPopover {
 .btn-border:not([disabled]):not(.disabled).hover,
 .btn:not([disabled]):not(.disabled):hover,
 .btn:not([disabled]):not(.disabled).hover {
-  background: url("highlighter-yellow.png") !important; }
+  background: url("highlighter-yellow.png") !important;
+}
 
 .btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
@@ -365,14 +409,16 @@ div.picPopover {
 .btn:not([disabled]):not(.disabled):active,
 .btn:not([disabled]):not(.disabled).active {
   color: black;
-  background: url("pencilshade-blue.png") !important; }
+  background: url("pencilshade-blue.png") !important;
+}
 
 .tab-contents {
   border-left: solid 1px black;
   border-bottom: solid 1px black;
   border-right: solid 1px black;
   border-top: solid 1px black;
-  border-radius: 0px 5px 5px 3px/3px 2px 25px 5px; }
+  border-radius: 0px 5px 5px 3px/3px 2px 25px 5px;
+}
 
 .tab-item {
   font-family: cabin sketch;
@@ -380,49 +426,59 @@ div.picPopover {
   border: solid 1px black;
   border-top-right-radius: 25px 5px;
   border-top-left-radius: 5px 2px;
-  background-color: white; }
+  background-color: white;
+}
 
 .dropdown-panel {
   border: solid 1px black;
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   border-radius: 5px 25px 5px 25px/25px 5px 25px 5px !important;
   background-color: white;
-  border-radius: 5px; }
+  border-radius: 5px;
+}
 
 .header-background {
   font-family: cabin sketch;
   font-weight: 700;
-  background: url("pencilshade-blue.png") !important; }
+  background: url("pencilshade-blue.png") !important;
+}
 
 table.optOuter {
-  border-radius: 5px 25px 5px 25px/25px 5px 25px 5px !important; }
+  border-radius: 5px 25px 5px 25px/25px 5px 25px 5px !important;
+}
 
 tr.optHeader > td {
   border-bottom: solid 2px black;
   border-top-right-radius: 255px 5px;
-  border-top-left-radius: 5px 255px; }
+  border-top-left-radius: 5px 255px;
+}
 
 table.optBody > tbody > tr > td:last-child,
 table.optHeader > tbody > tr > td:last-child {
-  border: none; }
+  border: none;
+}
 
 table.optBody td,
 table.optHeader td {
-  border-right: solid 1px gray; }
+  border-right: solid 1px gray;
+}
 
 table.optBody > tbody > tr.selected {
   background: url("highlighter-yellow.png") !important;
-  color: black !important; }
+  color: black !important;
+}
 
 table.optBody > tbody > tr:hover {
   background: url("highlighter-gray.png") !important;
-  color: white; }
+  color: white;
+}
 
 div.picIndicator {
   display: inline-block;
   border: solid 1px gray;
   border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
-  vertical-align: middle; }
+  vertical-align: middle;
+}
 
 div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],
@@ -431,29 +487,39 @@ div.picIndicator[data-status=true] {
   background: url("pencilshade-green.png") !important;
   background-size: auto;
   background-attachment: fixed;
-  background-position: left top; }
+  background-position: left top;
+}
 
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
   background: url("pencilshade-yellow.png") !important;
   background-size: auto;
   background-attachment: fixed;
-  background-position: left top; }
+  background-position: left top;
+}
 
 div.picIndicator[data-status=loading] {
   background: url("pencilshade-orange.png") !important;
   background-size: auto;
   background-attachment: fixed;
-  background-position: left top; }
+  background-position: left top;
+}
 
 div.picIndicator[data-status=error] {
   background: url("pencilshade-red.png") !important;
   background-size: auto;
   background-attachment: fixed;
-  background-position: left top; }
+  background-position: left top;
+}
 
 .btn-toggle.fld-btn-center {
   border: solid 1px gray;
-  background: url("pencilshade-gray.png") !important; }
+  background: url("pencilshade-gray.png") !important;
+}
 
-.btn-toggle[data-selected="true"] {
-  background: url("pencilshade-blue.png") !important; }
+.btn-toggle[data-selected=true] {
+  background: url("pencilshade-blue.png") !important;
+}
+
+div.picModules {
+  margin-bottom: 5px;
+}/*# sourceMappingURL=theme.css.map */

@@ -4,7 +4,7 @@ import { UploadRoute, BackgroundUpload } from "../upload/upload";
 import { Client } from "node-ssdp";
 import { config } from "../config/Config";
 import { logger } from "../logger/Logger";
-
+import { versionCheck } from '../config/VersionCheck';
 export class ConfigRoute {
     public static initRoutes(app: express.Application) {
         app.get('/config/findPoolControllers', async (req, res, next) => {
@@ -52,6 +52,13 @@ export class ConfigRoute {
                 }
                 catch (err) { reject(err); };
             });
+        });
+        app.get('/config/appVersion', (req, res) => {
+            try {
+                let v = versionCheck.checkGitRemote();
+                return res.status(200).send(v);
+            }
+            catch (err) { console.log(err); return res.status(500).send(err); }
         });
         app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
         app.put('/config/:section', (req, res) => {
