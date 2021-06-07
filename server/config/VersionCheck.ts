@@ -67,7 +67,6 @@ class VersionCheck {
       let res = execSync('git rev-parse HEAD');
       let out = res.toString().trim();
       console.log(`The current git commit output is ${out}`);
-      // Call your function here conditionally as per branch
       switch (out) {
         case 'fatal':
         case 'command':
