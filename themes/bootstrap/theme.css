@@ -137,12 +137,14 @@ div.picSuperChlor {
 }
 
 div.picFeature,
-div.picCircuit {
+div.picCircuit,
+div.picVirtualCircuit {
   display: flex;
 }
 
 div.picFeature > label,
-div.picCircuit > label {
+div.picCircuit > label,
+div.picVirtualCircuit > label {
   top: 6px;
   margin-right: auto;
 }
@@ -288,6 +290,7 @@ i.picDropdownButton {
 
 div.picVirtualCircuit {
   padding-left: 0.5em;
+  display: flex;
 }
 
 div.picChlorinator > label.picChlorinatorName,
@@ -297,10 +300,6 @@ div.picChemController label.picControllerName {
 
 div.picSpinner-up, div.picSpinner-down {
   line-height: 1.4rem !important;
-}
-
-div.picCircuit.btn {
-  align-items: center;
 }
 
 .test {
@@ -683,4 +682,9 @@ div.picIndicator[data-status=error] {
 
 div.picModules {
   margin-bottom: 5px;
+}
+
+div.picCircuit.btn, div.picFeature.btn, div.picCircuitGroup.btn,
+div.picPumps > *, div.picVirtualCircuit.btn {
+  align-items: center;
 }/*# sourceMappingURL=theme.css.map */

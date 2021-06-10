@@ -158,10 +158,8 @@ div.picBS {
 
 div.picFirmware {
   font-size: 0.8rem;
- /* display: inline-block;
-  vertical-align: top; */
   display: block;
-  margin-left: 10px;
+  /* vertical-align:top; */
 }
 
 div.picFirmware > div.picOptionLine > label {
@@ -170,7 +168,7 @@ div.picFirmware > div.picOptionLine > label {
 
 div.picFirmware > div.picOptionLine > span {
   display: inline-block;
-  width: 6rem;
+  width: 2rem;
   text-align: right;
 }
 

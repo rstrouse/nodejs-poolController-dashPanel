@@ -698,8 +698,8 @@ div.picBS {
 
 div.picFirmware {
   font-size: 0.8rem;
-  display: inline-block;
-  vertical-align: top;
+  display: block;
+  /* vertical-align:top; */
 }
 
 div.picFirmware > div.picOptionLine > label {

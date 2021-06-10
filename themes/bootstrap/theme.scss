@@ -236,7 +236,7 @@ table.optBody > tbody > tr:hover {
     color: white;
 }
 div.picBody {
-    display: flex;
+    display: flex;  
 }
 
 div.picBodyTemp {
@@ -352,3 +352,8 @@ div.picIndicator[data-status="error"] {
 div.picModules {
     margin-bottom: 5px;
 }
+div.picCircuit.btn,div.picFeature.btn, div.picCircuitGroup.btn,
+div.picPumps > *, div.picVirtualCircuit.btn
+{
+    align-items: center;
+ }
