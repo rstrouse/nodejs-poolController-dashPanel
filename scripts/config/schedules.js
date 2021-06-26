@@ -96,7 +96,7 @@
                 }
                 else {
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
-                    if (evt.newItem.hasCoolSetpoint === true)
+                    if (evt.newItem.hasCoolSetpoint === true && ($('div.dashOuter').data('controllertype')).includes('center'))
                         p.find('div.picValueSpinner[data-bind=coolSetpoint]').show()[0].required(true);
                     else
                         p.find('div.picValueSpinner[data-bind=coolSetpoint]').hide()[0].required(false);

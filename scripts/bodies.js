@@ -217,7 +217,13 @@
                     el.find('div.picBodySetpoints').show();
                     if (data.heaterOptions.hasCoolSetpoint) {
                         el.find('label.picSetpointText.heatSetpoint').text('Heat Point');
-                        el.find('div.coolSetpoint').show();
+                        if (($('div.dashOuter').data('controllertype')).includes('center')){
+                            el.find('div.coolSetpoint').show();
+                        }
+                        else {
+                            // Touch doesn't have cooling setpoints on the spa; only pool
+                            $('div.picPool div.coolSetpoint').show();
+                        }
                         el.attr('data-hascooling', true);
                     }
                     else {
