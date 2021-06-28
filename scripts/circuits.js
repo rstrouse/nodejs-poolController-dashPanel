@@ -63,6 +63,7 @@
         },
         initFeatures: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
             el.empty();
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.prependTo(el);
@@ -76,7 +77,7 @@
                 let div = $('<div class="picFeature picCircuit btn"></div>');
                 let circuit = data.circuits[i];
                 div.appendTo(inner);
-                div.circuit(circuit, {controllerType: data.equipment.controllerType});
+                div.circuit(circuit, { controllerType: data.equipment.controllerType });
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
@@ -138,10 +139,12 @@
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+            el[0].countdownEndTime = function () { self.countdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
             el.empty();
             if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
@@ -153,6 +156,7 @@
             var lbl = $('<label class="picFeatureLabel" data-bind="name"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
+            $('<span class="picCircuitEndTime"></span>').appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
             el.on('click', function () {
@@ -168,12 +172,35 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
+            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+            self.countdownEndTime();
             if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
             if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+        },
+        countdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            let endTime = el.data('endTime');
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+                $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).empty();
+            }
+            else {
+                let dt = new Date($('span.picControllerTime').data('dt'));
+                let tnow = dt.getHours() * 60 + dt.getMinutes();
+                let tnowStr;
+                if (endTime >= tnow) {
+                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
+                }
+                else {
+                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
+                }
+                $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+            }
         }
     });
     $.widget('pic.circuitGroup', {
@@ -183,10 +210,12 @@
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+            el[0].countdownEndTime = function () { self.countdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
             el.empty();
             if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
@@ -198,6 +227,7 @@
             var lbl = $('<label class="picFeatureLabel"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
+            $('<span class="picCircuitEndTime"></span>').appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
             el.on('click', function () {
@@ -213,12 +243,35 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
+            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+            self.countdownEndTime();
             if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
             if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+        },
+        countdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            let endTime = el.data('endTime');
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+                $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).empty();
+            }
+            else {
+                let dt = new Date($('span.picControllerTime').data('dt'));
+                let tnow = dt.getHours() * 60 + dt.getMinutes();
+                let tnowStr;
+                if (endTime >= tnow) {
+                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
+                }
+                else {
+                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
+                }
+                $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+            }
         }
     });
     $.widget("pic.virtualCircuits", {
@@ -274,7 +327,7 @@
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
-
+            el[0].countdownEndTime = function () { self.countdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
@@ -308,6 +361,7 @@
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].enablePopover = function (val) { return self.enablePopover(val); };
+            el[0].countdownEndTime = function () { self.countdownEndTime(); }
             o = {};
         },
         _buildPopover: function () {
@@ -317,6 +371,7 @@
                     el.attr('data-haslighttheme', true);
                     var color = $('<i class="fas fa-palette picDropdownButton"></i>');
                     color.appendTo(el);
+                    $('<span class="picCircuitEndTime"></span>').appendTo(el);
                     var theme = $('<div class="picIBColor" data-color="none"></div>');
                     theme.appendTo(el);
                     color.on('click', function (evt) {
@@ -395,6 +450,7 @@
 
             el.attr('data-type', 'circuit');
             $('<label class="picFeatureLabel" data-bind="name"></label>').appendTo(el);
+            $('<span class="picCircuitEndTime"></span>').appendTo(el);
             self._buildPopover();
             el.on('click', function (evt) {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
@@ -455,6 +511,8 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
+                data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+                self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
                     pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
@@ -490,6 +548,35 @@
                 else el.find('i.picDropdownButton').hide();
                 o.popoverEnabled = makeBool(val);
             }
+        },
+        countdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            let endTime = el.data('endTime');
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (getStorage('--show-time-remaining') === 'none' || !makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+                $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).empty();
+                // set body here in addition to circuits
+                $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'none');
+                $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).empty();
+            }
+            else {
+                let dt = new Date($('span.picControllerTime').data('dt'));
+                let tnow = dt.getHours() * 60 + dt.getMinutes();
+                let tnowStr;
+                if (endTime >= tnow) {
+                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
+                }
+                else {
+                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
+                }
+                $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                // bodies may be rendered/updated after circuits so these need to be updated more frequently
+                $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'inline-block');
+                $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
+
+                // 5s here so it populates the body
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 5);
+            }
         }
     });
     $.widget('pic.lights', {
@@ -518,7 +605,7 @@
                     let divThemes = $('<div class= "picLightSettings" data-bind="lightingTheme"></div>');
                     divThemes.appendTo(e.contents());
                     divThemes.attr('data-circuitid', '0');
-                    divThemes.lightGroupPanel({ id: '0'});
+                    divThemes.lightGroupPanel({ id: '0' });
                     divThemes.on('loaded', function (e) {
                         divPopover[0].show(btn);
                         console.log('Loaded called');
@@ -555,7 +642,7 @@
                 let div = $('<div class="picLight picFeature picLightGroup btn"></div>');
                 div.appendTo(el);
                 div.lightGroup(data.lightGroups[i]);
-                
+
             }
         },
         isLight: function (circuit) {
@@ -627,6 +714,7 @@
             var self = this, o = self.options, el = self.element;
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+            el[0].countdownEndTime = function () { self.countdownEndTime(); }
             self._buildControls();
             o = {};
         },
@@ -635,13 +723,14 @@
             var toggle = $('<div class="picFeatureToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
-            
+
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
             var lbl = $('<label class="picFeatureLabel" data-bind="name"></label>');
             lbl.appendTo(el);
             lbl.text(o.name);
+            $('<span class="picLightEndTime"></span>').appendTo(el);
             var color = $('<i class="fas fa-palette picDropdownButton"></i>');
             color.appendTo(el);
 
@@ -713,6 +802,8 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
+                data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+                self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
                     pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
@@ -724,8 +815,27 @@
         resetState: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+        },
+        countdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            let endTime = el.data('endTime');
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+                $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
+            }
+            else {
+                let dt = new Date($('span.picControllerTime').data('dt'));
+                let tnow = dt.getHours() * 60 + dt.getMinutes();
+                let tnowStr;
+                if (endTime >= tnow) {
+                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
+                }
+                else {
+                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
+                }
+                $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+            }
         }
-
-
     });
 })(jQuery);

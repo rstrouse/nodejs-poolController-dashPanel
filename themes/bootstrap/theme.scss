@@ -27,7 +27,7 @@ body {
     font-size: 1rem;
 }
 select,
-input[type="text"] {
+input[type="text"] { 
     font-size: 1rem;
     border-top: none;
     border-left: none;
@@ -52,7 +52,7 @@ fieldset {
     border: $outline_border;
     border-radius: $border_radius;
     @include panel_background();
-    @include box_shadow(2px 2px 2px, rgba(27, 27, 27, 0.4), gainsboro);
+    @include box_shadow(2px 2px 2px, rgba(27, 27, 27, 0.4), gainsboro); 
 }
 .control-panel-title {
     white-space: nowrap;
@@ -69,7 +69,7 @@ fieldset {
     border-top-left-radius: $border_radius;
     border-top-right-radius: $border_radius;
     @include panel_header_background();
-    @include box_shadow(2px 2px 5px, rgba(27, 27, 27, 0.4), gainsboro);
+    @include box_shadow(2px 2px 5px, rgba(27, 27, 27, 0.4), gainsboro); 
 }
 .body-text {
     font-family: Arial; 

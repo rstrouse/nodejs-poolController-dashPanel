@@ -101,6 +101,7 @@
                 if (typeof data !== 'undefined') {
                     let dt = new Date.parseISO(data.time);
                     el.find('span.picControllerTime').each(function () {
+                        $(this).data('dt', dt);
                         if (typeof data.clockMode !== 'undefined' && data.clockMode.val === 24) {
                             $(this).text(dt.format('MM/dd/yyyy HH:mm'));
                         }
@@ -428,6 +429,24 @@
                             $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + evt.newItem.code + '/theme.css" />').appendTo($('head')).attr('data-theme', evt.newItem.code);
                     }
                 })[0].val(getStorage('dashTheme', 'default'));
+                $('<div></div>').appendTo(divOuter).checkbox({
+                    labelText: 'Show Time Remaining',
+                    labelStyle: { float: 'left' },
+                    value: getStorage('--show-time-remaining') === 'none' ? false : true
+                })
+                    .on('click', function (evt) {
+                        let display =  evt.target.checked ? 'inline-block' : 'none';
+                        setStorage('--show-time-remaining', display);
+                        $(':root').css('--show-time-remaining', display);
+                        $('div.picFeature').each(function(){
+                            try{
+                                this.countdownEndTime();
+                            }
+                            catch (err) {
+                                console.log(`Unable to restart countdownEndTime for ${$(this).data('eqid')}.`);
+                            }
+                        })
+                    });
                 line = $('<div></div>').appendTo(divOuter);
                 $('<label></label>').appendTo(line).css({ width: '7rem', display: 'inline-block' }).addClass('field-label').text('Background');
                 settings.backgrounds.unshift({ name: 'Use Theme Default', url: '' });
@@ -738,22 +757,22 @@
             $.getApiService('/state/appVersion', null, function (sdata, status, xhr) {
                 console.log('getting the state from the server');
                 console.log(sdata);
-                if (sdata.hasOwnProperty('gitLocalBranch')){
+                if (sdata.hasOwnProperty('gitLocalBranch')) {
                     $('<div class="picOptionLine"><label>git branch</label><span>' + sdata.gitLocalBranch + '</span></div>').appendTo(njsPcInfo);
-                    $('<div class="picOptionLine"><label>git commit</label><span>' + sdata.gitLocalCommit.substring(sdata.gitLocalCommit.length-7) + '</span></div>').appendTo(njsPcInfo);
+                    $('<div class="picOptionLine"><label>git commit</label><span>' + sdata.gitLocalCommit.substring(sdata.gitLocalCommit.length - 7) + '</span></div>').appendTo(njsPcInfo);
                 }
                 else {
                     $('<div class="picOptionLine"><label>git status</label><span>Git is not in use</span></div>').appendTo(njsPcInfo);
                 }
                 $('<hr></hr>').appendTo(njsPcInfo);
             });
-            $.getLocalService('/config/appVersion', null,  function (data, status, xhr) {
+            $.getLocalService('/config/appVersion', null, function (data, status, xhr) {
                 console.log(`getting dashPanel version info`);
                 console.log(data);
                 $('<div class="picOptionLine dashPanelVersion"><label>dashPanel</label><span>' + data.installed + '</span></div>').prependTo(dpInfo);
-                if (data.hasOwnProperty('gitLocalBranch')){
+                if (data.hasOwnProperty('gitLocalBranch')) {
                     $('<div class="picOptionLine"><label>git branch</label><span>' + data.gitLocalBranch + '</span></div>').appendTo(dpInfo);
-                    $('<div class="picOptionLine"><label>git commit</label><span>' + data.gitLocalCommit.substring(data.gitLocalCommit.length-7) + '</span></div>').appendTo(dpInfo);
+                    $('<div class="picOptionLine"><label>git commit</label><span>' + data.gitLocalCommit.substring(data.gitLocalCommit.length - 7) + '</span></div>').appendTo(dpInfo);
                 }
                 else {
                     $('<div class="picOptionLine"><label>git status</label><span>Git is not in use</span></div>').appendTo(dpInfo);
@@ -764,10 +783,10 @@
                 console.log('getting the configuration from the server');
                 console.log(data);
                 $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').prependTo(njsPcInfo);
-               
+
                 el.find('div.picTabPanel:first').find('div.picSystem').each(function () {
                     let $div = $('<div class="picFirmware"></div>').appendTo($(this));
-                    
+
                     let $divMods = $('<div class="picModules"></div>').appendTo($div);
                     let $hdr = $('<table><tbody><tr><td><label>Panel</label></td><td><label>Module</label></td></tr></tbody></table>').appendTo($divMods);
                     let $tbody = $divMods.find('table:first > tbody');

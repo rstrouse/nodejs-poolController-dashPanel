@@ -656,6 +656,16 @@ var dataBinder = {
         if (sec > 0) fmt += ' ' + (sec + 'sec');
         return fmt.trim();
     },
+    formatEndTime: function (dur) {
+        // this fn takes the value of (hrs * 60) + mins
+        var fmt = '';
+        let hrs = Math.floor(dur / 60);
+        let min = Math.floor(dur - (hrs * 60));
+        if (hrs > 0) fmt += (hrs + 'h');
+        if (min > 0) fmt += ' ' + (min + 'm');
+        if (hrs <= 0 && min <= 1) fmt = "<1m";
+        return fmt.trim();
+    },
     fromElement: function (el, obj, arrayRef) {
         if (typeof arrayRef === 'undefined' || arrayRef === null) arrayRef = [];
         if (typeof obj === 'undefined' || obj === null) obj = {};

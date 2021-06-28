@@ -242,3 +242,13 @@ div.picSpinner-up, div.picSpinner-down {
 div.picModules > table > tbody > tr:nth-child(n+1) > td {
     color:rgba(0, 0, 0, 0.125);
 }
+span.picCircuitEndTime {
+    position: unset;
+    right: unset;
+}
+span.picLightEndTime {
+    margin-top: -10px;
+    margin-right: 5px;
+    position: unset;
+    right: unset;
+}

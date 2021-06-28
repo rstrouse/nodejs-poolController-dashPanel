@@ -63,5 +63,5 @@
     box-shadow: $thickness $shadowcolor;
     -webkit-box-shadow: $thickness $shadowcolor;
     -moz-box-shadow: $thickness $shadowcolor;
-    filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='#{$msequivcolor}',strength=nth($thickness, 1));
+    // filter: progid:DXImageTransform.Microsoft.Shadow(direction=135,color='#{$msequivcolor}',strength=nth($thickness, 1));
 }

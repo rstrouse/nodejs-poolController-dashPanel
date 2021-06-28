@@ -194,7 +194,8 @@
                     $(':root').css('--picChemistry-order', getStorage('--picChemistry-order'));
                     if (typeof getStorage('--picChemistry-display') === 'undefined') setStorage('--picChemistry-display', $(':root').css('--picChemistry-display'));
                     $(':root').css('--picChemistry-display', getStorage('--picChemistry-display'));
-
+                    if (typeof getStorage('--show-time-remaining') === 'undefined') setStorage('--show-time-remaining', $(':root').css('--show-time-remaining'));
+                    $(':root').css('--show-time-remaining', getStorage('--show-time-remaining'));
 
                     // put elements in correct container div
                     let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits']

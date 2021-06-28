@@ -16,6 +16,7 @@
     --number-of-columns: 2;
     --dashContainer2-display: block;
     --dashContainer3-display: block;
+    --show-time-remaining: block;
 }
 
 div.container1, div.container2, div.container3 {
@@ -246,6 +247,34 @@ div.picLights{
 }
 div.picCircuits > div:nth-child(n+2) {
     margin-top:.3rem;
+}
+
+div.divCircuitEndTime{
+    display: var(--show-time-remaining) !important;
+}
+span.picCircuitEndTime {
+    font-size:.585em;
+    width:auto;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    display: var(--show-time-remaining) !important;
+    font-style: italic;
+    position: absolute;
+    right: 0px;
+    margin-right: 5px;
+    padding-left: .2em;
+}
+span.picLightEndTime {
+    font-size:.585em;
+    width:auto;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    display: var(--show-time-remaining) !important;
+    font-style: italic;
+    position: absolute;
+    right: 0px;
+    margin-right: 20px;
+    padding-left: .2em;
 }
 div.picVirtualCircuit {
     white-space: nowrap;

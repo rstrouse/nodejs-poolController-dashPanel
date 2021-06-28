@@ -1,9 +1,10 @@
 ﻿$.widget('pic.lightGroup', {
-    options: { processing:false },
+    options: { processing: false },
     _create: function () {
         var self = this, o = self.options, el = self.element;
         el[0].setState = function (data) { self.setState(data); };
         el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
+        el[0].countdownEndTime = function () { self.countdownEndTime(); }
         self._buildControls();
         o = {};
     },
@@ -19,6 +20,7 @@
         var lbl = $('<label class="picFeatureLabel"></label>');
         lbl.appendTo(el);
         lbl.text(o.name);
+        $('<span class="picLightEndTime"></span>').appendTo(el);
         var color = $('<i class="fas fa-palette picDropdownButton"></i>');
         color.appendTo(el);
 
@@ -62,6 +64,9 @@
             else {
                 el.find('i.picDropdownButton').removeClass('fa-spin');
             }
+            el.attr('data-state', data.isOn);
+            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+            // self.countdownEndTime();
             el.parent().find('div.picLightSettings[data-circuitid=' + data.id + ']').each(function () {
                 //let pnl = $(this);
                 //pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
@@ -73,6 +78,27 @@
     resetState: function () {
         var self = this, o = self.options, el = self.element;
         el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+    },
+    countdownEndTime: function () {
+        var self = this, o = self.options, el = self.element;
+        if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+        let endTime = el.data('endTime');
+        if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+            el.find('span.picLightEndTime:first').empty();
+        }
+        else {
+            let dt = new Date($('span.picControllerTime').data('dt'));
+            let tnow = dt.getHours() * 60 + dt.getMinutes();
+            let tnowStr;
+            if (endTime >= tnow) {
+                tnowStr = dataBinder.formatEndTime(endTime - tnow);
+            }
+            else {
+                tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
+            }
+            el.find('span.picLightEndTime:first').text(`(${tnowStr})`);
+            o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+        }
     }
 });
 $.widget('pic.lightGroupPanel', {
@@ -143,7 +169,7 @@ $.widget('pic.lightGroupPanel', {
             });
             //divCircuit.sortable({ connectWith:'div.picLightCircuits' });
         }
-        el.find('div.picLightCircuits').sortable({ axis: 'y', containment:'parent' });
+        el.find('div.picLightCircuits').sortable({ axis: 'y', containment: 'parent' });
         el.find('div.picLightCircuits').disableSelection();
         var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
         btnPnl.appendTo(contents);
@@ -164,7 +190,7 @@ $.widget('pic.lightGroupPanel', {
         console.log('Apply clicked');
         // First get the selected theme.
         var themes = el.find('div.picLightThemes:first');
-        var obj = { id: parseInt(themes.attr('data-circuitid'), 10), circuits:[] };
+        var obj = { id: parseInt(themes.attr('data-circuitid'), 10), circuits: [] };
         themes.find('div.picIBColorSelector').each(function () {
             var stat = $(this).find('div.picToggleButton:first')[0].val();
             if (stat === 'on') {
@@ -214,7 +240,7 @@ $.widget('pic.lightGroupPanel', {
                         evt.stopPropagation();
                         // Set the lighting theme.
                         //if (circuitId !== 0)
-                            $.putApiService('state/circuit/setTheme', { id: circuitId, theme: parseInt(theme.val, 10) });
+                        $.putApiService('state/circuit/setTheme', { id: circuitId, theme: parseInt(theme.val, 10) });
                         //else
                         //    $.putApiService('state/intellibrite/setTheme', { theme: parseInt(theme.val, 10) });
 
@@ -247,7 +273,7 @@ $.widget('pic.lightGroupPanel', {
 
         });
         var actions = $('<div class="picBtnPanel btn-panel" style="text-align:center"></div>');
-        
+
         actions.appendTo(el);
         var btnSync = $('<div></div>');
         btnSync.appendTo(actions);
@@ -272,7 +298,7 @@ $.widget('pic.lightGroupPanel', {
             $.putApiService(stateCmd + '/colorSwim', obj, function (data, status, xhr) {
 
             });
-            
+
         });
     },
     _setOverlay: function (action) {
