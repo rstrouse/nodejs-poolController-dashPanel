@@ -371,7 +371,7 @@
                     el.attr('data-haslighttheme', true);
                     var color = $('<i class="fas fa-palette picDropdownButton"></i>');
                     color.appendTo(el);
-                    $('<span class="picCircuitEndTime"></span>').appendTo(el);
+                    $('<span class="picLightEndTime"></span>').appendTo(el);
                     var theme = $('<div class="picIBColor" data-color="none"></div>');
                     theme.appendTo(el);
                     color.on('click', function (evt) {
@@ -411,6 +411,7 @@
                     var dim = $('<i class="fas fa-sliders-h picDropdownButton"></i>');
                     el.attr('data-hasdimmer', true);
                     dim.appendTo(el);
+                    $('<span class="picLightEndTime"></span>').appendTo(el);
                     dim.on('click', function (evt) {
                         evt.stopImmediatePropagation();
                         evt.preventDefault();
@@ -554,7 +555,12 @@
             let endTime = el.data('endTime');
             if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
             if (getStorage('--show-time-remaining') === 'none' || !makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
-                $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).empty();
+                if (self.hasLightThemes(o) || self.hasDimmer(o)){
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();    
+                }
+                else {
+                    $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).empty();
+                }
                 // set body here in addition to circuits
                 $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'none');
                 $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).empty();
@@ -569,7 +575,12 @@
                 else {
                     tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
                 }
-                $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                if (self.hasLightThemes(o) || self.hasDimmer(o)){
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);    
+                }
+                else {
+                    $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                }
                 // bodies may be rendered/updated after circuits so these need to be updated more frequently
                 $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'inline-block');
                 $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
