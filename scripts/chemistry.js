@@ -45,10 +45,14 @@
                 for (let i = 0; i < data.chlorinators.length; i++) {
                     $('<div></div>').appendTo(el).chlorinator(data.chlorinators[i]);
                 }
+            }
+            if (typeof data !== 'undefined' && data.chemControllers.length > 0) {
+                el.show();
                 for (let i = 0; i < data.chemControllers.length; i++) {
                     $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
                 }
             }
+
             else el.hide();
         }
     });
@@ -354,6 +358,12 @@
                 var ph = typeof data.ph !== 'undefined' && typeof data.ph.pump !== 'undefined' && data.ph.pump.isDosing ? true : false;
                 var orp = typeof data.orp !== 'undefined' && typeof data.orp.pump !== 'undefined' && data.orp.pump.isDosing ? true : false;
                 el.find('div.picChemControllerState').attr('data-status', data.ph.pump.isDosing || data.orp.pump.isDosing ? 'on' : 'off');
+                let siTitle = typeof data.siCalcType === 'undefined' || data.siCalcType.name === 'undefined' ? 'Bal' : data.siCalcType.name === 'lsi' ? 'LSI' : 'CSI';
+                console.log(data);
+                el.find('label.siTitle').each(function () {
+                    $(this).text(siTitle);
+                });
+
                 dataBinder.bind(el, data);
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
                 else el.attr('data-status', '');
@@ -404,7 +414,7 @@
             $('<label></label>').addClass('picInline-label').text('ORP').appendTo(line);
             $('<span></span>').addClass('phLevel').attr('data-bind', 'orp.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-emptymask', '-.-').appendTo(line);
             span = $('<span></span>').addClass('lsiIndex').addClass('picData').appendTo(line);
-            $('<label></label>').addClass('picInline-label').text('Bal').appendTo(line);
+            $('<label></label>').addClass('picInline-label').addClass('siTitle').text('Bal').appendTo(line);
             $('<span></span>').addClass('saturationIndex').attr('data-bind', 'saturationIndex').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-emptymask', '-.-').appendTo(line);
 
             //$('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orp.probe.level"></span></span>').appendTo(line);
@@ -454,6 +464,10 @@
                     el.find('div.daily-dose[data-chemtype="acid"]').hide();
                 }
             }
+            let siTitle = typeof data.siCalcType === 'undefined' || data.siCalcType.name === 'undefined' ? 'Water Balance' : data.siCalcType.name === 'lsi' ? 'LSI Balance' : 'CSI Balance';
+            el.find('div.chem-balance-label').each(function () {
+                $(this).text(siTitle);
+            });
             // If this is IntelliChem then all the manual dosing buttons need to go away.  We don't have
             // control over this for IntelliChem.
             if (typeof data.type === 'undefined' || data.type.name === 'intellichem') {
@@ -835,10 +849,8 @@
             $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Calcium Hardness', canEdit: true, binding: 'calciumHardness', min: 25, max: 800, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             divLine = $('<div></div>').appendTo(grpIndex);
             $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Cyanuric Acid', canEdit: true, binding: 'cyanuricAcid', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-            if (data.type.name !== 'intellichem') {
-                divLine = $('<div></div>').appendTo(grpIndex);
-                $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Borates', canEdit: true, binding: 'borates', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-            }
+            divLine = $('<div></div>').appendTo(grpIndex);
+            $('<div></div>').appendTo(divLine).valueSpinner({ labelText: 'Borates', canEdit: true, binding: 'borates', min: 0, max: 201, step: 1, units: 'ppm', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(el);
             $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
             divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
