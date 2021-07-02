@@ -171,7 +171,7 @@ Number.prototype.formatTime = function (format, empty) {
 };
 Date.prototype.isDateEmpty = function () {
     return (isNaN(this.getTime()) || this.getFullYear() < 1970 || this.getFullYear() > 9999);
-}
+};
 Date.prototype.isDateTimeEmpty = function () {
     return (isNaN(this.getTime()) || this.getFullYear() < 1970 || this.getFullYear() > 9999);
 };
@@ -625,7 +625,7 @@ var dataBinder = {
                             tval = tval.format($this.attr('data-fmtmask'), $this.attr('data-fmtempty') || '');
                             break;
                         case 'duration':
-                            tval = dataBinder.formatDuration(tval);
+                            tval = dataBinder.formatDuration(tval, $this.attr('data-fmtmask'));
                             break;
                     }
                     if ($this.is('input')) {
@@ -644,16 +644,21 @@ var dataBinder = {
         var tval = val.replace(/[^0-9\.\-]+/g, '');
         return tval.indexOf('.') !== -1 ? parseFloat(tval) : parseInt(tval, 10);
     },
-    formatDuration: function (dur) {
+    formatDuration: function (dur, fmtMask) {
         var fmt = '';
         let hrs = Math.floor(dur / 3600);
         let min = Math.floor((dur - (hrs * 3600)) / 60);
         let sec = dur - ((hrs * 3600) + (min * 60));
         if (hrs > 1) fmt += (hrs + 'hrs');
         else if (hrs > 0) fmt += (hrs + 'hr');
-
         if (min > 0) fmt += ' ' + (min + 'min');
-        if (sec > 0) fmt += ' ' + (sec + 'sec');
+        if (sec > 0) {
+            if (typeof fmtMask !== 'undefined')
+                fmt += ' ' + (sec.format(fmtMask, '0') + 'sec');
+            else
+                fmt += ' ' + (sec + 'sec');
+
+        }
         return fmt.trim();
     },
     formatEndTime: function (dur) {
@@ -1492,6 +1497,7 @@ $.ui.position.fieldTip = {
             el[0].selectedTabId = function (tabId) { return self.selectedTabId(tabId); };
             el[0].addTab = function (tabObj) { return self.addTab(tabObj); };
             el[0].showTab = function (tabId, show) { return self.showTab(tabId, show); }
+            el[0].selectFirstVisibleTab = function () { return self.selectFirstVisibleTab(); }
 
             if (typeof o.style !== 'undefined') el.css(o.style);
             var evt = $.Event('initTabs');
@@ -1510,6 +1516,19 @@ $.ui.position.fieldTip = {
                 if (show) self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').show();
                 else self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').hide();
             }
+        },
+        selectFirstVisibleTab: function () {
+            var self = this, o = self.options, el = self.element;
+            var evt = $.Event('tabchange');
+            var tabId = '';
+            el.find('div.picTabs:first').children('div.picTab').each(function () {
+                if ($(this).css('display') !== 'none') {
+                    tabId = $(this).attr('data-tabId');
+                    self.selectTabById(tabId);
+                    return false;
+                }
+            });
+            return tabId;
         },
         selectTabById: function (tabId) {
             var self = this, o = self.options, el = self.element;
@@ -3508,6 +3527,195 @@ $.ui.position.fieldTip = {
 
         }
     });
+    $.widget("pic.selectList", {
+        options: {
+            caption: '',
+            itemName: 'Item',
+            columns: [],
+            actions: { canCreate: false, canEdit: false, canRemove: false, canClear: false }
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initList();
+            el[0].addRow = function (data) { return self.addRow(data); };
+            el[0].saveRow = function (data) { return self.saveRow(data); };
+            el[0].clear = function () { self.clear(); }
+            el[0].actions = function (val) { return self.actions(val); };
+            el[0].val = function (val) { return self.val(val); }
+        },
+        _getColumn: function (nCol) { return this.options.columns[nCol]; },
+        _createCaption: function () {
+            var self = this, o = self.options, el = self.element;
+            var caption = $('<div></div>').addClass('slist-caption').addClass('table-caption').text(o.caption);
+            $('<span></span>').appendTo(caption).addClass('header-icon-btn').addClass('btn-add').append($('<i class="fas fa-plus"></i>')).attr('title', 'Add a new ' + o.itemName)
+                .on('click', function (evt) {
+                    var evt = $.Event('additem');
+                    el.trigger(evt);
+                });
+            return caption;
+        },
+        _createHeader: function () {
+            var self = this, o = self.options, el = self.element;
+            var header = $('<div></div>').addClass('slist-header');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(header));
+            var row = $('<tr></tr>').appendTo(tbody).addClass('slist-header');
+            //var btn = $('<td></td>').appendTo(row).addClass('slist-button'); // This is the buttons column.
+            //$('<span></span>').appendTo(btn).addClass('slist-row-btn');
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = self._getColumn(i);
+                var td = $('<td></td>').appendTo(row);
+                var span = $('<span class="slist-header-text"></span>').appendTo(td).text(col.text);
+                if (typeof col.style !== 'undefined') span.css(col.style);
+                if (typeof col.headStyle !== 'undefined') div.css(col.headStyle);
+
+                if (col.hidden) td.hide();
+            }
+            //btn = $('<td></td>').appendTo(row).addClass('slist-button'); // This is the buttons column.
+            //$('<span></span>').appendTo(btn).addClass('slist-row-btn');
+            return header;
+        },
+        _createBody: function () {
+            var self = this, o = self.options, el = self.element;
+            var body = $('<div></div>').addClass('slist-body');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(body).addClass('slist-table'));
+            tbody.on('click', 'span.slist-row-btn.btn-edit', function (e) {
+                var evt = $.Event('edititem');
+                var row = $(e.currentTarget).parents('tr:first');
+                evt.dataKey = row.data('key');
+                evt.dataRow = row;
+                el.trigger(evt);
+            });
+            tbody.on('click', 'span.slist-row-btn.btn-remove', function (e) {
+                var evt = $.Event('removeitem');
+                var row = $(e.currentTarget).parents('tr:first');
+                evt.dataKey = row.data('key');
+                evt.dataRow = row;
+                el.trigger(evt);
+            });
+            return body;
+        },
+        _createActionButton: function (icon, title, cssClass) {
+            var self = this, o = self.options, el = self.element;
+            var span = $('<span></span>').addClass('slist-row-btn').addClass(cssClass).attr('title', title);
+            $('<i></i>').appendTo(span).addClass(icon);
+            return span;
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val !== 'undefined') {
+                self.clear();
+                for (data in val) {
+                    self.addRow(val[data]);
+                    console.log(val[data]);
+                }
+            }
+        },
+        addRow: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var tbl = el.find('table.slist-table:first');
+            var tbody = tbl.find('tbody:first');
+            var row = $('<tr></tr>').appendTo(tbody);
+            //var btn = $('<td></td>').appendTo(row);
+            //self._createActionButton('fas fa-edit', 'Edit ' + o.itemName).addClass('btn-edit').appendTo(btn);
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = o.columns[i];
+                var td = $('<td></td>').appendTo(row);
+                var div = $('<div></div>').appendTo(td).attr('data-bind', col.binding).attr('data-fmttype', col.fmtType).attr('data-fmtMask', col.fmtMask);
+                if (typeof col.style !== 'undefined') div.css(col.style);
+                if (typeof col.cellStyle !== 'undefined') td.css(col.cellStyle);
+            }
+            //btn = $('<td></td>').appendTo(row);
+            // Add in the buttons.
+            self.dataBindRow(row, data);
+            //self._createActionButton('fas fa-trash', 'Remove ' + o.itemName).addClass('btn-remove').appendTo(btn);
+            return row;
+        },
+        saveRow: function (data) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key !== 'undefined') {
+                // See if the key exists.
+                var key = data[o.key];
+                var row;
+                el.find('table.slist-table:first > tbody > row').each(function () {
+                    if (key === $(this).data('key')) {
+                        row = $(this);
+                        dataBinder.bind(row, data);
+                        return false;
+                    }
+                });
+                return (typeof row === 'undefined') ? addRow(data) : row;
+            }
+            else
+                self.addRow(data);
+        },
+        actions: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') {
+                return o.actions = {
+                    canCreate: makeBool(el.attr('data-cancreate')),
+                    canEdit: makeBool(el.attr('data-canedit')),
+                    canRemove: makeBool(el.attr('data-canremove')),
+                    canClear: makeBool(el.attr('data-canclear'))
+                }
+            }
+            else {
+                var acts = typeof o.actions !== 'undefined' ? o.actions : o.actions = {}
+                for (var prop in val) {
+                    var name = prop.toLowerCase();
+                    switch (name) {
+                        case 'cancreate':
+                            acts.canCreate = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canedit':
+                            acts.canUpdate = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canremove':
+                            acts.canRemove = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canclear':
+                            acts.canClear = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                    }
+                }
+            }
+        },
+        clear: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('table.slist-table:first > tbody > tr').remove();
+        },
+        dataBindRow: function (row, data) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key !== 'undefined') row.data('key', data[o.key]);
+            dataBinder.bind(row, data);
+        },
+        _initList: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('slist-list');
+            var caption = self._createCaption().appendTo(el);
+            var header = self._createHeader().appendTo(el);
+            var body = self._createBody().appendTo(el);
+            if (typeof o.id !== 'undefined') el.attr('id', o.id);
+            if (typeof o.bind !== 'undefined') el.attr('data-bind', o.bind);
+            el.on('click', 'table.slist-table > tbody > tr', function (evt) {
+                self.selectRow($(evt.currentTarget));
+            });
+            self.actions(o.actions);
+            if (typeof o.style !== 'undefined') el.css(o.style);
+        },
+        selectRow: function (row) {
+            var self = this, o = self.options, el = self.element;
+            el.find('table.slist-table > tbody > tr.selected').removeClass('selected');
+            row.addClass('selected');
+            var evt = $.Event('selected');
+            evt.dataKey = row.data('key');
+            el.trigger(evt);
+        }
+
+    });
+
 })(jQuery);
 $.pic.modalDialog.createDialog = function (id, options) {
     var opt = typeof options !== 'undefined' && options !== null ? options : {

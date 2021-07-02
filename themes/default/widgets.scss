@@ -94,3 +94,12 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
     content: "\f111";
     font-weight: 400;
 }
+.slist-caption,
+.crud-caption,
+.list-caption {
+    @include linear_gradient(180deg, #fde4be 0%, #E78F08 65%);
+}
+tr.slist-header,
+tr.crud-header {
+    @include header_background();
+}

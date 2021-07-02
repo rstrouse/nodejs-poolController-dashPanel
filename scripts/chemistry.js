@@ -357,7 +357,7 @@
                 el.attr('data-active', data.isActive === false ? false : true);
                 var ph = typeof data.ph !== 'undefined' && typeof data.ph.pump !== 'undefined' && data.ph.pump.isDosing ? true : false;
                 var orp = typeof data.orp !== 'undefined' && typeof data.orp.pump !== 'undefined' && data.orp.pump.isDosing ? true : false;
-                el.find('div.picChemControllerState').attr('data-status', data.ph.pump.isDosing || data.orp.pump.isDosing ? 'on' : 'off');
+                el.find('div.picChemControllerState').attr('data-status', ph || orp ? 'on' : 'off');
                 let siTitle = typeof data.siCalcType === 'undefined' || data.siCalcType.name === 'undefined' ? 'Bal' : data.siCalcType.name === 'lsi' ? 'LSI' : 'CSI';
                 console.log(data);
                 el.find('label.siTitle').each(function () {
@@ -813,6 +813,44 @@
             });
 
         },
+        _openHistoryDialog: function () {
+            var self = this, o = self.options, el = self.element;
+            $.getApiService(`/state/chemController/${o.id}/doseHistory`, null, 'Loading Dose History...', function (h, status, xhr) {
+                console.log(h);
+                if ((typeof h.ph !== 'undefined' && h.ph.length > 0) || (typeof h.orp !== 'undefined' && h.orp.length > 0)) {
+                    var dlg = $.pic.modalDialog.createDialog('dlgDoseHistory', {
+                        message: 'Chemical Dose History',
+                        width: '390px',
+                        height: 'auto',
+                        title: 'Dose History',
+                        buttons: [{
+                            text: 'Close', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                    var tabBar = $('<div></div>').appendTo(dlg).tabBar();
+                    if (typeof h.ph !== 'undefined' && h.ph.length > 0) {
+                        var tabPh = tabBar[0].addTab({ id: 'tabPhDoses', text: `${o.ph.chemType} Doses` });
+                        $('<div></div>').appendTo(tabPh).pnlChemDoseHistory({
+                            id: o.id,
+                            chemType:'pH',
+                            chemical: o.ph,
+                            history: h.ph
+                        });
+                    }
+                    if (typeof h.orp !== 'undefined' && h.orp.length > 0) {
+                        var tabOrp = tabBar[0].addTab({ id: 'tabOrpDoses', text: `${o.orp.chemType} Doses` });
+                        $('<div></div>').appendTo(tabOrp).pnlChemDoseHistory({
+                            id: o.id,
+                            chemType:'ORP',
+                            chemical: o.orp,
+                            history: h.orp
+                        });
+                    }
+                    tabBar[0].selectFirstVisibleTab();
+                }
+            });
+        },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             var divLine = $('<div></div>').appendTo(el);
@@ -857,7 +895,8 @@
             var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
             $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
             $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
-            var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').addClass('ph').css({ textAlign: 'left' });
+            var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').addClass('ph').css({ textAlign: 'left' }).on('click', () => { self._openHistoryDialog(); });
+
             $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight: '1' });
             $('<hr></hr>').appendTo(divTotal).css({ margin: '1px' });
             $('<div></div>').addClass('daily-dose').attr('data-chemtype', 'acid').appendTo(divTotal).staticField({ labelText: 'Acid', binding: 'ph.dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
@@ -953,5 +992,51 @@
             });
         }
     });
+    $.widget('pic.pnlChemDoseHistory', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-chemDoseHistory');
+            el.attr('data-id', o.id);
+            var list = $('<div></div>').addClass('pnl-chemDoseList').appendTo(el);
+            var sel = $('<div></div>').appendTo(list).selectList({
+                id: 'chemDose',
+                key: 'end',
+                canCreate: false,
+                actions: { canCreate: false },
+                caption: 'Doses last 24 hours', itemName: 'Dose',
+                columns: [
+                    {
+                        binding: 'start', fmtType: 'date', fmtMask: 'MM/dd hh:mmtt', text: 'Start', cellStyle: { width: '97px' },
+                        style: { width: '97px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                    },
+                    {
+                        binding: 'timeDosed', text: 'Duration', fmtType: 'duration', fmtMask: '#', cellStyle: { textAlign: 'right', width: '97px' },
+                        style: { width: '97px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                    },
+                    {
+                        binding: 'volumeDosed', fmtType: 'number', fmtMask: '#,##0.00', text: 'Dosed', cellStyle: { textAlign: 'right', width: '57px' },
+                        style: { width: '57px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                    },
+                    { binding: 'status', text: 'Status', style: { width: '97px' }, cellStyle: { width: '97px' } }
+                ]
+            }).css({ width: '363px' });
+            sel.find('div.slist-body').css({ fontSize: '.8rem', maxHeight: '97px', overflowY: 'auto' });
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
+            $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Clear History', icon: '<i class="fas fa-broom" ></i>' }).on('click', function (evt) {
+                $.putApiService(`/state/chemController/${o.id}/doseHistory/${o.chemType.toLowerCase()}/clear`, {}, `Clearing ${o.chemType.toUpperCase()} history...`, function (data, status, xhr) {
+                    sel[0].clear();
+                });
+            });
+            // Add in all the rows.
+            for (var i = 0; i < o.history.length; i++)
+                sel[0].addRow(o.history[i]);
+        }
+    });
+
 
 })(jQuery);

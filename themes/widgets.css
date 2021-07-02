@@ -1165,3 +1165,117 @@ div.warning-message {
   .ui-state-highlight{
       min-height: 35px;
   }
+.slist-list[data-cancreate="false"] .btn-add,
+.crud-list[data-cancreate="false"] .btn-add {
+    display: none;
+}
+
+.slist-list[data-canedit="false"] .btn-edit,
+.crud-list[data-canedit="false"] .btn-edit {
+    display: none;
+}
+
+.slist-list[data-canremove="false"] .btn-remove,
+.crud-list[data-canremove="false"] .btn-remove {
+    display: none;
+}
+
+.slist-list[data-canclear="false"] .btn-clear,
+.crud-list[data-canclear="false"] .btn-clear {
+    display: none;
+}
+
+.slist-caption,
+.crud-caption,
+.list-caption {
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: solid 1px black;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+div.slist-header,
+div.crud-header {
+    width:inherit;
+}
+tr.slist-header,
+tr.crud-header {
+}
+
+    tr.slist-header > td:nth-child(n + 2),
+    tr.crud-header > td:nth-child(n + 2) {
+        border-left: solid 1px black;
+    }
+
+    tr.slist-header > td > span,
+    tr.crud-header > td > span {
+        padding-left: 2px;
+        padding-right: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+table.slist-table > tbody > tr {
+    cursor: pointer;
+}
+
+    table.slist-table > tbody > tr > td > div,
+    table.crud-table > tbody > tr > td > div {
+        padding-left: 2px;
+        padding-right: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    table.slist-table > tbody > tr:nth-child(n+2) > td,
+    table.crud-table > tbody > tr:nth-child(n+2) > td {
+        border-top: solid 1px silver;
+    }
+
+    table.slist-table > tbody > tr > td:nth-child(n+2),
+    table.crud-table > tbody > tr > td:nth-child(n+2) {
+        border-left: solid 1px silver;
+    }
+
+div.crud-header {
+    width: inherit;
+    font-size: .8rem;
+}
+
+span.crud-row-btn {
+    width: 1.37rem;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.slist-header table,
+.crud-header table {
+    border-collapse: collapse;
+    border-bottom: solid 2px black;
+    width: inherit;
+}
+
+.slist-table,
+.crud-table {
+    border-collapse: collapse;
+    width: inherit;
+}
+
+td.crud-buttons {
+    width: 47px;
+}
+
+span.header-icon-btn {
+    float: right;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.slist-body {
+    width:inherit;
+}

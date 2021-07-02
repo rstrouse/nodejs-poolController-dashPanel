@@ -112,17 +112,25 @@
                                     id: -1,
                                     type: type.val,
                                     name: type.desc + (el.find('div.cfgChemController[data-controllertype=' + type.val + ']').length + 1),
-                                    phSetpoint: 7,
-                                    orpSetpoint: 400,
                                     alkalinity: 25,
                                     calciumHardness: 25,
-                                    cyanuricAcid: 0
+                                    cyanuricAcid: 0,
+                                    siCalcType: 0,
+                                    body: 0,
+                                    lsiRange: { enabled: true, low: -0.5, high: 0.5 }
+
                                 };
                                 switch (type.name) {
                                     case 'rem':
                                         cc.lsiRange = { enabled: true, low: -0.5, high: 0.5 };
                                         cc.ph = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5, tank: {alarmEmptyEnabled: true, alarmEmptyLevel: 20} };
                                         cc.orp = { dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8, tank: {alarmEmptyEnabled: true, alarmEmptyLevel: 20} };
+                                        break;
+                                    case 'intellichem':
+                                        cc.name = 'IntelliChem';
+                                        cc.address = 144;
+                                        cc.ph = { setpoint: 7.4, dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5, tank: { alarmEmptyEnabled: true, alarmEmptyLevel: 20 } };
+                                        cc.orp = { setpoint: 750, dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8, tank: { alarmEmptyEnabled: true, alarmEmptyLevel: 20 } };
                                         break;
                                 }
                                 divController[0].dataBind(cc);
@@ -933,9 +941,9 @@
                     tab = tabBar[0].addTab({ id: 'tabHardware', text: 'Hardware' });
                     $('<div></div>').appendTo(tab).pnlChemHardware(o);
                 }
-                if (typeof obj.orp === 'undefined' || typeof obj.ph === 'undefined' ||
+                if (type.name === 'rem' && (typeof obj.orp === 'undefined' || typeof obj.ph === 'undefined' ||
                     typeof obj.ph.pump === 'undefined' || typeof obj.orp.pump === 'undefined' ||
-                    typeof obj.orp.pump.type === 'undefined' || typeof obj.ph.pump.type === 'undefined' || obj.id <= 0)
+                    typeof obj.orp.pump.type === 'undefined' || typeof obj.ph.pump.type === 'undefined' || obj.id <= 0))
                     tabBar[0].selectTabById('tabHardware');
                 else
                     tabBar[0].selectTabById('tabSetpoints');

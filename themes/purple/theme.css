@@ -103,6 +103,29 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "\f111";
   font-weight: 400; }
 
+.slist-caption,
+.crud-caption,
+.list-caption {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: solid 1px gray;
+  color: white;
+  background: #02969b;
+  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
+  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+
+tr.slist-header,
+tr.crud-header {
+  text-align: center;
+  width: 2.4rem;
+  border: solid 1px gray;
+  color: white;
+  background: #fde4be;
+  background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
+  background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
+  color: black; }
+
 body {
   font-family: Roboto;
   background-image: url("background.jpg"); }
@@ -125,8 +148,7 @@ select, input[type=text], fieldset {
   background: linear-gradient(0deg, white 0%, white 100%);
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=2px; }
+  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4); }
 
 .control-panel-title {
   white-space: nowrap;
@@ -147,8 +169,7 @@ select, input[type=text], fieldset {
   background: linear-gradient(0deg, #673ab7 0%, #673ab7 100%);
   box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=2px; }
+  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4); }
 
 .body-text {
   font-family: Arial; }
@@ -180,8 +201,7 @@ select, input[type=text], fieldset {
   margin: .1rem;
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px; }
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5); }
 
 .btn {
   white-space: nowrap;
@@ -199,14 +219,12 @@ select, input[type=text], fieldset {
   background: linear-gradient(180deg, #02969b 0%, #02969b 100%);
   box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=1px; }
+  -moz-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5); }
 
 .btn-stateonly {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px;
   background: white;
   background: -webkit-linear-gradient(90deg, white 0%, white 100%);
   background: linear-gradient(0deg, white 0%, white 100%);
@@ -283,7 +301,6 @@ select, input[type=text], fieldset {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px;
   border-radius: 3px; }
 
 .header-background {
