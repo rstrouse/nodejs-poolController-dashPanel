@@ -16,7 +16,7 @@
     --number-of-columns: 2;
     --dashContainer2-display: block;
     --dashContainer3-display: block;
-    --show-time-remaining: block;
+    --show-time-remaining: inline-block;
 }
 
 div.container1, div.container2, div.container3 {
