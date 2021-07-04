@@ -661,14 +661,19 @@ var dataBinder = {
         }
         return fmt.trim();
     },
-    formatEndTime: function (dur) {
-        // this fn takes the value of (hrs * 60) + mins
+    formatEndTime: function (tnow, endTime) {
+        // this fn takes two dates
+        let diffInMS = (endTime -tnow) / 1000;
+        let days = Math.floor(diffInMS / 86400);
+        diffInMS -= days * 86400;
+        let hrs = Math.floor(diffInMS / 3600) % 24;
+        diffInMS -= hrs * 3600;
+        let min = Math.floor(diffInMS / 60) % 60;
         var fmt = '';
-        let hrs = Math.floor(dur / 60);
-        let min = Math.floor(dur - (hrs * 60));
+        if (days > 0) fmt += days + 'd';
         if (hrs > 0) fmt += (hrs + 'h');
-        if (min > 0) fmt += ' ' + (min + 'm');
-        if (hrs <= 0 && min <= 1) fmt = "<1m";
+        if (days === 0 && min > 0) fmt += ' ' + (min + 'm');
+        if (days <= 0 && hrs <= 0 && min <= 1) fmt = "<1m";
         return fmt.trim();
     },
     fromElement: function (el, obj, arrayRef) {

@@ -81,21 +81,15 @@
     },
     countdownEndTime: function () {
         var self = this, o = self.options, el = self.element;
+        let endTime = new Date(el.data('endTime'));
         if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-        let endTime = el.data('endTime');
-        if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+        if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
             el.find('span.picLightEndTime:first').empty();
         }
         else {
             let dt = new Date($('span.picControllerTime').data('dt'));
-            let tnow = dt.getHours() * 60 + dt.getMinutes();
-            let tnowStr;
-            if (endTime >= tnow) {
-                tnowStr = dataBinder.formatEndTime(endTime - tnow);
-            }
-            else {
-                tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
-            }
+            if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
+            else return;
             el.find('span.picLightEndTime:first').text(`(${tnowStr})`);
             o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
         }

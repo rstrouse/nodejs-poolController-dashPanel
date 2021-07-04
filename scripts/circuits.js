@@ -183,21 +183,15 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = el.data('endTime');
+            let endTime = new Date(el.data('endTime'));
             if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
                 $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).empty();
             }
             else {
                 let dt = new Date($('span.picControllerTime').data('dt'));
-                let tnow = dt.getHours() * 60 + dt.getMinutes();
-                let tnowStr;
-                if (endTime >= tnow) {
-                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
-                }
-                else {
-                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
-                }
+                if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
+                else return;
                 $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
                 o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
             }
@@ -254,21 +248,15 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = el.data('endTime');
+            let endTime = new Date(el.data('endTime'));
             if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
                 $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).empty();
             }
             else {
                 let dt = new Date($('span.picControllerTime').data('dt'));
-                let tnow = dt.getHours() * 60 + dt.getMinutes();
-                let tnowStr;
-                if (endTime >= tnow) {
-                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
-                }
-                else {
-                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
-                }
+                if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
+                else return;
                 $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
                 o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
             }
@@ -552,11 +540,11 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = el.data('endTime');
+            let endTime = new Date(el.data('endTime'));
             if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (getStorage('--show-time-remaining') === 'none' || !makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
-                if (self.hasLightThemes(o) || self.hasDimmer(o)){
-                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();    
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
+                if (self.hasLightThemes(o) || self.hasDimmer(o)) {
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
                 }
                 else {
                     $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).empty();
@@ -567,16 +555,10 @@
             }
             else {
                 let dt = new Date($('span.picControllerTime').data('dt'));
-                let tnow = dt.getHours() * 60 + dt.getMinutes();
-                let tnowStr;
-                if (endTime >= tnow) {
-                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
-                }
-                else {
-                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
-                }
-                if (self.hasLightThemes(o) || self.hasDimmer(o)){
-                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);    
+                if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
+                else return;
+                if (self.hasLightThemes(o) || self.hasDimmer(o)) {
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
                 }
                 else {
                     $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
@@ -584,8 +566,6 @@
                 // bodies may be rendered/updated after circuits so these need to be updated more frequently
                 $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'inline-block');
                 $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
-
-                // 5s here so it populates the body
                 o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 5);
             }
         }
@@ -829,21 +809,15 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = el.data('endTime');
+            let endTime = new Date(el.data('endTime'));
             if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime <= 0 || isNaN(endTime) || typeof endTime === 'undefined' || endTime === null) {
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
                 $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
             }
             else {
                 let dt = new Date($('span.picControllerTime').data('dt'));
-                let tnow = dt.getHours() * 60 + dt.getMinutes();
-                let tnowStr;
-                if (endTime >= tnow) {
-                    tnowStr = dataBinder.formatEndTime(endTime - tnow);
-                }
-                else {
-                    tnowStr = dataBinder.formatEndTime(1440 - tnow + endTime);
-                }
+                if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
+                else return;
                 $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
                 o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
             }
