@@ -1,197 +1,164 @@
-span.picPercentData {
+﻿span.picPercentData {
   padding-left: 2px;
-  padding-right: 2px;
-}
+  padding-right: 2px; }
 
 div.picControllerTitle {
   display: table;
-  width: 100%;
-}
+  width: 100%; }
 
 input.picServerAddress {
-  width: 10rem;
-}
+  width: 10rem; }
 
 input.picServerPort {
-  width: 4rem;
-}
+  width: 4rem; }
 
 div.picOptionLine > label {
   width: 9rem;
-  display: inline-block;
-}
+  display: inline-block; }
 
 div.picPanelMode,
 div.picFreezeProtect {
   text-align: center;
-  color: blue;
-}
+  color: blue; }
 
 div.picPanelMode[data-status=""],
 div.picPanelMode[data-status=auto],
 div.picFreezeProtect[data-status=off] {
-  display: none;
-}
+  display: none; }
 
 div.picModel > i {
   cursor: pointer;
-  padding-right: 0.2rem;
-}
+  padding-right: .2rem; }
 
 div.picModel > i:hover {
   cursor: pointer;
-  padding-right: 0.2rem;
-  color: orange;
-}
+  padding-right: .2rem;
+  color: orange; }
 
 div.picPanelMode > label,
 div.picFreezeProtect > label {
   font-weight: bold;
   color: red;
   font-size: 1.2rem;
-  padding-left: 0.2rem;
-  padding-right: 0.2rem;
-}
+  padding-left: .2rem;
+  padding-right: .2rem; }
 
 div.picControllerTitle > div {
-  display: table-cell;
-}
+  display: table-cell; }
 
 div.picControllerTitle > div:nth-child(2) {
-  text-align: center;
-}
+  text-align: center; }
 
 div.picControllerTitle > div:nth-child(1) {
-  width: 20%;
-}
+  width: 20%; }
 
 div.picControllerTitle > div:nth-child(3) {
   width: 20%;
-  text-align: right;
-}
+  text-align: right; }
 
 div.picAppLogging > label,
 div.picPacketLogging > label {
   min-width: 4rem;
-  display: inline-block;
-}
+  display: inline-block; }
 
 div.picBS {
-  color: purple;
-}
+  color: purple; }
 
 div.picFirmware {
-  font-size: 0.8rem;
+  font-size: .8rem;
   display: block;
-  /* vertical-align:top; */
-}
+  /* vertical-align:top; */ }
 
 div.picFirmware > div.picOptionLine > label {
-  width: 4.5rem;
-}
+  width: 4.5rem; }
 
 div.picFirmware > div.picOptionLine > span {
   display: inline-block;
   width: 2rem;
-  text-align: right;
-}
+  text-align: right; }
 
 div.picModules {
   display: inline-block;
   vertical-align: top;
   padding-left: 1em;
   padding-right: 1em;
-  font-size: 0.8rem;
-}
+  font-size: .8rem; }
 
 div.picModules > table > tbody > tr > td:nth-child(1) {
   width: 70px;
-  text-align: left;
-}
+  text-align: left; }
 
 div.picModules > table > tbody > tr > td:nth-child(2) {
   width: 200px;
-  text-align: left;
-}
+  text-align: left; }
 
 div.picModules > table {
   border-collapse: collapse;
   box-sizing: border-box;
-  border-spacing: 0px;
-}
+  border-spacing: 0px; }
 
 div.picModules > table > tbody > tr:nth-child(1) {
   color: white;
   font-weight: bold;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
-  background-image: linear-gradient(top, #ffaf4b, #ff920a);
-}
+  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: linear-gradient(to bottom, #ffaf4b, #ff920a); }
 
 div.picModules > table > tbody > tr:nth-child(n+2) {
   width: 100%;
   top: 0;
   margin: 0px;
-  background-color: white;
-}
+  background-color: white; }
 
 div.picModules > table > tbody > tr:nth-child(n+1) > td {
   border: solid 1px teal;
   padding-left: 4px;
   padding-right: 4px;
-  border-collapse: collapse;
-}
+  border-collapse: collapse; }
 
 div.picModules > table > tbody > tr:nth-child(1) > td {
   border: solid 1px black;
   padding-left: 4px;
   padding-right: 4px;
-  border-collapse: collapse;
-}
+  border-collapse: collapse; }
 
 div.picConfigIcon, div.picStartLogs {
   display: inline-block;
   cursor: pointer;
-  margin-left: 0.5rem;
-  vertical-align: text-top;
-}
+  margin-left: .5rem;
+  vertical-align: text-top; }
 
 div.picConfigIcon:hover, div.picStartLogs:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634;
-}
+  text-shadow: 3px 3px 16px #272634; }
 
 div.picOptionField > label {
   display: inline-block;
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
 div.picAmbientTemp > div {
-  display: inline-block;
-}
+  display: inline-block; }
 
 div.picAmbientTemp > div:nth-child(2) {
-  float: right;
-}
+  float: right; }
 
 div.picAmbientTemp label {
-  color: gray;
-}
+  color: gray; }
 
 div.picBodyTemp > div:nth-child(2) {
-  font-size: 2em;
-}
+  font-size: 2em; }
 
 div.ct-narrative {
   width: 100%;
   overflow: hidden;
-  font-size: 0.8em;
+  font-size: .8em;
   margin-top: 1em;
-  max-width: 37rem;
-}
+  max-width: 37rem; }
 
 div.ct-narrative > hr {
-  margin: 1px;
-}/*# sourceMappingURL=controller.css.map */
+  margin: 1px; }

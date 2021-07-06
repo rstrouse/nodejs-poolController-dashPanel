@@ -193,8 +193,7 @@ div.chem-balance-value {
   padding-top: 0px;
   box-shadow: 3px 3px 3px #7f7f7f;
   -webkit-box-shadow: 3px 3px 3px #7f7f7f;
-  -moz-box-shadow: 3px 3px 3px #7f7f7f;
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px; }
+  -moz-box-shadow: 3px 3px 3px #7f7f7f; }
 
 .control-panel-title {
   font-family: cabin sketch;

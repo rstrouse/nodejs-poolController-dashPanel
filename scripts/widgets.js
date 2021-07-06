@@ -3553,7 +3553,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             var caption = $('<div></div>').addClass('slist-caption').addClass('table-caption').text(o.caption);
             $('<span></span>').appendTo(caption).addClass('header-icon-btn').addClass('btn-add').append($('<i class="fas fa-plus"></i>')).attr('title', 'Add a new ' + o.itemName)
-                .on('click', function (evt) {
+                .on('click', function (e) {
                     var evt = $.Event('additem');
                     el.trigger(evt);
                 });
@@ -3722,6 +3722,15 @@ $.ui.position.fieldTip = {
     });
 
 })(jQuery);
+$.pic.fieldTip.clearTips = function (el) {
+    if (el instanceof jQuery) {
+        el.find('div.picFieldTip').remove();
+    }
+    else if (typeof el !== 'undefined')
+        $(el).find('div.picFieldTip').remove();
+    else
+        $('div.picFieldTip').remove();
+};
 $.pic.modalDialog.createDialog = function (id, options) {
     var opt = typeof options !== 'undefined' && options !== null ? options : {
         autoOpen: false,

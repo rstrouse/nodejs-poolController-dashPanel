@@ -165,7 +165,7 @@ div.picModules > table > tbody > tr:nth-child(1) {
   background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
   background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
   background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
-  background-image: linear-gradient(top, #ffaf4b, #ff920a); }
+  background-image: linear-gradient(to bottom, #ffaf4b, #ff920a); }
 
 div.picModules > table > tbody > tr:nth-child(n+2) {
   width: 100%;

@@ -257,7 +257,6 @@
                     }
                     break;
             }
-
         }
 
     });
@@ -267,41 +266,138 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].dataBind = function (obj) { return self.dataBind(obj); };
+            el[0].setRS485Stats = function (stat) { return self.setRS485Stats(stat); };
+        },
+        setRS485Stats: function (stat) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.pnl-rs485Stats').each(function () {
+                dataBinder.bind($(this), stat);
+            });
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picConfigCategory');
             el.addClass('cfgRS485');
-            var port = {
-                "enabled": true,
-                "rs485Port": "/dev/ttyUSB0",
-                "mockPort": false,
-                "netConnect": true,
-                "netHost": "raspberrypi",
-                "netPort": 9801,
-                "inactivityRetry": 10,
-                "portSettings": {
-                    "baudRate": 9600,
-                    "dataBits": 8,
-                    "parity": "none",
-                    "stopBits": 1,
-                    "flowControl": false,
-                    "autoOpen": false,
-                    "lock": false
-                }
-            };
-            var line = $('<div></div>').appendTo(el);
-            var binding = '';
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
-            $('<div></div>').appendTo(line).pickList({
-                required: true,
-                bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
-                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
-            });
+            el.addClass('rs485Stats');
+            var divSettings = $('<div></div>').appendTo(el).addClass('pnl-rs485Port').css({ display: 'inline-block', verticalAlign: 'top' });
+            var divStatus = $('<div></div>').appendTo(el).addClass('pnl-rs485Stats').css({ display: 'inline-block', verticalAlign: 'top', paddingLeft: '1rem' });
+            $.getApiService('/config/options/rs485', null, 'Getting Port Settings...', function (opts, status, xhr) {
+                var port = $.extend(true, {
+                    "enabled": true,
+                    "type": opts.port.netConnect ? 'network' : 'local',
+                    "rs485Port": "/dev/ttyUSB0",
+                    "mockPort": false,
+                    "netConnect": true,
+                    "netHost": "raspberrypi",
+                    "netPort": 9801,
+                    "inactivityRetry": 10,
+                    "portSettings": {
+                        "baudRate": 9600,
+                        "dataBits": 8,
+                        "parity": "none",
+                        "stopBits": 1,
+                        "flowControl": false,
+                        "autoOpen": false,
+                        "lock": false
+                    }
+                }, opts.port);
+                var line = $('<div></div>').appendTo(divSettings);
+                var binding = '';
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
+                $('<div></div>').appendTo(line).pickList({
+                    required: true,
+                    bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
+                    items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                }).on('selchanged', function (evt) {
+                    var pnl = $(evt.currentTarget).parents('div.cfgRS485:first');
+                    if (evt.newItem.val === 'network') {
+                        pnl.find('div.pnl-rs485-network').show();
+                        pnl.find('div.pnl-rs485-local').hide();
+                    }
+                    else {
+                        pnl.find('div.pnl-rs485-network').hide();
+                        pnl.find('div.pnl-rs485-local').show();
+                    }
+                });
+                line = $('<div></div>').appendTo(divSettings);
+                $('<div></div>').appendTo(line).inputField({ labelText: 'Port Name', binding: 'rs485Port', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width: '5.5rem' } } });
+                var divLocal = $('<div></div>').addClass('pnl-rs485-local').appendTo(divSettings).hide();
+                line = $('<div></div>').appendTo(divLocal);
+                var divNet = $('<div></div>').addClass('pnl-rs485-network').appendTo(divSettings).hide();
+                line = $('<div></div>').appendTo(divNet);
+                $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'netHost', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width:'5.5rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType:'number', fmtMask:'#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
+                // Create the settings panel.
+                var grpRec = $('<fieldset></fieldset>').appendTo(divStatus).css({ fontSize: '.8rem' });
+                $('<legend></legend>').appendTo(grpRec).text('Receive Stats');
 
-            line = $('<div></div>').appendTo(el);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Port Name', binding: 'name', inputAttrs: { maxlength: 32}, labelAttrs: { style: { marginRight: '.25rem' } } });
+                line = $('<div></div>').appendTo(grpRec);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display:'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpRec);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Successful', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'recSuccess', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpRec);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Failed', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'recFailed', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpRec);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Collisions', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'recCollisions', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpRec);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units:'%', binding: 'recFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+
+                var grpSend = $('<fieldset></fieldset>').appendTo(divStatus).css({ fontSize: '.8rem' });
+                $('<legend></legend>').appendTo(grpSend).text('Send Stats');
+                line = $('<div></div>').appendTo(grpSend);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType:'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSend);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Successful', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'sndSuccess', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSend);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Aborted', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'sndAborted', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSend);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Retries', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'sndRetries', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSend);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units: '%', binding: 'sndFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
+                var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Port', icon: '<i class="fas fa-save" ></i>' });
+                btnSave.on('click', function (evt) {
+                    $.pic.fieldTip.clearTips(divSettings);
+                    var p = dataBinder.fromElement(divSettings);
+                    console.log(p);
+                    var obj = {};
+                    obj.enabled = p.enabled;
+                    obj.netConnect = p.type === 'network';
+                    obj.rs485Port = p.rs485Port;
+                    obj.netPort = p.netPort;
+                    obj.netHost = p.netHost;
+                    var bValid = true;
+                    if (p.enabled) {
+                        if (obj.rs485Port.trim() === '') {
+                            $('<div></div>').appendTo(el.find('div[data-bind$=rs485Port]:first')).fieldTip({ message: 'You must supply the port name' });
+                            bValid = false;
+                        }
+                        if (obj.netConnect) {
+                            if (obj.netHost.trim() === '') {
+                                $('<div></div>').appendTo(el.find('div[data-bind$=netHost]:first')).fieldTip({ message: 'The network host is required' });
+                                bValid = false;
+                            }
+                            if (isNaN(obj.netPort) || obj.netPort < 1 || obj.netPort > 65535) {
+                                $('<div></div>').appendTo(el.find('div[data-bind$=netPort]:first')).fieldTip({ message: 'The network port is required between 1 and 65,535' });
+                                bValid = false;
+                            }
+                        }
+                    }
+                    if (bValid) {
+                        $.putApiService('/app/rs485Port', obj, 'Setting RS485 Port...', function (retPort, status, xhr) {
+                            self.dataBind(retPort);
+                        });
+                    }
+                });
+                var db = $('div.picDashboard').each(function () {
+                    console.log(this);
+                    this.receivePortStats(true);
+                });
+                self.dataBind(port);
+                self.setRS485Stats(opts.stats);
+            });
 
 
         //    el.addClass('picConfigCategory cfgBody');
@@ -326,27 +422,8 @@
         //    });
         },
         dataBind: function (obj) {
-        //    var self = this, o = self.options, el = self.element;
-        //    var acc = el.find('div.picAccordian:first');
-        //    var cols = acc[0].columns();
-        //    if (typeof obj.type === 'undefined') {
-        //        if (name.toLowerCase() === 'pool') obj.type = 0;
-        //        else if (name.toLowerCase() === 'spa') obj.type = 1;
-        //        else obj.type = 0;
-        //    }
-        //    if (obj.type === 1) {
-        //        el.find('div.picCheckbox[data-bind=manualHeat]').show();
-        //        cols[0].elGlyph().attr('class', 'fas fa-hot-tub');
-        //    }
-        //    else {
-        //        el.find('div.picCheckbox[data-bind=manualHeat]').hide();
-        //        cols[0].elGlyph().attr('class', 'fas fa-swimming-pool');
-        //    }
-        //    var capacity = typeof obj.capacity !== 'undefined' ? parseInt(obj.capacity, 10) || 0 : 0;
-        //    if (isNaN(capacity)) capacity = 0;
-        //    cols[0].elText().text(obj.name);
-        //    cols[1].elText().text(capacity.format('#,##0') + ' gallons');
-        //    dataBinder.bind(el, obj);
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, obj);
         }
     });
 })(jQuery);

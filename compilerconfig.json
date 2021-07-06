@@ -62,5 +62,17 @@
   {
     "outputFile": "themes/materia/colors.css",
     "inputFile": "themes/materia/colors.scss"
+  },
+  {
+    "outputFile": "themes/mixins/gradients.css",
+    "inputFile": "themes/mixins/gradients.scss"
+  },
+  {
+    "outputFile": "themes/purple/colors.css",
+    "inputFile": "themes/purple/colors.scss"
+  },
+  {
+    "outputFile": "themes/purple/widgets.css",
+    "inputFile": "themes/purple/widgets.scss"
   }
 ]

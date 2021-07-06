@@ -129,6 +129,19 @@
                 }
             }
         },
+        receiveRS485Stats: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof val !== 'undefined') {
+                    console.log(`sendRS485PortStats Emit ${val}`);
+                    o.socket.emit('sendRS485PortStats', makeBool(val));
+                    o.sendRS485PortStats = makeBool(val);
+                    $('div.picRS485Stats').each(function () {
+                        this.setRS485Stats(o.sendRS485PortStats);
+                    });
+                }
+            }
+        },
         sendOutboundMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
             if (o.isConnected) {

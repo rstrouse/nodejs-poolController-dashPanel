@@ -5,7 +5,9 @@
             var self = this, o = self.options, el = self.element;
             self._initState();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
+            el[0].receivePortStats = function (val) { self.receivePortStats(val); };
             el[0].reset = function () { self._reset(); };
+            console.log(el[0]);
         },
         _clearPanels: function () {
             var self = this, o = self.options, el = self.element;
@@ -123,6 +125,7 @@
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     console.log(data);
+                    self.receivePortStats(o.sendPortStatus);
                 })
                     .done(function (status, xhr) { console.log({ msg: 'Done:', status: status }); })
                     .fail(function (xhr, status, error) { console.log('Failed:' + error); });
@@ -346,6 +349,15 @@
             o.socket.on('logMessage', function (data) {
                 console.log({ evt: 'logMessage', data: data });
             });
+            o.socket.on('rs485Stats', function (data) {
+                console.log({ evt: 'rs485Stats', data: data });
+                var rs485Displays = el.find('div.rs485Stats');
+                rs485Displays.each(function () {
+                    this.setRS485Stats(data);
+                });
+                // Turn it off if there are no displays out there.
+                if (rs485Displays.length === 0) self.receivePortStats(false);
+            });
             o.socket.on('chemController', function (data) {
                 console.log({ evt: 'chemController', data: data });
                 el.find('div.picChemistry').each(function () { this.setChemControllerData(data); });
@@ -408,6 +420,17 @@
                     o.sendLogMessages = makeBool(val);
                 }
             }
+        },
+        receivePortStats: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof val !== 'undefined') {
+                    console.log(`sendPortStatus Emit ${val}`);
+                    o.socket.emit('sendRS485PortStats', makeBool(val));
+                    o.sendPortStatus = makeBool(val);
+                }
+            }
         }
+
     });
 })(jQuery);

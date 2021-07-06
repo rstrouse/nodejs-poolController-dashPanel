@@ -153,8 +153,7 @@ fieldset {
   background: white;
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=2px; }
+  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4); }
 
 .control-panel-title {
   white-space: nowrap;
@@ -174,8 +173,7 @@ fieldset {
   background: linear-gradient(180deg, #67bb6a, #4CAF50);
   box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=2px; }
+  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4); }
 
 .body-text {
   font-family: Arial; }
@@ -240,7 +238,6 @@ fieldset {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px;
   background: white; }
 
 .btn-panel {
@@ -303,7 +300,6 @@ fieldset {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  filter: progid:DXImageTransform.Microsoft.Shadow direction=135, color="gainsboro", strength=3px;
   border-radius: 3px; }
 
 .header-background {

@@ -1,20 +1,18 @@
-table.vlist-body {
+﻿table.vlist-body {
   box-sizing: border-box;
   font-size: 8pt;
   width: 100%;
   table-layout: auto;
   border-spacing: 0px;
   border-collapse: collapse;
-  margin: 0px;
-}
+  margin: 0px; }
 
 table.vlist-outer {
   width: 100%;
   height: 100%;
   border-collapse: collapse;
   border-spacing: 0px;
-  table-layout: auto;
-}
+  table-layout: auto; }
 
 table.vlist-header {
   box-sizing: border-box;
@@ -26,38 +24,35 @@ table.vlist-header {
   border-spacing: 0px;
   border-collapse: collapse;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
-  background: linear-gradient(top, #159FCF, #13647F);
-}
+  background: -ms-linear-gradient(top, #159FCF, #13647F);
+  background: -moz-linear-gradient(top, #159FCF, #13647F);
+  background: -webkit-linear-gradient(top, #159FCF, #13647F);
+  background: linear-gradient(to bottom, #159FCF, #13647F); }
 
 td.vlist-header {
-  padding: 0px;
-}
+  padding: 0px; }
 
 td.vlist-data {
   border: solid 1px gray;
-  padding: 0px;
-}
+  padding: 0px; }
 
 tr.vlist-body-outer {
   height: 100%;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
 td.vlist-body-outer {
   width: 100%;
   height: 100%;
   overflow: hidden;
   vertical-align: top;
-  padding: 0px;
-}
+  padding: 0px; }
 
 div.vlist-body-outer {
   position: relative;
   overflow: hidden;
   vertical-align: top;
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
 
 div.vlist-body {
   position: absolute;
@@ -65,9 +60,7 @@ div.vlist-body {
   vertical-align: top;
   width: 100%;
   height: 100%;
-  padding-right: 1px;
-}
+  padding-right: 1px; }
 
 tr.msgRow, tr.msgApiRow {
-  cursor: pointer;
-}/*# sourceMappingURL=vlist.css.map */
+  cursor: pointer; }
