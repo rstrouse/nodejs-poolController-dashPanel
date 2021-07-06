@@ -653,11 +653,13 @@ var dataBinder = {
         else if (hrs > 0) fmt += (hrs + 'hr');
         if (min > 0) fmt += ' ' + (min + 'min');
         if (sec > 0) {
-            if (typeof fmtMask !== 'undefined')
-                fmt += ' ' + (sec.format(fmtMask, '0') + 'sec');
+            if (typeof fmtMask !== 'undefined') {
+                let ssec = sec.format(fmtMask, '');
+                if (ssec !== '' && ssec.length > 0)
+                    fmt += (' ' + ssec + 'sec');
+            }
             else
                 fmt += ' ' + (sec + 'sec');
-
         }
         return fmt.trim();
     },
