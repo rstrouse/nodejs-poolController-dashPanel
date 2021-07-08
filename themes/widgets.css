@@ -252,6 +252,10 @@ div.picCircuits > div:nth-child(n+2) {
 div.divCircuitEndTime{
     display: var(--show-time-remaining) !important;
 }
+div.outerBodyEndTime label.picInline-label {
+    min-width:7em;
+    display:inline-block;
+}
 span.picCircuitEndTime {
     font-size:.585em;
     width:auto;

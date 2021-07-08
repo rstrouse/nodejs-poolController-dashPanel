@@ -104,7 +104,8 @@
             $('<label></label>').addClass('picUnitSymbol').html('&deg').css({ fontSize: '.4em', verticalAlign:'top', display:'inline-block', paddingTop:'.25em' }).appendTo(line);
             $('<span></span>').addClass('picTempUnits').text('-').css({ fontSize: '.4em', verticalAlign: 'top', display: 'inline-block', paddingTop: '.25em'}).appendTo(line);
             bodyTemp.appendTo(el);
-
+            
+            var setpointsWrapper = $('<div></div>').appendTo(el); 
             var setpoints = $('<div></div>').addClass('picBodySetpoints');
             line = $('<div></div>').addClass('heatSetpoint').appendTo(setpoints);
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').addClass('heatSetpoint').text('Set Point').appendTo(line);
@@ -124,10 +125,10 @@
             line = $('<div></div>').appendTo(setpoints);
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').text('Heater Status').appendTo(line);
             $('<span></span>').addClass('picStatusData').attr('data-bind', 'heatStatus.desc').text('----').css({ maxWidth: '5.1rem', display: 'inline-block' }).appendTo(line);
-            line = $('<div></div>').attr('data-circuitid', o.circuit).addClass('outerBodyEndTime').appendTo(setpoints).css('display', 'none');
+            setpoints.appendTo(setpointsWrapper);
+            line = $('<div></div>').attr('data-circuitid', o.circuit).addClass('outerBodyEndTime').appendTo(setpointsWrapper).css('display', 'none');
             $('<label></label>').addClass('picInline-label').attr('data-circuitid', o.circuit).addClass('picSetpointText').text('Time to off').appendTo(line);
             $('<span class="bodyCircuitEndTime"></span>').appendTo(line);
-            setpoints.appendTo(el);
 
 
             //$('<div class="picBodyIcon">'

@@ -8,6 +8,38 @@
         },
         _initCircuits: function (data) {
             var self = this, o = self.options, el = self.element;
+
+            el.find('div.picLight').each(function () {
+                try {
+
+                    this.stopCountdownEndTime();
+                }
+                catch (err) {
+                    console.log($(this).attr('data-circuitid'))
+                    console.log(err);
+                }
+            });
+
+            el.find('div.picFeature').each(function () {
+                try {
+
+                    this.stopCountdownEndTime();
+                }
+                catch (err) {
+                    console.log($(this).attr('data-circuitid'))
+                    console.log(err);
+                }
+            });
+            el.find('div.picCircuit').each(function () {
+                try {
+
+                    this.stopCountdownEndTime();
+                }
+                catch (err) {
+                    console.log($(this).attr('data-circuitid'))
+                    console.log(err);
+                }
+            });
             el.empty();
             if (typeof data !== 'undefined') {
                 el.show();
@@ -63,7 +95,7 @@
         },
         initFeatures: function (data) {
             var self = this, o = self.options, el = self.element;
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
             el.empty();
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.prependTo(el);
@@ -129,6 +161,7 @@
                 // el.parents('div.picCircuits.picControlPanel:first').find('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
                 // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
+            $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
             $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
     });
@@ -140,11 +173,12 @@
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
             el.empty();
             if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
@@ -172,7 +206,13 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
-            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+            if (typeof data.endTime === 'undefined') {
+                el.attr('data-endTime', null)
+                o.endTime = undefined;
+            }
+            else {
+                el.attr('data-endTime', data.endTime);
+            }
             self.countdownEndTime();
             if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
             if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
@@ -183,9 +223,9 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = new Date(el.data('endTime'));
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
+            this.stopCountdownEndTime();
+            let endTime = new Date(el.attr('data-endTime'));
+            if (isNaN(endTime) || !makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
                 $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).empty();
             }
             else {
@@ -193,8 +233,12 @@
                 if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
                 else return;
                 $(`div[data-featureid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
-                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 30);
             }
+        },
+        stopCountdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
         }
     });
     $.widget('pic.circuitGroup', {
@@ -205,11 +249,12 @@
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
             el.empty();
             if (!el.hasClass('btn')) el.addClass('btn');
             var toggle = $('<div class="picFeatureToggle"></div>');
@@ -237,7 +282,13 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
-            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+            if (typeof data.endTime === 'undefined') {
+                el.attr('data-endTime', null)
+                o.endTime = undefined;
+            }
+            else {
+                el.attr('data-endTime', data.endTime);
+            }
             self.countdownEndTime();
             if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
             if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
@@ -248,9 +299,9 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = new Date(el.data('endTime'));
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
+            this.stopCountdownEndTime();
+            let endTime = new Date(el.attr('data-endTime'));
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
                 $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).empty();
             }
             else {
@@ -258,8 +309,12 @@
                 if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
                 else return;
                 $(`div[data-groupid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
-                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 30);
             }
+        },
+        stopCountdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
         }
     });
     $.widget("pic.virtualCircuits", {
@@ -316,6 +371,7 @@
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
             o = {};
         },
         _buildControls: function () {
@@ -350,6 +406,7 @@
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].enablePopover = function (val) { return self.enablePopover(val); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
             o = {};
         },
         _buildPopover: function () {
@@ -500,7 +557,13 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
-                data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+                if (typeof data.endTime === 'undefined' || !data.isOn) {
+                    el.attr('data-endTime', null)
+                    o.endTime = undefined;
+                }
+                else {
+                    el.attr('data-endTime', data.endTime);
+                }
                 self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
@@ -520,6 +583,7 @@
                 else {
                     if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length > 0) {
                         //console.log('remove id: ' + data.id);
+                        $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
                         $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').remove();
                     }
                 }
@@ -540,9 +604,9 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = new Date(el.data('endTime'));
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
+            this.stopCountdownEndTime();
+            let endTime = new Date(el.attr('data-endTime'));
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
                 if (self.hasLightThemes(o) || self.hasDimmer(o)) {
                     $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
                 }
@@ -563,11 +627,22 @@
                 else {
                     $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
                 }
-                // bodies may be rendered/updated after circuits so these need to be updated more frequently
-                $(`div[data-circuitid=${o.id}].outerBodyEndTime`).css('display', 'inline-block');
-                $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
-                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 5);
+                let body;
+                if (o.type.name === 'spa' || o.type.name === 'pool') {
+                    // bodies may be rendered/updated after circuits so these need to be updated more frequently
+                    body = $(`div[data-circuitid=${o.id}].outerBodyEndTime`);
+                    console.log(`${o.id}: ${tnowStr} and body.length: ${body.length}`);
+                    if (body.length) {
+                        body.css('display', 'inline-block');
+                        $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
+                    }
+                }
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * (typeof body !== 'undefined' && body.length === 0 ? .5 : 5));
             }
+        },
+        stopCountdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
         }
     });
     $.widget('pic.lights', {
@@ -695,6 +770,7 @@
                 // el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
                 // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
+            $('div.picLights > div.picCircuit[data-eqid=' + data.id + ']:not(:first)').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
             $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
 
@@ -706,6 +782,7 @@
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
             self._buildControls();
             o = {};
         },
@@ -793,7 +870,13 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
-                data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
+                if (typeof data.endTime === 'undefined' || !data.isOn) {
+                    el.attr('data-endTime', null)
+                    o.endTime = undefined;
+                }
+                else {
+                    el.attr('data-endTime', data.endTime);
+                }
                 self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
@@ -809,18 +892,32 @@
         },
         countdownEndTime: function () {
             var self = this, o = self.options, el = self.element;
-            let endTime = new Date(el.data('endTime'));
-            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
-                $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
+            this.stopCountdownEndTime();
+            let endTime = new Date(el.attr('data-endTime'));
+            if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
+                if (self.hasLightThemes(o) || self.hasDimmer(o)) {
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).empty();
+                }
+                else {
+                    $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).empty();
+                }
             }
             else {
                 let dt = new Date($('span.picControllerTime').data('dt'));
                 if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
                 else return;
-                $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
-                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+                if (self.hasLightThemes(o) || self.hasDimmer(o)) {
+                    $(`div[data-circuitid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
+                }
+                else {
+                    $(`div[data-circuitid=${o.id}] > span.picCircuitEndTime`).text(`${tnowStr}`);
+                }
+                o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 30);
             }
+        },
+        stopCountdownEndTime: function () {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
         }
     });
 })(jQuery);

@@ -5,6 +5,7 @@
         el[0].setState = function (data) { self.setState(data); };
         el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
         el[0].countdownEndTime = function () { self.countdownEndTime(); }
+        el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
         self._buildControls();
         o = {};
     },
@@ -81,9 +82,10 @@
     },
     countdownEndTime: function () {
         var self = this, o = self.options, el = self.element;
-        let endTime = new Date(el.data('endTime'));
-        if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) clearTimeout(o.countdownEndTime);
-        if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || typeof el.data('endTime') === 'undefined' || endTime === null) {
+        this.stopCountdownEndTime();
+        if (typeof el.attr('data-endTime') === 'undefined') return;
+        let endTime = new Date(el.attr('data-endTime'));
+        if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
             el.find('span.picLightEndTime:first').empty();
         }
         else {
@@ -91,8 +93,12 @@
             if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
             else return;
             el.find('span.picLightEndTime:first').text(`(${tnowStr})`);
-            o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 60);
+            o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 30);
         }
+    },
+    stopCountdownEndTime: function () {
+        var self = this, o = self.options, el = self.element;
+        if (typeof o.countdownEndTime !== 'undefined' && o.countdownEndTime) { clearTimeout(o.countdownEndTime); o.countdownEndTime = null; }
     }
 });
 $.widget('pic.lightGroupPanel', {

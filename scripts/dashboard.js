@@ -118,10 +118,10 @@
                     //    $('div.picDashboard').attr('data-hideintellibrite', 'true');
 
                     //}
+                    self._createBodiesPanel(data);
                     self._createControllerPanel(data);
                     self._createCircuitsPanel(data);
                     self._createPumpsPanel(data);
-                    self._createBodiesPanel(data);
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     console.log(data);
@@ -156,9 +156,9 @@
 
                     }
                     self._createControllerPanel(data);
+                    self._createBodiesPanel(data);
                     self._createCircuitsPanel(data);
                     self._createPumpsPanel(data);
-                    self._createBodiesPanel(data);
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     self._initSockets();
