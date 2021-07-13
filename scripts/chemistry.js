@@ -359,7 +359,7 @@
                 var orp = typeof data.orp !== 'undefined' && typeof data.orp.pump !== 'undefined' && data.orp.pump.isDosing ? true : false;
                 el.find('div.picChemControllerState').attr('data-status', ph || orp ? 'on' : 'off');
                 let siTitle = typeof data.siCalcType === 'undefined' || data.siCalcType.name === 'undefined' ? 'Bal' : data.siCalcType.name === 'lsi' ? 'LSI' : 'CSI';
-                console.log(data);
+                //console.log(data);
                 el.find('label.siTitle').each(function () {
                     $(this).text(siTitle);
                 });
@@ -437,7 +437,7 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
-            console.log(data);
+            //console.log(data);
             el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
                 this.val(data.ph.level);
             });

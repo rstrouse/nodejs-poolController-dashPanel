@@ -364,7 +364,9 @@
                 el.find(`div.pnl-chemcontroller-settings[data-eqid="${data.id}"]`).each(function () { this.setEquipmentData(data); });
 
             });
-
+            o.socket.on('chemicalDose', (data) => {
+                console.log({ evt: 'chemDose', data: data });
+            });
             o.socket.on('heater', function (data) {
                 console.log({ evt: 'heater', data: data });
             });
