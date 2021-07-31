@@ -30,10 +30,9 @@ class Config {
                 this.cfgPath,
                 JSON.stringify(this._cfg, undefined, 2)
             );
+            console.log(`Updated configuration file`);
         }
-        catch (err) {
-            logger.error("Error writing configuration file %s", err);
-        }
+        catch (err) { console.log(`Error writing configuration file ${err}`); }
     }
     public setSection(section: string, val) {
         let c = this._cfg;

@@ -93,6 +93,9 @@
                     $('<div></div>').appendTo(evt.newTab.contents).configInterfaces();
                     break;
             }
+            if (typeof evt.oldTab !== 'undefined') {
+                evt.oldTab.contents.empty();
+            }
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;

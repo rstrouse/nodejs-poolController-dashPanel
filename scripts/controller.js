@@ -717,7 +717,7 @@
                 btnApply.on('click', function (e) {
                     if (dataBinder.checkRequired(divOuter)) {
                         var cfg = dataBinder.fromElement(divOuter);
-                        $.putLocalService('/config/web.services', cfg.services, 'Updating Connection...', function (data, status, xhr) {
+                        $.putLocalService('/config/serviceUri', cfg.services, 'Updating Connection...', function (data, status, xhr) {
                             $('div.picDashboard, div.picMessageManager').each(function () {
                                 this.reset();
                             });

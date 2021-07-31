@@ -1541,7 +1541,9 @@ $.ui.position.fieldTip = {
         selectTabById: function (tabId) {
             var self = this, o = self.options, el = self.element;
             var evt = $.Event('tabchange');
-            if (o.tabId) evt.oldTab = { id: o.tabId, contents: self.tabContent(o.tabId) };
+            if (o.tabId) {
+                evt.oldTab = { id: o.tabId, contents: self.tabContent(o.tabId) };
+            }
             evt.newTab = { id: tabId, contents: self.tabContent(tabId) };
             el.trigger(evt);
             //console.log(evt);

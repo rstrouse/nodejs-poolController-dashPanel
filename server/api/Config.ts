@@ -1,20 +1,30 @@
 ﻿import * as express from "express";
+import * as extend from 'extend';
 import { ApiError } from '../Errors';
 import { UploadRoute, BackgroundUpload } from "../upload/upload";
 import { Client } from "node-ssdp";
 import { config } from "../config/Config";
 import { logger } from "../logger/Logger";
 import { versionCheck } from '../config/VersionCheck';
+import { njsPCRelay } from "../relay/relayRoute";
 export class ConfigRoute {
     public static initRoutes(app: express.Application) {
         app.get('/config/serviceUri', (req, res, next) => {
             try {
                 let srv = config.getSection('web.services');
                 if (srv.useProxy) {
-                    ///console.log({ protocol: req.protocol, url: req.url, originalUrl: req.originalUrl, baseUrl: req.baseUrl, headers: req.headers, hostName: req.hostname });
-                    console.log({ protocol: `${req.protocol}://`, ip: `${req.hostname}:${req.socket.localPort}`, useProxy: true });
+                    //console.log({ protocol: `${req.protocol}://`, ip: `${req.hostname}:${req.socket.localPort}`, useProxy: true });
                 }
                 res.status(200).send(srv);
+            }
+            catch (err) { next(err); }
+        });
+        app.put('/config/serviceUri', async (req, res, next) => {
+            try {
+                let srv = extend(true, {}, config.getSection('web.services'), req.body);
+                config.setSection('web.services', srv);
+                njsPCRelay.init();
+                return res.status(200).send(config.getSection(req.params.section));
             }
             catch (err) { next(err); }
         });
