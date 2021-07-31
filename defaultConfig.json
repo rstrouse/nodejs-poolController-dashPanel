@@ -27,7 +27,16 @@
       "protocol": "http://",
       "ip": "127.0.0.1",
       "port": 4200,
-      "useProxy": false
+      "useProxy": false,
+      "options": {},
+      "socket": {
+        "protocol": "ws://",
+        "upgrade": false,
+        "allowEIO3": true,
+        "reconnectionDelay": 2000,
+        "reconnection": true,
+        "reconnectionDelayMax": 20000
+      }
     },
     "socket": {
       "sendLogMessages":  false

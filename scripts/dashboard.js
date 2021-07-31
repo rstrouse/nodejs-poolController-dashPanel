@@ -97,10 +97,12 @@
         _resetState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('resetting state');
-            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
+            $.getLocalService('/config/serviceUri', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                o.useProxy = makeBool(data.useProxy);
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
+                $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     self._setControllerType(data.controllerType);
                     //if (data.equipment.model.startsWith('IntelliCenter')) {
@@ -134,10 +136,12 @@
         _initState: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getLocalService('/config/web.services', null, function (data, status, xhr) {
+            $.getLocalService('/config/serviceUri', null, function (data, status, xhr) {
                 console.log(data);
                 o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                o.useProxy = makeBool(data.useProxy);
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
+                $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
                     if (data.equipment.model.startsWith('IntelliCenter')) {
@@ -225,8 +229,14 @@
         },
         _initSockets: function () {
             var self = this, o = self.options, el = self.element;
-            console.log({ msg: 'Checking Url', url: o.apiServiceUrl });
-            o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+            if (!o.useProxy) {
+                console.log({ msg: 'Checking Url', url: o.apiServiceUrl });
+                o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+            }
+            else {
+                console.log({ msg: 'Connecting socket through proxy', url: window.location.origin.toString() });
+                o.socket = io(window.location.origin.toString(), { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+            }
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
                 var circs = $('div.picCircuit[data-eqid=' + data.id + ']');

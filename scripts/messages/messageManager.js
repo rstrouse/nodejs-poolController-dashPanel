@@ -29,10 +29,12 @@
         _initLogs: function () {
             var self = this, o = self.options, el = self.element;
             console.log('initializing state');
-            $.getLocalService('/config/web.services', null, function (cfg, status, xhr) {
+            $.getLocalService('/config/serviceUri', null, function (cfg, status, xhr) {
                 console.log(cfg);
                 o.apiServiceUrl = cfg.protocol + cfg.ip + (typeof cfg.port !== 'undefined' && !isNaN(cfg.port) ? ':' + cfg.port : '');
+                o.useProxy = makeBool(cfg.useProxy);
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
+                $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (state, status, xhr) {
                     $('body').attr('data-controllertype', state.equipment.controllerType);
                     self._createControllerPanel(state);
@@ -47,7 +49,14 @@
         },
         _initSockets: function () {
             var self = this, o = self.options, el = self.element;
-            o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000 });
+            if (!o.useProxy) {
+                console.log({ msg: 'Checking Url', url: o.apiServiceUrl });
+                o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+            }
+            else {
+                console.log({ msg: 'Connecting socket through proxy', url: window.location.origin.toString() });
+                o.socket = io(window.location.origin.toString(), { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+            }
             o.socket.on('controller', function (data) {
                 console.log({ evt: 'controller', data: data });
                 $('div.picController').each(function () {

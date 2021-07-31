@@ -13,6 +13,9 @@ import { UploadRoute, BackgroundUpload } from "./upload/upload";
 import { setTimeout } from "timers";
 import { ConfigRoute } from "./api/Config";
 import { MessagesRoute } from "./api/Messages";
+import { RelayRoute, njsPCRelay } from "./relay/relayRoute";
+import { Namespace, RemoteSocket, Server as SocketIoServer, Socket } from "socket.io";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 // This class serves data and pages for
 export class WebServer {
@@ -42,11 +45,17 @@ export class WebServer {
             this._servers[i].emitToClients(evt, ...data);
         }
     }
+    public emitToChannel(channel: string, evt: string, ...data: any) {
+        for (let i = 0; i < this._servers.length; i++) {
+            this._servers[i].emitToChannel(channel, evt, ...data);
+        }
+    }
 }
 class ProtoServer {
     // base class for all servers.
     public isRunning: boolean = false;
     public emitToClients(evt: string, ...data: any) {}
+    public emitToChannel(channel: string, evt: string, ...data: any) { }
 }
 export class Http2Server extends ProtoServer {
     public server: http2.Http2Server;
@@ -102,7 +111,7 @@ export class HttpServer extends ProtoServer {
                 }
                 return value;
             });
-
+            this.initSockets();
             // start our server on port
             let self = this;
             this.server.listen(cfg.port, cfg.ip, function () {
@@ -116,105 +125,10 @@ export class HttpServer extends ProtoServer {
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
             this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
+            RelayRoute.initRoutes(this.app);
             ConfigRoute.initRoutes(this.app);
             MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);
-            //this.app.get('/config/findPoolControllers', async (req, res, next) => {
-            //    let prom = new Promise((resolve, reject) => {
-            //        let ssdpClient = new Client({});
-            //        let servers = [];
-            //        try {
-            //            ssdpClient.on('response', (headers, statusCode, rinfo) => {
-            //                if (statusCode === 200) {
-            //                    let url = new URL(headers.LOCATION);
-            //                    if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
-            //                        servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname:url.hostname, port: url.port, hash: url.hash });
-            //                    }
-            //                }
-            //            });
-            //            ssdpClient.search('urn:schemas-upnp-org:device:PoolController:1');
-            //            setTimeout(() => {
-            //                resolve();
-            //                ssdpClient.stop(); console.log('done searching for poolController');
-            //                return res.status(200).send(servers);
-            //            }, 5000);
-            //        }
-            //        catch (err) { reject(err); };
-            //    });
-            //});
-            //this.app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
-            //this.app.put('/config/:section', (req, res) => {
-            //    try {
-            //        config.setSection(req.params.section, req.body);
-            //    }
-            //    catch (err) { return res.status(400).send(new Error(err)); }
-            //    return res.status(200).send(config.getSection(req.params.section));
-            //});
-            //this.app.get('/options', (req, res) => {
-            //    let opts = {
-            //        web: config.getSection('web'),
-            //        backgrounds: BackgroundUpload.getBackgrounds()
-            //    }
-            //    return res.status(200).send(opts);
-            //});
-            //this.app.put('/messages/queue', async (req, res, next) => {
-            //    try {
-            //        console.log(`request:  ${JSON.stringify(req.body)}...`);
-            //        let queue = await outQueues.saveQueue(req.body);
-            //        return res.status(200).send(queue);
-            //    }
-            //    catch (err) {
-            //        next(err);
-            //    }
-            //});
-            //this.app.get('/messages/queue/:id', (req, res, next) => {
-            //    try {
-            //        console.log(`Getting Queue request:  ${JSON.stringify(req.params)}...`);
-            //        let id = parseInt(req.params.id, 10);
-            //        let queue = outQueues.find(q => { return q.id === id });
-            //        if (typeof queue === 'undefined') next(new ApiError(`Outbound queue id:${id} not found.`, 100, 404));
-            //        let out = extend(true, {}, queue);
-            //        out.messages = queue.loadMessages();
-            //        return res.status(200).send(out);
-            //    }
-            //    catch (err) { next(err); }
-            //});
-            //this.app.get('/messages/queues', async (req, res, next) => {
-            //    try {
-            //        outQueues.loadDescriptors();
-            //        console.log(`request:  ${JSON.stringify(req.body)}...`);
-            //        return res.status(200).send(outQueues);
-            //    }
-            //    catch (err) {
-            //        next(err);
-            //    }
-            //});
-            //this.app.get('/messages/docs/constants', (req, res, next) => {
-            //    try {
-            //        return res.status(200).send(MessageDocs.getConstants());
-            //    }
-            //    catch (err) {
-            //        next(err);
-            //    }
-
-            //});
-            //this.app.get('/messages/docs/keyBytes', (req, res, next) => {
-            //    try {
-            //        return res.status(200).send(MessageDocs.getKeyBytes());
-            //    }
-            //    catch (err) {
-            //        next(err);
-            //    }
-            //});
-            //this.app.get('/messages/docs/:key', (req, res, next) => {
-            //    try {
-            //        return res.status(200).send(MessageDocs.findMessageByKey(req.params.key) || { docKey: req.params.key });
-            //    }
-            //    catch (err) {
-            //        next(err);
-            //    }
-            //});
-
             // This is last so that it is picked up when we have an error.
             this.app.use((error, req, res, next) => {
                 logger.error(error);
@@ -224,9 +138,75 @@ export class HttpServer extends ProtoServer {
                 }
             });
             this.isRunning = true;
-
-
+            njsPCRelay.init();
         }
+    }
+    public sockServer: SocketIoServer<DefaultEventsMap, DefaultEventsMap>;
+    private _sockets: RemoteSocket<DefaultEventsMap>[] = [];
+    public emitToClients(evt: string, ...data: any) {
+        if (this.isRunning) {
+            this.sockServer.emit(evt, ...data);
+        }
+    }
+    public emitToChannel(channel: string, evt: string, ...data: any) {
+        //console.log(`Emitting to channel ${channel} - ${evt}`)
+        if (this.isRunning) {
+            this.sockServer.to(channel).emit(evt, ...data);
+        }
+    }
+    protected initSockets() {
+        let options = {
+            allowEIO3: true,
+            cors: {
+                origin: true,
+                methods: ["GET", "POST"],
+                credentials: true
+            }
+        }
+        this.sockServer = new SocketIoServer(this.server, options);
+        this.sockServer.on("connection", (sock: Socket) => {
+            logger.info(`New socket client connected ${sock.id} -- ${sock.client.conn.remoteAddress}`);
+            this.socketHandler(sock);
+            sock.on('connect_error', (err) => {
+                logger.error('Socket server error %s', err.message);
+            });
+            sock.on('reconnect_failed', (err) => {
+                logger.error('Failed to reconnect with socket %s', err.message);
+            });
+            sock.on('sendRS485PortStats', (sendPortStatus: boolean) => {
+                console.log(`sendRS485PortStats set to ${sendPortStatus}`);
+                // When we receive this we need to relay this.
+                if (!sendPortStatus) sock.leave('rs485PortStats');
+                else sock.join('rs485PortStats');
+                njsPCRelay.relaySocket('sendRS485PortStats', sendPortStatus);
+            });
+            sock.on('sendLogMessages', (sendMessages: boolean) => {
+                console.log(`sendLogMessages set to ${sendMessages}`);
+                if (!sendMessages) sock.leave('msgLogger');
+                else sock.join('msgLogger');
+                njsPCRelay.relaySocket('sendLogMessages', sendMessages);
+            });
+            sock.on('sendOutboundMessage', (data) => {
+                njsPCRelay.relaySocket('sendOutboundMessage', data);
+            });
+
+        });
+        this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
+    }
+    private socketHandler(sock: Socket) {
+        let self = this;
+        setTimeout(async () => {
+            // refresh socket list with every new socket
+            self._sockets = await self.sockServer.fetchSockets();
+        }, 100)
+        sock.on('error', (err) => {
+            logger.error('Error with socket: %s', err);
+        });
+        sock.on('close', async (id) => {
+            logger.info('Socket diconnecting %s', id);
+            self._sockets = await self.sockServer.fetchSockets();
+        });
+        sock.on('echo', (msg) => { sock.emit('echo', msg); });
     }
 }
 export class SspdServer extends ProtoServer {
@@ -237,5 +217,4 @@ export class MdnsServer extends ProtoServer {
     // Multi-cast DNS server
     public server: any;
 }
-
 export const webApp = new WebServer();

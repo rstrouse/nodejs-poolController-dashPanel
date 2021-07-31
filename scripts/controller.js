@@ -664,7 +664,9 @@
                 });
                 $('<div></div>').appendTo(line).inputField({ labelText: '', binding: binding + 'ip', inputAttrs: { maxlength: 20 } });
                 $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType: 'int', binding: binding + 'port', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight: '.15rem' } } });
-
+                $('<hr></hr>').appendTo(divOuter);
+                line = $('<div></div>').appendTo(divOuter);
+                $('<div></div').appendTo(line).checkbox({ labelText: 'Use Proxy to njsPC Server', binding: binding + 'useProxy' });
                 //$('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);

@@ -2,6 +2,7 @@
 import { config } from "./server/config/Config";
 import { webApp } from "./server/Server";
 import { outQueues } from "./server/queues/outboundQueue";
+import { njsPCRelay } from "./server/relay/relayRoute";
 import * as readline from 'readline';
 
 export function initAsync() {

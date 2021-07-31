@@ -427,8 +427,9 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             }
         };
         var cbShowSuccess = function (data, status, jqXHR) { };
-        var serviceUrl = $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
-
+        var useProxy = makeBool($('body').attr('data-apiproxy'));
+        var serviceUrl = useProxy ? '/njsPC' + (!url.startsWith('/') ? '/' : '') + url : $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+        console.log({ serviceUrl: serviceUrl, useProxy: useProxy });
 
         // Set up the callbacks.
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
@@ -524,14 +525,14 @@ function getStorage(name, def) {
     if (typeof Storage === 'undefined') return getCookie(name, def);
     else {
         var val = localStorage.getItem(name);
-        console.log(`Getting data using local storage method: ${name}/${val}`);
+        //console.log(`Getting data using local storage method: ${name}/${val}`);
         return typeof val === 'undefined' || !val ? def : val;
     }
 }
 function setStorage(name, value) {
     if (typeof Storage === 'undefined') return setCookie(name, val);
     else {
-        console.log(`Setting data using local storage method: ${name}/${value}`);
+        //console.log(`Setting data using local storage method: ${name}/${value}`);
         localStorage.setItem(name, value);
     }
 }
