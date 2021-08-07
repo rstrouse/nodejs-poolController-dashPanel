@@ -79,7 +79,7 @@
                     sc.show();
                     // if (o.superChlorTimer) this.stopCountdownSuperChlor();
                     if (data.superChlorRemaining > 0) {
-                        if (o.superChlorTimer === null || typeof o.superChlorTimer === 'undefined')  o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
+                        if (o.superChlorTimer === null || typeof o.superChlorTimer === 'undefined') o.superChlorTimer = setInterval(function () { self.countdownSuperChlor(); }, 1000);
                         el.find('div.picSuperChlorBtn label.picSuperChlor').text('Cancel Chlorinate');
                         el.find('div.picSuperChlorBtn div.picIndicator').attr('data-status', 'on');
                     }
@@ -95,9 +95,9 @@
                 else el.find('div.picSuperChlorBtn').show();
                 // due to granularity of chlor time remaining, if we are <1 min off then don't reset the counter.
                 // this caused a small but annoying bug where if you opened the chlorinator settings it would reset the counter to the prev value
-                if (data.superChlorRemaining - el.data('remaining')  <= 0 || data.superChlorRemaining - el.data('remaining') >= 60 || isNaN(el.data('remaining'))) {
+                if (data.superChlorRemaining - el.data('remaining') <= 0 || data.superChlorRemaining - el.data('remaining') >= 60 || isNaN(el.data('remaining'))) {
                     el.data('remaining', data.superChlorRemaining);
-                } 
+                }
                 if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
                 else el.attr('data-status', '');
             }
@@ -177,8 +177,9 @@
                                     clearTimeout(o.putChlorValuesTimer);
                                     o.putChlorValuesTimer = null;
                                 }
-                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500);
                             });
+                            if (data.lockSetpoints) { $('div.picValueSpinner[data-bind="poolSetpoint"]').addClass('disabled'); }
                         }
                         if (data.body.val === 32 || data.body.val === 1) {
                             // Add in the spa setpoint.
@@ -198,8 +199,9 @@
                                     clearTimeout(o.putChlorValuesTimer);
                                     o.putChlorValuesTimer = null;
                                 }
-                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500);
                             });
+                            if (data.lockSetpoints) { $('div.picValueSpinner[data-bind="spaSetpoint"]').addClass('disabled'); }
                         }
 
                         //let divSuperChlorHours = $('<div class="picSuperChlorHours picSetpoint"><label class="picInline-label picSetpointText">Super Chlorinate</label><div class="picValueSpinner" data-bind="superChlorHours"></div><label class="picUnits">Hours</label></div>');
@@ -219,7 +221,7 @@
                                     clearTimeout(o.putChlorValuesTimer);
                                     o.putChlorValuesTimer = null;
                                 }
-                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500); 
+                                o.putChlorValuesTimer = setTimeout(function () { self.putChlorValues() }, 1500);
                             });
 
                         // Add in the super chlorinate button.
@@ -230,9 +232,9 @@
                         toggle.appendTo(btn);
                         toggle.toggleButton();
                         // if current countdown timer is between 0-60s, don't reset the display
-                        if (data.superChlorRemaining - el.data('remaining')  > 0 && data.superChlorRemaining - el.data('remaining') < 60) {
+                        if (data.superChlorRemaining - el.data('remaining') > 0 && data.superChlorRemaining - el.data('remaining') < 60) {
                             data.superChlorRemaining = el.data('remaining');
-                        } 
+                        }
                         let lbl = $('<div><div><label class="picSuperChlor">Super Chlorinate</label></div><div class="picSuperChlorRemaining"><span class="picSuperChlorRemaining" data-bind="superChlorRemaining" data-fmttype="duration"></span></div></div>');
                         lbl.appendTo(btn);
                         btn.on('click', function (e) {
@@ -288,11 +290,19 @@
                         var vol = !isNaN(chem.doseVolume) ? chem.doseVolume : 0;
                         var volDosed = !isNaN(chem.dosingVolumeRemaining) ? vol - chem.dosingVolumeRemaining : 0;
                         if (chem.delayTimeRemaining > 0) {
-                            $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${vol.format('#,##0')}mL`);
+                            if (type === 'ORP' && chem.useChlorinator) {
+                                $('<span></span>').appendTo(stat).text(`Chlorinating ${type}: ${vol.format('#,#0.####0')}lbs`);
+                            }
+                            else
+                                $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${vol.format('#,##0')}mL`);
                             $('<span></span>').appendTo(stat).css({ float: 'right' }).text(`Delay: ${dataBinder.formatDuration(chem.delayTimeRemaining)}`);
                         }
                         else {
-                            $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${volDosed.format('#,##0')}mL of ${vol.format('#,##0')}mL - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                            if (type === 'ORP' && chem.useChlorinator) {
+                                $('<span></span>').appendTo(stat).text(`Chlorinating ${type}: ${volDosed.format('#,#0.####0')}lbs of ${vol.format('#,#0.####0')}lbs - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                            }
+                            else
+                                $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${volDosed.format('#,##0')}mL of ${vol.format('#,##0')}mL - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
                         }
                         stat.show();
                         break;
@@ -740,7 +750,7 @@
                 inputAttrs: { style: { width: '3rem' } }
             }).on('change', function (e) {
 
-                });
+            });
             $('<div></div>').appendTo(line).valueSpinner({
                 canEdit: true, labelText: '', binding: 'minutes', min: 0, max: 59, step: 1,
                 fmtMask: '#,##0', units: 'min',
@@ -833,7 +843,7 @@
                         var tabPh = tabBar[0].addTab({ id: 'tabPhDoses', text: `${o.ph.chemType} Doses` });
                         $('<div></div>').appendTo(tabPh).pnlChemDoseHistory({
                             id: o.id,
-                            chemType:'pH',
+                            chemType: 'pH',
                             chemical: o.ph,
                             history: h.ph
                         });
@@ -842,7 +852,7 @@
                         var tabOrp = tabBar[0].addTab({ id: 'tabOrpDoses', text: `${o.orp.chemType} Doses` });
                         $('<div></div>').appendTo(tabOrp).pnlChemDoseHistory({
                             id: o.id,
-                            chemType:'ORP',
+                            chemType: 'ORP',
                             chemical: o.orp,
                             history: h.orp
                         });
