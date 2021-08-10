@@ -13,7 +13,10 @@
   },
   "scripts": {
     "start": "npm run build && node dist/app.js",
-    "build": "tsc"
+    "start:cached": "node dist/app.js",
+    "build": "tsc",
+    "watch": "tsc -w"
+
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
