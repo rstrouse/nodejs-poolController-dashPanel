@@ -291,7 +291,7 @@
                         var volDosed = !isNaN(chem.dosingVolumeRemaining) ? vol - chem.dosingVolumeRemaining : 0;
                         if (chem.delayTimeRemaining > 0) {
                             if (type === 'ORP' && chem.useChlorinator) {
-                                $('<span></span>').appendTo(stat).text(`Chlorinating ${type}: ${vol.format('#,#0.####0')}lbs`);
+                                $('<span></span>').appendTo(stat).text(`Chlorinating: ${vol.format('#,#0.####0')}lbs`);
                             }
                             else
                                 $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${vol.format('#,##0')}mL`);
@@ -299,7 +299,7 @@
                         }
                         else {
                             if (type === 'ORP' && chem.useChlorinator) {
-                                $('<span></span>').appendTo(stat).text(`Chlorinating ${type}: ${volDosed.format('#,#0.####0')}lbs of ${vol.format('#,#0.####0')}lbs - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                                $('<span></span>').appendTo(stat).text(`Chlorinating: ${volDosed.format('#,#0.####0')}lbs of ${vol.format('#,#0.####0')}lbs - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
                             }
                             else
                                 $('<span></span>').appendTo(stat).text(`Dosing ${type}: ${volDosed.format('#,##0')}mL of ${vol.format('#,##0')}mL - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);

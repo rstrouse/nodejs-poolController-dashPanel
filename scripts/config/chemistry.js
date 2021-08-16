@@ -349,8 +349,9 @@
                     el.find('div.picValueSpinner[data-bind="orp.maxDailyVolume"]').hide();
                     el.find('div.picValueSpinner[data-bind="orp.startDelay"]').hide();
                     el.find('div.picValueSpinner[data-bind="orp.dosingMethod"]').hide();
-                    el.find('.pnl-orpDose-mix').hide();
                     el.find('div.pnl-orpDose-time').hide();
+                    //el.find('.pnl-orpDose-mix').hide();
+                    el.find('div.pnl-orpDose-mixtime').hide();
                     el.find('.grp-dosingparams hr').hide()
                     el.find('div.picPickList[data-bind="orp.chlorDosingMethod"]').show();
                     if (data.orp.chlorDosingMethod > 0) {
@@ -371,7 +372,7 @@
                     el.find('div.picValueSpinner[data-bind="orp.maxDailyVolume"]').show();
                     el.find('div.picValueSpinner[data-bind="orp.startDelay"]').show();
                     el.find('.pnl-orpDose-mix').show();
-                    el.find('div.pnl-orpDose-time').show();
+                    el.find('div.pnl-orpDose-mixtime').show();
                     $('.grp-dosingparams hr').show()
                     el.find('div.picPickList[data-bind="orp.chlorDosingMethod"]').hide();
                     $('div.picValueSpinner[data-bind="poolSetpoint"]').removeClass('disabled');
@@ -476,7 +477,7 @@
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-orpDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
             $('<legend></legend>').text('Mixing').appendTo(grpMix);
-            line = $('<div></div>').appendTo(grpMix);
+            line = $('<div></div>').addClass('pnl-orpDose-mixtime').appendTo(grpMix);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.mixingTimeHours', labelText: 'Time', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3.7rem' } }, inputAttrs: { style: { width: '2.1rem' } }, units: 'hrs' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.mixingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
             line = $('<div></div>').appendTo(grpMix);
