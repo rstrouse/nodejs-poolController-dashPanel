@@ -631,7 +631,6 @@
                 if (o.type.name === 'spa' || o.type.name === 'pool') {
                     // bodies may be rendered/updated after circuits so these need to be updated more frequently
                     body = $(`div[data-circuitid=${o.id}].outerBodyEndTime`);
-                    console.log(`${o.id}: ${tnowStr} and body.length: ${body.length}`);
                     if (body.length) {
                         body.css('display', 'inline-block');
                         $(`div[data-circuitid=${o.id}] > span.bodyCircuitEndTime`).text(`${tnowStr}`);
