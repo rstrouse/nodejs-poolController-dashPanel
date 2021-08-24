@@ -12,44 +12,49 @@ import { webApp } from "../Server";
 
 export class RelayRoute {
     public static initRoutes(app: express.Application) {
-        app.get('/njsPC/*', async (req, res, next) => {
-            try {
-                // Lets route this back to njsPC.
-                await njsPCRelay.relayRequest(req, res, next);
-               
-            }
-            catch (err) { next(err); };
-        });
-        app.put('/njsPC/*', async (req, res, next) => {
+        app.all('/njsPC/*', async (req, res, next) => {
             try {
                 await njsPCRelay.relayRequest(req, res, next);
             }
             catch (err) { next(err); }
         });
-        app.search('/njsPC/*', async (req, res, next) => {
-            try {
-                await njsPCRelay.relayRequest(req, res, next);
-            }
-            catch (err) { next(err); }
-        });
-        app.delete('/njsPC/*', async (req, res, next) => {
-            try {
-                await njsPCRelay.relayRequest(req, res, next);
-            }
-            catch (err) { next(err); }
-        });
-        app.head('/njsPC/*', async (req, res, next) => {
-            try {
-                await njsPCRelay.relayRequest(req, res, next);
-            }
-            catch (err) { next(err); }
-        });
-        app.patch('/njsPC/*', async (req, res, next) => {
-            try {
-                await njsPCRelay.relayRequest(req, res, next);
-            }
-            catch (err) { next(err); }
-        });
+        //app.get('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        // Lets route this back to njsPC.
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); };
+        //});
+        //app.put('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); }
+        //});
+        //app.search('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); }
+        //});
+        //app.delete('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); }
+        //});
+        //app.head('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); }
+        //});
+        //app.patch('/njsPC/*', async (req, res, next) => {
+        //    try {
+        //        await njsPCRelay.relayRequest(req, res, next);
+        //    }
+        //    catch (err) { next(err); }
+        //});
 
 
     }
@@ -116,7 +121,7 @@ class ServiceRelay {
     public relaySocket(evt, ...data) {
         this._sockClient.emit(evt, data);
     }
-    public async relayRequest(req, res, next: express.NextFunction) {
+    public async relayRequest(req: express.Request, res, next: express.NextFunction) {
         try {
             let proxyUrl = `${this.serviceUrl}${req.url.replace('/njsPC', '')}`;
             logger.info(`Relaying request: ${proxyUrl}`);
@@ -135,17 +140,29 @@ class ServiceRelay {
             };
             opts = extend(true, opts, this.service.options);
             await new Promise<void>((resolve, reject) => {
-                try {
-                    let reqProxy = http.request(opts, respProxy => {
-                        respProxy.pipe(res);
-                        resolve();
-                    });
-                    reqProxy.on('error', (err) => { logger.error(err); });
-                    if (typeof req.body !== 'undefined') reqProxy.write(JSON.stringify(req.body), (err) => {
-                        if(err) logger.error(err);
-                    });
-                    reqProxy.end();
-                } catch (err) { logger.error(err); }
+                let reqProxy = http.request(opts);
+                reqProxy.on('response', (pres) => {
+                    res.writeHead(pres.statusCode, pres.headers);
+                    pres.pipe(res);
+                    resolve();
+                });
+                // Sometimes the content-length of the request is not defined yet there is an empty body object.  This is something
+                // that express does but we will use the content-length header to determine whether there will be content on the proxied request.
+                if (typeof req.body !== 'undefined' && req.body && typeof headers['content-length'] !== 'undefined') {
+                    let body = JSON.stringify(req.body);
+                    logger.verbose(`Writing request body: ${body}`);
+                    if (body && body.length > 0) {
+                        if (body.length.toString() !== req.headers['content-length']) logger.warn(`The content length header is incorrect for ${uri.href}: Body: ${body.length} !== Content: ${req.headers['content-length']}`);
+                        reqProxy.write(body, (err) => {
+                            if (err) logger.error(`Error writing response body: ${uri.href}: ${err.message}`);
+                        });
+                    }
+                }
+                reqProxy.on('error', (err) => {
+                    logger.error(`Error relaying request ${uri.href}: ${err.message}`);
+                    reject(err);
+                });
+                reqProxy.end();
             });
         }
         catch (err) { next(err); }

@@ -421,7 +421,7 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         };
         var cbShowError = function (jqXHR, status, error) {
             var err = { httpCode: jqXHR.status, status: status, error: jqXHR.responseJSON, message: error };
-            console.log(err);
+            console.log({ err: err, xhr: jqXHR });
             if (err.httpCode >= 299) {
                 $.pic.modalDialog.createApiError(err);
             }
@@ -2523,7 +2523,7 @@ $.ui.position.fieldTip = {
                 var oldVal = cb.is(':checked');
                 cb.prop('checked', makeBool(val));
                 if (makeBool(val) !== makeBool(oldVal)) {
-                    console.log('Triggering checkbox');
+                    //console.log('Triggering checkbox');
                     evt = $.Event('changed');
                     evt.newVal = makeBool(val);
                     evt.oldVal = !evt.newVal;
