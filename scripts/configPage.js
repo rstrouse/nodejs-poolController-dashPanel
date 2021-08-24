@@ -26,7 +26,6 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configFilters();
                     break;
-
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
@@ -45,6 +44,7 @@
                     self._buildEquipmentTab(evt.newTab.contents);
                     break;
                 case 'tabAuxCircuits':
+                    console.log({ msg: 'Building Aux Circuits tab', newTab: evt.newTab });
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configAuxCircuits();
                     break;
@@ -94,7 +94,7 @@
                     break;
             }
             if (typeof evt.oldTab !== 'undefined') {
-                evt.oldTab.contents.empty();
+                if (evt.oldTab.id === 'tabRS485') evt.oldTab.contents.empty();
             }
         },
         _buildControls: function () {
@@ -174,8 +174,8 @@
         _buildCircuitsTab: function (contents) {
             var self = this, o = self.options, el = self.element;
             // Find the currently selected tab.  We want to reload it.
-            var tabs = contents.find('div.picTabBar:first')[0];
-            var tabId = tabs.selectedTabId();
+            var tabs = contents.find('div.picTabBar:first');
+            var tabId = tabs.length > 0 ? tabs[0].selectedTabId() : 'tabAuxCircuits';
             console.log({ msg: 'Building Circuits Tab', tabId: tabId });
             switch (tabId) {
                 case 'tabFeatures':
@@ -186,7 +186,7 @@
                     //tabs.selectedTabId(tabId);
                     break;
                 default:
-                    tabs.selectTabById('tabAuxCircuits');
+                    tabs[0].selectTabById('tabAuxCircuits');
                     break;
             }
         },

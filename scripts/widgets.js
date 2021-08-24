@@ -1527,7 +1527,6 @@ $.ui.position.fieldTip = {
         },
         selectFirstVisibleTab: function () {
             var self = this, o = self.options, el = self.element;
-            var evt = $.Event('tabchange');
             var tabId = '';
             el.find('div.picTabs:first').children('div.picTab').each(function () {
                 if ($(this).css('display') !== 'none') {
