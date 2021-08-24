@@ -48,7 +48,7 @@ div.picFeatures div.picFeatureGrid > div.picCircuitGroup[data-showinfeatures=fal
 select, input[type=text], fieldset {
     font-size:1rem;
 }
-div.picLights > div.picCircuit[data-showinfeatures=true] {
+div.picLights > div.picFeatureGrid > div.picCircuit[data-showinfeatures=true] {
     display: none;
 }
 div.picOptionButton > i {

@@ -58,6 +58,11 @@ div.picLightThemes {
   display: flex;
   flex-wrap: wrap; }
 
+div.picIBColorSelector > div.picToggleButton > div.picIndicator {
+  margin-left: .15em;
+  margin-right: -.19em;
+  margin-top: -.47em; }
+
 div.picSchedule > span, div.picSchedule > label, div.picChemistry label, div.picChemistry span {
   line-height: 2; }
 

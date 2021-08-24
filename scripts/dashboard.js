@@ -14,6 +14,7 @@
             el.find('div.picController').each(function () { this.initController(); });
             el.find('div.picBodies').each(function () { this.initBodies(); });
             el.find('div.picCircuits').each(function () { this.initCircuits(); });
+            el.find('div.picLights').each(function () { this.initLights(); });
             el.find('div.picPumps').each(function () { this.initPumps(); });
             el.find('div.picChemistry').each(function () { this.initChemistry(); });
             el.find('div.picSchedules').each(function () { this.initSchedules(); });
@@ -29,6 +30,7 @@
         _createCircuitsPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picCircuits').each(function () { this.initCircuits(data); });
+            el.find('div.picLights').each(function () { this.initLights(data); });
         },
         _createPumpsPanel: function (data) {
             var self = this, o = self.options, el = self.element;

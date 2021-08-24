@@ -8,37 +8,23 @@
         },
         _initCircuits: function (data) {
             var self = this, o = self.options, el = self.element;
-
             el.find('div.picLight').each(function () {
                 try {
-
                     this.stopCountdownEndTime();
                 }
-                catch (err) {
-                    console.log($(this).attr('data-circuitid'))
-                    console.log(err);
-                }
+                catch (err) { console.log({ msg: `Error stopping countdown timer for light circuit #${$(this).attr('data-circuitid')}`, err: err }); }
             });
-
             el.find('div.picFeature').each(function () {
                 try {
-
                     this.stopCountdownEndTime();
                 }
-                catch (err) {
-                    console.log($(this).attr('data-circuitid'))
-                    console.log(err);
-                }
+                catch (err) { console.log({ msg: `Error stopping countdown timer for feature #${$(this).attr('data-circuitid')}`, err: err }); }
             });
             el.find('div.picCircuit').each(function () {
                 try {
-
                     this.stopCountdownEndTime();
                 }
-                catch (err) {
-                    console.log($(this).attr('data-circuitid'))
-                    console.log(err);
-                }
+                catch (err) { console.log({ msg: `Error stopping countdown timer for aux circuit #${$(this).attr('data-circuitid')}`, err: err }); }
             });
             el.empty();
             if (typeof data !== 'undefined') {
@@ -46,8 +32,8 @@
                 div = $('<div class="picFeatures"></div>');
                 div.appendTo(el);
                 div.features(data);
-                div = $('.picLights');
-                div.lights(data);
+                //div = $('div.picLights').lights(data);
+                //div.lights(data);
                 div = $('.picVirtualCircuits');
                 div.virtualCircuits(data);
             }
@@ -67,6 +53,7 @@
                 case 'samlight':
                 case 'sallight':
                 case 'photongen':
+                    console.log(name);
                     return true;
             }
             return false;
@@ -109,7 +96,7 @@
                 let div = $('<div class="picFeature picCircuit btn"></div>');
                 let circuit = data.circuits[i];
                 div.appendTo(inner);
-                div.circuit(circuit, { controllerType: data.equipment.controllerType });
+                div.circuit(circuit);
                 if (typeof circuit.showInFeatures !== 'undefined') div.attr('data-showinfeatures', circuit.showInFeatures);
             }
             for (let i = 0; i < data.features.length; i++) {
@@ -161,7 +148,7 @@
                 // el.parents('div.picCircuits.picControlPanel:first').find('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
                 // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
-            $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
+            $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').each(function () { try { this.stopCountdownEndTime(); } catch (err) { console.log(err); } });
             $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
     });
@@ -172,8 +159,8 @@
             self._buildControls();
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
-            el[0].countdownEndTime = function () { self.countdownEndTime(); }
-            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
+            el[0].countdownEndTime = function () { self.countdownEndTime(); };
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); };
             o = {};
         },
         _buildControls: function () {
@@ -575,8 +562,8 @@
                 if (self.isLight(data)) {
                     el.addClass('picLight');
                     // Alright we are a light.  Make sure we have an entry in the lights panel.
-                    if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
-                        let divLight = $('<div class="picLight picFeature picCircuit"></div>').appendTo('div.picLights');
+                    if ($('div.picLights > div.picFeatureGrid > div.picCircuit[data-circuitid=' + data.id + ']').length === 0) {
+                        let divLight = $('<div class="picLight picFeature picCircuit"></div>').appendTo('div.picLights > div.picFeatureGrid');
                         divLight.circuit(data);
                     }
                 }
@@ -648,9 +635,55 @@
         options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
+            console.log({ msg: `Calling lights method`, o: o });
             self._buildControls(o);
             el[0].setItem = function (type, data) { self.setItem(type, data); };
-            o = {};
+            el[0].initLights = function (data) { self._initLights(data); };
+            //o = {};
+        },
+        _initLights: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var inner = el.find('div.picFeatureGrid:first');
+            el.find('div.picLight').each(function () {
+                try {
+                    this.stopCountdownEndTime();
+                }
+                catch (err) { console.log({ msg: `Error stopping countdown timer for light circuit #${$(this).attr('data-circuitid')}`, err: err }); }
+            });
+            el.find('div.picLight').remove();
+            //el.empty();
+            if (typeof data !== 'undefined') {
+                for (let i = 0; i < data.circuits.length; i++) {
+                    try {
+                        // Create a new feature for light types only.
+                        switch (data.circuits[i].type.name) {
+                            case 'light':
+                            case 'intellibrite':
+                            case 'globrite':
+                            case 'globritewhite':
+                            case 'magicstream':
+                            case 'dimmer':
+                            case 'colorcascade':
+                            case 'samlight':
+                            case 'sallight':
+                            case 'photongen':
+                                let div = $('<div class="picLight picFeature picCircuit btn"></div>');
+                                //console.log({ msg: 'Building light', light: data.circuits[i] });
+                                div.appendTo(inner);
+                                if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
+                                div.circuit(data.circuits[i]);
+                                self.setItem(data.circuits[i].type.name, data.circuits[i]);
+                                break;
+                        }
+                    } catch (err) { console.error(err); }
+                }
+                for (let i = 0; i < data.lightGroups.length; i++) {
+                    let div = $('<div class="picLight picFeature picLightGroup btn"></div>');
+                    div.appendTo(inner);
+                    div.lightGroup(data.lightGroups[i]);
+
+                }
+            }
         },
         _buildControls: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -680,35 +713,7 @@
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             });
-            for (let i = 0; i < data.circuits.length; i++) {
-                try {
-                    // Create a new feature for light types only.
-                    switch (data.circuits[i].type.name) {
-                        case 'light':
-                        case 'intellibrite':
-                        case 'globrite':
-                        case 'globritewhite':
-                        case 'magicstream':
-                        case 'dimmer':
-                        case 'colorcascade':
-                        case 'samlight':
-                        case 'sallight':
-                        case 'photongen':
-                            let div = $('<div class="picLight picFeature picCircuit btn"></div>');
-                            div.appendTo(el);
-                            if (typeof data.circuits[i].showInFeatures !== 'undefined') div.attr('data-showinfeatures', data.circuits[i].showInFeatures);
-                            div.circuit(data.circuits[i]);
-                            self.setItem(data.circuits[i].type.name, data.circuits[i]);
-                            break;
-                    }
-                } catch (err) { console.error(err); }
-            }
-            for (let i = 0; i < data.lightGroups.length; i++) {
-                let div = $('<div class="picLight picFeature picLightGroup btn"></div>');
-                div.appendTo(el);
-                div.lightGroup(data.lightGroups[i]);
-
-            }
+            $('<div></div>').addClass('picFeatureGrid').appendTo(el);
         },
         isLight: function (circuit) {
             try {
@@ -733,26 +738,27 @@
             var self = this, o = self.options, el = self.element;
             // See if the item exists.
             var selector = '';
+            var inner = el.find('div.picFeatureGrid:first');
             var div = el.find('div.picFeature[data-eqid=' + data.id + ']');
             if (div.length === 0) {
                 // We need to add it.
                 var bAdded = false;
                 var id = parseInt(data.id, 10);
-                el.children('div.picLight').each(function () {
+                inner.children('div.picLight').each(function () {
                     if (this.equipmentId() > id) {
                         div = $('<div class="picLight picFeature btn"></div>').insertBefore($(this));
                         bAdded = true;
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature btn"></div>').appendTo(el);
+                if (!bAdded) div = $('<div class="picFeature btn"></div>').appendTo(inner);
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
                         div.circuit(data);
                         break;
                     case 'feature':
-                        div.addClass('picCircuit');;
+                        div.addClass('picCircuit');
                         div.feature(data);
                         break;
                     case 'circuitGroup':
@@ -780,8 +786,8 @@
             var self = this, o = self.options, el = self.element;
             el[0].setState = function (data) { self.setState(data); };
             el[0].equipmentId = function () { return parseInt(el.attr('data-eqid'), 10); };
-            el[0].countdownEndTime = function () { self.countdownEndTime(); }
-            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
+            el[0].countdownEndTime = function () { self.countdownEndTime(); };
+            el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); };
             self._buildControls();
             o = {};
         },
@@ -790,7 +796,6 @@
             var toggle = $('<div class="picFeatureToggle"></div>');
             toggle.appendTo(el);
             toggle.toggleButton();
-
             el.attr('data-circuitid', o.id);
             el.attr('data-eqid', o.id);
 
