@@ -14,7 +14,7 @@
                 $('<div></div>').appendTo(el).pnlPersonalInfo({ countries: opts.countries })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlTimeDate({ timeZones: opts.timeZones, clockModes: opts.clockModes, clockSources: opts.clockSources })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlDelays()[0].dataBind(opts.pool);
-                $('<div></div>').appendTo(el).pnlSensorCalibration({ sensors: opts.sensors, tempUnits: opts.tempUnits })[0].dataBind(opts.pool);
+                $('<div></div>').appendTo(el).pnlSensorCalibration({ freezeThreshold: opts.pool.options.freezeThreshold, sensors: opts.sensors, tempUnits: opts.tempUnits })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlAlerts({})[0].dataBind(opts.alerts);
                 $('<div></div>').appendTo(el).pnlSecurity({})[0].dataBind(opts.security);
             });
@@ -207,17 +207,31 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
+            var isNixie = $('body').attr('data-controllertype') === 'nixie';
+
             el.addClass('picConfigCategory cfgSensorCalibration');
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Sensor Calibration', glyph: 'fas fa-balance-scale-right', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            $('<span style="margin-left:8.5rem"></span><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;"></span><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
+            var dataFmt = '#,##0';
             var tempUnits = o.tempUnits.find(elem => elem.val === 0) || { val: 0, name: "F", desc: "Fahrenheit" };
+            if (isNixie) {
+                // Add in the freeze protection threshold since we can set this value on nixie controllers.
+                dataFmt = '#,##0.##';
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Freeze Threshold', binding: 'freezeThreshold', dataType: 'number', fmtType: dataFmt, value: o.freezeThreshold || 35, min: -50, max: 150, step: 1, maxlength: 5,
+                    units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+                $('<hr></hr>').appendTo(pnl);
+                line = $('<div></div>').appendTo(pnl);
+            }
+            
+            $('<span style="margin-left:8.5rem"></span><label style="width:7rem;text-align:center;">Adjusted Value</label><span style="width:5rem;display:inline-block;"></span><label style="width:7rem;text-align:center;">True Readout</label>').appendTo(line);
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: sensor.name, binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } } });
-                $('<span></span>').css({ width: '4.5rem', display: 'inline-block' }).appendTo(line);
+                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: sensor.name, binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } } });
+                $('<span></span>').css({ width: '3rem', display: 'inline-block' }).appendTo(line);
                 $('<span></span>').appendTo(line).attr('data-bind', 'sensorRaw.' + sensor.binding + '_curr').attr('data-datatype', 'number').text(sensor.temp - sensor.tempAdj)
                     .css({ width: '7rem', display: 'inline-block', textAlign:'center' });
             }
@@ -227,6 +241,8 @@
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var raw = dataBinder.fromElement(el);
                 var v = { options: {} };
+                console.log(raw);
+                if (typeof raw.freezeThreshold !== 'undefined') v.options['freezeThreshold'] = raw.freezeThreshold;
                 for (var prop in raw.sensorRaw) {
                     if (prop.endsWith('_curr')) {
                         var offName = prop.replace('_curr', '');
