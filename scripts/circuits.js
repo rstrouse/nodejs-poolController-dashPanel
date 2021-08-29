@@ -45,6 +45,7 @@
             switch (name) {
                 case 'light':
                 case 'intellibrite':
+                case 'colorlogic':
                 case 'globrite':
                 case 'globritewhite':
                 case 'magicstream':
@@ -62,9 +63,14 @@
             var self = this, o = self.options, el = self.element;
             if (typeof data.type === 'undefined') return;
             if (type === 'lightGroup' || self._isLight(data.type.name)) {
-                el.find('div.picLights').each(function () {
+                el.parent().find('div.picLights').each(function () {
                     this.setItem(type, data);
                 });
+                if (data.showInFeatures === true) {
+                    el.find('div.picFeatures').each(function () {
+                        this.setItem(type, data);
+                    });
+                }
             }
             else
                 el.find('div.picFeatures').each(function () {
@@ -115,20 +121,23 @@
             // See if the item exists.
             var selector = '';
             var div = el.find('div.picFeature[data-eqid=' + data.id + ']');
+            if (data.isActive === false) {
+                div.remove();
+                return;
+            }
             if (div.length === 0) {
                 // We need to add it.
                 var bAdded = false;
                 var id = parseInt(data.id, 10);
-                el.children('div.picFeature').each(function () {
+                el.find('div.picFeatureGrid').children('div.picFeature').each(function () {
                     //console.log({ msg: 'Found Feature', id: this.equipmentId() });
                     if (this.equipmentId() > id) {
-                        //console.log({ msg: 'Setting Item', type: type, data: data });
                         div = $('<div class="picFeature"></div>').insertBefore($(this));
                         bAdded = true;
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature"></div>').appendTo(el);
+                if (!bAdded) div = $('<div class="picFeature"></div>').appendTo(el.find('div.picFeatureGrid:first'));
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
@@ -188,9 +197,12 @@
                 setTimeout(function () { self.resetState(); }, 3000);
             });
         },
-
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (data.isActive === false) {
+                el.remove();
+                return;
+            }
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
             if (typeof data.endTime === 'undefined') {
@@ -432,7 +444,7 @@
                                 }
 
                             });
-                            divPopover.popover({ title: 'Intellibrite Theme', popoverStyle: 'modal', placement: { target: evt.target } });
+                            divPopover.popover({ title: 'Light Theme', popoverStyle: 'modal', placement: { target: evt.target } });
                             divPopover[0].show(evt.target);
                         });
                         evt.preventDefault();
@@ -500,6 +512,7 @@
             var self = this, o = self.options, el = self.element;
             if (makeBool($('div.picDashboard').attr('data-hidethemes'))) return false;
             switch (circuit.type.name) {
+                case 'colorlogic':
                 case 'intellibrite':
                 case 'globrite':
                 case 'magicstream':
@@ -525,6 +538,7 @@
             switch (circuit.type.name) {
                 case 'light':
                 case 'intellibrite':
+                case 'colorlogic':
                 case 'globrite':
                 case 'globritewhite':
                 case 'magicstream':
@@ -539,6 +553,10 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (data.isActive === false) {
+                el.remove();
+                return;
+            }
             try {
                 dataBinder.bind(el.parent().find('div.picPopover[data-circuitid=' + data.id + ']'), data);
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
@@ -570,7 +588,7 @@
                 else {
                     if ($('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').length > 0) {
                         //console.log('remove id: ' + data.id);
-                        $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
+                        $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').each(function () { try { this.stopCountdownEndTime(); } catch (err) { console.log(err); }});
                         $('div.picLights > div.picCircuit[data-circuitid=' + data.id + ']').remove();
                     }
                 }
@@ -659,6 +677,7 @@
                         switch (data.circuits[i].type.name) {
                             case 'light':
                             case 'intellibrite':
+                            case 'colorlogic':
                             case 'globrite':
                             case 'globritewhite':
                             case 'magicstream':
@@ -721,6 +740,7 @@
                 switch (circuit.type.name) {
                     case 'light':
                     case 'intellibrite':
+                    case 'colorlogic':
                     case 'globrite':
                     case 'globritewhite':
                     case 'magicstream':
@@ -740,6 +760,11 @@
             var selector = '';
             var inner = el.find('div.picFeatureGrid:first');
             var div = el.find('div.picFeature[data-eqid=' + data.id + ']');
+            if (data.isActive === false) {
+                div.remove();
+                return;
+            }
+            console.log({ msg: `Setting light`, data: data, found: div.length });
             if (div.length === 0) {
                 // We need to add it.
                 var bAdded = false;
@@ -751,7 +776,7 @@
                         return false;
                     }
                 });
-                if (!bAdded) div = $('<div class="picFeature btn"></div>').appendTo(inner);
+                if (!bAdded) div = $('<div class="picLight picFeature btn"></div>').appendTo(inner);
                 switch (type) {
                     case 'circuit':
                         div.addClass('picCircuit');
@@ -775,7 +800,7 @@
                 // el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
                 // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
             }
-            $('div.picLights > div.picCircuit[data-eqid=' + data.id + ']:not(:first)').each(function(){try {this.stopCountdownEndTime();} catch (err){}});
+            $('div.picLights > div.picCircuit[data-eqid=' + data.id + ']:not(:first)').each(function () { try { this.stopCountdownEndTime(); } catch (err) { console.log(err); }});
             $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
         }
 
@@ -844,7 +869,7 @@
                         }
 
                     });
-                    divPopover.popover({ title: 'Intellibrite Theme', popoverStyle: 'modal', placement: { target: evt.target } });
+                    divPopover.popover({ title: 'Light Theme', popoverStyle: 'modal', placement: { target: evt.target } });
                     divPopover[0].show(evt.target);
                 });
                 evt.preventDefault();
@@ -856,6 +881,7 @@
             switch (circuit.type.name) {
                 case 'light':
                 case 'intellibrite':
+                case 'colorlogic':
                 case 'globrite':
                 case 'globritewhite':
                 case 'magicstream':
