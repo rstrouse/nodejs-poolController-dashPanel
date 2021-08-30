@@ -31,7 +31,6 @@
                 }
             });
             $.getApiService('/config/options/chemControllers', null, function (opts, status, xhr) {
-                console.log(opts);
                 chemOpts = opts;
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(pnl).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
@@ -59,7 +58,8 @@
                         .on('click', function (e) {
                             var btn = $(e.currentTarget);
                             if (btn.hasClass('disabled')) return;
-                            var divChlorinator = $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(opts);
+                            var divChlorinator = $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(chlorOpts);
+                            console.log(chlorOpts);
                             divChlorinator[0].dataBind({
                                 id: -1,
                                 name: 'IntelliChlor' + (el.find('div.cfgChlorinator').length),
@@ -812,7 +812,7 @@
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Model', binding: binding + 'model',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Model', style: { whiteSpace: 'nowrap' } }],
-                items: o.models, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                items: o.models, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             /* $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the chlorinator is not being controlled by\r\na pool automation system.').hide(); */
             $('<hr></hr>').appendTo(pnl);
