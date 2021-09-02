@@ -87,7 +87,7 @@
                 console.log(opts);
                 var filters = opts.filters;
                 for (var i = 0; i < filters.length; i++) {
-                    $('<div></div>').appendTo(el).pnlFilterConfig({ filterTypes: opts.types, servers: opts.servers, bodies: opts.bodies, areaUnits: opts.areaUnits })[0].dataBind(filters[i]);
+                    $('<div></div>').appendTo(el).pnlFilterConfig({ filterTypes: opts.types, servers: opts.servers, bodies: opts.bodies, areaUnits: opts.areaUnits, pressureUnits: opts.pressureUnits, circuits: opts.circuits })[0].dataBind(filters[i]);
                 }
             });
         }
@@ -121,6 +121,25 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Units', style: { whiteSpace: 'nowrap' } }],
                 items: o.areaUnits, inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { display: 'none' } }
             });
+            $('<hr></hr>').appendTo(pnl);
+            var grpPressure = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
+            $('<legend></legend>').text('Filter Pressure').appendTo(grpPressure);
+            line = $('<div></div>').appendTo(grpPressure);
+            $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Units', binding: binding + 'pressureUnits',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Units', style: { whiteSpace: 'nowrap' } }],
+                items: o.pressureUnits, inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { width: '4rem' } }
+            }).on('selchanged', function (evt) { self.setPressureUnits(evt.newItem.val); });
+            $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Circuit', binding: binding + 'pressureCircuitId',
+                columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Circuit Name', style: { whiteSpace: 'nowrap' } }],
+                items: o.circuits, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            });
+
+            line = $('<div></div>').appendTo(grpPressure);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Clean', binding: binding + 'cleanPressure', fmtMask: '#,##0.##', min: 0, max: 1000, step: 1, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { width: '4rem' } } });
+            line = $('<div></div>').appendTo(grpPressure);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Dirty', binding: binding + 'dirtyPressure', fmtMask: '#,##0.##', min: 0, max: 1000, step: 1, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { width: '4rem' } } });
 
             var bindpnl = $('<div></div>').addClass('pnlDeviceBinding').REMBinding({ servers: o.servers }).appendTo(pnl).hide();
             $('<hr></hr>').prependTo(bindpnl);
@@ -140,6 +159,14 @@
                 });
             });
         },
+        setPressureUnits(val) {
+            var self = this, o = self.options, el = self.element;
+            var units = o.pressureUnits.find(elem => val === elem.val);
+            if (typeof units !== 'undefined') {
+                el.find('div[data-bind$="cleanPressure"]').each(function () { this.units(units.name); });
+                el.find('div[data-bind$="dirtyPressure"]').each(function () { this.units(units.name); });
+            }
+        },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
@@ -149,6 +176,7 @@
             cols[1].elText().text(typeof type === 'object' ? type.desc || 'Unknown' : 'Unknown');
             if (obj.master === 1) el.find('div.pnlDeviceBinding').show();
             else el.find('div.pnlDeviceBinding').hide();
+            self.setPressureUnits(obj.pressureUnits);
             dataBinder.bind(el, obj);
         }
     });

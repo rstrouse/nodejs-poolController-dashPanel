@@ -52,7 +52,6 @@
                     $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
                 }
             }
-
             else el.hide();
         }
     });

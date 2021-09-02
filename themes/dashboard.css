@@ -334,6 +334,7 @@ div.picBodyTemp > div:nth-child(2) {
     width: 100%; }
   div.picBodies {
     min-width: 100%; }
+  div.picBodyFilter > label.picFilterName,
   div.picChlorinator > label.picChlorinatorName,
   div.picChemController > label.picControllerName {
     max-width: 25%; } }

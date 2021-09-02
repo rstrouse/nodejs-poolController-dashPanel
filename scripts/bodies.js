@@ -52,6 +52,55 @@
             else el.find('div.picSolarTempField').show();
         }
     });
+    $.widget('pic.bodyFilters', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el[0].initFilters = function (data) { self._initFilters(data); };
+        },
+        _initFilters: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            let div = $('<div class="picCircuitTitle control-panel-title"></div>');
+            div.appendTo(el);
+            let span = $('<span class="picCircuitTitle"></span>');
+            span.appendTo(div);
+            span.text('Filters');
+            if (typeof data !== 'undefined' && data.filters.length > 0) {
+                el.show();
+                for (let i = 0; i < data.filters.length; i++) {
+                    $('<div></div>').appendTo(el).bodyFilter(data.filters[i]);
+                }
+            }
+            else el.hide();
+        }
+    });
+    $.widget('pic.bodyFilter', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+            self._initFilter();
+        },
+        _initFilter: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picBodyFilter');
+            el.empty();
+            var div = $('<div class="picFilterState picIndicator"></div>').appendTo(el);
+            el.attr('data-id', o.id);
+            div.attr('data-ison', o.isOn);
+            div.attr('data-status', o.isOn ? 'on' : 'off');
+            $('<label class="picFilterName" data-bind="name"></label>').appendTo(el);
+            $('<span class="picFilterPressure picData"></label><span class="picPressureValue" data-bind="pressure" data-fmttype="number" data-fmtmask="#,##0.##" data-fmtempty="----"></span><label class="picUnits" data-bind="pressureUnits.name"></label></span>').appendTo(el);
+            $('<span class="picFilterPercentage picData"></label><span class="picPercentValue" data-bind="cleanPercentage" data-fmttype="number" data-fmtmask="#,##0.##" data-fmtempty="----"></span><label class="picUnits">%</label></span>').appendTo(el);
+            self.setEquipmentData(o);
+        },
+        setEquipmentData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, data);
+        }
+    });
+
     $.widget('pic.body', {
         options: {},
         _create: function () {

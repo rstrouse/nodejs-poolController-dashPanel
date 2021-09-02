@@ -18,6 +18,7 @@
             el.find('div.picPumps').each(function () { this.initPumps(); });
             el.find('div.picChemistry').each(function () { this.initChemistry(); });
             el.find('div.picSchedules').each(function () { this.initSchedules(); });
+            el.find('div.picFilters').each(function () { this.initFilters(); });
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -36,6 +37,11 @@
             var self = this, o = self.options, el = self.element;
             el.find('div.picPumps').each(function () { this.initPumps(data); });
         },
+        _createFiltersPanel: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picFilters').each(function () { this.initFilters(data); });
+        },
+
         _reset: function () {
             var self = this, o = self.options, el = self.element;
             if (o.socket && typeof o.socket !== 'undefined' && o.socket.connected) {
@@ -128,6 +134,7 @@
                     self._createPumpsPanel(data);
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
+                    self._createFiltersPanel(data);
                     console.log(data);
                     self.receivePortStats(o.sendPortStatus);
                 })
@@ -167,6 +174,7 @@
                     self._createPumpsPanel(data);
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
+                    self._createFiltersPanel(data);
                     self._initSockets();
                     console.log(data);
                     console.log('initializing element order');
@@ -202,6 +210,9 @@
                     if (typeof getStorage('--picChemistry-order') === 'undefined') setStorage('--picChemistry-order', $(':root').css('--picChemistry-order'));
                     $(':root').css('--picChemistry-order', getStorage('--picChemistry-order'));
                     if (typeof getStorage('--picChemistry-display') === 'undefined') setStorage('--picChemistry-display', $(':root').css('--picChemistry-display'));
+                    $(':root').css('--picFilters-order', getStorage('--picFilters-order'));
+                    if (typeof getStorage('--picFilters-display') === 'undefined') setStorage('--picFilters-display', $(':root').css('--picFilters-display'));
+
                     $(':root').css('--picChemistry-display', getStorage('--picChemistry-display'));
                     if (typeof getStorage('--show-time-remaining') === 'undefined') setStorage('--show-time-remaining', $(':root').css('--show-time-remaining'));
                     $(':root').css('--show-time-remaining', getStorage('--show-time-remaining'));
@@ -312,6 +323,12 @@
                     this.setEquipmentData(data);
                 });
                 console.log({ evt: 'body', data: data });
+            });
+            o.socket.on('filter', function (data) {
+                $('div.picBodyFilter[data-id=' + data.id + ']').each(function () {
+                    this.setEquipmentData(data);
+                });
+                console.log({ evt: 'filter', data: data });
             });
             o.socket.on('config', function (data) {
                 console.log({ evt: 'config', data: data });

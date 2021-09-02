@@ -6,6 +6,7 @@
     --picPumps-order: 5;
     --picChemistry-order: 10;
     --picSchedules-order: 15;
+    --picFilters-order: 17;
     --picBodies-display: block;
     --picCircuits-display: block;
     --picLights-display: block;
@@ -13,6 +14,7 @@
     --picPumps-display: block;
     --picChemistry-display: block;
     --picSchedules-display: block;
+    --picFilters-display: block;
     --number-of-columns: 2;
     --dashContainer2-display: block;
     --dashContainer3-display: block;
@@ -241,6 +243,10 @@ div.picVirtualCircuits{
     order :var(--picVirtualCircuits-order);
     display: var(--picVirtualCircuits-display) !important;
 }
+div.picFilters {
+    order: var(--picFilters-order);
+    display: var(--picFilters-display) !important;
+}
 div.picLights{
     order :var(--picLights-order);
     display: var(--picLights-display) !important;
@@ -449,10 +455,15 @@ label.picUnits, span.picUnits {
     padding-right:.1em;
     font-size:.8em;
 }
-div.picPump, div.picChlorinator, div.picSchedule, div.picChemController {
+div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.picBodyFilter {
     font-size:.9rem;
     cursor:pointer;
 }
+    div.picBodyFilter > span.picFilterPercentage {
+        display: inline-block;
+        float: right;
+    }
+    div.picBodyFilter > label.picFilterName,
     div.picChlorinator > label.picChlorinatorName,
     div.picChemController label.picControllerName {
         display: inline-block;
@@ -1147,7 +1158,7 @@ div.warning-message {
     margin: 0 5px 5px 5px;
     padding: 5px;
     font-size: 1.2em;
-    width: 120px;
+    width: 130px;
   }
 
   @media screen and (max-width: 744px) {

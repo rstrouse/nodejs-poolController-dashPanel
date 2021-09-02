@@ -528,7 +528,7 @@
                     $(':root').css('--dashContainer3-display', 'none');
                 }
 
-                let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits']
+                let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters'];
 
                 arr.forEach(id => {
                     let el = $(`.${id}`);
@@ -565,8 +565,8 @@
                         $(`<li>${disp}</li>`).addClass('btn').attr({ 'data-orderLg': elVarName, 'data-id': id }).appendTo(col1ullg);
                         $(el).appendTo('.container1');
                     }
-                })
-            }
+                });
+            };
             $('<legend>Order of Elements</legend>').appendTo(grp);
             var outerOrderInstDiv = $('<div></div>').addClass('lgOrderInstructions').appendTo(grp);
             var innerOrderInstDiv = $('<label>Drag and drop the items to the desired format.  Screens smaller than 744px will display the columns vertically.</label>').addClass('orderInstructions');

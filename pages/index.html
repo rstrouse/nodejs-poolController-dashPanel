@@ -67,6 +67,7 @@
                 <div class="picSchedules picControlPanel picScheduleContainer control-panel"></div>
                 <div class="picCircuits picControlPanel control-panel"></div>
                 <div class="picLights picControlPanel control-panel"></div>
+                <div class="picFilters picControlPanel control-panel"></div>
                 <div class="picVirtualCircuits picControlPanel control-panel"></div>
             </div>
             <div class="container2"></div>
@@ -84,8 +85,6 @@
                 $(document.body).css('background-image', `url(${background})`);
             else
                 $(document.body).css('background-image', '');
-            console.log(background);
-
             $('div.picDashboard').dashboard();
             $('div.picController').controller();
             $('div.picBodies').bodies();
@@ -94,6 +93,7 @@
             $('div.picPumps').pumps();
             $('div.picChemistry').chemistry();
             $('div.picSchedules').schedules();
+            $('div.picFilters').bodyFilters();
         });
     </script>
 </body>

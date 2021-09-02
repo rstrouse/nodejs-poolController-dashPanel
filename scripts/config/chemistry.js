@@ -23,14 +23,14 @@
             var chlorOpts;
             var chemOpts;
             var pnl = $('<div></div>').addClass('pnlControllers').appendTo(el);
-            $.getApiService('/config/options/chlorinators', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/chlorinators', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
                 chlorOpts = opts;
                 for (var i = 0; i < opts.chlorinators.length; i++) {
                     $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(opts)[0].dataBind(opts.chlorinators[i]);
                 }
             });
-            $.getApiService('/config/options/chemControllers', null, function (opts, status, xhr) {
+            $.getApiService('/config/options/chemControllers', null, 'Loading Options...', function (opts, status, xhr) {
                 chemOpts = opts;
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(pnl).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
