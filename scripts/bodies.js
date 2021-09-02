@@ -97,6 +97,10 @@
         },
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
+            if (typeof data.isOn !== 'undefined') {
+                el.find('div.picFilterState').attr('data-ison', makeBool(data.isOn));
+                el.find('div.picFilterState').attr('data-status', makeBool(data.isOn));
+            }
             dataBinder.bind(el, data);
         }
     });
