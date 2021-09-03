@@ -591,7 +591,7 @@
             $(function () {
                 $("#appearance-order-col-1, #appearance-order-col-2, #appearance-order-col-3, #appearance-order-col-hidden").sortable({
                     connectWith: ".connectedSortable",
-                    placeholder: "ui-state-highlight",
+                    placeholder: "ui-sort-placeholder",
                     stop: function (event, ui) {
                         console.log(`moving element ${ui.item.data('id')} from ${event.target.id} to ${ui.item[0].parentElement.id}`);
                         let col1ids = $('#appearance-order-col-1').sortable('toArray', { attribute: 'data-orderLg' });

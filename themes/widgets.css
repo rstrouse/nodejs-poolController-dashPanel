@@ -1177,9 +1177,12 @@ div.warning-message {
       border: 1px dashed #eee;
       color: gray;
   }
-  .ui-state-highlight{
-      min-height: 35px;
-  }
+.ui-sort-placeholder {
+    min-height: 35px;
+    border: 1px solid #dad55e;
+    background: #fffa90;
+    color: #777620;
+}
 .slist-list[data-cancreate="false"] .btn-add,
 .crud-list[data-cancreate="false"] .btn-add {
     display: none;
