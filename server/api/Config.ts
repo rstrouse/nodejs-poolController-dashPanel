@@ -24,7 +24,7 @@ export class ConfigRoute {
                 let srv = extend(true, {}, config.getSection('web.services'), req.body);
                 config.setSection('web.services', srv);
                 njsPCRelay.init();
-                return res.status(200).send(config.getSection(req.params.section));
+                return res.status(200).send(config.getSection(req.body.section));
             }
             catch (err) { next(err); }
         });
