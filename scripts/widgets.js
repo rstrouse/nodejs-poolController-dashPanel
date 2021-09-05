@@ -1868,7 +1868,7 @@ $.ui.position.fieldTip = {
             var tblOuter = $('<table></table>').addClass('optOuter');
             var tblBody = $('<tbody></tbody>').appendTo(tblOuter);
             var rowHeader = $('<tr></tr>').addClass('optHeader').addClass('header-background').appendTo(tblBody);
-            var cellHeder = $('<td></td>').appendTo(rowHeader);
+            var cellHeader = $('<td></td>').appendTo(rowHeader);
             self._buildOptionHeader().appendTo(cellHeader);
             var rowBody = $('<tr></tr>').appendTo(tblBody).addClass('optBody');
             var cellBody = $('<td></td>').appendTo(rowBody);
