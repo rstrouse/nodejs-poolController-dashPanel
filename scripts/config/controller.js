@@ -18,14 +18,12 @@
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Interface', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
-                    console.log(`implement me`)
+                    console.log(`implement me`);
                 });
             });
 
         }
     });
-
-
     $.widget('pic.pnlInterfaces', {
         options: {},
         _create: function () {
@@ -59,7 +57,7 @@
             var grpConnection = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
             $('<legend></legend>').text('Connection').appendTo(grpConnection);
             line = $('<div></div>').appendTo(grpConnection);
-            $('<div></div>').appendTo(line).pickList({
+            $('<div></div>').appendTo(line).pickList({ canEdit: true,
                 binding: binding + 'options.protocol',
                 bindColumn: 1, displayColumn: 2,
                 labelText: 'Protocol',
@@ -69,8 +67,8 @@
                 labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             // $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Host', binding: 'options.host', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Port', binding: 'options.port', inputAttrs: { maxlength: 5 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Host', binding: 'options.host', inputAttrs: { maxlength: 16, style: { width: '14rem' } }, labelAttrs: { style: { paddingLeft: '.15rem'} } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: ':', binding: 'options.port', dataType: 'number', fmtMask: '#####', inputAttrs: { maxlength: 5, style: { width: '4rem' } }, labelAttrs: { style: {marginLeft:'.15rem'} } });
             var btnPnl = $('<div class="picBtnPanel btn-panel findButton"></div>');
             btnPnl.appendTo(grpConnection);
 
@@ -97,16 +95,26 @@
                     $.getLocalService('/config/findREMControllers', null, 'Searching for Servers...', function (servers, status, xhr) {
                         if (servers.length > 0) {
                             searchStatus.text(servers.length + ' Running REM server(s) found.');
+                            console.log(servers);
                             for (var i = 0; i < servers.length; i++) {
                                 var server = servers[i];
                                 var divSelection = $('<div></div>').addClass('picButton').addClass('REM').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
                                 $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> REM Controller</span>');
-                                $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(server.origin);
+                                var hostname = server.hostnames && typeof server.hostnames !== 'undefined' && server.hostnames.length === 1 ? server.hostnames[0] : server.hostname;
+                                var ipadddress = server.hostname;
+                                server.resolvedHost = hostname;
+                                if (server.port && typeof server.port !== 'undefined' && !isNaN(server.port)) {
+                                    hostname += `:${server.port}`;
+                                    ipadddress += `:${server.port}`;
+                                }
+
+                                $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(hostname);
+                                $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(ipadddress);
                                 divSelection.data('server', server);
                                 divSelection.on('click', function (e) {
                                     var srv = $(e.currentTarget).data('server');
-                                    dataBinder.bind(grpConnection, { options: { host: srv.hostname, port: srv.port, protocol: srv.protocol + '//' } });
-
+                                    console.log({ msg: 'binding host', obj: { options: { host: srv.resolvedHost, port: srv.port, protocol: srv.protocol + '//' } } });
+                                    dataBinder.bind(grpConnection, { options: { host: srv.resolvedHost, port: srv.port, protocol: srv.protocol + '//' } });
                                     $.pic.modalDialog.closeDialog(dlg[0]);
                                 });
                             }
@@ -134,9 +142,9 @@
                     }
                 }
                 iface = $.extend(true, iface, v);
-                console.log(v);
                 if (dataBinder.checkRequired(p)) {
                     $.putApiService('/app/interface', iface, 'Saving interface...', function (c, status, xhr) {
+                        console.log(c);
                         self.dataBind(c);
                     });
                 }
@@ -177,7 +185,9 @@
             cols[0].elText().text(obj.name);
             var type = o.types.find(elem => elem.name === obj.type);
             cols[1].elText().text(typeof type !== 'undefined' ? type.desc : 'Interface');
-
+            // If the interface is enabled lets highlight the flask.
+            if (!obj.enabled) cols[0].elGlyph().css({ color: 'silver' });
+            else cols[0].elGlyph().css({ color: '' });
             if (typeof obj.type !== 'undefined' && obj.type === 'rem') {
                 el.find('div.findButton').show();
             }

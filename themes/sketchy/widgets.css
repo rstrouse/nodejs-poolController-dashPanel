@@ -1,102 +1,83 @@
-div.picTab:not(.picTabSelected) {
+﻿div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver;
-}
+  color: silver; }
 
 div.picConfigTabContents {
-  background-color: white;
-}
+  background-color: white; }
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634;
-}
+  text-shadow: 3px 3px 16px #272634; }
 
 div.picSaltReqd {
-  padding: 0.2rem;
+  padding: .2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: 0.4rem;
-}
+  margin-bottom: .4rem; }
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver;
-}
+  color: silver; }
 
 div.picBodyTemp > div.body-temp {
   font-family: cabin sketch;
-  font-weight: 400;
-}
+  font-weight: 400; }
 
 span.picUnits {
-  color: gray;
-}
+  color: gray; }
 
 div.picAccordian-title {
   border: solid 1px gray;
-  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px;
-}
+  border-radius: 4px 15px 15px 5px/25px 5px 13px 5px; }
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 25px 5px;
   border-top-right-radius: 5px 25px;
-  border-collapse: separate;
-}
+  border-collapse: separate; }
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 25px 5px;
   border-top-right-radius: 5px 25px;
   font-family: "cabin sketch";
   border: solid 1px gray;
-  background: url("pencilshade-gray.png");
-}
+  background: url("pencilshade-gray.png"); }
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white;
-}
+  color: white; }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: url("pencilshade-orange.png");
   color: black;
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: url("highlighter-yellow.png");
-}
+  background: url("highlighter-yellow.png"); }
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
-  background: url("pencilshade-blue.png");
-}
+  background: url("pencilshade-blue.png"); }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 div.pnl-scheduleDays div.table-cell.day:first-child {
-  border-bottom-left-radius: 25px 4px;
-}
+  border-bottom-left-radius: 25px 4px; }
 
 div.pnl-scheduleDays div.table-cell.day:last-child {
-  border-bottom-right-radius: 25px 4px;
-}
+  border-bottom-right-radius: 25px 4px; }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 1.5rem;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 div.pnl-scheduleDays div.table-row.days {
-  height: 2rem;
-}
+  height: 2rem; }
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: " ";
@@ -106,8 +87,7 @@ div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   display: inline-block;
   border-radius: 2px 25px 5px 15px/25px 5px 25px 2px !important;
   margin: 1px;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: " ";
@@ -117,5 +97,4 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   right: 0px;
   bottom: 0px;
   width: 1rem;
-  height: 1rem;
-}/*# sourceMappingURL=widgets.css.map */
+  height: 1rem; }

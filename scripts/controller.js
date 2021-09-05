@@ -655,15 +655,15 @@
                 divOuter.appendTo(contents);
                 var line = $('<div></div>').appendTo(divOuter);
                 var binding = 'services.';
-                $('<div></div>').appendTo(line).pickList({
+                $('<div></div>').appendTo(line).pickList({ 
                     labelText: 'Server', binding: binding + 'protocol', required: true,
                     inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.25rem' } },
                     columns: [{ binding: 'val', hidden: true, text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
                     bindColumn: 0, displayColumn: 1, items: [{ val: 'http://', name: 'http:', desc: 'The nodejs-PoolController is communicating without an SSL certificate' },
                     { val: 'https://', name: 'https:', desc: 'The nodejs-PoolController is communicating using an SSL certificate.' }]
                 });
-                $('<div></div>').appendTo(line).inputField({ labelText: '', binding: binding + 'ip', inputAttrs: { maxlength: 20 } });
-                $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType: 'int', binding: binding + 'port', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem', marginRight: '.15rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: '', binding: binding + 'ip', inputAttrs: { maxlength: 20, style: { width: '14rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: ':', dataType: 'int', fmtMask: '######', binding: binding + 'port', inputAttrs: { maxlength: 7, style: { width: '4rem' } }, labelAttrs: { style: { paddingLeft: '.15rem', marginRight: '.15rem' } } });
                 $('<hr></hr>').appendTo(divOuter);
                 line = $('<div></div>').appendTo(divOuter);
                 $('<div></div').appendTo(line).checkbox({ labelText: 'Use Proxy to njsPC Server', binding: binding + 'useProxy' });
@@ -694,13 +694,22 @@
                                 searchStatus.text(servers.length + ' Running nodejs-PoolController server(s) found.');
                                 for (var i = 0; i < servers.length; i++) {
                                     var server = servers[i];
-                                    var divSelection = $('<div></div>').addClass('picButton').addClass('nodejs-poolController').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
-                                    $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Pool Controller</span>');
-                                    $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(server.origin);
+                                    var divSelection = $('<div></div>').addClass('picButton').addClass('REM').addClass('server').addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
+                                    $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fab fa-node-js" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> REM Controller</span>');
+                                    var hostname = server.hostnames && typeof server.hostnames !== 'undefined' && server.hostnames.length === 1 ? server.hostnames[0] : server.hostname;
+                                    var ipadddress = server.hostname;
+                                    server.resolvedHost = hostname;
+                                    if (server.port && typeof server.port !== 'undefined' && !isNaN(server.port)) {
+                                        hostname += `:${server.port}`;
+                                        ipadddress += `:${server.port}`;
+                                    }
+
+                                    $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(hostname);
+                                    $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(ipadddress);
                                     divSelection.data('server', server);
                                     divSelection.on('click', function (e) {
                                         var srv = $(e.currentTarget).data('server');
-                                        dataBinder.bind(divOuter, { services: { ip: srv.hostname, port: srv.port, protocol: srv.protocol + '//' } });
+                                        dataBinder.bind(divOuter, { services: { ip: srv.resolvedHost, port: srv.port, protocol: srv.protocol + '//' } });
                                         $.pic.modalDialog.closeDialog(dlg[0]);
                                     });
                                 }

@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿
+
+(function ($) {
     $.widget("pic.chemistry", {
         options: {},
         _create: function () {
@@ -1024,14 +1026,14 @@
                         style: { width: '97px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
                     },
                     {
-                        binding: 'timeDosed', text: 'Duration', fmtType: 'duration', fmtMask: '#', cellStyle: { textAlign: 'right', width: '97px' },
-                        style: { width: '97px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                        binding: 'timeDosed', text: 'Duration', fmtType: 'duration', fmtMask: '#', cellStyle: { textAlign: 'right', width: '77px' },
+                        style: { width: '77px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
                     },
                     {
                         binding: 'volumeDosed', fmtType: 'number', fmtMask: '#,##0.00', text: 'Dosed', cellStyle: { textAlign: 'right', width: '57px' },
                         style: { width: '57px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
                     },
-                    { binding: 'status', text: 'Status', style: { width: '97px' }, cellStyle: { width: '97px' } }
+                    { binding: 'status', text: 'Status', style: { width: '117px' }, cellStyle: { width: '117px' } }
                 ]
             }).css({ width: '363px' });
             sel.find('div.slist-body').css({ fontSize: '.8rem', maxHeight: '97px', overflowY: 'auto' });

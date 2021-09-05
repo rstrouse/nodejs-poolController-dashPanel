@@ -1,177 +1,141 @@
-@charset "UTF-8";
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.dashContainer {
-  grid-template-columns: 377px calc(22.4rem + 4px);
-}
+  grid-template-columns: 377px calc(22.4rem + 4px); }
 
 div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver;
-}
+  color: silver; }
 
 div.picModules > table {
   background: white;
-  color: black;
-}
+  color: black; }
 
 div.picModules > table > tbody > td:nth-child(1) {
-  background: #701c7c !important;
-}
+  background: #701c7c !important; }
 
 div.picTab {
   background: #63727A !important;
-  color: white;
-}
+  color: white; }
 
 div.picOptionButton {
-  border-color: white;
-}
+  border-color: white; }
 
 div.picConfigTabContents {
   background: #63727A !important;
-  color: white;
-}
+  color: white; }
 
 div.picConfigPage {
-  margin-top: 0.4rem;
-}
+  margin-top: .4rem; }
 
 div.picController {
-  padding: 0px;
-}
-
-div.picFeatures {
-  padding-bottom: 0.4rem;
-}
+  padding: 0px; }
 
 div.picAmbientTemp label {
-  color: white;
-}
+  color: white; }
 
 div.picController > div.picControllerTitle {
-  margin: 0px;
-}
+  margin: 0px; }
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634;
-}
+  text-shadow: 3px 3px 16px #272634; }
 
 div.picSaltReqd {
-  padding: 0.2rem;
+  padding: .2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: 0.4rem;
-}
+  margin-bottom: .4rem; }
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver;
-}
+  color: silver; }
 
 span.picUnits {
-  color: silver;
-}
+  color: silver; }
 
 div.picAccordian-title {
   border: solid 1px white;
   background: #5A2D81;
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays > div.table {
-  margin-top: 0.4rem;
+  margin-top: .4rem;
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   border: solid 1px white;
   background: #673ab7;
-  border-bottom: none;
-}
+  border-bottom: none; }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+  border-top-right-radius: 5px; }
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px white;
   font-weight: bold;
-  color: white;
-}
+  color: white; }
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #701c7c;
   color: black;
-  font-weight: bold;
-}
+  font-weight: bold; }
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: #4b555a;
-}
+  background: #4b555a; }
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: #7b1fa2;
-  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%);
-}
+  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
+  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: "Font Awesome 5 Free";
-  background-color: black;
-}
+  font-family: 'Font Awesome 5 Free';
+  background-color: black; }
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
-  content: "";
-  font-weight: 900;
-}
+  content: "\f057";
+  font-weight: 900; }
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
-  content: "";
-  font-weight: 400;
-}
+  content: "\f111";
+  font-weight: 400; }
 
 div.picLightThemes {
-  width: 22rem;
-}
+  width: 22rem; }
 
 table.picPumpPrograms > tbody > tr:nth-child(1),
 table.picSchedDays > tbody > tr:nth-child(1) {
   background-color: #701c7c !important;
-  background-image: none;
-}
+  background-image: none; }
 
 table.picPumpPrograms > tbody > tr:nth-child(1) > td,
 table.picSchedDays > tbody > tr:nth-child(1) > td {
-  border-top: solid 1px white;
-}
+  border-top: solid 1px white; }
 
-table.picPumpPrograms > tbody > tr:nth-child(1) > td:nth-child(1) table.picSchedDays > tbody > tr:nth-child(1) > td:nth-child(1) {
-  border-left: solid 1px white;
-}
+table.picPumpPrograms > tbody > tr:nth-child(1) > td:nth-child(1)
+table.picSchedDays > tbody > tr:nth-child(1) > td:nth-child(1) {
+  border-left: solid 1px white; }
 
 table.picPumpPrograms > tbody > tr:nth-child(1) > td:last-child,
 table.picSchedDays > tbody > tr:nth-child(1) > td:last-child {
-  border-right: solid 1px white;
-}
+  border-right: solid 1px white; }
 
 table.picPumpPrograms > tbody > tr:nth-child(2) > td,
 table.picSchedDays > tbody > tr:nth-child(2) > td {
   border: solid 1px white;
-  background-color: black;
-}/*# sourceMappingURL=widgets.css.map */
+  background-color: black; }

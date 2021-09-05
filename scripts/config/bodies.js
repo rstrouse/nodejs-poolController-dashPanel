@@ -152,11 +152,17 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                console.log(v);
-                $.putApiService('/config/filter', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
-                    console.log({ data: data, status: status, xhr: xhr });
-                    self.dataBind(data);
-                });
+                if (v.cleanPressure <= v.dirtyPressure) {
+                    $.putApiService('/config/filter', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
+                        console.log({ data: data, status: status, xhr: xhr });
+                        self.dataBind(data);
+                    });
+                } else
+                    $('<div></div>')
+                        .appendTo(el.find('div[data-bind$="cleanPressure"]'))
+                            .fieldTip({ message: 'The clean (starting) pressure must be less than the dirty (ending) pressure.' });
+
+
             });
         },
         setPressureUnits(val) {

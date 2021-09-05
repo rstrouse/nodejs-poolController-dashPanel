@@ -1863,11 +1863,27 @@ $.ui.position.fieldTip = {
             }
             return tbl;
         },
+        _buildTblOuter: function () {
+            var self = this, o = self.options, el = self.element;
+            var tblOuter = $('<table></table>').addClass('optOuter');
+            var tblBody = $('<tbody></tbody>').appendTo(tblOuter);
+            var rowHeader = $('<tr></tr>').addClass('optHeader').addClass('header-background').appendTo(tblBody);
+            var cellHeder = $('<td></td>').appendTo(rowHeader);
+            self._buildOptionHeader().appendTo(cellHeader);
+            var rowBody = $('<tr></tr>').appendTo(tblBody).addClass('optBody');
+            var cellBody = $('<td></td>').appendTo(rowBody);
+            var divBody = $('<div></div>').addClass('optBody').appendTo(cellBody);
+            $('<div></div>').appendTo(divBody);
+            var rowFooter = $('<tr></tr>').addClass('optFooter').appendTo(tblBody);
+            $('<td></td>').appendTo(rowFooter);
+            return tblOuter;
+        },
         _buildOptionList: function () {
             var self = this, o = self.options, el = self.element;
             div = $('<div class="picPickList-options dropdown-panel"></div>');
-            var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader header-background"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
-            self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
+            //var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader header-background"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
+            var tblOuter = self._buildTblOuter().appendTo(div);
+            //self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
             var tbody = $('<table class="optBody"><tbody></tbody></table>').appendTo(tblOuter.find('div.optBody > div:first'));
             var val = self.val();
             for (var i = 0; i < o.items.length; i++) {

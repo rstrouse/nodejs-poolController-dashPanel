@@ -1,5 +1,6 @@
 ﻿import * as express from "express";
 import * as extend from 'extend';
+import * as dns from 'dns';
 import { ApiError } from '../Errors';
 import { UploadRoute, BackgroundUpload } from "../upload/upload";
 import { Client } from "node-ssdp";
@@ -37,7 +38,13 @@ export class ConfigRoute {
                         if (statusCode === 200) {
                             let url = new URL(headers.LOCATION);
                             if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
-                                servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname: url.hostname, port: url.port, hash: url.hash });
+                                let server = { origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname: url.hostname, port: url.port, hash: url.hash, hostnames: [] };
+                                servers.push(server);
+                                (async () => {
+                                    try {
+                                        server.hostnames = await dns.promises.reverse(url.hostname);
+                                    } catch (err) { logger.error(`Error resolving host names: ${err.message}`) }
+                                })();
                             }
                         }
                     });
@@ -60,7 +67,13 @@ export class ConfigRoute {
                         if (statusCode === 200) {
                             let url = new URL(headers.LOCATION);
                             if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
-                                servers.push({ origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname: url.hostname, port: url.port, hash: url.hash });
+                                let server = { origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname: url.hostname, port: url.port, hash: url.hash, hostnames: [] };
+                                servers.push(server);
+                                (async () => {
+                                    try {
+                                        server.hostnames = await dns.promises.reverse(url.hostname);
+                                    } catch(err) { logger.error(`Error resolving host names: ${err.message}`)}
+                                })();
                             }
                         }
                     });

@@ -74,5 +74,25 @@
   {
     "outputFile": "themes/purple/widgets.css",
     "inputFile": "themes/purple/widgets.scss"
+  },
+  {
+    "outputFile": "themes/default/colors.css",
+    "inputFile": "themes/default/colors.scss"
+  },
+  {
+    "outputFile": "themes/materia/widgets.css",
+    "inputFile": "themes/materia/widgets.scss"
+  },
+  {
+    "outputFile": "themes/nurple/colors.css",
+    "inputFile": "themes/nurple/colors.scss"
+  },
+  {
+    "outputFile": "themes/nurple/widgets.css",
+    "inputFile": "themes/nurple/widgets.scss"
+  },
+  {
+    "outputFile": "themes/sketchy/widgets.css",
+    "inputFile": "themes/sketchy/widgets.scss"
   }
 ]
