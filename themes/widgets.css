@@ -655,7 +655,7 @@ div.picPickList-options {
         height:100%;
     }
         div.picPickList-options div.optBody {
-            position: relative;
+            position: inherit;
             height: 100%;
             width: 100%;
             overflow:hidden;
