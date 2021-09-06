@@ -230,9 +230,9 @@
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
-                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: sensor.name, binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: sensor.name, dataType: 'number', fmtMask:'#,##0.##', binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } } });
                 $('<span></span>').css({ width: '3rem', display: 'inline-block' }).appendTo(line);
-                $('<span></span>').appendTo(line).attr('data-bind', 'sensorRaw.' + sensor.binding + '_curr').attr('data-datatype', 'number').text(sensor.temp - sensor.tempAdj)
+                $('<span></span>').appendTo(line).attr('data-bind', 'sensorRaw.' + sensor.binding + '_curr').attr('data-datatype', 'number').attr('data-fmtmask', '#,##0.##').text((sensor.temp - sensor.tempAdj).format('#,##0.##'))
                     .css({ width: '7rem', display: 'inline-block', textAlign:'center' });
             }
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
