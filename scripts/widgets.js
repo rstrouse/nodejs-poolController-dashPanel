@@ -1102,8 +1102,8 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             el[0].minVal = function (val) { return self.minVal(val); };
-            el[0].maxVal = function (val) { return self.maxVal(val); }
-            el[0].units = function (val) { return self.units(val); }
+            el[0].maxVal = function (val) { return self.maxVal(val); };
+            el[0].units = function (val) { return self.units(val); };
             if (o.required === true) self.required(true);
             //$('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             $('<label></label>').addClass('picSpinner-label').appendTo(el);
@@ -1295,6 +1295,7 @@ $.ui.position.fieldTip = {
             el[0].options = function (opts) { return self.opts(opts); };
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
+            el[0].units = function (val) { return self.units; };
             if (o.required === true) self.required(true);
             $('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><input type="text" class="picSpinner-value fld-value-center"></input><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             if (typeof o.min === 'undefined') o.min = 0;
@@ -1435,6 +1436,10 @@ $.ui.position.fieldTip = {
             //console.log({ m: 'Setting time', val: val, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
             o.val = Math.min(Math.max(o.min, val), o.max);
             el.find('input.picSpinner-value').val(val.formatTime(o.fmtMask, o.fmtEmpty));
+        },
+        units: function (val) {
+            var self = this, o = self.options, el = self.element;
+            el.find('input.picSpinner-units').text(val);
         }
     });
     $.widget("pic.selector", {
@@ -2129,8 +2134,6 @@ $.ui.position.fieldTip = {
             el[0].required = function (val) { return self.required(val); };
             if (o.required === true) self.required(true);
             el.on('change', '.picInputField-value', function (evt) { self.formatField(); });
-
-
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;

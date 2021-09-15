@@ -12,9 +12,9 @@
             $.getApiService('/config/options/general', null, function (opts, status, xhr) {
                 console.log(opts);
                 $('<div></div>').appendTo(el).pnlPersonalInfo({ countries: opts.countries })[0].dataBind(opts.pool);
-                $('<div></div>').appendTo(el).pnlTimeDate({ timeZones: opts.timeZones, clockModes: opts.clockModes, clockSources: opts.clockSources })[0].dataBind(opts.pool);
+                $('<div></div>').appendTo(el).pnlTimeDate({ timeZones: opts.timeZones, clockModes: opts.clockModes, clockSources: opts.clockSources, systemUnits: opts.systemUnits, tempUnits: opts.tempUnits })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlDelays()[0].dataBind(opts.pool);
-                $('<div></div>').appendTo(el).pnlSensorCalibration({ freezeThreshold: opts.pool.options.freezeThreshold, sensors: opts.sensors, tempUnits: opts.tempUnits })[0].dataBind(opts.pool);
+                $('<div></div>').appendTo(el).pnlSensorCalibration({ freezeThreshold: opts.pool.options.freezeThreshold, sensorUnits: opts.pool.options.units, sensors: opts.sensors, tempUnits: opts.tempUnits, systemUnits: opts.systemUnits })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlAlerts({})[0].dataBind(opts.alerts);
                 $('<div></div>').appendTo(el).pnlSecurity({})[0].dataBind(opts.security);
             });
@@ -111,9 +111,20 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgTimeDate');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Time & Date', glyph: 'far fa-clock', style: { width: '15rem' } }] });
+            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Timezone & Locality', glyph: 'far fa-clock', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
+            // If this is IntelliCenter we do not have this option yet.
+            var pnlType = $('div.dashOuter').attr('data-controllertype');
+            if (pnlType !== 'IntelliCenter') {
+                $('<div></div>').appendTo(line).pickList({
+                    labelText: 'Units', binding: 'options.units',
+                    displayColumn: 1,
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'System Units', style: { whiteSpace: 'nowrap' } }],
+                    items: o.systemUnits, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '5.7rem' } }
+                });
+                line = $('<div></div>').appendTo(pnl);
+            }
             $('<div></div>').appendTo(line).pickList({
                 labelText: 'Time Zone', binding: 'location.timeZone',
                 displayColumn: 2,
@@ -135,20 +146,22 @@
                 });
             }
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            btnSave = $('<div id="btnSaveTimeDate"></div>').appendTo(btnPnl).actionButton({ text: 'Save Time & Date', icon: '<i class="fas fa-save"></i>' });
+            btnSave = $('<div id="btnSaveTimeDate"></div>').appendTo(btnPnl).actionButton({ text: 'Save Locality', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 //$(this).addClass('disabled');
                 //$(this).find('i').addClass('burst-animated');
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
                 console.log(v);
-                $.putApiService('/config/general', v, 'Saving Time & Date Information...', function (data, status, xhr) {
+                $.putApiService('/config/general', v, 'Saving Locality Information...', function (data, status, xhr) {
                     self.dataBind(data);
+                    console.log(data);
+                    var tempUnits = o.tempUnits.find(elem => elem.val === data.pool.options.units) || { val: 0, name: 'F', desc: 'Fahrenheit' };
+                    var tu = '°' + tempUnits.name;
+                    el.parents('div.picTabContents').find('div.fld-temp-units').each(function() {
+                        if (typeof this.units === 'function') this.units(tu);
+                    });
                 });
-
-                // Send this off to the server.
-                //$(this).find('span.picButtonText').text('Loading Config...');
-                //$.putApiService('/app/config/reload', function (data, status, xhr) {
             });
         },
         dataBind: function (obj) {
@@ -214,14 +227,14 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             var dataFmt = '#,##0';
-            var tempUnits = o.tempUnits.find(elem => elem.val === 0) || { val: 0, name: "F", desc: "Fahrenheit" };
+            var tempUnits = o.tempUnits.find(elem => elem.val === o.sensorUnits) || { val: 0, name: "F", desc: "Fahrenheit" };
             if (isNixie) {
                 // Add in the freeze protection threshold since we can set this value on nixie controllers.
                 dataFmt = '#,##0.##';
                 $('<div></div>').appendTo(line).valueSpinner({
                     canEdit: true, labelText: 'Freeze Threshold', binding: 'freezeThreshold', dataType: 'number', fmtType: dataFmt, value: o.freezeThreshold || 35, min: -50, max: 150, step: 1, maxlength: 5,
                     units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } }
-                });
+                }).addClass('fld-temp-units');
                 $('<hr></hr>').appendTo(pnl);
                 line = $('<div></div>').appendTo(pnl);
             }
@@ -230,7 +243,8 @@
             for (var k = 0; k < o.sensors.length; k++) {
                 var sensor = o.sensors[k];
                 line = $('<div></div>').appendTo(pnl);
-                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: sensor.name, dataType: 'number', fmtMask:'#,##0.##', binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: sensor.name, dataType: 'number', fmtMask: '#,##0.##', binding: 'sensorRaw.' + sensor.binding + '_adj', value: sensor.temp, min: -50, max: 150, step: 1, maxlength: 5, units: '°' + tempUnits.name, labelAttrs: { style: { width: '8.5rem' } }, inputAttrs: { style: { width: '4.5rem' } } })
+                    .addClass('fld-temp-units');
                 $('<span></span>').css({ width: '3rem', display: 'inline-block' }).appendTo(line);
                 $('<span></span>').appendTo(line).attr('data-bind', 'sensorRaw.' + sensor.binding + '_curr').attr('data-datatype', 'number').attr('data-fmtmask', '#,##0.##').text((sensor.temp - sensor.tempAdj).format('#,##0.##'))
                     .css({ width: '7rem', display: 'inline-block', textAlign:'center' });

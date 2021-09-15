@@ -13,7 +13,7 @@
                 console.log(opts);
                 var bodies = opts.bodies;
                 for (var i = 0; i < bodies.length; i++) {
-                    $('<div></div>').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies })[0].dataBind(opts.bodies[i]);
+                    $('<div></div>').appendTo(el).pnlBodyConfig({ bodyTypes: opts.bodyTypes, maxBodies: opts.maxBodies, capacityUnits: opts.capacityUnits })[0].dataBind(opts.bodies[i]);
                 }
             });
         }
@@ -53,6 +53,7 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
+            var units = o.capacityUnits.find(elem => obj.capacityUnits === elem.val) || { val: 1, name: 'gal', desc: 'Gallons' };
             if (typeof obj.type === 'undefined') {
                 if (name.toLowerCase() === 'pool') obj.type = 0;
                 else if (name.toLowerCase() === 'spa') obj.type = 1;
@@ -69,7 +70,7 @@
             var capacity = typeof obj.capacity !== 'undefined' ? parseInt(obj.capacity, 10) || 0 : 0;
             if (isNaN(capacity)) capacity = 0;
             cols[0].elText().text(obj.name);
-            cols[1].elText().text(capacity.format('#,##0') + ' gallons');
+            cols[1].elText().text(capacity.format('#,##0') + ' ' + units.desc);
             dataBinder.bind(el, obj);
         }
     });
