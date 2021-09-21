@@ -2772,7 +2772,7 @@ $.ui.position.fieldTip = {
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 for (var i = 0; i < btns.length; i++) {
                     var btn = btns[i];
-                    var b = $('<div></div>').appendTo(btnPnl).actionButton({ text: btn.text, icon: btn.icon });
+                    var b = $('<div></div>').appendTo(btnPnl).actionButton({ id: btn.id, text: btn.text, icon: btn.icon, style: btn.style });
                     if (typeof btn.click === 'function') b.on('click', btn.click);
                 }
             }
@@ -3747,11 +3747,199 @@ $.ui.position.fieldTip = {
         }
 
     });
+    $.widget("pic.crudList", {
+        options: {
+            caption: '',
+            itemName: 'Item',
+            columns: [],
+            actions: { canCreate: false, canEdit: false, canRemove: false, canClear: false },
+            items: []
+        },
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._initList();
+            el[0].addRow = function (data) { return self.addRow(data); };
+            el[0].saveRow = function (data) { return self.saveRow(data); };
+            el[0].removeItemByIndex = function (val) { return self.removeItemByIndex(val); };
+            el[0].clear = function () { self.clear(); };
+            el[0].actions = function (val) { return self.actions(val); };
+        },
+        _getColumn: function (nCol) { return this.options.columns[nCol]; },
+        _createCaption: function () {
+            var self = this, o = self.options, el = self.element;
+            var caption = $('<div></div>').addClass('crud-caption').html(o.caption);
+            $('<span></span>').appendTo(caption).addClass('header-icon-btn').addClass('btn-add').append($('<i class="fas fa-plus"></i>')).attr('title', 'Add a new ' + o.itemName)
+                .on('click', function (e) {
+                    var evt = $.Event('additem');
+                    el.trigger(evt);
+                });
+            $('<span></span>').appendTo(caption).addClass('header-icon-btn').addClass('btn-clear').append($('<i class="fas fa-broom"></i>')).attr('title', 'Clear all ' + o.itemName)
+                .on('click', function (e) {
+                    var evt = $.Event('clearitems');
+                    el.trigger(evt);
+                });
+            return caption;
+        },
+        _createHeader: function () {
+            var self = this, o = self.options, el = self.element;
+            var header = $('<div></div>').addClass('crud-header');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(header));
+            var row = $('<tr></tr>').appendTo(tbody).addClass('crud-header');
+            var btn = $('<td></td>').appendTo(row).addClass('crud-button').addClass('btn-edit'); // This is the buttons column.
+            $('<span></span>').appendTo(btn).addClass('crud-row-btn');
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = self._getColumn(i);
+                var td = $('<td></td>').appendTo(row);
+                var span = $('<span class="crud-header-text"></span>').appendTo(td).text(col.text);
+                if (typeof col.style !== 'undefined') span.css(col.style);
+                if (typeof col.headStyle !== 'undefined') div.css(col.headStyle);
 
+                if (col.hidden) td.hide();
+            }
+            btn = $('<td></td>').appendTo(row).addClass('crud-button').addClass('btn-remove'); // This is the buttons column.
+            $('<span></span>').appendTo(btn).addClass('crud-row-btn');
+            return header;
+        },
+        _createBody: function () {
+            var self = this, o = self.options, el = self.element;
+            var body = $('<div></div>').addClass('crud-body');
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(body).addClass('crud-table'));
+            tbody.on('click', 'span.crud-row-btn.btn-edit', function (e) {
+                var evt = $.Event('edititem');
+                var row = $(e.currentTarget).parents('tr:first');
+                evt.dataKey = row.data('key');
+                evt.dataRow = row;
+                el.trigger(evt);
+            });
+            tbody.on('click', 'span.crud-row-btn.btn-remove', function (e) {
+                var evt = $.Event('removeitem');
+                var row = $(e.currentTarget).parents('tr:first');
+                evt.dataKey = row.data('key');
+                evt.dataRow = row;
+                el.trigger(evt);
+            });
+            return body;
+        },
+        _createActionButton: function (icon, title, cssClass) {
+            var self = this, o = self.options, el = self.element;
+            var span = $('<span></span>').addClass('crud-row-btn').addClass(cssClass).attr('title', title);
+            $('<i></i>').appendTo(span).addClass(icon);
+            return span;
+        },
+        addRow: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var tbl = el.find('table.crud-table:first');
+            var tbody = tbl.find('tbody:first');
+            var row = $('<tr></tr>').appendTo(tbody);
+            var btn = $('<td></td>').addClass('btn-edit').appendTo(row);
+            self._createActionButton('fas fa-edit', 'Edit ' + o.itemName).addClass('btn-edit').appendTo(btn);
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = o.columns[i];
+                var td = $('<td></td>').appendTo(row);
+                var div = $('<div></div>').appendTo(td).attr('data-bind', col.binding).attr('data-fmttype', col.fmtType).attr('data-fmtMask', col.fmtMask);
+                if (typeof col.style !== 'undefined') div.css(col.style);
+                if (typeof col.cellStyle !== 'undefined') td.css(col.cellStyle);
+            }
+            btn = $('<td></td>').addClass('btn-remove').appendTo(row);
+            // Add in the buttons.
+            self.dataBindRow(row, data);
+            o.items.push(data);
+            self._createActionButton('fas fa-trash', 'Remove ' + o.itemName).addClass('btn-remove').appendTo(btn);
+            return row;
+        },
+        saveRow: function (data) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key !== 'undefined') {
+                // See if the key exists.
+                var key = data[o.key];
+                var row;
+                el.find('table.crud-table:first > tbody > row').each(function () {
+                    if (key === $(this).data('key')) {
+                        row = $(this);
+                        dataBinder.bind(row, data);
+                        return false;
+                    }
+                });
+                return typeof row === 'undefined' ? addRow(data) : row;
+            }
+            else
+                self.addRow(data);
+        },
+        removeItemByIndex: function (ndx) {
+            var self = this, o = self.options, el = self.element;
+            let tbl = el.find('table.crud-table:first');
+            tbl[0].deleteRow(ndx);
+            if (o.items.length > ndx) o.items.splice(ndx, 1);
+        },
+        clear: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('table.crud-table:first > tbody > tr').remove();
+        },
+        dataBindRow: function (row, data) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key !== 'undefined') row.data('key', data[o.key]);
+            dataBinder.bind(row, data);
+        },
+        _initList: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('crud-list');
+            var caption = self._createCaption().appendTo(el);
+            var header = self._createHeader().appendTo(el);
+            var body = self._createBody().appendTo(el);
+            if (typeof o.id !== 'undefined') el.attr('id', o.id);
+            el.on('click', 'span.crud-row-btn.btn-edit', function (evt) {
+                console.log('Edit clicked');
+            });
+            el.on('click', 'span.crud-row-btn.btn-remove', function (e) {
+                e.stopPropagation();
+                let row = $(e.currentTarget).parents('tr:first');
+                // Now get the item from the list.
+                let evt = $.Event('removeItem');
+                evt.item = o.items.length > row[0].rowIndex ? o.items[row[0].rowIndex] : undefined;
+                evt.itemIndex = row[0].rowIndex;
+                el.trigger(evt);
+            });
+            self.actions(o.actions);
+        },
+        actions: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') {
+                return o.actions = {
+                    canCreate: makeBool(el.attr('data-cancreate')),
+                    canEdit: makeBool(el.attr('data-canedit')),
+                    canRemove: makeBool(el.attr('data-canremove')),
+                    canClear: makeBool(el.attr('data-canclear'))
+                };
+            }
+            else {
+                var acts = typeof o.actions !== 'undefined' ? o.actions : o.actions = {}
+                for (var prop in val) {
+                    var name = prop.toLowerCase();
+                    switch (name) {
+                        case 'cancreate':
+                            acts.canCreate = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canedit':
+                            acts.canUpdate = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canremove':
+                            acts.canRemove = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                            break;
+                        case 'canclear':
+                            acts.canClear = makeBool(val[prop]);
+                            el.attr(`data-${name}`, makeBool(val[prop]));
+                    }
+                }
+            }
+        }
+    });
 })(jQuery);
-$.pic.fieldTip.showTip = function(el, opts) {
+$.pic.fieldTip.showTip = function (el, opts) {
     $('<div></div>').appendTo(el).fieldTip(opts);
-}
+};
 $.pic.fieldTip.clearTips = function (el) {
     if (el instanceof jQuery) {
         el.find('div.picFieldTip').remove();

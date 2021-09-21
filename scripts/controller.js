@@ -745,7 +745,7 @@
                 var contents = this.addTab(tabObj);
                 var divOuter = $('<div class="picBackups"></div>');
                 divOuter.appendTo(contents);
-                $.getApiService('/app/config/options/backup', null, 'Loading Backup Options...', function (opts, status, xhr) {
+                $.getApiService('/app/config/options/backup', null, function (opts, status, xhr) {
                     console.log(opts);
                     var line = $('<div></div>').appendTo(divOuter);
                     var bo = $('<div></div>').appendTo(divOuter).addClass('pnl-autobackup-options').hide();
@@ -798,7 +798,7 @@
                         .on('click', function (e) {
                             self._createBackupDialog();
                         });
-                    var btnRestore = $('<div></div>').attr('id', 'btnBackup').actionButton({ text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>' }).addClass('disabled')
+                    var btnRestore = $('<div></div>').attr('id', 'btnBackup').actionButton({ text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>' })
                         .on('click', function (e) {
                             self._createRestoreDialog();
                         });
@@ -941,35 +941,38 @@
                 width: '400px',
                 height: 'auto',
                 title: 'Create Backup File',
-                buttons: [{
-                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
-                    click: function () { $.pic.modalDialog.closeDialog(this); }
-                },
-                {
-                    text: 'Create Backup', icon: '<i class="fas fa-tape"></i>',
-                    click: function () {
-                        $.pic.fieldTip.clearTips(dlg);
-                        // Build the options data.
-                        let opts = dataBinder.fromElement(dlg);
-                        opts.automatic = false;
-                        // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
-                        if (opts.njsPC !== true && opts.dashPanel !== true && typeof opts.servers.find(elem => elem.backup === true) === 'undefined') {
-                            $.pic.fieldTip.showTip(dlg.find('div[data-bind=njsPC'), { message: 'You must select at least one server to back up.' });
-                        }
-                        else {
-                            $.putFileApiService('/app/config/createBackup', opts, function (data, status, xhr) {
-                                var url = window.URL.createObjectURL(new Blob([data]));
-                                var link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', 'backup.zip');
-                                document.body.appendChild(link);
-                                link.click();
-                                $(link).remove();
-                                $.pic.modalDialog.closeDialog(dlg);
-                            });
-                        }
-                    }
-                }]
+                buttons: [
+                    {
+                        id:'btnCreateBackup',
+                        text: 'Create Backup', icon: '<i class="fas fa-tape"></i>',
+                        click: function () {
+                            $.pic.fieldTip.clearTips(dlg);
+                            // Build the options data.
+                            let opts = dataBinder.fromElement(dlg);
+                            opts.automatic = false;
+                            // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
+                            if (opts.njsPC !== true && opts.dashPanel !== true && typeof opts.servers.find(elem => elem.backup === true) === 'undefined') {
+                                $.pic.fieldTip.showTip(dlg.find('div[data-bind=njsPC'), { message: 'You must select at least one server to back up.' });
+                            }
+                            else {
+                                $.putFileApiService('/app/config/createBackup', opts, function (data, status, xhr) {
+                                    var url = window.URL.createObjectURL(new Blob([data]));
+                                    var link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', 'backup.zip');
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    $(link).remove();
+                                    $.pic.modalDialog.closeDialog(dlg);
+                                });
+                            }
+                        },
+                        style: { display: 'none' }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
             });
             var line = $('<div></div>').appendTo(dlg);
             $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Provide a name for this backup and select the servers that you want to include in the backup');
@@ -991,6 +994,104 @@
                         $('<div></div>').appendTo(line).checkbox({ labelText: opts.servers[i].name, binding: `servers[${i}].backup` });
                     }
                 }
+                dlg.find('#btnCreateBackup').show();
+            });
+        },
+        _createRestoreDialog: function () {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgRestoreFile', {
+                width: '400px',
+                height: 'auto',
+                title: 'Restore from Backup',
+                buttons: [{
+                    id: 'btnRestoreBackup',
+                    text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>',
+                    click: function () {
+                        $.pic.fieldTip.clearTips(dlg);
+                        // Build the options data.
+                        let opts = dataBinder.fromElement(dlg);
+                        opts.automatic = false;
+                        // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
+                        if (opts.njsPC !== true && opts.dashPanel !== true && typeof opts.servers.find(elem => elem.backup === true) === 'undefined') {
+                            $.pic.fieldTip.showTip(dlg.find('div[data-bind=njsPC'), { message: 'You must select at least one server to back up.' });
+                        }
+                        else {
+                            $.putFileApiService('/app/config/verifyRestore', opts, function (data, status, xhr) {
+                                var url = window.URL.createObjectURL(new Blob([data]));
+                                var link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', 'backup.zip');
+                                document.body.appendChild(link);
+                                link.click();
+                                $(link).remove();
+                                $.pic.modalDialog.closeDialog(dlg);
+                            });
+                        }
+                    },
+                    style: { display: 'none' }
+
+                },
+                {
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            var line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Select a backup file from the list or upload one');
+            line = $('<div></div>').appendTo(dlg);
+            $('<hr></hr>').appendTo(line);
+            line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+            dlg.css({ overflow: 'visible' });
+
+            var files = $('<div></div>').appendTo(dlg);
+            var sel = $('<div></div>').appendTo(files).crudList({
+                id: 'lstBackupFiles',
+                key: 'file',
+                canCreate: false,
+                canRemove: true,
+                actions: { canCreate: false, canRemove: true },
+                caption: 'Backup Files', itemName: 'File',
+                columns: [
+                    {
+                        binding: 'options.backupDate', fmtType: 'date', fmtMask: 'MM/dd/yy hh:mmtt', text: 'Date', cellStyle: { width: '97px' },
+                        style: { width: '117px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                    },
+                    {
+                        binding: 'options.name', text: 'Name', cellStyle: { width: '227px' },
+                        style: { width: '227px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+                    }
+                ]
+            }).css({ width: '376px', fontSize: '.8rem' });
+            sel.find('div.slist-body').css({ fontSize: '.8rem', maxHeight: '127px', overflowY: 'auto' });
+            sel.on('removeItem', function (evt) {
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteBackup', {
+                    message: 'Are you sure you want to delete backup file ' + (evt.item.options.name || ('from ' + evt.item.options.backupDate)) + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Backup File',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            $.deleteApiService('app/backup/file', evt.item, 'Deleting Backup File...', function (c, status, xhr) {
+                                sel[0].removeItemByIndex(evt.itemIndex);
+                            });
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+
+            });
+            $.getApiService('/app/config/options/restore', null, 'Loading Restore Options...', function (opts, status, xhr) {
+                console.log(opts);
+                for (var i = 0; i < opts.backupFiles.length; i++)
+                    sel[0].addRow(opts.backupFiles[i]);
+                dlg.find('#btnRestoreBackup').addClass('disabled');
+                dlg.find('#btnRestoreBackup').show();
+
             });
         },
         uploadBackgroundFile: function (uploader, opts) {
