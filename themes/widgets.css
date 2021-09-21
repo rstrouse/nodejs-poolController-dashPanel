@@ -1160,7 +1160,9 @@ div.warning-message {
     font-size: 1.2em;
     width: 130px;
   }
-
+  .btn.disabled {
+      opacity: .5;
+  }
   @media screen and (max-width: 744px) {
     #appearance-order-col-1, #appearance-order-col-2, #appearance-order-col-3, #appearance-order-col-hidden {
     margin-right: 50%}

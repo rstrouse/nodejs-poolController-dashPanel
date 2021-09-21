@@ -2764,7 +2764,7 @@ $.ui.position.fieldTip = {
             this._super('_create');
             if (typeof btns !== 'undefined') setTimeout(function () { self._buildButtons(btns); }, 0);
             o.screenLayer = _screenLayer;
-            el.css({ zIndex: _screenLayer++ });
+            el.css({ zIndex: ++_screenLayer });
         },
         _buildButtons: function (btns) {
             var self = this, o = self.options, el = self.element;
@@ -3749,6 +3749,9 @@ $.ui.position.fieldTip = {
     });
 
 })(jQuery);
+$.pic.fieldTip.showTip = function(el, opts) {
+    $('<div></div>').appendTo(el).fieldTip(opts);
+}
 $.pic.fieldTip.clearTips = function (el) {
     if (el instanceof jQuery) {
         el.find('div.picFieldTip').remove();

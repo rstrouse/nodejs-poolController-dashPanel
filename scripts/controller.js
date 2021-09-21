@@ -738,6 +738,77 @@
                 dataBinder.bind(divOuter, settings);
             });
         },
+        _buildBackupTab: function (settings) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picTabPanel:first').each(function () {
+                var tabObj = { id: 'tabBackup', text: 'Backups' };
+                var contents = this.addTab(tabObj);
+                var divOuter = $('<div class="picBackups"></div>');
+                divOuter.appendTo(contents);
+                $.getApiService('/app/config/options/backup', null, 'Loading Backup Options...', function (opts, status, xhr) {
+                    console.log(opts);
+                    var line = $('<div></div>').appendTo(divOuter);
+                    var bo = $('<div></div>').appendTo(divOuter).addClass('pnl-autobackup-options').hide();
+                    $('<div></div>').appendTo(line).checkbox({ id:'cbAutoBackup', labelText: 'Automatic Backups', binding: 'automatic' }).
+                        on('changed', function (e) {
+                            if (e.newVal === true) bo.show();
+                            else bo.hide();
+                        });
+                    line = $('<div></div>').appendTo(bo);
+                    $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Backup Every', fmtMask: "#,##0", emptyMask: "---", binding: 'interval.days', min: 0, max: 365, step: 1, units: 'days', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '7rem', marginRight: '.25rem' } } });
+                    $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: '', fmtMask: "#,##0", emptyMask: "---", binding: 'interval.hours', min: 0, max: 23, step: 1, units: 'hours', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+                    line = $('<div></div>').appendTo(bo);
+                    $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Keep the Last', fmtMask: "#,##0", emptyMask: "---", binding: 'keepCount', min: 1, max: 50, step: 1, units: 'backups on-line', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '7rem', marginRight: '.25rem' } } });
+                    line = $('<div></div>').appendTo(bo);
+                    $('<hr></hr>').appendTo(line);
+
+                    var servers = $('<div></div>').appendTo(bo).addClass('pnl-autobackup-options-servers');
+                    $('<div></div>').appendTo(servers).addClass('info-message').text('Select all the servers you would like to automatically back up');
+                    line = $('<div></div>').appendTo(servers);
+                    $('<div></div>').appendTo(line).checkbox({ labelText: 'njsPC', binding: 'njsPC' });
+                    if (typeof opts.servers !== 'undefined' && opts.servers.length > 0) {
+                        for (let i = 0; i < opts.servers.length; i++) {
+                            line = $('<div></div>').appendTo(servers);
+                            console.log(opts.servers[i]);
+                            $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].name`).val(opts.servers[i].name);
+                            $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].uuid`).val(opts.servers[i].uuid);
+                            $('<div></div>').appendTo(line).checkbox({ labelText: opts.servers[i].name, binding: `servers[${i}].backup` })[0].val(opts.servers[i].backup);
+                        }
+                    }
+                    var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
+                    btnPnl.appendTo(contents);
+                    var btnApply = $('<div id="btnSaveBackupConfig"></div>');
+                    btnApply.actionButton({ text: 'Apply Settings', icon: '<i class="fas fa-save"></i>' });
+                    btnApply.on('click', function (e) {
+                        var pnl = divOuter;
+                        $.pic.fieldTip.clearTips(pnl);
+                        var bk = dataBinder.fromElement(pnl);
+                        if (bk.automatic && bk.njsPC !== true && typeof bk.servers.find(elem => elem.backup === true) === 'undefined') {
+                            console.log(pnl.find('div[data-bind="automatic"]'));
+                            console.log(pnl.find('div[data-bind="interval.days"]'));
+                            $.pic.fieldTip.showTip(pnl.find('div[data-bind="automatic"]'), { message: 'You must select at least one server to automatically back up.' });
+                        }
+                        else {
+                            $.putApiService('app/config/options/backup', bk, 'Saving Auto-Backup Configuration...', function (data, status, xhr) {
+                                dataBinder.bind(divOuter, data);
+                            });
+                        }
+                    });
+                    var btnBackup = $('<div></div>').attr('id', 'btnBackup').actionButton({ text: 'Backup', icon: '<i class="fas fa-tape"></i>' })
+                        .on('click', function (e) {
+                            self._createBackupDialog();
+                        });
+                    var btnRestore = $('<div></div>').attr('id', 'btnBackup').actionButton({ text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>' }).addClass('disabled')
+                        .on('click', function (e) {
+                            self._createRestoreDialog();
+                        });
+                    btnRestore.appendTo(btnPnl);
+                    btnBackup.appendTo(btnPnl);
+                    btnApply.appendTo(btnPnl);
+                    dataBinder.bind(divOuter, opts);
+                });
+            });
+        },
         _buildFirmwareTab: function (settings) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picTabPanel:first').each(function () {
@@ -748,7 +819,6 @@
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
                 var btnApply = $('<div id="btnReloadConfig"></div>');
-                btnApply.appendTo(btnPnl);
                 btnApply.actionButton({ text: 'Reload Config', icon: '<i class="fas fa-redo-alt"></i>' });
                 btnApply.addClass('disabled');
                 btnApply.on('click', function (e) {
@@ -759,9 +829,9 @@
                     $.putApiService('/app/config/reload', function (data, status, xhr) {
 
                     });
-                    ///$.putApiService(obj.id === 0 ? '/config/intellibrite/setColors' : '/config/lightGroup/' + obj.id + '/setColors', obj, function (data, status, xhr) {
-
                 });
+                btnApply.appendTo(btnPnl);
+
             });
             let njsPcInfo = $('<div class="picFirmware"></div>').attr('id', 'picNjsPCInfo').appendTo($('div.picSystem'));
             let dpInfo = $('<div class="picFirmware"></div>').attr('id', 'picdpInfo').appendTo($('div.picSystem'));
@@ -789,12 +859,9 @@
                     $('<div class="picOptionLine"><label>git status</label><span>Git is not in use</span></div>').appendTo(dpInfo);
                 }
                 $('<hr></hr>').appendTo(dpInfo);
-            })
+            });
             $.getApiService('/config/all', null, function (data, status, xhr) {
-                console.log('getting the configuration from the server');
-                console.log(data);
                 $('<div class="picOptionLine"><label>njsPC</label><span>' + data.appVersion + '</span></div>').prependTo(njsPcInfo);
-
                 el.find('div.picTabPanel:first').find('div.picSystem').each(function () {
                     let $div = $('<div class="picFirmware"></div>').appendTo($(this));
 
@@ -822,13 +889,14 @@
                             }
                         }
                     }
-                    $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Pumps</label><span>' + data.pumps.length + '</span></div>').appendTo($div);
-                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo($div);
+                    let divStats = $('<div></div>').appendTo($div).css({ paddingLeft: '1em' });
+                    $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Pumps</label><span>' + data.pumps.length + '</span></div>').appendTo(divStats);
+                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo(divStats);
                     let btn = el.find('div[id$=btnReloadConfig]');
                     let status = parseInt($('div.picController').attr('data-status'), 10);
                     if (status === 1) {
@@ -856,6 +924,7 @@
                 self._buildConnectionsTab(configData.web);
                 self._buildLoggingTab();
                 self._buildFirmwareTab(configData.web);
+                self._buildBackupTab(configData);
                 tabs[0].selectTabById('tabAppearance');
                 var evt = $.Event('loaded');
                 o.initializing = false;
@@ -865,6 +934,64 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
+        },
+        _createBackupDialog: function () {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgBackupController', {
+                width: '400px',
+                height: 'auto',
+                title: 'Create Backup File',
+                buttons: [{
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                },
+                {
+                    text: 'Create Backup', icon: '<i class="fas fa-tape"></i>',
+                    click: function () {
+                        $.pic.fieldTip.clearTips(dlg);
+                        // Build the options data.
+                        let opts = dataBinder.fromElement(dlg);
+                        opts.automatic = false;
+                        // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
+                        if (opts.njsPC !== true && opts.dashPanel !== true && typeof opts.servers.find(elem => elem.backup === true) === 'undefined') {
+                            $.pic.fieldTip.showTip(dlg.find('div[data-bind=njsPC'), { message: 'You must select at least one server to back up.' });
+                        }
+                        else {
+                            $.putFileApiService('/app/config/createBackup', opts, function (data, status, xhr) {
+                                var url = window.URL.createObjectURL(new Blob([data]));
+                                var link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', 'backup.zip');
+                                document.body.appendChild(link);
+                                link.click();
+                                $(link).remove();
+                                $.pic.modalDialog.closeDialog(dlg);
+                            });
+                        }
+                    }
+                }]
+            });
+            var line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Provide a name for this backup and select the servers that you want to include in the backup');
+            line = $('<div></div>').appendTo(dlg);
+            $('<hr></hr>').appendTo(line);
+            line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+            dlg.css({ overflow: 'visible' });
+            var servers = $('<div></div>').appendTo(dlg);
+            $.getApiService('/app/config/options/backup', null, 'Loading Backup Options...', function (opts, status, xhr) {
+                line = $('<div></div>').appendTo(servers);
+                $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: 'name', inputAttrs: { style: { width: '20rem' } }, labelAttrs: { style: { marginRight: '.25rem' } } });
+                line = $('<div></div>').appendTo(servers);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'njsPC', binding: 'njsPC' });
+                if (typeof opts.servers !== 'undefined' && opts.servers.length > 0) {
+                    for (let i = 0; i < opts.servers.length; i++) {
+                        line = $('<div></div>').appendTo(servers);
+                        $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].name`).val(opts.servers[i].name);
+                        $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].uuid`).val(opts.servers[i].uuid);
+                        $('<div></div>').appendTo(line).checkbox({ labelText: opts.servers[i].name, binding: `servers[${i}].backup` });
+                    }
+                }
+            });
         },
         uploadBackgroundFile: function (uploader, opts) {
             var self = this, o = self.options, el = self.element;
@@ -986,10 +1113,10 @@
                 //console.log({ include: tabInclude, exclude: tabExclude });
                 tabInclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.includeActions.length === 0);
                 tabExclude.find('div.picOptionButton[data-actionid=all]')[0].val(data.excludeActions.length === 0);
-                for (var i = 0; i < data.includeActions.length; i++) {
+                for (let i = 0; i < data.includeActions.length; i++) {
                     tabInclude.find('div.picOptionButton[data-actionid=' + data.includeActions[i] + ']')[0].val(true);
                 }
-                for (var i = 0; i < data.excludeActions.length; i++) {
+                for (let i = 0; i < data.excludeActions.length; i++) {
                     tabExclude.find('div.picOptionButton[data-actionid=' + data.excludeActions[i] + ']')[0].val(true);
                 }
 
