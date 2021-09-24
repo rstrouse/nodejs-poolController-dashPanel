@@ -158,12 +158,12 @@ table.optBody td,
 table.optHeader td {
     border-right: solid 1px gray;
 }
-
+table.crud-table > tbody > tr.selected > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr.selected {
     @include selected_background();
     color: white;
 }
-
+table.crud-table > tbody > tr:hover > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr:hover {
     @include hover_background();
     color: white;

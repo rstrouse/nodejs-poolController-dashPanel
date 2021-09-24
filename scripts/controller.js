@@ -435,11 +435,11 @@
                     value: getStorage('--show-time-remaining') === 'none' ? false : true
                 })
                     .on('click', function (evt) {
-                        let display =  evt.target.checked ? 'inline-block' : 'none';
+                        let display = evt.target.checked ? 'inline-block' : 'none';
                         setStorage('--show-time-remaining', display);
                         $(':root').css('--show-time-remaining', display);
-                        $('div.picFeature').each(function(){
-                            try{
+                        $('div.picFeature').each(function () {
+                            try {
                                 this.countdownEndTime();
                             }
                             catch (err) {
@@ -655,7 +655,7 @@
                 divOuter.appendTo(contents);
                 var line = $('<div></div>').appendTo(divOuter);
                 var binding = 'services.';
-                $('<div></div>').appendTo(line).pickList({ 
+                $('<div></div>').appendTo(line).pickList({
                     labelText: 'Server', binding: binding + 'protocol', required: true,
                     inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.25rem' } },
                     columns: [{ binding: 'val', hidden: true, text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
@@ -749,7 +749,7 @@
                     console.log(opts);
                     var line = $('<div></div>').appendTo(divOuter);
                     var bo = $('<div></div>').appendTo(divOuter).addClass('pnl-autobackup-options').hide();
-                    $('<div></div>').appendTo(line).checkbox({ id:'cbAutoBackup', labelText: 'Automatic Backups', binding: 'automatic' }).
+                    $('<div></div>').appendTo(line).checkbox({ id: 'cbAutoBackup', labelText: 'Automatic Backups', binding: 'automatic' }).
                         on('changed', function (e) {
                             if (e.newVal === true) bo.show();
                             else bo.hide();
@@ -935,6 +935,45 @@
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
         },
+        _createUploadBackupDialog: function (restoreDialog) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgUploadBackground', {
+                message: 'Upload Backup File',
+                width: '470px',
+                height: 'auto',
+                title: 'Upload a Backup File',
+                buttons: [{
+                    text: 'Upload File', icon: '<i class="fas fa-upload"></i>',
+                    click: function () {
+                        var bf = dataBinder.fromElement(dlg);
+                        var useProxy = makeBool($('body').attr('data-apiproxy'));
+                        var url = '/app/backup/file';
+                        var serviceUrl = useProxy ? '/njsPC' + (!url.startsWith('/') ? '/' : '') + url : $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+                        dlg.find('div.picFileUploader').each(function () {
+                            this.upload({ url: serviceUrl, showProgress: true });
+                        });
+                    }
+                },
+                {
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            var line = $('<div>Select a valid backup file to upload then click the upload file to add it to the list available backups.</div>').appendTo(dlg);
+            $('<hr></hr>').appendTo(dlg);
+            line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).fileUpload({ binding: 'backupFile', showProgress: true, accept: '.zip', labelText: 'Backup File', inputAttrs: { style: { width: '24rem' } } })
+                .on('changed', function (e) {
+                    console.log(e);
+                })
+                .on('complete', function (e) {
+                    console.log(e);
+                    $.pic.modalDialog.closeDialog(dlg);
+                    if (restoreDialog.length > 0) restoreDialog[0].loadRestoreFiles(e.fileData.filePath);
+                });
+            line = $('<div></div>').appendTo(div);
+            dlg.css({ overflow: 'visible' });
+        },
         _createBackupDialog: function () {
             var self = this, o = self.options, el = self.element;
             var dlg = $.pic.modalDialog.createDialog('dlgBackupController', {
@@ -943,7 +982,7 @@
                 title: 'Create Backup File',
                 buttons: [
                     {
-                        id:'btnCreateBackup',
+                        id: 'btnCreateBackup',
                         text: 'Create Backup', icon: '<i class="fas fa-tape"></i>',
                         click: function () {
                             $.pic.fieldTip.clearTips(dlg);
@@ -997,56 +1036,208 @@
                 dlg.find('#btnCreateBackup').show();
             });
         },
+        _createConfirmRestoreDialog: function (opts, ctx) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgConfirmRestoreFile', {
+                width: '400px',
+                height: 'auto',
+                title: 'Confirm Restore from Backup',
+                buttons: [
+                    {
+                        id: 'btnRestoreFile',
+                        text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>',
+                        style: { display: 'none' },
+                        click: function () {
+                            $.pic.fieldTip.clearTips(dlg);
+                            // Alright we are ready to begin restoring it all.
+                            dlg[0].dialogResult(true);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/app/restore/file', opts, function (data, status, xhr) { });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+            });
+            var line = $('<div></div>').appendTo(dlg);
+            var instructions = $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus')
+            let d = { errors: [], warnings: [], add: 0, update: 0, remove: 0 };
+
+            let hasErrors = false;
+            if (opts.options.njsPC) {
+                // Extract all the warnings and errors from the server.
+                for (let s in ctx.njsPC) {
+                    let c = ctx.njsPC[s];
+                    if (typeof c.errors !== 'undefined') d.errors.push(...c.errors);
+                    if (typeof c.warnings !== 'undefined') d.warnings.push(...c.warnings);
+                    if (typeof c.add !== 'undefined') d.add += c.add.length;
+                    if (typeof c.update !== 'undefined') d.update += c.update.length;
+                    if (typeof c.remove !== 'undefined') d.remove += c.remove.length;
+                }
+                if (d.errors.length > 0) {
+                    let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px', overflowY: 'auto' });
+                    line = $('<div></div>').appendTo(errors);
+                    $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`njsPC Errors`);
+                    for (let i = 0; i < d.errors.length; i++) {
+                        line = $('<div></div>').appendTo(errors);
+                        $('<span></span>').appendTo(line).css({ fontSize: '.7em', marginLeft: '.5em' }).text(d.errors[i]);
+                    }
+                    hasErrors = true;
+                }
+                if (d.warnings.length > 0) {
+                    let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px' });
+                    line = $('<div></div>').appendTo(warnings);
+                    $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`njsPC Warnings`);
+                    for (let i = 0; i < d.warnings.length; i++) {
+                        line = $('<div></div>').appendTo(warnings);
+                        $('<span></span>').appendTo(line).css({ fontSize: '.7em', marginLeft: '.5em' }).text(d.warnings[i]);
+                    }
+                    hasErrors = true;
+                }
+            }
+            
+            if (typeof opts.options.servers !== 'undefined') {
+                for (let i = 0; i < ctx.servers.length; i++) {
+                    let srv = opts.options.servers.find(elem => elem.uuid === ctx.servers[i].server.uuid);
+                    for (let s in ctx.servers[i]) {
+                        let c = ctx.servers[i][s];
+                        if (typeof c.errors !== 'undefined') d.errors.push(...c.errors);
+                        if (typeof c.warnings !== 'undefined') d.warnings.push(...c.warnings);
+                        if (typeof c.add !== 'undefined') d.add += c.add.length;
+                        if (typeof c.update !== 'undefined') d.update += c.update.length;
+                        if (typeof c.remove !== 'undefined') d.remove += c.remove.length;
+                    }
+                    if (d.errors.length > 0) {
+                        let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px', overflowY: 'auto' });
+                        line = $('<div></div>').appendTo(errors);
+                        $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`${srv.name} Errors`);
+                        for (let i = 0; i < d.errors.length; i++) {
+                            line = $('<div></div>').appendTo(errors);
+                            $('<span></span>').appendTo(line).css({ fontSize: '.7em', marginLeft: '.5em' }).text(d.errors[i]);
+                        }
+                        hasErrors = true;
+                    }
+                    if (d.warnings.length > 0) {
+                        let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px' });
+                        line = $('<div></div>').appendTo(warnings);
+                        $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`${srv.name} Warnings`);
+                        for (let i = 0; i < d.warnings.length; i++) {
+                            line = $('<div></div>').appendTo(warnings);
+                            $('<span></span>').appendTo(line).css({ fontSize: '.7em', marginLeft: '.5em' }).text(d.warnings[i]);
+                        }
+                    }
+                }
+
+            }
+            if (!hasErrors) {
+                $('<div></div>').appendTo(instructions).css({ fontSize: '.8rem', marginBottom:'4px' }).addClass('warning-message').html('<span style="font-weight:bold">WARNING:</span> This feature is still in BETA.  Please do not use it if you have not been asked to try it out.  This will attempt to send the stored configuration from the backup file to your OCP.');
+                $('<div></div>').appendTo(instructions).text('Are you sure you would like to restore this file?  Once the restore process begins it cannot be cancelled.');
+
+                // Don't let them blow by the errors.  The init method needs to be called before we get here anyway.
+                setTimeout(() => { dlg.find('div[id=btnRestoreFile]').show(); }, 2000);
+            }
+            else {
+                instructions.text('This file cannot be restored because the following reasons are preventing it.');
+            }
+            line = $('<div></div>').appendTo(dlg);
+            $('<hr></hr>').appendTo(line);
+            return dlg;
+        },
         _createRestoreDialog: function () {
             var self = this, o = self.options, el = self.element;
             var dlg = $.pic.modalDialog.createDialog('dlgRestoreFile', {
                 width: '400px',
                 height: 'auto',
                 title: 'Restore from Backup',
-                buttons: [{
-                    id: 'btnRestoreBackup',
-                    text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>',
-                    click: function () {
-                        $.pic.fieldTip.clearTips(dlg);
-                        // Build the options data.
-                        let opts = dataBinder.fromElement(dlg);
-                        opts.automatic = false;
-                        // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
-                        if (opts.njsPC !== true && opts.dashPanel !== true && typeof opts.servers.find(elem => elem.backup === true) === 'undefined') {
-                            $.pic.fieldTip.showTip(dlg.find('div[data-bind=njsPC'), { message: 'You must select at least one server to back up.' });
-                        }
-                        else {
-                            $.putFileApiService('/app/config/verifyRestore', opts, function (data, status, xhr) {
-                                var url = window.URL.createObjectURL(new Blob([data]));
-                                var link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', 'backup.zip');
-                                document.body.appendChild(link);
-                                link.click();
-                                $(link).remove();
-                                $.pic.modalDialog.closeDialog(dlg);
-                            });
+                buttons: [
+                    {
+                        id: 'btnUploadBackup',
+                        text: 'Upload', icon: '<i class="fas fa-tape fa-rotate-90"></i>',
+                        click: function () {
+                            $.pic.fieldTip.clearTips(dlg);
+                            self._createUploadBackupDialog(dlg);
+                        },
+                        style: { display: 'none' }
+                    },
+                    {
+                        id: 'btnRestoreBackup',
+                        text: 'Restore', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>',
+                        style: { display: 'none' },
+                        click: function () {
+                            $.pic.fieldTip.clearTips(dlg);
+                            let opts = dataBinder.fromElement(selectOpts);
+                            // Check to see if there are any servers to back up.  If not then tell the user they are idiots.
+                            if (opts.options.njsPC !== true && opts.dashPanel !== true && typeof opts.options.servers.find(elem => elem.restore === true) === 'undefined') {
+                                $.pic.fieldTip.showTip(selectOpts.find('div[data-bind="options.njsPC"]'), { message: 'You must select at least one server to restore.' });
+                            }
+                            else {
+                                $.putApiService('/app/restore/validate', opts, 'Validating Restore...', function (data, status, xhr) {
+                                    console.log(data);
+                                    // So we have validated the restore.  Now we need to show a confirm dialog.  Yeah I know this is a lot of layers deep but
+                                    // we want to make sure that the user's hand is held all the way on this.
+                                    var cdlg = self._createConfirmRestoreDialog(opts, data)
+                                        .on('closemodal', function (evt) {
+                                            if (evt.dialogResult === true) $.pic.modalDialog.closeDialog(dlg);
+                                        });
+                                });
+                            }
                         }
                     },
-                    style: { display: 'none' }
+                    {
+                        id: 'btnToRestoreOptions',
+                        //text: 'Next', icon: '<i class="fas fa-tape fa-flip-horizontal"></i>',
+                        text: 'Next', icon: '<i class="far fa-hand-point-right"></i>',
+                        click: function () {
+                            // Move to the next pane but only if we have selected a file.
+                            $.pic.fieldTip.clearTips(dlg);
+                            if (sel[0].getSelectedIndex() >= 0) {
+                                selectFile.hide();
+                                selectOpts.show();
+                                $('#btnToRestoreOptions').hide();
+                                $('#btnToSelectFile').show();
+                                $('#btnRestoreBackup').show();
+                                $('#btnUploadBackup').hide();
+                            }
+                            else
+                                $.pic.fieldTip.showTip(sel.find('span.crud-header-text:first'), { message: 'You must select a file to restore.' });
+                        },
+                        style: { display: 'none' }
 
-                },
-                {
-                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
-                    click: function () { $.pic.modalDialog.closeDialog(this); }
-                }]
+                    },
+                    {
+                        id: 'btnToSelectFile',
+                        text: 'Back', icon: '<i class="far fa-hand-point-left"></i>',
+                        click: function () {
+                            $.pic.fieldTip.clearTips(dlg);
+                            // Go back to selecting a file.
+                            selectOpts.hide();
+                            selectFile.show();
+                            $('#btnToRestoreOptions').show();
+                            $('#btnToSelectFile').hide();
+                            $('#btnRestoreBackup').hide();
+                            $('#btnUploadBackup').show();
+                        },
+                        style: { display: 'none' }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
             });
-            var line = $('<div></div>').appendTo(dlg);
-            $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Select a backup file from the list or upload one');
-            line = $('<div></div>').appendTo(dlg);
+            dlg.attr('data-step', 'selectFile');
+            // Step 1: Select File.
+            var selectFile = $('<div></div>').appendTo(dlg);
+            var line = $('<div></div>').appendTo(selectFile);
+            $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Select a backup file from the list or upload one.  Once you have made your selection press the next button to continue.');
+            line = $('<div></div>').appendTo(selectFile);
             $('<hr></hr>').appendTo(line);
-            line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+            line = $('<div></div>').css({ textAlign: 'center' }).appendTo(selectFile);
             dlg.css({ overflow: 'visible' });
-
-            var files = $('<div></div>').appendTo(dlg);
+            var files = $('<div></div>').appendTo(selectFile);
             var sel = $('<div></div>').appendTo(files).crudList({
                 id: 'lstBackupFiles',
-                key: 'file',
+                key: 'filePath',
                 canCreate: false,
                 canRemove: true,
                 actions: { canCreate: false, canRemove: true },
@@ -1083,17 +1274,77 @@
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
-
             });
-            $.getApiService('/app/config/options/restore', null, 'Loading Restore Options...', function (opts, status, xhr) {
-                console.log(opts);
-                for (var i = 0; i < opts.backupFiles.length; i++)
-                    sel[0].addRow(opts.backupFiles[i]);
-                dlg.find('#btnRestoreBackup').addClass('disabled');
-                dlg.find('#btnRestoreBackup').show();
-
+            sel.on('selchanged', function (evt) {
+                console.log(evt);
+                dlg[0].selectRestoreFile(evt.newItem);
             });
+            dlg[0].loadRestoreFiles = function (selFile) {
+                dlg.find('#btnToRestoreOptions').hide();
+                dlg.find('#btnUploadBackup').hide();
+                $.getApiService('/app/config/options/restore', null, 'Loading Restore Options...', function (opts, status, xhr) {
+                    sel[0].clear();
+                    for (var i = 0; i < opts.backupFiles.length; i++) {
+                        sel[0].addRow(opts.backupFiles[i]);
+                        if (typeof selFile === 'string' && opts.backupFiles[i].filePath === selFile) sel[0].selectItemByIndex(i);
+                    }
+                    dlg.find('#btnToRestoreOptions').show();
+                    dlg.find('#btnUploadBackup').show();
+
+                });
+            };
+            dlg[0].loadRestoreFiles();
+            // Step 2: Select Restore options
+            var selectOpts = $('<div></div>').appendTo(dlg).hide();
+            line = $('<div></div>').appendTo(selectOpts);
+            $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Select from the available options contained in the backup file.  When satisfied press the restore button to begin restoring the file.  If you would like to select another file, press the back button.');
+            line = $('<div></div>').appendTo(selectOpts);
+            $('<hr></hr>').appendTo(line);
+            var fileAttrs = $('<div></div>').addClass('pnl-restorebackup-fileattrs').appendTo(selectOpts);
+            line = $('<div></div>').appendTo(fileAttrs);
+            $('<label></label>').appendTo(line).text('File');
+            $('<span></span>').appendTo(line).attr('data-bind', 'filename');
+            $('<label></label>').appendTo(line).css({ marginLeft: '2rem' }).text('Version');
+            $('<span></span>').appendTo(line).attr('data-bind', 'options.version').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.00');
+            $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', 'filePath');
+            line = $('<div></div>').appendTo(fileAttrs);
+            $('<label></label>').appendTo(line).text('Name');
+            $('<span></span>').appendTo(line).attr('data-bind', 'options.name');
+            line = $('<div></div>').appendTo(fileAttrs);
+            $('<label></label>').appendTo(line).text('Date');
+            $('<span></span>').appendTo(line).attr('data-bind', 'options.backupDate').attr('data-fmttype', 'date').attr('data-fmtmask', 'MM/dd/yyyy hh:mm:sstt');
+            line = $('<div></div>').appendTo(selectOpts);
+            $('<hr></hr>').appendTo(line);
+            line = $('<div></div>').appendTo(selectOpts);
+            $('<div></div>').appendTo(line).addClass('status-text').addClass('picSearchStatus').text('Select the servers you would like to restore.');
+            var restoreOpts = $('<div></div>').appendTo(selectOpts);
+            dlg[0].selectRestoreFile = function (fileOpts) {
+                restoreOpts.empty();
+                line = $('<div></div>').appendTo(restoreOpts);
+                // Create the available options from the file.
+                let cb = $('<div></div>').appendTo(line).checkbox({ labelText: 'njsPC', binding: 'options.njsPC' });
+                if (!fileOpts.options.njsPC) cb.disabled(true);
+
+                dataBinder.bind(selectOpts, fileOpts);
+                for (let i = 0; i < fileOpts.options.servers.length; i++) {
+                    let srv = fileOpts.options.servers[i];
+                    line = $('<div></div>').appendTo(restoreOpts);
+                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].uuid`).val(srv.uuid);
+                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].name`).val(srv.name);
+                    cb = $('<div></div>').appendTo(line).checkbox({ labelText: srv.name, binding: `options.servers[${i}].restore` });
+                    if (!srv.backup) line.hide();
+                    else if (!srv.success) cb[0].disabled(true);
+                    cb[0].val(srv.backup && srv.success);
+                    if (typeof srv.errors !== 'undefined' && srv.errors.length > 0) {
+                        for (let j = 0; j < srv.errors.length; j++) {
+                            line = $('<div></div>').css({ paddingLeft: '2rem', fontSize:'.7em'}).appendTo(restoreOpts);
+                            $('<span></span>').appendTo(line).text(srv.errors[j]);
+                        }
+                    }
+                }
+            };
         },
+
         uploadBackgroundFile: function (uploader, opts) {
             var self = this, o = self.options, el = self.element;
             var divPopover = $('<div></div>');

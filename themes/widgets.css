@@ -1299,3 +1299,14 @@ span.header-icon-btn {
 .slist-body {
     width:inherit;
 }
+table.crud-table {
+    cursor:pointer;
+}
+div.pnl-restorebackup-fileattrs {
+    font-size:.77rem;
+}
+div.pnl-restorebackup-fileattrs label {
+    display: inline-block;
+    width: 3rem;
+    font-weight:bold;
+}

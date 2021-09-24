@@ -325,7 +325,8 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
                 left: ($(document).width() - msg.width()) / 2,
                 top: ($(document).height() - msg.height()) / 2
             });
-
+            overlay.css({ zIndex: _screenLayer + 1 });
+            msg.css({ zIndex: _screenLayer + 2 });
         }
         // Set up the callbacks.
         var cbComplete = function (jqXHR, status) {
@@ -400,6 +401,8 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             // We are displaying a message while the service is underway.
             msg = $('<div style="visibility:hidden;"></div>').addClass('picServiceStatusMsg').appendTo(document.body);
             overlay = $('<div style="background-color:lavender;opacity:.15"></div>').addClass('ui-widget-overlay').addClass('ui-front').appendTo(document.body);
+            overlay.css({ zIndex: _screenLayer + 1 });
+            msg.css({ zIndex: _screenLayer + 2 });
             if (message instanceof jQuery) message.appendTo(msg);
             else
                 $('<div></div>').html(message).appendTo(msg);
@@ -408,7 +411,8 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
                 left: ($(document).width() - msg.width()) / 2,
                 top: ($(document).height() - msg.height()) / 2
             });
-
+            overlay.css({ zIndex: _screenLayer + 1 });
+            msg.css({ zIndex: _screenLayer + 2 });
         }
         // Set up the callbacks.
         var cbComplete = function (jqXHR, status) {
@@ -2759,6 +2763,7 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el[0].returnValue = function (value) { return self.returnValue(value); };
             el[0].dialogArguments = function (args) { return self.dialogArguments(args); };
+            el[0].dialogResult = function (result) { return self.dialogResult(result); };
             var btns = o.buttons.slice();
             o.buttons = [];
             this._super('_create');
@@ -2787,14 +2792,24 @@ $.ui.position.fieldTip = {
             if (typeof value === 'undefined') return o.returnValue;
             else o.returnValue = value;
         },
-        dialogArguments: function (args) {
+        dialogArguments: function (dargs) {
             var self = this, o = self.options, el = self.element;
-            if (typeof args === 'undefined') return o.dialogArguments;
-            else o.dialogArguments = value;
+            if (typeof dargs === 'undefined') return o.dialogArguments;
+            else o.dialogArguments = dargs;
+        },
+        dialogResult: function (res) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof res === 'undefined') return o.dialogResult;
+            else o.dialogResult = res;
         },
         close: function (event, ui) {
             var self = this, o = self.options, el = self.element;
             _screenLayer = o.screenLayer;
+            var evt = $.Event('closemodal');
+            evt.returnValue = o.returnValue;
+            evt.dialogArguments = o.dialogArguments;
+            evt.dialogResult = o.dialogResult;
+            el.trigger(evt);
             // Close all others that are greater than this one.
             this._super('_close');
             this._destroy();
@@ -2812,7 +2827,6 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             el.addClass('picErrorPanel');
             var line = $('<div></div>').appendTo(el);
-            console.log(o);
             if (typeof o.error !== 'undefined') {
                 $('<label></label>').appendTo(line).addClass('errorLabel').text('Message');
                 $('<span></span>').appendTo(line).addClass('errorMessage').text(o.error.message);
@@ -2834,6 +2848,16 @@ $.ui.position.fieldTip = {
                         $('<label></label>').appendTo(line).text(' = ');
                         $('<span></span>').appendTo(line).text(o.error.value);
                     }
+                }
+                if (typeof o.error.service !== 'undefined') {
+                    line = $('<div></div>').appendTo(el);
+                    $('<label></label>').appendTo(line).addClass('errorLabel').text('Service');
+                    $('<span></span>').appendTo(line).text(o.error.service);
+                }
+                if (typeof o.error.process !== 'undefined') {
+                    line = $('<div></div>').appendTo(el);
+                    $('<label></label>').appendTo(line).addClass('errorLabel').text('Process');
+                    $('<span></span>').appendTo(line).text(o.error.process);
                 }
                 if (typeof o.error.stack !== 'undefined') {
                     var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Stack Trace', glyph: 'fab fa-stack-overflow', style: { width: '10rem' } }] });
@@ -3556,7 +3580,6 @@ $.ui.position.fieldTip = {
             o.procTotal = total;
             o.procProcessed = processed;
             label.text('Log Processing Progress: ' + o.procProcessed + ' of ' + o.procTotal);
-
         }
     });
     $.widget("pic.selectList", {
@@ -3753,16 +3776,23 @@ $.ui.position.fieldTip = {
             itemName: 'Item',
             columns: [],
             actions: { canCreate: false, canEdit: false, canRemove: false, canClear: false },
-            items: []
+            items: [],
+            selType: 'none'
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._initList();
+            el[0].insertRow = function (ndx, data) { return self.insertRow(ndx, data); };
             el[0].addRow = function (data) { return self.addRow(data); };
             el[0].saveRow = function (data) { return self.saveRow(data); };
             el[0].removeItemByIndex = function (val) { return self.removeItemByIndex(val); };
+            el[0].selectItemByKey = function (key) { return self.selectItemByKey(key); };
+            el[0].selectItemByIndex = function (ndx) { return self.selectItemByIndex(ndx); };
+            el[0].getSelectedIndex = function () { return self.getSelectedIndex(); };
             el[0].clear = function () { self.clear(); };
             el[0].actions = function (val) { return self.actions(val); };
+            el[0].val = function (val) { return self.val(val); };
+            el[0].getItems = function () { return o.items; };
         },
         _getColumn: function (nCol) { return this.options.columns[nCol]; },
         _createCaption: function () {
@@ -3803,7 +3833,7 @@ $.ui.position.fieldTip = {
         _createBody: function () {
             var self = this, o = self.options, el = self.element;
             var body = $('<div></div>').addClass('crud-body');
-            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(body).addClass('crud-table'));
+            var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(body).addClass('crud-table').attr('data-seltype', o.selType));
             tbody.on('click', 'span.crud-row-btn.btn-edit', function (e) {
                 var evt = $.Event('edititem');
                 var row = $(e.currentTarget).parents('tr:first');
@@ -3817,6 +3847,10 @@ $.ui.position.fieldTip = {
                 evt.dataKey = row.data('key');
                 evt.dataRow = row;
                 el.trigger(evt);
+            });
+            tbody.on('click', 'tr > td:not(.btn-remove, .btn-edit)', function (e) {
+                var row = $(e.currentTarget).parents('tr:first');
+                self.selectItemByIndex(row[0].rowIndex);
             });
             return body;
         },
@@ -3847,6 +3881,28 @@ $.ui.position.fieldTip = {
             self._createActionButton('fas fa-trash', 'Remove ' + o.itemName).addClass('btn-remove').appendTo(btn);
             return row;
         },
+        insertRow: function (ndx, data) {
+            var self = this, o = self.options, el = self.element;
+            if (ndx < 0 || ndx > o.items.length) ndx = o.items.length;
+            var tbl = el.find('table.crud-table:first');
+            var tbody = tbl.find('tbody:first');
+            var row = tbody.find('tr').eq(ndx).after('<tr></tr>');
+            var btn = $('<td></td>').addClass('btn-edit').appendTo(row);
+            self._createActionButton('fas fa-edit', 'Edit ' + o.itemName).addClass('btn-edit').appendTo(btn);
+            for (var i = 0; i < o.columns.length; i++) {
+                var col = o.columns[i];
+                var td = $('<td></td>').appendTo(row);
+                var div = $('<div></div>').appendTo(td).attr('data-bind', col.binding).attr('data-fmttype', col.fmtType).attr('data-fmtMask', col.fmtMask);
+                if (typeof col.style !== 'undefined') div.css(col.style);
+                if (typeof col.cellStyle !== 'undefined') td.css(col.cellStyle);
+            }
+            btn = $('<td></td>').addClass('btn-remove').appendTo(row);
+            // Add in the buttons.
+            self.dataBindRow(row, data);
+            o.items.splice(ndx, 0, data);
+            self._createActionButton('fas fa-trash', 'Remove ' + o.itemName).addClass('btn-remove').appendTo(btn);
+            return row;
+        },
         saveRow: function (data) {
             var self = this, o = self.options, el = self.element;
             if (typeof o.key !== 'undefined') {
@@ -3874,6 +3930,7 @@ $.ui.position.fieldTip = {
         clear: function () {
             var self = this, o = self.options, el = self.element;
             el.find('table.crud-table:first > tbody > tr').remove();
+            o.items = [];
         },
         dataBindRow: function (row, data) {
             var self = this, o = self.options, el = self.element;
@@ -3933,6 +3990,85 @@ $.ui.position.fieldTip = {
                             el.attr(`data-${name}`, makeBool(val[prop]));
                     }
                 }
+            }
+        },
+        getItemByIndex: function (ndx) {
+            var self = this, o = self.options, el = self.element;
+            return ndx < o.items.length ? o.items[ndx] : undefined;
+        },
+        getItemIndexByKey: function (keyVal) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key !== 'string' || o.key === '') return -1;
+            // Do it the hard way because there are issues with findIndex in some browsers.
+            for (let i = 0; i < o.items.length; i++) {
+                let itm = o.items[i];
+                if (itm[o.key] === keyVal) return i;
+            }
+        },
+        setSelectedIndex: function (ndx) {
+            var self = this, o = self.options, el = self.element;
+            let tbody = el.find('table.crud-table:first > tbody:first');
+            let oldIndex = self.getSelectedIndex();
+            if (oldIndex !== ndx) {
+                // Clear any selections.
+                if (oldIndex >= 0) tbody.children('tr').removeClass('selected');
+                tbody.children('tr').eq(ndx).addClass('selected');
+            }
+            return oldIndex;
+        },
+        selectItemByIndex: function (ndx) {
+            var self = this, o = self.options, el = self.element;
+            var item = self.getItemByIndex(ndx);
+            self.val(self.getKeyValue(item));
+        },
+        selectItemByKey: function (key) {
+            var self = this, o = self.options, el = self.element;
+            self.selectItemByIndex(self.getItemIndexByKey(key));
+        },
+        getSelectedIndex: function () {
+            var self = this, o = self.options, el = self.element;
+            let tbody = el.find('table.crud-table:first > tbody:first');
+            let row = tbody.children('tr.selected:first');
+            return row.length > 0 ? row[0].rowIndex : -1;
+        },
+        getKeyValue: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof o.key === 'undefined' || o.key === '' || typeof obj === 'undefined') return undefined;
+            try {
+                return eval(`obj['${o.key}']`);
+            } catch (err) { console.log({ msg: `Error getting key value from crud list: ${err.message}`, obj: obj }); }
+        },
+        val: function (val) {
+            var self = this, o = self.options, el = self.element;
+            let tbl = el.find('table.crud-table:first');
+            let oldSel = tbl.find('tbody:first > tr.selected');
+            let oldIndex = oldSel.length > 0 ? oldSel[0].rowIndex : -1;
+            let oldItem = oldIndex >= 0 ? self.getItemByIndex(oldSel[0].rowIndex) : undefined;
+            if (typeof val !== 'undefined') {
+                // We need to select the row from the incoming value.  This should
+                // match what we have set for the key.
+                let newIndex = self.getItemIndexByKey(val);
+                let newItem = newIndex >= 0 ? o.items[newIndex] : undefined;
+
+                // So now we should have the old item and the new item as well as the value
+                // so trigger an event to see whether we should change to the new value.
+                if (oldIndex !== newIndex) {
+                    let evt = $.Event('beforeselchange');
+                    evt.oldItem = oldItem;
+                    evt.newItem = newItem;
+                    el.trigger(evt);
+                    if (!evt.isDefaultPrevented()) {
+                        // The consumer said it was ok to change the value or didn't say no.
+                        self.setSelectedIndex(newIndex);
+                        evt = $.Event('selchanged');
+                        evt.oldItem = oldItem;
+                        evt.newItem = newItem;
+                        el.trigger(evt);
+                    }
+                }
+            }
+            else {
+                return self.getKeyValue(oldItem);
             }
         }
     });

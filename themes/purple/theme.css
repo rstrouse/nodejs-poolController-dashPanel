@@ -321,10 +321,12 @@ table.optBody td,
 table.optHeader td {
   border-right: solid 1px gray; }
 
+table.crud-table > tbody > tr.selected > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr.selected {
   background: #a64dff;
   color: white; }
 
+table.crud-table > tbody > tr:hover > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr:hover {
   background: #4DB6AC;
   color: white; }

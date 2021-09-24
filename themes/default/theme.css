@@ -287,12 +287,14 @@ table.optBody td,
 table.optHeader td {
   border-right: solid 1px gray; }
 
+table.crud-table > tbody > tr.selected > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr.selected {
   background: #159FCF;
   background: -webkit-linear-gradient(-90deg, #159FCF, #13647F);
   background: linear-gradient(180deg, #159FCF, #13647F);
   color: white; }
 
+table.crud-table > tbody > tr:hover > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr:hover {
   background: #ffaf4b;
   background: -webkit-linear-gradient(-90deg, #ffaf4b, #ff920a);
