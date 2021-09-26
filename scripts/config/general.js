@@ -78,7 +78,8 @@
                     });
                 });
             var pnlType = $('div.dashOuter').attr('data-controllertype');
-            if (!('geolocation' in navigator) || window.location.protocol !== 'https:' || pnlType === 'IntelliCenter') btnGPS.hide();
+            try { if (!('geolocation' in navigator) || window.location.protocol !== 'https:' || pnlType === 'IntelliCenter') btnGPS.hide(); }
+            catch (err) { console.log(err); btnGPS.hide(); }
             if (pnlType === 'IntelliCenter') {
                 fldLongitude[0].disabled(true);
                 fldLatitude[0].disabled(true);

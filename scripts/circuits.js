@@ -61,9 +61,9 @@
         },
         setItem: function (type, data) {
             var self = this, o = self.options, el = self.element;
-            if (typeof data.type === 'undefined') return;
-            if (type === 'lightGroup' || self._isLight(data.type.name)) {
-                el.parent().find('div.picLights').each(function () {
+            //if (typeof data.type === 'undefined') return;
+            if (type === 'lightGroup' || (typeof data.type !== 'undefined' && self._isLight(data.type.name))) {
+                el.parents('div.dashContainer:first').find('div.picLights').each(function () {
                     this.setItem(type, data);
                 });
                 if (data.showInFeatures === true) {
@@ -72,7 +72,7 @@
                     });
                 }
             }
-            else
+            else if (typeof data.type !== 'undefined')
                 el.find('div.picFeatures').each(function () {
                     this.setItem(type, data);
                 });
@@ -282,7 +282,7 @@
             el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             el.attr('data-state', data.isOn);
             if (typeof data.endTime === 'undefined') {
-                el.attr('data-endTime', null)
+                el.attr('data-endTime', null);
                 o.endTime = undefined;
             }
             else {
@@ -575,7 +575,7 @@
                     pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
                     pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
                 });
-                el.find('label.picFeatureLabel').text(data.name);
+                if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel').text(data.name);
                 if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
                 if (self.isLight(data)) {
                     el.addClass('picLight');
@@ -791,6 +791,7 @@
                         div.circuitGroup(data);
                         break;
                     case 'lightGroup':
+                        console.log('Setting Light Group');
                         div.addClass('picLightGroup');
                         div.lightGroup(data);
                         break;
@@ -799,6 +800,11 @@
                 // Remove it from the lights section if it existed there before.
                 // el.parents('div.picCircuits.picControlPanel:first').find('div.picFeatures > div.picFeature[data-eqid=' + data.id + ']').remove();
                 // $('div.picLights > div.picFeature[data-eqid=' + data.id + ']').remove();
+            }
+            else {
+                div.each(function () {
+                    $(this).find('label.picFeatureLabel').text(data.name);
+                });
             }
             $('div.picLights > div.picCircuit[data-eqid=' + data.id + ']:not(:first)').each(function () { try { this.stopCountdownEndTime(); } catch (err) { console.log(err); }});
             $('div.picLights > div.picFeature[data-eqid=' + data.id + ']:not(:first)').remove();
@@ -900,8 +906,9 @@
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
+                if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel').text(data.name);
                 if (typeof data.endTime === 'undefined' || !data.isOn) {
-                    el.attr('data-endTime', null)
+                    el.attr('data-endTime', null);
                     o.endTime = undefined;
                 }
                 else {
