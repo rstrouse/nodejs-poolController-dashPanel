@@ -1310,3 +1310,19 @@ div.pnl-restorebackup-fileattrs label {
     width: 3rem;
     font-weight:bold;
 }
+div.picBody {
+    position:relative;
+}
+div.picBody[data-covered=true]:before {
+    content: "Covered";
+    color: orangered;
+    font-weight:bold;
+    font-size:1em;
+    width:100%;
+    left:0;
+    top:0;
+    vertical-align:middle;
+    display:block;
+    line-height:1;
+    margin-bottom:-1em;
+}

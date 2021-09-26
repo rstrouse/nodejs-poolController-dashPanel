@@ -563,7 +563,7 @@
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
                 if (typeof data.endTime === 'undefined' || !data.isOn) {
-                    el.attr('data-endTime', null)
+                    el.attr('data-endTime', null);
                     o.endTime = undefined;
                 }
                 else {

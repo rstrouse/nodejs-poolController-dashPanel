@@ -262,3 +262,10 @@ span.picLightEndTime {
     position: unset;
     right: unset;
 }
+div.picBody[data-covered=true]:before {
+    text-align:right;
+    display:block;
+    position:absolute;
+    left:-3.25em;
+    top:2.5em;
+}

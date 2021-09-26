@@ -260,6 +260,7 @@
             if (typeof data.heatMode === 'undefined') data.heatMode = { val: 0, name: 'off', desc: 'Unknown' };
             dataBinder.bind(el, data);
             try {
+                if (typeof data.isCovered !== 'undefined') el.attr('data-covered', data.isCovered);
                 if (typeof data.temp === 'undefined') el.find('span.picTempData').text('--');
                 el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
