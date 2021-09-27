@@ -656,7 +656,7 @@
                 var line = $('<div></div>').appendTo(divOuter);
                 var binding = 'services.';
                 $('<div></div>').appendTo(line).pickList({
-                    labelText: 'Server', binding: binding + 'protocol', required: true,
+                    labelText: 'Server', binding: binding + 'protocol', required: true, canEdit: true,
                     inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '.25rem' } },
                     columns: [{ binding: 'val', hidden: true, text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Protocol', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
                     bindColumn: 0, displayColumn: 1, items: [{ val: 'http://', name: 'http:', desc: 'The nodejs-PoolController is communicating without an SSL certificate' },

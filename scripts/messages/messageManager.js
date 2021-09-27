@@ -6,6 +6,7 @@
             self._initLogs();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
             el[0].sendOutboundMessage = function (msg) { self.sendOutboundMessage(msg); };
+            el[0].sendInboundMessage = function (msg) { self.sendInboundMessage(msg); };
             el[0].clearOutbound = function () { el.find('div.picMessages:first')[0].clearOutbound(); };
             el[0].reset = function () { self._reset(); };
         },
@@ -157,6 +158,15 @@
                 if (typeof msg !== 'undefined') {
                     //console.log(`sendOutboundMessage Emit ${msg}`);
                     o.socket.emit('sendOutboundMessage', msg);
+                }
+            }
+        },
+        sendInboundMessage: function (msg) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof msg !== 'undefined') {
+                    console.log(`sendInboundMessage Emit ${msg}`);
+                    o.socket.emit('sendInboundMessage', msg);
                 }
             }
         }

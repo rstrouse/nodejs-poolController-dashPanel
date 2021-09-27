@@ -1203,6 +1203,9 @@ mhelper.init();
             $('<div></div>').attr('id', 'btnSendQueue').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 self.sendQueue();
             });
+            $('<div></div>').attr('id', 'btnReplayQueue').appendTo(btnPnl).actionButton({ text: 'Replay (to app)', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
+                self.replayQueue();
+            });
             $('<div></div>').attr('id', 'btnRunTests').appendTo(btnPnl).actionButton({ text: 'Run Script', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 el.addClass('processing');
                 outModule.begin();
@@ -1296,6 +1299,7 @@ mhelper.init();
                 el.find('#btnRunTests').hide();
                 el.find('#btnAddMessage').hide();
                 el.find('#btnSendQueue').hide();
+                el.find('#btnReplayQueue').hide();
                 el.find('div.picEditQueue').hide();
                 el.find('div.picSaveQueue').hide();
                 //$('script#scriptTestModule').remove();
@@ -1323,6 +1327,7 @@ mhelper.init();
                 el.find('#btnRunTests').hide();
                 el.find('#btnAddMessage').show();
                 el.find('#btnSendQueue').show();
+                el.find('#btnReplayQueue').show();
                 el.find('div.picEditQueue').show();
                 el.find('div.picSaveQueue').show();
             }
@@ -1382,7 +1387,20 @@ mhelper.init();
 
             self.processNextMessage();
         },
-        processNextMessage: function () {
+        replayQueue: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('processing');
+            // Send out the messages on the interval.
+            el.find('div.queued-message').each(function () {
+                self.msgQueue.push(this);
+            });
+            o.messagesToSend = self.msgQueue.length;
+            o.messagesSent = 0;
+            el.find('div.picMessageListTitle:first > span').text('Sending Messages...');
+
+            self.processNextMessage(true);
+        },
+        processNextMessage: function (toApp) {
             var self = this, o = self.options, el = self.element;
             var mm = $('div.picMessageManager')[0];
             if (self.msgQueue.length > 0) {
@@ -1395,8 +1413,14 @@ mhelper.init();
                         setTimeout(function () {
                             o.messagesSent++;
                             elMsg.addClass('sent');
-                            mm.sendOutboundMessage(msg);
-                            self.processNextMessage();
+                            if (toApp){
+                                mm.sendInboundMessage(msg);
+                                self.processNextMessage(true);
+                            }
+                            else {
+                                mm.sendOutboundMessage(msg);
+                                self.processNextMessage();
+                            }
                         }, (msg.delay || 0));
                     }
                 }

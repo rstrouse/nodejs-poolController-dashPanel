@@ -57,7 +57,8 @@
             var grpConnection = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
             $('<legend></legend>').text('Connection').appendTo(grpConnection);
             line = $('<div></div>').appendTo(grpConnection);
-            $('<div></div>').appendTo(line).pickList({ canEdit: true,
+            $('<div></div>').appendTo(line).pickList({
+                canEdit: true,
                 binding: binding + 'options.protocol',
                 bindColumn: 1, displayColumn: 2,
                 labelText: 'Protocol',
@@ -67,8 +68,8 @@
                 labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             // $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Host', binding: 'options.host', inputAttrs: { maxlength: 16, style: { width: '14rem' } }, labelAttrs: { style: { paddingLeft: '.15rem'} } });
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: ':', binding: 'options.port', dataType: 'number', fmtMask: '#####', inputAttrs: { maxlength: 5, style: { width: '4rem' } }, labelAttrs: { style: {marginLeft:'.15rem'} } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Host', binding: 'options.host', inputAttrs: { maxlength: 16, style: { width: '14rem' } }, labelAttrs: { style: { paddingLeft: '.15rem' } } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: ':', binding: 'options.port', dataType: 'number', fmtMask: '#####', inputAttrs: { maxlength: 5, style: { width: '4rem' } }, labelAttrs: { style: { marginLeft: '.15rem' } } });
             var btnPnl = $('<div class="picBtnPanel btn-panel findButton"></div>');
             btnPnl.appendTo(grpConnection);
 
@@ -229,7 +230,20 @@
                 })[0].disabled(!makeBool(type.canChange));
                 $('<div></div>').appendTo(el).addClass('ct-narrative');
                 self._setModelAttributes(model);
-                if (type.canChange) {
+                if (typeof opts.equipment.expansions !== 'undefined' && opts.equipment.expansions.length > 0 && type.type === 'intellitouch') {
+                    for (let i = 0; i < opts.equipment.expansions.length; i++) {
+                        line = $('<div></div>').appendTo(el);
+                        $('<div></div>').pickList({
+                            required: true,
+                            value: opts.equipment.expansions[i].type,
+                            bindColumn: 0, displayColumn: 2, labelText: `Expansion Card ${opts.equipment.expansions[i].id}`, binding: `expansion${opts.equipment.expansions[i].id}`,
+                            columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap', marginTop: '1rem' } }, { binding: 'name', hidden: false, text: 'Expansion', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                            items: type.expansionCards, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                        }).appendTo(line)
+                    }
+                }
+
+                if (type.canChange || typeof opts.equipment.expansions !== 'undefined' && opts.equipment.expansions.length > 0) {
                     btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                     var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Model', icon: '<i class="fas fa-save"></i>' });
                     btnSave.on('click', function (e) {
@@ -237,14 +251,14 @@
                         console.log(v);
                         if (dataBinder.checkRequired(el)) {
                             $.putApiService('/config/controllerType', v, 'Saving Controller Type...', function (c, status, xhr) {
-                                
+
                             });
                         }
                     });
                 }
             });
         },
-        _setModelAttributes: function(model) {
+        _setModelAttributes: function (model) {
             var self = this, o = self.options, el = self.element;
             var narr = el.find('div.ct-narrative');
             narr.empty();
@@ -336,14 +350,14 @@
                 line = $('<div></div>').appendTo(divLocal);
                 var divNet = $('<div></div>').addClass('pnl-rs485-network').appendTo(divSettings).hide();
                 line = $('<div></div>').appendTo(divNet);
-                $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'netHost', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width:'5.5rem' } } });
-                $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType:'number', fmtMask:'#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'netHost', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width: '5.5rem' } } });
+                $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType: 'number', fmtMask: '#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
                 // Create the settings panel.
                 var grpRec = $('<fieldset></fieldset>').appendTo(divStatus).css({ fontSize: '.8rem' });
                 $('<legend></legend>').appendTo(grpRec).text('Receive Stats');
 
                 line = $('<div></div>').appendTo(grpRec);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display:'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
                 line = $('<div></div>').appendTo(grpRec);
                 $('<div></div>').appendTo(line).staticField({ labelText: 'Successful', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'recSuccess', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
                 line = $('<div></div>').appendTo(grpRec);
@@ -351,12 +365,12 @@
                 line = $('<div></div>').appendTo(grpRec);
                 $('<div></div>').appendTo(line).staticField({ labelText: 'Collisions', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'recCollisions', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
                 line = $('<div></div>').appendTo(grpRec);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units:'%', binding: 'recFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units: '%', binding: 'recFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
 
                 var grpSend = $('<fieldset></fieldset>').appendTo(divStatus).css({ fontSize: '.8rem' });
                 $('<legend></legend>').appendTo(grpSend).text('Send Stats');
                 line = $('<div></div>').appendTo(grpSend);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType:'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
                 line = $('<div></div>').appendTo(grpSend);
                 $('<div></div>').appendTo(line).staticField({ labelText: 'Successful', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'sndSuccess', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
                 line = $('<div></div>').appendTo(grpSend);
@@ -410,26 +424,26 @@
             });
 
 
-        //    el.addClass('picConfigCategory cfgBody');
-        //    var binding = '';
-        //    var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: '', style: { width: '10rem' }, binding: 'name' }, { binding: 'capacity', text: '', style: { width: '10rem', textAlign: 'right' } }] });
-        //    var pnl = acc.find('div.picAccordian-contents');
-        //    var line = $('<div></div>').appendTo(pnl);
-        //    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-        //    $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
-        //    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft:'1rem', marginRight:'.25rem' } } });
-        //    $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
-        //    var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-        //    var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save"></i>' });
-        //    btnSave.on('click', function (e) {
-        //        var p = $(e.target).parents('div.picAccordian-contents:first');
-        //        var v = dataBinder.fromElement(p);
-        //        console.log(v);
-        //        $.putApiService('/config/body', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
-        //            console.log({ data: data, status: status, xhr: xhr });
-        //            self.dataBind(data);
-        //        });
-        //    });
+            //    el.addClass('picConfigCategory cfgBody');
+            //    var binding = '';
+            //    var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: '', style: { width: '10rem' }, binding: 'name' }, { binding: 'capacity', text: '', style: { width: '10rem', textAlign: 'right' } }] });
+            //    var pnl = acc.find('div.picAccordian-contents');
+            //    var line = $('<div></div>').appendTo(pnl);
+            //    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            //    $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            //    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft:'1rem', marginRight:'.25rem' } } });
+            //    $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
+            //    var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+            //    var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save"></i>' });
+            //    btnSave.on('click', function (e) {
+            //        var p = $(e.target).parents('div.picAccordian-contents:first');
+            //        var v = dataBinder.fromElement(p);
+            //        console.log(v);
+            //        $.putApiService('/config/body', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
+            //            console.log({ data: data, status: status, xhr: xhr });
+            //            self.dataBind(data);
+            //        });
+            //    });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
