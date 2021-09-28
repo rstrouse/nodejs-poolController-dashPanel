@@ -238,7 +238,7 @@
                             value: opts.equipment.expansions[i].type,
                             bindColumn: 0, displayColumn: 2, labelText: `Expansion Module ${opts.equipment.expansions[i].id}`, binding: `expansion${opts.equipment.expansions[i].id}`,
                             columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap', marginTop: '1rem' } }, { binding: 'name', hidden: false, text: 'Expansion', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
-                            items: type.expansionCards, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                            items: type.expansionModules, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
                         }).appendTo(line)
                     }
                 }
