@@ -55,21 +55,37 @@
                     line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
                     var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
+                        .on('mouseover', function (e) {
+                            $(e.currentTarget).addClass('button-hover');
+                        })
+                        .on('mouseout', function (e) {
+                            $(e.target).removeClass('button-hover');
+                        })
+                        .on('mousedown', function (e) {
+                            $(e.currentTarget).addClass('button-active');
+                        })
+                        .on('mouseup', function (e) {
+                            $(e.currentTarget).removeClass('button-active');
+                        })
                         .on('click', function (e) {
                             var btn = $(e.currentTarget);
                             if (btn.hasClass('disabled')) return;
-                            var divChlorinator = $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(chlorOpts);
-                            console.log(chlorOpts);
-                            divChlorinator[0].dataBind({
-                                id: -1,
-                                name: 'IntelliChlor' + (el.find('div.cfgChlorinator').length),
-                                poolSetpoint: 50,
-                                spaSetpoint: 10,
-                                superChlorHours: 8
-                            });
-                            divChlorinator.find('div.picAccordian:first').each(function () { this.expanded(true); });
-                            $.pic.modalDialog.closeDialog(dlg[0]);
-
+                            if (dataBinder.checkRequired(btn)) {
+                                var data = dataBinder.fromElement(btn);
+                                var master = chlorOpts.equipmentMasters.find(elem => elem.val === data.type);
+                                var divChlorinator = $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(chlorOpts);
+                                console.log(chlorOpts);
+                                divChlorinator[0].dataBind({
+                                    id: -1,
+                                    name: 'IntelliChlor' + (el.find('div.cfgChlorinator').length),
+                                    poolSetpoint: 50,
+                                    spaSetpoint: 10,
+                                    superChlorHours: 8,
+                                    master: master.val === 0 ? 0 : 1
+                                });
+                                divChlorinator.find('div.picAccordian:first').each(function () { this.expanded(true); });
+                                $.pic.modalDialog.closeDialog(dlg[0]);
+                            }
                         });
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
@@ -77,6 +93,50 @@
                         divSelection.addClass('disabled');
                         $('<div></div>').css({ textAlign: 'center', fontSize: '8pt' }).appendTo(divSelection).text('Max Chlorinators Added');
                     }
+                    else {
+
+
+                        var chlorTypes = [];
+                        for (var i = 0; i < chlorOpts.equipmentMasters.length; i++) {
+                            console.log(chlorOpts.equipmentMasters[i].name);
+                            switch (chlorOpts.equipmentMasters[i].name) {
+                                case 'none':
+                                case 'unknown':
+                                    break;
+                                case 'ocp':
+                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                    chlorTypes[chlorTypes.length - 1].desc = $('.picModelData').first().text();
+                                    break;
+                                case 'ncp':
+                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                    chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
+                                    break
+                                default:
+                                    break;
+                            }
+                        }
+                        $('<div></div>').appendTo(divSelection).pickList({
+                            required: true,
+                            style: { textAlign: 'left' },
+                            bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>', binding: 'type',
+                            columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
+                            items: chlorTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
+                        }).on('mouseover', function (e) {
+                            divSelection.removeClass('button-hover');
+                            e.stopPropagation();
+                        }).on('mousedown', function (e) {
+                            e.stopImmediatePropagation();
+
+                        });
+                    }
+
+
+
+
+
+
+
+
                     divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {
@@ -801,6 +861,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
             $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
