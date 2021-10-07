@@ -400,11 +400,46 @@
       "key": "V"
     },
     {
+      "val": 15,
+      "name": "Broadcast",
+      "desc": "To whom it may concern",
+      "protocol": "!chlorinator,any",
+      "key": 15
+    },
+    {
       "val": 16,
       "desc": "OCP (Outdoor Control Panel)",
       "name": "OCP",
       "protocol": "!chlorinator,any",
       "key": 16
+    },
+    {
+      "val": 17,
+      "desc": "Expansion Panel 1",
+      "name": "Exp1",
+      "protocol": "!chlorinator,any",
+      "key": 17
+    },
+    {
+      "val": 18,
+      "desc": "Expansion Panel 2",
+      "name": "Exp2",
+      "protocol": "!chlorinator,any",
+      "key": 18
+    },
+    {
+      "val": 19,
+      "desc": "Expansion Panel 3",
+      "name": "Exp3",
+      "protocol": "!chlorinator,any",
+      "key": 19
+    },
+    {
+      "val": 32,
+      "desc": "Indoor Control Panel",
+      "name": "ICP",
+      "protocol": "!chlorinator,any",
+      "key": 33
     },
     {
       "val": 33,
@@ -414,11 +449,11 @@
       "key": 33
     },
     {
-      "val": 15,
-      "name": "Broadcast",
-      "desc": "To whom it may concern",
+      "val": 34,
+      "name": "SL",
+      "desc": "ScreenLogic",
       "protocol": "!chlorinator,any",
-      "key": 15
+      "key": 34
     },
     {
       "val": 80,
