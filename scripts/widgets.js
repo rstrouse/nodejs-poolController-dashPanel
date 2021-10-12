@@ -644,8 +644,10 @@ var dataBinder = {
         });
     },
     parseNumber: function (val) {
+        if (val === null) return;
         if (typeof val === 'undefined') return val;
         if (typeof val === 'number') return val;
+        if (typeof val.getMonth === 'function') return val.getTime();
         var tval = val.replace(/[^0-9\.\-]+/g, '');
         return tval.indexOf('.') !== -1 ? parseFloat(tval) : parseInt(tval, 10);
     },
