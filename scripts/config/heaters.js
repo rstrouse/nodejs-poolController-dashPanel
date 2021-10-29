@@ -53,7 +53,7 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heater Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.heaterTypes, inputAttrs: { style: { width: '7.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             }).on('selchanged', function (evt) { self._setOptionsPanel(evt.newItem); });
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the heater is not being controlled by\r\na pool automation system.').hide();
+            // $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the heater is not being controlled by\r\na pool automation system.').hide();
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
@@ -171,7 +171,7 @@
             cols[1].elText().text(htype.desc);
             cols[2].elText().text(body.desc);
             el.find('div[data-bind="type"]').each(function () { this.disabled(hasId); });
-            el.find('div[data-bind="isVirtual"]').each(function () { this.disabled(hasId); });
+            // el.find('div[data-bind="isVirtual"]').each(function () { this.disabled(hasId); });
             self._setOptionsPanel(htype);
             if (obj.master === 1) el.find('div.pnlDeviceBinding').show();
             else el.find('div.pnlDeviceBinding').hide();

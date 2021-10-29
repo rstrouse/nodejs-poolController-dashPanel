@@ -931,7 +931,7 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
-            if (typeof obj.master === 'undefined') el.find('div[data-bind=isVirtual]').show();
+            // if (typeof obj.master === 'undefined') el.find('div[data-bind=isVirtual]').show();
 
             cols[0].elText().text(obj.name || 'Chlorinator');
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');

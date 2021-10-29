@@ -20,14 +20,14 @@
                 $('<div id="btnAddValve"></div>').appendTo(btnPnl).actionButton({ text: 'Add Valve', icon: '<i class="fas fa-plus"></i>' })
                     .on('click', function (e) {
                         var id = 0;
-                        el.find('input[data-bind=isVirtual]').each(function () {
-                            if ($(this).val()) id++;
-                        });
+                        // el.find('input[data-bind=isVirtual]').each(function () {
+                        //     if ($(this).val()) id++;
+                        // });
                         var acc = $('<div></div>').appendTo(pnl).pnlValveConfig({ valveTypes: opts.valveTypes, maxValves: opts.maxValves, circuits: opts.circuits, servers: opts.servers });
                         acc[0].dataBind({
                             isIntake: false,
                             isReturn: false,
-                            isVirtual: true,
+                            // isVirtual: true,
                             isActive: true,
                             master: 1,
                             type: 0,
@@ -62,7 +62,7 @@
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isIntake').appendTo(line);
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isReturn').appendTo(line);
-            $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isVirtual').appendTo(line);
+            // $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isVirtual').appendTo(line);
             $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginLeft: '.25rem', width:'3rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
