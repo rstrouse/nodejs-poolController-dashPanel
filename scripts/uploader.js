@@ -93,7 +93,7 @@
                         mxhr.upload.addEventListener('progress', function (e) {
                             if (e.lengthComputable) {
                                 if (typeof opts.progress === 'function') {
-                                    opts.progress(mxhr, e, { loaded: e.loaded, total: evt.total });
+                                    opts.progress(mxhr, e, { loaded: e.loaded, total: e.total });
                                 }
                                 else {
                                     let evt = $.Event('progress');

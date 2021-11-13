@@ -225,12 +225,12 @@
           },
           {
             "val": 17,
-            "desc": "Current Output Percentage",
+            "desc": "Output Percentage",
             "defaultType": "Response"
           },
           {
             "val": 18,
-            "desc": "Current Salt Level/Status",
+            "desc": "Salt Level/Status",
             "defaultType": "Response"
           },
           {
@@ -404,14 +404,14 @@
       "name": "Broadcast",
       "desc": "To whom it may concern",
       "protocol": "!chlorinator,any",
-      "key": 15
+      "key": "BC"
     },
     {
       "val": 16,
       "desc": "OCP (Outdoor Control Panel)",
       "name": "OCP",
       "protocol": "!chlorinator,any",
-      "key": 16
+      "key": "CP"
     },
     {
       "val": 17,
@@ -439,21 +439,21 @@
       "desc": "Indoor Control Panel",
       "name": "ICP",
       "protocol": "!chlorinator,any",
-      "key": 33
+      "key": "CP"
     },
     {
       "val": 33,
       "name": "Plugin",
-      "desc": "To whom it may concern",
+      "desc": "Default plugin address",
       "protocol": "!chlorinator,any",
-      "key": 33
+      "key": "CP"
     },
     {
       "val": 34,
       "name": "SL",
       "desc": "ScreenLogic",
       "protocol": "!chlorinator,any",
-      "key": 34
+      "key": "CP"
     },
     {
       "val": 80,
@@ -488,112 +488,112 @@
       "name": "Pump[1]",
       "desc": "Pump #1",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 97,
       "name": "Pump[2]",
       "desc": "Pump #2",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 98,
       "name": "Pump[3]",
       "desc": "Pump #3",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 99,
       "name": "Pump[4]",
       "desc": "Pump #4",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 100,
       "name": "Pump[5]",
       "desc": "Pump #5",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 101,
       "name": "Pump[6]",
       "desc": "Pump #6",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 102,
       "name": "Pump[7]",
       "desc": "Pump #7",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 103,
       "name": "Pump[8]",
       "desc": "Pump #8",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 104,
       "name": "Pump[9]",
       "desc": "Pump #9",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 105,
       "name": "Pump[10]",
       "desc": "Pump #10",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 106,
       "name": "Pump[11]",
       "desc": "Pump #11",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 107,
       "name": "Pump[12]",
       "desc": "Pump #12",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 108,
       "name": "Pump[13]",
       "desc": "Pump #13",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 109,
       "name": "Pump[14]",
       "desc": "Pump #14",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 110,
       "name": "Pump[15]",
       "desc": "Pump #15",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 111,
       "name": "Pump[16]",
       "desc": "Pump #16",
       "protocol": "pump",
-      "key": "P"
+      "key": "PMP"
     },
     {
       "val": 112,
@@ -712,112 +712,112 @@
       "name": "Chem[1]",
       "desc": "IntelliChem #1",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 145,
       "name": "Chem[2]",
       "desc": "IntelliChem #2",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 146,
       "name": "Chem[3]",
       "desc": "IntelliChem #3",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 147,
       "name": "Chem[4]",
       "desc": "IntelliChem #4",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 148,
       "name": "Chem[5]",
       "desc": "IntelliChem #5",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 149,
       "name": "Chem[6]",
       "desc": "IntelliChem #6",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 150,
       "name": "Chem[7]",
       "desc": "IntelliChem #7",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 151,
       "name": "Chem[8]",
       "desc": "IntelliChem #8",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 152,
       "name": "Chem[9]",
       "desc": "IntelliChem #9",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 153,
       "name": "Chem[10]",
       "desc": "IntelliChem #10",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 154,
       "name": "Chem[11]",
       "desc": "IntelliChem #11",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 155,
       "name": "Chem[12]",
       "desc": "IntelliChem #12",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 156,
       "name": "Chem[13]",
       "desc": "IntelliChem #13",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 157,
       "name": "Chem[14]",
       "desc": "IntelliChem #14",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 158,
       "name": "Chem[15]",
       "desc": "IntelliChem #15",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     },
     {
       "val": 159,
       "name": "Chem[16]",
       "desc": "IntelliChem #16",
       "protocol": "intellichem",
-      "key": "C"
+      "key": "CHM"
     }
   ]
 }

@@ -2509,15 +2509,20 @@ $.ui.position.fieldTip = {
                 evt.oldVal = !evt.newVal;
                 el.trigger(evt);
             });
-            $('<label></label>').attr('for', o.id).appendTo(el).text(o.labelText);
+            if (typeof o.labelHtml !== 'undefined')
+                $('<label></label>').attr('for', o.id).appendTo(el).html(o.labelHtml);
+            else
+                $('<label></label>').attr('for', o.id).appendTo(el).text(o.labelText);
             self.val(o.value);
             el.attr('data-bind', o.binding);
             self._applyStyles();
             el[0].label = function () { return el.find('label:first'); };
             el[0].checkbox = function () { return el.find('input.picCheckbox-value:first'); };
             el[0].text = function (text) { return self.text(text); };
+            el[0].labelHtml = function (html) { return el.find('label:first').html(html); };
             el[0].val = function (val) { return self.val(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
+            el[0].indeterminate = function (val) { return el.find('input.picCheckbox-value:first').prop('indeterminate', val); }
         },
         _applyStyles: function () {
             var self = this, o = self.options, el = self.element;

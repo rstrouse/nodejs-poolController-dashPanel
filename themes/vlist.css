@@ -5,7 +5,8 @@
   table-layout: auto;
   border-spacing: 0px;
   border-collapse: collapse;
-  margin: 0px; }
+  margin: 0px;
+  user-select: none; }
 
 table.vlist-outer {
   width: 100%;

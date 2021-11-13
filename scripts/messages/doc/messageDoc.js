@@ -129,7 +129,6 @@
             var self = this, o = self.options, el = self.element;
             var div = el.find('div.edit-message-doc');
             var obj = dataBinder.fromElement(div);
-            console.log(obj);
             var proto = o.constants.protocols.find(elem => elem.name === obj.protocol) || { name: 'undefined', keyFormat: '' };
             var key = proto.keyFormat;
             var addrSource = o.constants.addresses.find(elem => elem.val === obj.source) || { val:obj.source || 0, key: obj.dest || 0 };

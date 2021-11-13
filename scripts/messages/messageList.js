@@ -446,7 +446,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, filters: []
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -456,7 +456,7 @@ mhelper.init();
             el[0].addBulkApiCall = function (call) { self.addBulkApiCall(call); };
             el[0].commitBulkMessages = function () { self.commitBulkMessages(); };
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
-            el[0].cancelBulkMessages = function () {};
+            el[0].cancelBulkMessages = function () { };
             el[0].clear = function () { self.clear(); };
             el[0].clearOutbound = function () { self.clearOutbound(); };
             el[0].pinSelection = function (val) {
@@ -493,6 +493,13 @@ mhelper.init();
             //console.log({ docHeight: docHeight, rect: rect, pos: el.offset() });
             el.css({ height: height + 'px' });
         },
+        _calcMessageFilter: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            if (o.changesOnly && !obj.hasChanged) return true;
+            let msg = o.messages[`m${obj.rowId}`];
+            if (o.filters.includes(msg.messageKey)) return true;
+            return false;
+        },
         _initList: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
@@ -506,6 +513,7 @@ mhelper.init();
             $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack"></i></div>').appendTo(div);
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
             $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom"></i></div>').appendTo(div);
+            $('<div class="picFilter mmgrButton picIconRight" title="Filter Display"><i class="fas fa-filter"></i></div>').appendTo(div);
             $('<div class="picUploadLog mmgrButton picIconRight" title="Upload a Log File"><i class="fas fa-upload"></i></div>').appendTo(div);
 
 
@@ -542,6 +550,7 @@ mhelper.init();
                         break;
                     }
                 }
+                //console.log(docKey);
                 pnlDetail[0].bindMessage(msg, prev, o.contexts[docKey]);
             });
             el.on('click', 'div.picStartLogs', function (evt) {
@@ -550,25 +559,59 @@ mhelper.init();
             });
             el.on('click', 'div.picScrolling', function (evt) {
                 o.pinScrolling = !o.pinScrolling;
-                console.log(evt);
+                //console.log(evt);
                 if (!o.pinScrolling) $(evt.currentTarget).removeClass('selected');
                 else $(evt.currentTarget).addClass('selected');
             });
             el.on('click', 'div.picChangesOnly', function (evt) {
                 o.changesOnly = !o.changesOnly;
                 if (o.changesOnly) {
-                    $(evt.currentTarget).addClass('selected');
                     el.addClass('changesOnly');
-                    vlist[0].applyFilter(function (obj) {
-                        obj.hidden = !obj.hasChanged;
-                    });
+                    $(evt.currentTarget).addClass('selected');
                 }
                 else {
                     $(evt.currentTarget).removeClass('selected');
                     el.removeClass('changesOnly');
-                    vlist[0].clearFilter();
                 }
+                self._filterMessages();
             });
+            el.on('click', 'div.picFilter', function (evt) {
+                let filt = { protocols: [] };
+                for (var s in o.contexts) {
+                    let c = o.contexts[s];
+                    let p = filt.protocols.find(elem => elem.name === c.protocol.name);
+                    if (typeof p === 'undefined') {
+                        p = { name: c.protocol.name, desc: c.protocol.desc, actions: [] };
+                        filt.protocols.push(p);
+                    }
+
+                    if (typeof c.actionByte !== 'undefined') {
+                        let act = p.actions.find(elem => elem.val === c.actionByte);
+                        if (typeof act === 'undefined') {
+                            act = { val: c.actionByte, name: c.actionName, filters: [], sources: [], dests: [] };
+                            p.actions.push(act);
+                        }
+                        // Check to see if we have a filter defined.
+                        if (typeof act.filters.find(elem => elem.key === c.mesaageKey) === 'undefined') {
+                            act.filters.push({
+                                key: c.messageKey,
+                                filtered: o.filters.includes(c.messageKey),
+                                actionExt: c.actionExt,
+                                payloadKey: c.payloadKey,
+                                category: c.category,
+                                context: c,
+                                source: { val: c.sourceAddr.val, name: c.sourceAddr.name },
+                                dest: { val: c.destAddr.val, name: c.destAddr.name }
+                            });
+                        }
+                    }
+                }
+                // We should have a complete list of what is contained in this so lets show a filter dialog.
+                // Protocol --> Action --> Source / Dest
+                console.log(filt);
+                self._createFilterDialog(filt);
+            });
+
             el.on('click', 'div.picClearMessages', function (evt) { self.clear(); });
             el.on('click', 'i.fa-clipboard', function (evt) {
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
@@ -596,9 +639,134 @@ mhelper.init();
                 self._resetHeight();
             });
         },
+        _filterMessages: function () {
+            var self = this, o = self.options, el = self.element;
+            let vlist = el.find('div.picVirtualList:first');
+            vlist[0].applyFilter(function (obj) {
+                obj.hidden = self._calcMessageFilter(obj);
+            });
+        },
+        _createFilterDialog: function (filt) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgFilterMessages', {
+                message: 'Filter Messages',
+                width: '400px',
+                height: 'auto',
+                title: 'Filter Messages',
+                buttons: [
+                    {
+                        text: 'Clear', icon: '<i class="fas fa-broom"></i>',
+                        click: function () {
+                            dlg.find('div.picCheckbox').each(function () { this.val(false); });
+                        }
+                    },
+                    {
+                        text: 'Apply', icon: '<i class="fas fa-save"></i>',
+                        click: function () {
+                            let keys = [];
+                            dlg.find('div.picCheckbox').each(function () {
+                                if (this.val()) keys.push($(this).attr('data-messageKey'));
+                            });
+                            //console.log(keys);
+                            o.filters = keys;
+                            self._filterMessages();
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            var outer = $('<div></div>').appendTo(dlg).addClass('pnl-protofilter').css({
+                maxHeight: `calc(100vh - 177px)`, overflowY: 'auto'
+            });
+            let fnCalcChecks = (div) => {
+                return {
+                    checked: div.find('div.picCheckbox.cb-filter > input[type=checkbox]:checked'),
+                    unchecked: div.find('div.picCheckbox.cb-filter > input[type=checkbox]:not(:checked)')
+                };
+            };
+            for (var i = 0; i < filt.protocols.length; i++) {
+                let f = filt.protocols[i];
+                let divP = $('<div></div>').appendTo(outer).addClass('pnl-protocol');
+                $('<div></div>').appendTo(divP).css({ fontWeight: 'bold' });
+                $('<div></div>').appendTo(divP).checkbox({ labelHtml: `<span>${f.desc}</span>` }).addClass('cb-protocol').css({ fontWeight: 'bold' });
+                for (let a = 0; a < f.actions.length; a++) {
+                    let act = f.actions[a];
+                    let divA = $('<div></div>').appendTo(divP).addClass('pnl-action');
+                    $('<div></div>').appendTo(divA).checkbox({ labelHtml: `<span>[<span class="msg-detail-byte">${act.val}</span>]<span> ${act.name}</span>` })
+                        .css({ marginLeft: '1rem', fontWeight: 'bold' }).addClass('cb-action');
+                    for (let j = 0; j < act.filters.length; j++) {
+                        let filter = act.filters[j];
+                        let divFilter = $('<div></div>').css({ marginLeft: '2rem', fontSize: '.8rem' }).appendTo(divA);
+                        $('<div></div>').checkbox({
+                            labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${filter.actionExt}</span></span>`,
+                            value: filter.filtered
+                        }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
+                    }
+                    let achecks = fnCalcChecks(divA);
+                    if (achecks.checked.length === 0) divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(false); this.val(false); });
+                    else if (achecks.checked.length > 0 && achecks.unchecked.length === 0) divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(false); this.val(true); });
+                    else divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(true); });
+                }
+                let pchecks = fnCalcChecks(divP);
+                if (pchecks.checked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(false); this.val(false); });
+                else if (pchecks.checked.length > 0 && pchecks.unchecked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(false); this.val(true); });
+                else divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(true); });
+            }
+            outer.on('changed', 'div.picCheckbox.cb-protocol', function (evt) {
+                let div = $(evt.currentTarget).parents('div.pnl-protocol:first');
+                try {
+                    dlg.attr('data-processing', true);
+                    div.find('div.picCheckbox.cb-action').each(function () {
+                        if (this.val() !== evt.newVal) {
+                            this.val(evt.newVal);
+                        }
+                        this.indeterminate(false);
+                    });
+                } catch (err) { console.log(err); }
+            });
+            outer.on('changed', 'div.picCheckbox.cb-action', function (evt) {
+                let div = $(evt.currentTarget).parents('div.pnl-action:first');
+                try {
+                    div.find('div.picCheckbox.cb-filter').each(function () { if (this.val() !== evt.newVal) this.val(evt.newVal); });
+                    let divP = div.parents('div.pnl-protocol:first');
+                    let checks = fnCalcChecks(divP);
+                    if (checks.checked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () {
+                        if (this.val() !== false) this.val(false);
+                        this.indeterminate(false);
+                    });
+                    else if (checks.checked.length > 0 && checks.unchecked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () {
+                        if (this.val() !== true) this.val(true);
+                        this.indeterminate(false);
+                    });
+                    else divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(true); });
+
+                } catch (err) { console.log(err); }
+            });
+            outer.on('changed', 'div.picCheckbox.cb-filter', function (evt) {
+                if (dlg.attr('data-processing') === true) return;
+                let divA = $(evt.currentTarget).parents('div.pnl-action:first');
+                let divP = divA.parents('div.pnl-protocol:first');
+                let checks = fnCalcChecks(divA);
+                if (checks.checked.length === 0) divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(false); this.val(false); });
+                else if (checks.checked.length > 0 && checks.unchecked.length === 0) divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(false); this.val(true); });
+                else divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(true); });
+
+                checks = fnCalcChecks(divP);
+                if (checks.checked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(false); this.val(false); });
+                else if (checks.checked.length > 0 && checks.unchecked.length === 0) divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(false); this.val(true); });
+                else divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(true); });
+            });
+            
+            dlg.parent().position({ my: 'center', at: 'center', of: window });
+
+        },
         clear: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList')[0].clear();
+            o.contexts = {};
             o.messageKeys = {};
         },
         clearOutbound: function () {
@@ -645,7 +813,7 @@ mhelper.init();
             row.attr('data-msgdir', msg.direction);
             row.addClass('msgRow');
             var ctx = msgManager.getListContext(msg);
-            o.contexts[ctx.docKey] = ctx;
+            o.contexts[ctx.messageKey] = ctx;
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
 
             $('<span></span>').text(msg._id).appendTo(r.cells[1]);
@@ -672,16 +840,18 @@ mhelper.init();
             }
             else
                 row.addClass('nochange');
-            if (o.changesOnly && !hasChanged) obj.hidden = true;
+            //if (o.changesOnly && !hasChanged) obj.hidden = true;
 
             o.messageKeys[ctx.messageKey] = msg;
             msg.rowId = obj.rowId;
+            msg.messageKey = ctx.messageKey;
             //row.data('message', msg); Can't store jquery data. Create our own message cache.
             o.messages['m' + obj.rowId] = msg;
             row.attr('data-msgkey', ctx.messageKey);
             row.attr('data-dockey', ctx.docKey);
             row.attr('data-msgid', msg._id);
             obj.hasChanged = hasChanged;
+            obj.hidden = self._calcMessageFilter(obj);
             if (typeof prev !== 'undefined') obj.prevId = prev.rowId;
             if (!o.pinScrolling) {
                 if (!o.changesOnly || (o.changesOnly && hasChanged)) {
@@ -699,7 +869,8 @@ mhelper.init();
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
             $('<span></span>').append(dir).appendTo(r.cells[2]);
             var spChg = $('<span class="changed"></span>').append('<i class="fas fa-poo"></i>').appendTo(r.cells[3]).css({ color: 'brown' });
-            $(r.cells[4]).attr('colspan', 4).text(`${msg.requestor}${msg.path}`);
+            $(r.cells[4]).attr('colspan', 4).css({ width: '218px' });//.text(`${msg.requestor}${msg.path}`);
+            $('<span></span>').text(`${msg.requestor}${msg.path}`).appendTo($(r.cells[4])).css({ width: '214px', textOverlow: 'ellipsis', whiteSpace: 'nowrap' });
             $(r.cells[7]).remove();
             $(r.cells[6]).remove();
             $(r.cells[5]).remove();
@@ -969,6 +1140,8 @@ mhelper.init();
             else {
                 el.find('div.msg-detail-panel').show();
                 if (typeof ctx === 'undefined') ctx = msgManager.getListContext(msg);
+                //ctx = msgManager.getListContext(msg);
+                //console.log({ ctx: ctx, msg: msg });
                 o.context = ctx;
                 obj = {
                     isValid: msg.valid || msg.isValid,

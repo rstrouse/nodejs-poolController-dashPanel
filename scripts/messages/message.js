@@ -45,7 +45,8 @@ var msgManager = {
     makeDocKey: function (msg, context) {
         context = context || this.createKeyContext(msg);
         var key = context.keyFormat;
-        key = key.replace(/\<controller\>/g, context.controllerByte);
+        //key = key.replace(/\<controller\>/g, context.controllerByte);
+        key = key.replace(/\<controller\>/g, 'P');
         key = key.replace(/\<source\>/g, context.sourceAddr.key);
         key = key.replace(/\<dest\>/g, context.destAddr.key);
         key = key.replace(/\<action\>/g, context.actionByte);
@@ -76,23 +77,40 @@ var msgManager = {
         msgKey = msgKey.replace(/\<action\>/g, context.actionByte);
         msgKey = msgKey.replace(/\<length\>/g, context.payloadLength);
         var key = this.keyBytes[docKey];
+        if (typeof key !== 'undefined' && typeof key.minLength !== 'undefined') {
+            if (context.payloadLength < key.minLength) {
+                docKey += `_${context.payloadLength}`;
+                key = this.keyBytes[docKey];
+            }
+        }
         var actionName = context.actionByte.toString();
-
+        var actionExt = '';
+        var payloadKey;
+        var category = context.category;
         if (typeof key !== 'undefined') {
             actionName = key.shortName || actionName;
             if (typeof key.keyBytes !== 'undefined') {
-                var pkey = ':';
+                console.log({ key: key, context: context });
+                var pkey = '';
                 for (var i = 0; i < key.keyBytes.length; i++) {
                     val = this.extractByte(msg.payload, key.keyBytes[i], 512);
                     if(i !== 0) pkey += '_';
                     pkey += val.toString();
                 }
-                msgKey += pkey;
+                msgKey += ':' + pkey;
+                let xkey = typeof key.payloadKeys !== 'undefined' ? key.payloadKeys[pkey] : undefined;
+                if (typeof xkey !== 'undefined') {
+                    actionExt = xkey.shortName;
+                    category = xkey.category;
+                }
+                else actionExt = pkey;
+                payloadKey = pkey;
+                //console.log({ context: context, key: key, actionExt:actionExt });
             }
-            if (typeof key.payloadKeys !== 'undefined')
-                actionName = key.payloadKeys[pkey] || actionName;
+            //if (typeof key.payloadKeys !== 'undefined')
+            //    actionName = key.payloadKeys[pkey] || actionName;
         }
-        return { messageKey: msgKey, docKey: docKey, actionName: actionName };
+        return { messageKey: msgKey, docKey: docKey, actionName: actionName, actionExt: actionExt, payloadKey: payloadKey, category:category };
     },
     getListContext: function (msg) {
         let context = this.createKeyContext(msg);
@@ -143,7 +161,8 @@ var msgManager = {
             name: sig.name,
             desc:sig.desc,
             keyBytes: sig.keyBytes,
-            payload: payload
+            payload: payload,
+            minLength: sig.minLength
         };
     },
     extractActionByte: function (msg) {

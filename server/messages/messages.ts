@@ -28,12 +28,12 @@ export class MessageDocs {
             let msg = messages[key];
             //console.log(`key:${key} bytes:${messages[key].keyBytes}`);
             if (typeof msg.keyBytes !== 'undefined') {
-                let kb: any = { keyBytes: messages[key].keyBytes, shortName: msg.shortName };
+                let kb: any = { keyBytes: messages[key].keyBytes, shortName: msg.shortName, hasCategories: msg.hasCategories, category: msg.category, minLength: msg.minLength };
                 if (typeof msg.payloadKeys !== 'undefined') {
                     kb.payloadKeys = {};
                     for (let pkey in msg.payloadKeys) {
                         let pb = msg.payloadKeys[pkey];
-                        if (typeof pb.shortName !== 'undefined') kb.payloadKeys[pkey] = { shortName: pb.shortName };
+                        if (typeof pb !== 'undefined') kb.payloadKeys[pkey] = { shortName: pb.shortName, category: pb.category };
                     }
                 }
                 keys[key] = kb;
