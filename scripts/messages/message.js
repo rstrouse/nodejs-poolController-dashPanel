@@ -90,7 +90,7 @@ var msgManager = {
         if (typeof key !== 'undefined') {
             actionName = key.shortName || actionName;
             if (typeof key.keyBytes !== 'undefined') {
-                console.log({ key: key, context: context });
+                //console.log({ key: key, context: context });
                 var pkey = '';
                 for (var i = 0; i < key.keyBytes.length; i++) {
                     val = this.extractByte(msg.payload, key.keyBytes[i], 512);

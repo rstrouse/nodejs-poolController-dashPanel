@@ -495,7 +495,7 @@ mhelper.init();
         },
         _calcMessageFilter: function (obj) {
             var self = this, o = self.options, el = self.element;
-            if (o.changesOnly && !obj.hasChanged) return true;
+            if (o.changesOnly && obj.hasChanged === false) return true;
             let msg = o.messages[`m${obj.rowId}`];
             if (o.filters.includes(msg.messageKey)) return true;
             return false;
@@ -592,7 +592,7 @@ mhelper.init();
                             p.actions.push(act);
                         }
                         // Check to see if we have a filter defined.
-                        if (typeof act.filters.find(elem => elem.key === c.mesaageKey) === 'undefined') {
+                        if (typeof act.filters.find(elem => elem.key === c.messageKey) === 'undefined') {
                             act.filters.push({
                                 key: c.messageKey,
                                 filtered: o.filters.includes(c.messageKey),
@@ -643,7 +643,8 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             let vlist = el.find('div.picVirtualList:first');
             vlist[0].applyFilter(function (obj) {
-                obj.hidden = self._calcMessageFilter(obj);
+                if (obj.isApiCall === true) obj.hidden = false;
+                else obj.hidden = self._calcMessageFilter(obj);
             });
         },
         _createFilterDialog: function (filt) {
@@ -880,6 +881,8 @@ mhelper.init();
                     self.selectRowByIndex(obj.rowId, true);
                 }
             }
+            obj.hasChanged = true;
+            obj.isApiCall = true;
             row.attr('data-msgid', msg._id);
             o.messages['m' + obj.rowId] = msg;
 
