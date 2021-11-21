@@ -66,8 +66,15 @@
                 el.find('i.picDropdownButton').removeClass('fa-spin');
             }
             el.attr('data-state', data.isOn);
-            data.endTime === 'undefined' ? el.data('endTime', null) : el.data('endTime', data.endTime);
-            // self.countdownEndTime();
+            if (typeof data.endTime === 'undefined') {
+                el.attr('data-endTime', null)
+                o.endTime = undefined;
+                $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
+            }
+            else {
+                el.attr('data-endTime', data.endTime);
+            }
+            self.countdownEndTime();
             el.parent().find('div.picLightSettings[data-circuitid=' + data.id + ']').each(function () {
                 //let pnl = $(this);
                 //pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
@@ -85,14 +92,16 @@
         this.stopCountdownEndTime();
         if (typeof el.attr('data-endTime') === 'undefined') return;
         let endTime = new Date(el.attr('data-endTime'));
-        if (!makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
-            el.find('span.picLightEndTime:first').empty();
+        if (isNaN(endTime) || !makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
+            // el.find('span.picLightEndTime:first').empty();
+            $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
         }
         else {
             let dt = new Date($('span.picControllerTime').data('dt'));
             if (endTime.getTime() > dt.getTime()) tnowStr = dataBinder.formatEndTime(dt, endTime);
             else return;
-            el.find('span.picLightEndTime:first').text(`(${tnowStr})`);
+            // el.find('span.picLightEndTime:first').text(`${tnowStr}`);
+            $(`div[data-groupid=${o.id}] > span.picLightEndTime`).text(`${tnowStr}`);
             o.countdownEndTime = setTimeout(() => { this.countdownEndTime(); }, 1000 * 30);
         }
     },
