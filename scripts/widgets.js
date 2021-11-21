@@ -149,8 +149,8 @@ Number.prototype.formatTime = function (format, empty) {
     var mins = this - (hrs * 60);
     var secs = 0;
     var tok = {
-        'hh': (hrs > 12 ? hrs - 12 : hrs).toString().padStart(2, '0'),
-        'h': (hrs > 12 ? hrs - 12 : hrs).toString(),
+        'hh': (hrs > 12 ? hrs - 12 : hrs === 0 ? 12 : hrs).toString().padStart(2, '0'),
+        'h': (hrs > 12 ? hrs - 12 : hrs === 0 ? 12 : hrs).toString(),
         'HH': hrs.toString().padStart(2, '0'),
         'H': hrs.toString(),
         'mm': mins.toString().padStart(2, '0'),
@@ -1410,7 +1410,6 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             var indexOfAny = function (str, arrChars) {
                 for (var char in arrChars) {
-                    console.log(char);
                     var ndx = str.indexOf(arrChars[char]);
                     if (ndx !== -1) return ndx;
                 }
@@ -1419,18 +1418,25 @@ $.ui.position.fieldTip = {
             var bAddHrs = false;
             var hrs = 0;
             var mins = 0;
-            var arr = val.split(':');
+            let arr = [val];
+            if (val.indexOf(':') !== -1) arr = val.split(':');
+            else if (val.indexOf(' ') !== -1) arr = val.split(' ');
+            else if (val.length === 3) arr = [val.substring(0, 1), val.substring(1)];
+            else if (val.length > 2) arr = [val.substring(0, 1), val.substring(2)];
             if (arr.length > 0) {
                 hrs = parseInt(arr[0].replace(/\D/g), 10);
                 bAddHrs = (indexOfAny(arr[0], ['P', 'p']) !== -1);
+                if (hrs === 12 && !bAddHrs) hrs = 0;
             }
             if (arr.length > 1) {
                 mins = parseInt(arr[1].replace(/\D/g), 10);
                 bAddHrs = (indexOfAny(arr[1], ['P', 'p']) !== -1);
+                if (hrs === 12 && !bAddHrs) hrs = 0;
             }
             if (isNaN(hrs)) hrs = 0;
             if (isNaN(mins)) mins = 0;
-            if (bAddHrs && hrs <= 12) hrs += 12;
+            if (bAddHrs && hrs < 12) hrs += 12;
+            //console.log({ val: val, hrs: hrs, mins: mins, num:(hrs * 60) + mins });
             return (hrs * 60) + mins;
 
         },
@@ -1439,7 +1445,7 @@ $.ui.position.fieldTip = {
             if (typeof val === 'undefined') return o.val;
             if (val > o.max) val = o.max;
             else if (val < o.min) val = o.min;
-            //console.log({ m: 'Setting time', val: val, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
+            console.log({ m: 'Setting time', val: val, fmt: o.fmtMask, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
             o.val = Math.min(Math.max(o.min, val), o.max);
             el.find('input.picSpinner-value').val(val.formatTime(o.fmtMask, o.fmtEmpty));
         },
