@@ -1030,6 +1030,7 @@
                         line = $('<div></div>').appendTo(servers);
                         $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].name`).val(opts.servers[i].name);
                         $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].uuid`).val(opts.servers[i].uuid);
+                        $('<input></input>').attr('type', 'hidden').appendTo(line).attr('data-bind', `servers[${i}].host`).val(opts.servers[i].host);
                         $('<div></div>').appendTo(line).checkbox({ labelText: opts.servers[i].name, binding: `servers[${i}].backup` });
                     }
                 }
@@ -1052,7 +1053,20 @@
                             // Alright we are ready to begin restoring it all.
                             dlg[0].dialogResult(true);
                             $.pic.modalDialog.closeDialog(this);
-                            $.putApiService('/app/restore/file', opts, function (data, status, xhr) { });
+                            this.disabled = true;
+                            var dlg2 = $.pic.modalDialog.createDialog('restoreResults', {
+                                width: '447px',
+                                height: 'auto',
+                                title: `Restore Results`,
+                                position: { my: "center bottom", at: "center top", of: el }
+                            });
+                            $('<div></div>').appendTo(dlg2).html(`Restore is running.`);
+                            $.putApiService('/app/restore/file', opts, function (data, status, xhr) {
+                                console.log(data);
+                                $('<div></div>').appendTo(dlg2).html(`Restore is done.`);
+                                $('<pre></pre>').appendTo(dlg2).css({whiteSpace: 'pre-wrap', wordWrap: 'break-word'}).html(JSON.stringify(data,null,2));
+
+                             });
                         }
                     },
                     {
@@ -1076,7 +1090,7 @@
                     if (typeof c.remove !== 'undefined') d.remove += c.remove.length;
                 }
                 if (d.errors.length > 0) {
-                    let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px', overflowY: 'auto' });
+                    let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '100px', overflowY: 'auto' });
                     line = $('<div></div>').appendTo(errors);
                     $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`njsPC Errors`);
                     for (let i = 0; i < d.errors.length; i++) {
@@ -1086,7 +1100,7 @@
                     hasErrors = true;
                 }
                 if (d.warnings.length > 0) {
-                    let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px' });
+                    let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '100px' });
                     line = $('<div></div>').appendTo(warnings);
                     $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`njsPC Warnings`);
                     for (let i = 0; i < d.warnings.length; i++) {
@@ -1109,7 +1123,7 @@
                         if (typeof c.remove !== 'undefined') d.remove += c.remove.length;
                     }
                     if (d.errors.length > 0) {
-                        let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px', overflowY: 'auto' });
+                        let errors = $('<div></div>').appendTo(dlg).css({ maxHeight: '100px', overflowY: 'auto' });
                         line = $('<div></div>').appendTo(errors);
                         $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`${srv.name} Errors`);
                         for (let i = 0; i < d.errors.length; i++) {
@@ -1119,7 +1133,7 @@
                         hasErrors = true;
                     }
                     if (d.warnings.length > 0) {
-                        let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '50px' });
+                        let warnings = $('<div></div>').appendTo(dlg).css({ maxHeight: '100px' });
                         line = $('<div></div>').appendTo(warnings);
                         $('<span></span>').appendTo(line).css({ fontSize: '.8em', fontWeight: 'bold' }).text(`${srv.name} Warnings`);
                         for (let i = 0; i < d.warnings.length; i++) {
@@ -1305,7 +1319,7 @@
             $('<label></label>').appendTo(line).text('File');
             $('<span></span>').appendTo(line).attr('data-bind', 'filename');
             $('<label></label>').appendTo(line).css({ marginLeft: '2rem' }).text('Version');
-            $('<span></span>').appendTo(line).attr('data-bind', 'options.version').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.00');
+            $('<span></span>').appendTo(line).attr('data-bind', 'options.version').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0');
             $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', 'filePath');
             line = $('<div></div>').appendTo(fileAttrs);
             $('<label></label>').appendTo(line).text('Name');
@@ -1331,6 +1345,7 @@
                     line = $('<div></div>').appendTo(restoreOpts);
                     $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].uuid`).val(srv.uuid);
                     $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].name`).val(srv.name);
+                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].host`).val(srv.host);
                     cb = $('<div></div>').appendTo(line).checkbox({ labelText: srv.name, binding: `options.servers[${i}].restore` });
                     if (!srv.backup) line.hide();
                     else if (!srv.success) cb[0].disabled(true);
