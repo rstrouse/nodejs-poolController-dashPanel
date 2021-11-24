@@ -210,16 +210,20 @@
                     if (typeof getStorage('--picChemistry-order') === 'undefined') setStorage('--picChemistry-order', $(':root').css('--picChemistry-order'));
                     $(':root').css('--picChemistry-order', getStorage('--picChemistry-order'));
                     if (typeof getStorage('--picChemistry-display') === 'undefined') setStorage('--picChemistry-display', $(':root').css('--picChemistry-display'));
+                    $(':root').css('--picChemistry-display', getStorage('--picChemistry-display'));
+
+                    if (typeof getStorage('--picFilters-order') === 'undefined') setStorage('--picFilters-order', $(':root').css('--picFilters-order'));
                     $(':root').css('--picFilters-order', getStorage('--picFilters-order'));
                     if (typeof getStorage('--picFilters-display') === 'undefined') setStorage('--picFilters-display', $(':root').css('--picFilters-display'));
+                    $(':root').css('--picFilters-display', getStorage('--picFilters-display'));
 
-                    $(':root').css('--picChemistry-display', getStorage('--picChemistry-display'));
                     if (typeof getStorage('--show-time-remaining') === 'undefined') setStorage('--show-time-remaining', $(':root').css('--show-time-remaining'));
                     $(':root').css('--show-time-remaining', getStorage('--show-time-remaining'));
 
                     // put elements in correct container div
-                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits']
+                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters'];
                     arr.forEach(id => {
+                        console.log(id);
                         let el = $(`.${id}`);
                         let elVarName = `--${id}-order`;
                         if (getStorage(elVarName) >= 200) {
