@@ -299,6 +299,7 @@
                         el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').hide();
                         break;
+                    case 'mtheat':
                     case 'hpheat':
                     case 'heater':
                         el.find('span.picSolarOn').hide();
