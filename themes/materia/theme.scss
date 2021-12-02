@@ -228,6 +228,11 @@ div.picIndicator[data-status=true] {
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(255,255,28,1) 0%, rgba(204,201,73,1) 85%, rgba(196,192,81,1) 100%);
 }
+div.picIndicator[data-status=delay] {
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(255,255,28,1) 0%, rgba(204,201,73,1) 85%, rgba(196,192,81,1) 100%);
+    animation: blinker 1s linear infinite;
+    -webkit-animation: blinker 1s infinite linear;
+}
 
 div.picIndicator[data-status=loading] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(255,175,75,1) 0%,rgba(255,146,10,1) 100%);

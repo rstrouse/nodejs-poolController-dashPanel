@@ -358,6 +358,16 @@ div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
   background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
 
+div.picIndicator[data-status=delay] {
+  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1);
+  animation: blinker 1s linear infinite;
+  -webkit-animation: blinker 1s infinite linear; }
+
 div.picIndicator[data-status=loading] {
   background: -moz-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
   background: -webkit-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);

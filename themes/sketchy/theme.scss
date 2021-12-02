@@ -340,7 +340,14 @@ div.picIndicator[data-status=true] {
     background-attachment:fixed;
     background-position:left top;
 }
-
+div.picIndicator[data-status=delay] {
+    background: url('pencilshade-yellow.png') !important;
+    background-size: auto;
+    background-attachment: fixed;
+    background-position: left top;
+    animation: blinker 1s linear infinite;
+    -webkit-animation: blinker 1s infinite linear;
+}
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
     background: url('pencilshade-yellow.png') !important;
     background-size: auto;

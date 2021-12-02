@@ -165,6 +165,11 @@ div.picController > div.picControllerLine label {
     -webkit-animation: burst 1s infinite linear;
     animation: burst 1s infinite linear
 }
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
 @keyframes flicker {
     0% {
         transform: rotate(-4deg);
@@ -655,7 +660,7 @@ div.picPickList-options {
         height:100%;
     }
         div.picPickList-options div.optBody {
-            position: inherit;
+            position: relative;
             height: 100%;
             width: 100%;
             overflow:hidden;

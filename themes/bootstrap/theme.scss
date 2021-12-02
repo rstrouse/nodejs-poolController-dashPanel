@@ -283,7 +283,12 @@ div.picIndicator[data-status="true"] {
     background-color: #28a745;
     border-color: #28a745;
 }
-
+div.picIndicator[data-status=delay] {
+    background-color: #28a745;
+    border-color: #28a745;
+    animation: blinker 1s linear infinite;
+    -webkit-animation: blinker 1s infinite linear;
+}
 div.picIndicator[data-status="selected"]::before {
     content: "✔";
     position: relative;

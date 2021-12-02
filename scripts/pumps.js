@@ -98,7 +98,10 @@
                     el.attr('data-active', true);
                     dataBinder.bind(el, data);
                     el.css({ display: '' });
-                    el.find('div.picIndicator').attr('data-status', data.command === 10 || data.relay > 0 ? 'on' : 'off');
+                    if (data.pumpOnDelay === true)
+                        el.find('div.picIndicator').attr('data-status', 'delay');
+                    else
+                        el.find('div.picIndicator').attr('data-status', data.command === 10 || data.relay > 0 ? 'on' : 'off');
                 }
                 el.attr('data-pumptype', data.type.val);
                 el.attr('data-id', data.id);
