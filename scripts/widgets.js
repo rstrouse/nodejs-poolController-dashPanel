@@ -2536,7 +2536,14 @@ $.ui.position.fieldTip = {
             var lbl = el.find('label:first');
             if (typeof o.style !== 'undefined') el.css(o.style);
             for (var la in o.labelAttrs) {
-                lbl.attr(la, o.labelAttrs[la]);
+                switch (la) {
+                    case 'style':
+                        if (typeof o.labelAttrs[la] === 'object') lbl.css(o.labelAttrs[la]);
+                        break;
+                    default:
+                        lbl.attr(la, o.labelAttrs[la]);
+                        break;
+                }
             }
             if (typeof o.inputStyle !== 'undefined') fld.css(o.inputStyle);
             if (typeof o.labelStyle !== 'undefined') lbl.css(o.labelStyle);

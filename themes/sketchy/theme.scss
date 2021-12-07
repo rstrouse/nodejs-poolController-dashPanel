@@ -348,6 +348,54 @@ div.picIndicator[data-status=delay] {
     animation: blinker 1s linear infinite;
     -webkit-animation: blinker 1s infinite linear;
 }
+
+div.picIndicator[data-status=delayoff] {
+    background: url('pencilshade-yellow.png') !important;
+    background-size: auto;
+    background-attachment: fixed;
+    background-position: left top;
+    animation: delayoff .5s ease infinite;
+    -webkit-animation: delayoff .5s infinite ease;
+}
+
+div.picIndicator[data-status=delayon] {
+    background: url('pencilshade-green.png') !important;
+    background-size: auto;
+    background-attachment: fixed;
+    background-position: left top;
+    animation: delayon .5s ease infinite;
+    -webkit-animation: delayon .5s infinite ease;
+}
+
+@keyframes delayoff {
+    0% {
+        background: url('pencilshade-yellow.png') !important;
+        background-size: auto;
+        background-attachment: fixed;
+        background-position: left top;
+    }
+
+    100% {
+        background: url('pencilshade-green.png') !important;
+        background-size: auto;
+        background-attachment: fixed;
+        background-position: right bottom;
+    }
+}
+
+@keyframes delayon {
+    0% {
+        background: url('pencilshade-yellow.png') !important;
+    }
+
+    100% {
+        background: url('pencilshade-green.png') !important;
+    }
+}
+
+
+
+
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
     background: url('pencilshade-yellow.png') !important;
     background-size: auto;

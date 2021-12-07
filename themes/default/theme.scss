@@ -191,6 +191,34 @@ div.picIndicator[data-status=delay] {
     animation: blinker 1s linear infinite;
     -webkit-animation: blinker 1s infinite linear;
 }
+div.picIndicator[data-status=delayoff] {
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(0,240,0,1) 0%, rgba(0,0,0,1) 100%);
+    animation: delayoff .5s ease infinite;
+    -webkit-animation: delayoff .5s infinite ease;
+}
+div.picIndicator[data-status=delayon] {
+    @include radial_gradient(center, ellipse, farthest-corner, rgba(255,255,28,1) 0%, rgba(204,201,73,1) 85%, rgba(196,192,81,1) 100%);
+    animation: delayon .5s ease infinite;
+    -webkit-animation: delayon .5s infinite ease;
+}
+@keyframes delayoff {
+    0% {
+        @include radial_gradient(center, ellipse, farthest-corner, rgba(0,240,0,1) 0%, rgba(0,0,0,1) 100%);
+    }
+    100% {
+        @include radial_gradient(center, ellipse, farthest-corner, rgba(222,222,222,1) 45%, rgba(0,33,0,0.2) 54%, rgba(0,0,0,1) 100%);
+    }
+}
+@keyframes delayon {
+    0% {
+        @include radial_gradient(center, ellipse, farthest-corner, rgba(255,255,28,1) 0%, rgba(204,201,73,1) 85%, rgba(196,192,81,1) 100%);
+    }
+    100% {
+        @include radial_gradient(center, ellipse, farthest-corner, rgba(222,222,222,1) 45%, rgba(0,33,0,0.2) 54%, rgba(0,0,0,1) 100%);
+    }
+}
+
+
 div.picIndicator[data-status=loading] {
     @include radial_gradient(center, ellipse, farthest-corner, rgba(252,255,84,1) 0%, rgba(255,182,71,1) 100%);
 }

@@ -1331,3 +1331,8 @@ div.picBody[data-covered=true]:before {
     line-height:1;
     margin-bottom:-1em;
 }
+div.systemdelays-list {
+    display:inline-block;
+    float:left;
+    font-size:.7rem;
+}

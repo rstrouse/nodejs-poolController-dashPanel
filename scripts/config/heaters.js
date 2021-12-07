@@ -214,7 +214,7 @@
             el.addClass('pnl-gas-heater');
             var binding = '';
             var line = $('<div></div>').appendTo(el);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 1, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 0, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -245,7 +245,7 @@
             //$('<div></div>').appendTo(line).valueSpinner({ labelText: 'Differential Temp', binding: binding + 'differentialTemp', min: 3, max: 9, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '2rem', marginRight: '.25rem' } } });
             //line = $('<div></div>').appendTo(el);
             //$('<div></div>').appendTo(line).checkbox({ labelText: 'Nocturnal Cooling', binding: 'coolingEnabled' }).attr('title', 'Check this to enable cooling when the body is on/r/nand the solar temperature is less than the water temperature.');
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 1, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 0, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

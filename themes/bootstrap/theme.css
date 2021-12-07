@@ -545,9 +545,17 @@ div.picIndicator[data-status="true"] {
   background-color: #28a745;
   border-color: #28a745; }
 
+div.picIndicator[data-status=delayoff],
 div.picIndicator[data-status=delay] {
   background-color: #28a745;
   border-color: #28a745;
+  animation: blinker 1s linear infinite;
+  -webkit-animation: blinker 1s infinite linear; }
+
+div.picIndicator[data-status=delayon] {
+  color: white;
+  background-color: #007bff;
+  border-color: #007bff;
   animation: blinker 1s linear infinite;
   -webkit-animation: blinker 1s infinite linear; }
 
@@ -567,6 +575,24 @@ div.picIndicator[data-status="true"]::before {
 div.picIndicator[data-status="off"]::before,
 div.picIndicator[data-status="false"]::before {
   content: "Off";
+  position: relative;
+  top: calc(0.8rem - 5px);
+  left: calc(0.8rem - 5px); }
+
+div.picIndicator[data-status="delayoff"]::before {
+  content: "Del";
+  position: relative;
+  top: calc(0.8rem - 5px);
+  left: calc(0.8rem - 5px); }
+
+div.picIndicator[data-status="delayon"]::before {
+  content: "Del";
+  position: relative;
+  top: calc(0.8rem - 5px);
+  left: calc(0.8rem - 5px); }
+
+div.picIndicator[data-status="delay"]::before {
+  content: "Del";
   position: relative;
   top: calc(0.8rem - 5px);
   left: calc(0.8rem - 5px); }

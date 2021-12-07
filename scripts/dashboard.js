@@ -329,6 +329,7 @@
                 console.log({ evt: 'body', data: data });
             });
             o.socket.on('filter', function (data) {
+                console.log({ evt: 'filter', data: data });
                 $('div.picBodyFilter[data-id=' + data.id + ']').each(function () {
                     this.setEquipmentData(data);
                 });
@@ -344,9 +345,13 @@
                 });
 
             });
-            o.socket.on('delay', function (data) {
-                console.log({ evt: 'delay', data: data });
+            o.socket.on('delays', function (data) {
+                console.log({ evt: 'delays', data: data });
+                $('div.picSystemDelays').each(function () {
+                    this.setEquipmentData(data);
+                });
             });
+
             o.socket.on('equipment', function (data) {
                 console.log({ evt: 'equipment', data: data });
                 $('body').attr('data-controllertype', data.controllerType);

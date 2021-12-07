@@ -181,15 +181,41 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var controller = $('body').attr('data-controllertype');
+
             el.empty();
             el.addClass('picConfigCategory cfgDelays');
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Delays', glyph: 'fas fa-stopwatch', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual OP Priority', binding: 'options.manualPriority' });
+            if (controller !== 'nixie') $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual OP Priority', binding: 'options.manualPriority' });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay' });
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Cooldown Delay', binding: 'options.cooldownDelay' });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+            if (controller === 'nixie') {
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Delay Time', binding: 'options.valveDelayTime', dataType: 'number', fmtType: '#,##0', value: o.valveDelayTime, min: 0, max: 240, step: 1, maxlength: 5,
+                    units: 'sec', labelAttrs: { style: { width: '5.5rem', display: 'none' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Start Delay', binding: 'options.heaterStartDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Heater Start Delay', binding: 'options.heaterStartDelayTime', dataType: 'number', fmtType: '#,##0', value: o.heaterStartDelayTime, min: 0, max: 900, step: 1, maxlength: 5,
+                    units: 'sec', labelAttrs: { style: { width: '9.5rem', display: 'none' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Cleaner Start Delay', binding: 'options.cleanerStartDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Cleaner Start Delay', binding: 'options.cleanerStartDelayTime', dataType: 'number', fmtType: '#,##0', value: o.cleanerStartDelayTime, min: 0, max: 900, step: 1, maxlength: 5,
+                    units: 'sec', labelAttrs: { style: { width: '9.5rem', display: 'none' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Cleaner Off for Solar', binding: 'options.cleanerSolarDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Cleaner Solar Delay', binding: 'options.cleanerSolarDelayTime', dataType: 'number', fmtType: '#,##0', value: o.cleanerStartDelayTime, min: 0, max: 900, step: 1, maxlength: 5,
+                    units: 'sec', labelAttrs: { style: { width: '9.5rem', display: 'none' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+            }
+            if (controller !== 'nixie') $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Cooldown Delay', binding: 'options.cooldownDelay' });
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveDelays"></div>').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {

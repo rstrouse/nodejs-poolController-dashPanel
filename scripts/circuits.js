@@ -203,7 +203,16 @@
                 el.remove();
                 return;
             }
-            el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+            if (data.isOn && data.stopDelay) {
+                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayoff');
+            }
+            else if (!data.data.isOn && data.startDelay) {
+                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayon');
+            }
+            else {
+                console.log(`${data.name} ${data.isOn}`);
+                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+            }
             el.attr('data-state', data.isOn);
             if (typeof data.endTime === 'undefined') {
                 el.attr('data-endTime', null)
@@ -406,6 +415,7 @@
             el[0].enablePopover = function (val) { return self.enablePopover(val); };
             el[0].countdownEndTime = function () { self.countdownEndTime(); }
             el[0].stopCountdownEndTime = function () { self.stopCountdownEndTime(); }
+            el[0].disabled = function (val) { return self.disabled(val); };
             o = {};
         },
         _buildPopover: function () {
@@ -459,6 +469,7 @@
                     dim.on('click', function (evt) {
                         evt.stopImmediatePropagation();
                         evt.preventDefault();
+                        if (self.disabled()) return;
                         $.getApiService('state/circuit/' + el.attr('data-circuitid'), function (data, status, xhr) {
                             var divPopover = $('<div class="picDimmer"></div>');
                             divPopover.attr('data-circuitid', el.attr('data-circuitid'));
@@ -498,12 +509,37 @@
             $('<span class="picCircuitEndTime"></span>').appendTo(el);
             self._buildPopover();
             el.on('click', function (evt) {
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
                 evt.stopPropagation();
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
-                    self.setState(data);
-                });
-                setTimeout(function () { self.resetState(); }, 2000);
+                if (self.disabled()) return;
+                let ind = el.find('div.picFeatureToggle').find('div.picIndicator');
+                if (ind.attr('data-status') === 'delayon') {
+                    //(url, data, message, successCallback, errorCallback, completeCallback)
+                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: false }, function (circ, status, xhr) {
+                        self.setState(circ);
+                    }, function () { ind.attr('data-status', 'delayon'); });
+                    ind.attr('data-status', 'pending');
+                }
+                else {
+                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (circ, status, xhr) {
+                        console.log(`RETURNED`);
+                        console.log(circ);
+                        self.setState(circ);
+                    }, function () {
+                        if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
+                    });
+                    ind.attr('data-status', 'pending');
+                }
+                //el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
+                //evt.stopPropagation();
+                //$.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                //    self.setState(data);
+                //});
+                //setTimeout(function () { self.resetState(); }, 2000);
+                //el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
+                //$.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                //    self.setState(data);
+                //});
+                //setTimeout(function () { self.resetState(); }, 2000);
             });
             self.setState(o);
         },
@@ -559,7 +595,18 @@
             }
             try {
                 dataBinder.bind(el.parent().find('div.picPopover[data-circuitid=' + data.id + ']'), data);
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                //el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                self.disabled(data.stopDelay);
+                if (data.isOn && data.stopDelay) {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayoff');
+                }
+                else if (!data.isOn && data.startDelay) {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayon');
+                }
+                else {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                }
+
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
                 if (typeof data.endTime === 'undefined' || !data.isOn) {
@@ -593,6 +640,15 @@
                     }
                 }
             } catch (err) { console.error(err); }
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined')
+                return el.hasClass('disabled');
+            else {
+                if (val) el.addClass('disabled');
+                else el.removeClass('disabled');
+            }
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;
@@ -764,7 +820,7 @@
                 div.remove();
                 return;
             }
-            console.log({ msg: `Setting light`, data: data, found: div.length });
+            //console.log({ msg: `Setting light`, data: data, found: div.length });
             if (div.length === 0) {
                 // We need to add it.
                 var bAdded = false;
@@ -842,12 +898,29 @@
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
             el.on('click', function (evt) {
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
-                evt.stopPropagation();
-                $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
-                    self.setState(data);
-                });
-                setTimeout(function () { self.resetState(); }, 2000);
+                if (ind.attr('data-status') === 'delayon') {
+                    ind.attr('data-status', 'pending');
+                    //(url, data, message, successCallback, errorCallback, completeCallback)
+                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: false }, function (circ, status, xhr) {
+                        self.setCircuitState(circ);
+                    }, function () { ind.attr('data-status', 'delayon'); });
+                }
+                else {
+                    ind.attr('data-status', 'pending');
+                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(ind.attr('data-state')) }, function (circ, status, xhr) {
+                        consele.log(`RETURNED`);
+                        console.log(circ);
+                        self.setCircuitState(circ);
+                    }, function () {
+                        if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
+                    });
+                }
+                //el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
+                //evt.stopPropagation();
+                //$.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(el.attr('data-state')) }, function (data, status, xhr) {
+                //    self.setState(data);
+                //});
+                //setTimeout(function () { self.resetState(); }, 2000);
             });
             el.on('click', 'i.picDropdownButton', function (evt) {
                 $.getApiService('config/circuit/' + el.attr('data-circuitid') + '/lightThemes', function (data, status, xhr) {
