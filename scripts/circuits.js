@@ -199,31 +199,32 @@
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
-            if (data.isActive === false) {
-                el.remove();
-                return;
-            }
-            if (data.isOn && data.stopDelay) {
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayoff');
-            }
-            else if (!data.data.isOn && data.startDelay) {
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayon');
-            }
-            else {
-                console.log(`${data.name} ${data.isOn}`);
-                el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-            }
-            el.attr('data-state', data.isOn);
-            if (typeof data.endTime === 'undefined') {
-                el.attr('data-endTime', null)
-                o.endTime = undefined;
-            }
-            else {
-                el.attr('data-endTime', data.endTime);
-            }
-            self.countdownEndTime();
-            if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
-            if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
+            try {
+                if (data.isActive === false) {
+                    el.remove();
+                    return;
+                }
+                if (data.isOn && data.stopDelay) {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayoff');
+                }
+                else if (!data.isOn && data.startDelay) {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'delayon');
+                }
+                else {
+                    el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
+                }
+                el.attr('data-state', data.isOn);
+                if (typeof data.endTime === 'undefined') {
+                    el.attr('data-endTime', null)
+                    o.endTime = undefined;
+                }
+                else {
+                    el.attr('data-endTime', data.endTime);
+                }
+                self.countdownEndTime();
+                if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
+                if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
+            } catch (err) { console.error(`Error processing circuit setState ${err.message}`); }
         },
         resetState: function () {
             var self = this, o = self.options, el = self.element;
