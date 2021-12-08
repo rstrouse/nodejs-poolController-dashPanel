@@ -82,9 +82,14 @@ div.picFreezeProtect {
   text-align: center;
   color: blue; }
 
+div.picSpaDrain {
+  text-align: center;
+  color: black; }
+
 div.picPanelMode[data-status=""],
 div.picPanelMode[data-status=auto],
-div.picFreezeProtect[data-status=off] {
+div.picFreezeProtect[data-status=off],
+div.picSpaDrain[data-status=off] {
   display: none; }
 
 div.picModel > i {
@@ -97,12 +102,13 @@ div.picModel > i:hover {
   color: orange; }
 
 div.picPanelMode > label,
-div.picFreezeProtect > label {
+div.picFreezeProtect > label,
+div.picSpaDrain > label {
   font-weight: bold;
   color: red;
   font-size: 1.2rem;
-  padding-left: .2rem;
-  padding-right: .2rem; }
+  padding-left: .5rem;
+  padding-right: .5rem; }
 
 div.picControllerTitle > div {
   display: table-cell; }

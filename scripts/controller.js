@@ -25,7 +25,7 @@
             row.appendTo(el);
             row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><i class="far fa-pause-circle burst-animated"></i></div>');
             row.appendTo(el);
-
+            $('<div class="picSpaDrain" data-status="off"><i class="fas fa-skull-crossbones burst-animated"></i><label>SPA DRAIN ACTIVE</label><i class="fas fa-skull-crossbones burst-animated"></i></div>').appendTo(el);
             el.find('div.picModel > i').on('click', function (evt) {
                 // Open up the settings window.
                 var divPopover = $('<div class="picAppSettings"></div>');
@@ -119,6 +119,7 @@
                     el.find('div.picPanelMode').attr('data-status', data.mode.name);
                     el.find('div.picPanelMode > label').text(data.mode.desc);
                     el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+                    if (typeof data.valveMode !== 'undefined') el.find('div.picSpaDrain').attr('data-status', data.valveMode.name === 'spadrain' ? 'on' : 'off');
                     el.attr('data-status', data.status.val);
                     $('div.picActionButton[id$=btnReloadConfig]').each(function () {
                         let btn = $(this);
