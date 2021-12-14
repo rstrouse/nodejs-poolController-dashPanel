@@ -284,6 +284,9 @@ jQuery.each(["put", "delete"], function (i, method) {
                 url += (v + '=' + encodeURIComponent(data[v].toString()));
             }
         }
+        if (url.startsWith('/')) {
+            url = url.substring(1);
+        }
         //console.log({ method: method, url: url, type: typeof (data), data: typeof (data) === 'string' && !data.startsWith('=') ? '=' + data : data });
         return $.ajax({
             url: url,
@@ -347,6 +350,9 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         var serviceUrl = url;
 
         // Set up the callbacks.
+        if (serviceUrl.startsWith('/')) {
+            serviceUrl = serviceUrl.substring(1);
+        }
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
         errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
         completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
@@ -433,6 +439,10 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         var cbShowSuccess = function (data, status, jqXHR) { };
         var useProxy = makeBool($('body').attr('data-apiproxy'));
         var serviceUrl = useProxy ? '/njsPC' + (!url.startsWith('/') ? '/' : '') + url : $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+        if (serviceUrl.startsWith('/')) {
+            serviceUrl = serviceUrl.substring(1);
+        }
+
         console.log({ serviceUrl: serviceUrl, useProxy: useProxy });
 
         // Set up the callbacks.
