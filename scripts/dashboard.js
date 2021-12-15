@@ -251,8 +251,9 @@
                 o.socket = io(o.apiServiceUrl, { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
             }
             else {
-                console.log({ msg: 'Connecting socket through proxy', url: window.location.origin.toString() });
-                o.socket = io(window.location.origin.toString(), { reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
+                let path = window.location.pathname.replace(/[^/]*$/, '') + 'socket.io';
+                console.log({ msg: 'Connecting socket through proxy', url: window.location.origin.toString(), path: path });
+                o.socket = io(window.location.origin.toString(), { path: path, reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
             }
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
