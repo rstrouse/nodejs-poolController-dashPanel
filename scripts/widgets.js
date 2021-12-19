@@ -512,8 +512,10 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
             }
         };
         var cbShowSuccess = function (data, status, jqXHR) { };
-        var serviceUrl = $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
-
+        var useProxy = makeBool($('body').attr('data-apiproxy'));
+        var serviceUrl = useProxy ? '/njsPC' + (!url.startsWith('/') ? '/' : '') + url : $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+        if (serviceUrl.startsWith('/')) serviceUrl = serviceUrl.substring(1);
+        console.log({ serviceUrl: serviceUrl, useProxy: useProxy });
 
         // Set up the callbacks.
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
