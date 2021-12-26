@@ -144,7 +144,7 @@ Number.prototype.format = function (format, empty) {
 };
 Number.prototype.formatTime = function (format, empty) {
     // Formats the time in minutes from midnight.
-    if (isNaN(this) || this <= 0) return empty;
+    if (isNaN(this) || this < 0) return empty;
     var hrs = Math.floor(this / 60);
     var mins = this - (hrs * 60);
     var secs = 0;
@@ -1427,14 +1427,20 @@ $.ui.position.fieldTip = {
                 }
                 return -1;
             };
-            var bAddHrs = false;
+            var bAddHrs = indexOfAny(['P', 'p']) !== -1;
             var hrs = 0;
             var mins = 0;
-            let arr = [val];
-            if (val.indexOf(':') !== -1) arr = val.split(':');
-            else if (val.indexOf(' ') !== -1) arr = val.split(' ');
-            else if (val.length === 3) arr = [val.substring(0, 1), val.substring(1)];
-            else if (val.length > 2) arr = [val.substring(0, 1), val.substring(2)];
+            // Get rid of any text that is not a number or a colon.
+            var stripped = val.replace(/[^\d\:\s]/g, '');
+            // Remove multiple spaces for colon
+            stripped = stripped.replace(/\s+/g, ':');
+            // Remove multiple colons
+            stripped = stripped.replace(/\:+/g, ':');
+            if (stripped.indexOf(':') !== -1) arr = stripped.split(':');
+            else if (stripped.length === 1) arr = [stripped.substring(0, 1), '0'];
+            else if (stripped.length === 2) arr = [stripped, '0'];
+            else if (stripped.length === 3) arr = [stripped.substring(0, 1), stripped.substring(1)];
+            else if (stripped.length > 2) arr = [stripped.substring(0, 1), stripped.substring(2)];
             if (arr.length > 0) {
                 hrs = parseInt(arr[0].replace(/\D/g), 10);
                 bAddHrs = (indexOfAny(arr[0], ['P', 'p']) !== -1);
@@ -1454,10 +1460,10 @@ $.ui.position.fieldTip = {
         },
         val: function (val) {
             var self = this, o = self.options, el = self.element;
-            if (typeof val === 'undefined') return o.val;
+            if (typeof val === 'undefined') { return o.val; }
             if (val > o.max) val = o.max;
             else if (val < o.min) val = o.min;
-            console.log({ m: 'Setting time', val: val, fmt: o.fmtMask, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
+            //console.log({ m: 'Setting time', val: val, fmt: o.fmtMask, text: val.formatTime(o.fmtMask, o.fmtEmpty) });
             o.val = Math.min(Math.max(o.min, val), o.max);
             el.find('input.picSpinner-value').val(val.formatTime(o.fmtMask, o.fmtEmpty));
         },
