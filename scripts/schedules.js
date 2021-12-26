@@ -100,7 +100,7 @@
                 el.find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.attr('data-id', data.id);
                 el.find('.picSchedDays').remove();
-                var startTime = parseInte(data.startTime);
+                var startTime = parseInt(data.startTime);
                 var endTime = parseInt(data.endTime);
                 var startTimeType = data.startTimeType || { val: 0, name: 'manual', desc: 'Manual' };
                 var endTimeType = data.endTimeType || { val: 0, name: 'manual', desc: 'Manual' };
