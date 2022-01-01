@@ -46,7 +46,9 @@
                 divThemes.appendTo(e.contents());
                 divThemes.attr('data-circuitid', el.attr('data-groupid'));
                 divThemes.lightGroupPanel({ id: el.attr('data-groupid') });
-                divThemes.on('loaded', function (e) { divPopover[0].show(btn); });
+                divThemes.on('loaded', function (e) {
+                    divPopover[0].show(btn);
+                });
             });
             divPopover.popover({ title: 'Light Group Settings', popoverStyle: 'modal', placement: { target: btn } });
             evt.preventDefault();
@@ -111,7 +113,7 @@
     }
 });
 $.widget('pic.lightGroupPanel', {
-    options: {},
+    options: { themesLoaded: false, commandsLoaded: false },
     _create: function () {
         var self = this, o = self.options, el = self.element;
         el[0].setState = function (data) { self.setState(data); };
@@ -174,7 +176,6 @@ $.widget('pic.lightGroupPanel', {
                 });
                 evtCircuit.preventDefault();
                 evtCircuit.stopImmediatePropagation();
-
             });
             //divCircuit.sortable({ connectWith:'div.picLightCircuits' });
         }
@@ -221,6 +222,58 @@ $.widget('pic.lightGroupPanel', {
         });
         return obj;
     },
+    _buildCommands: function (group) {
+        var self = this, o = self.options, el = self.element;
+        $.getApiService(`/config/circuit/${group.id}/lightCommands`, function (commands, status, xhr) {
+                // Add in all our buttons.
+            //console.log(`div.picLightSettings[data-circuitid="${group.id}"] div.pnl-light-commands`);
+            el.find(`div.pnl-light-commands`).each(function () {
+                // This should be the button panel
+                console.log(commands);
+                let pnl = $(this);
+                pnl.empty();
+                let row1 = $('<div></div>').appendTo(pnl);
+                let row2 = $('<div></div>').appendTo(pnl);
+            
+                for (let i = 0; i < commands.length; i++) {
+                    let cmd = commands[i];
+                    let icon = 'fas fa-ghost';
+                    let row = row1;
+                    switch (cmd.name) {
+                        case 'colorset':
+                            icon = 'fas fa-ellipsis-h';
+                            break;
+                        case 'colorswim':
+                            icon = 'fas fa-swimmer';
+                            break;
+                        case 'colorsync':
+                            icon = 'fas fa-sync';
+                            break;
+                        case 'colorhold':
+                            icon = 'fas fa-eye-dropper';
+                            row = row2;
+                            break;
+                        case 'colorrecall':
+                            icon = 'fas fa-bookmark';
+                            row = row2;
+                            break;
+                        case 'lightthumper':
+                            icon = 'fas fa-hammer';
+                            row = row2;
+                            break;
+
+                    }
+                    $('<div></div>').appendTo(row).actionButton({ text: cmd.desc, icon: `<i class="${icon}"></i>` })
+                        .on('click', function (evt) {
+                            $.putApiService(`/state/lightGroup/${group.id}/${cmd.command}`, group, function (data, status, xhr) {
+
+                            });
+                        });
+                }
+            });
+            self.setCommandsLoaded(true);
+        });
+    },
     _buildThemes: function (group) {
         var self = this, o = self.options, el = self.element;
         el.find('div.picTabPanel:first').each(function () {
@@ -237,7 +290,7 @@ $.widget('pic.lightGroupPanel', {
                 divThemes.attr('data-circuitid', el.attr('data-circuitid'));
                 for (let i = 0; i < data.length; i++) {
                     let theme = data[i];
-                    if (hideThemes && (theme.val > 197 || theme.val < 177 || theme.name === 'save' || theme.name === 'recall')) continue;
+                    if (hideThemes && (theme.val > 197 || theme.val < 177 || theme.name === 'save' || theme.name === 'hold' || theme.name === 'recall')) continue;
                     let div = $('<div class="picIBColor picIBColorSelector" data-color="' + theme.name + '"><div class="picToggleButton"></div><label class="picIBThemeLabel"></label></div>');
                     div.appendTo(divThemes);
                     div.attr('data-val', theme.val);
@@ -247,16 +300,10 @@ $.widget('pic.lightGroupPanel', {
                     div.find('div.picToggleButton > div.picIndicator').attr('data-status', curr === theme.name ? 'on' : 'off');
                     div.on('click', function (evt) {
                         evt.stopPropagation();
-                        // Set the lighting theme.
-                        //if (circuitId !== 0)
                         $.putApiService('state/circuit/setTheme', { id: circuitId, theme: parseInt(theme.val, 10) });
-                        //else
-                        //    $.putApiService('state/intellibrite/setTheme', { theme: parseInt(theme.val, 10) });
-
                     });
                 }
-                var evt = $.Event('loaded');
-                el.trigger(evt);
+                self.setThemesLoaded(true);
             });
         });
     },
@@ -271,43 +318,15 @@ $.widget('pic.lightGroupPanel', {
         //let cfgCmd = circuitId === 0 ? '/config/intellibrite' : '/config/lightGroup/' + circuitId;
         //let stateCmd = circuitId === 0 ? '/state/intellibrite' : '/state/lightGroup/' + circuitId;
         let cfgCmd = '/config/lightGroup/' + circuitId;
-        let stateCmd = '/state/lightGroup/' + circuitId;
         let obj;
+        $('<div class="picBtnPanel btn-panel pnl-light-commands" style="text-align:center"></div>').appendTo(el);
         $.getApiService(cfgCmd, function (group, status, xhr) {
             console.log(group);
             self._buildThemes(group);
             self._buildColors(group);
+            self._buildCommands(group);
             tabs[0].selectTabById('tabThemes');
             self._setProcessing(group.action);
-
-        });
-        var actions = $('<div class="picBtnPanel btn-panel" style="text-align:center"></div>');
-
-        actions.appendTo(el);
-        var btnSync = $('<div></div>');
-        btnSync.appendTo(actions);
-        btnSync.actionButton({ text: 'Sync', icon: '<i class="fas fa-sync"></i>' });
-        btnSync.on('click', function (evt) {
-            $.putApiService(stateCmd + '/colorSync', obj, function (data, status, xhr) {
-
-            });
-        });
-        var btnSet = $('<div></div>');
-        btnSet.appendTo(actions);
-        btnSet.actionButton({ text: 'Set', icon: '<i class="fas fa-ellipsis-h"></i>' });
-        btnSet.on('click', function (evt) {
-            $.putApiService(stateCmd + '/colorSet', obj, function (data, status, xhr) {
-
-            });
-        });
-        var btnSwim = $('<div></div>');
-        btnSwim.appendTo(actions);
-        btnSwim.actionButton({ text: 'Swim', icon: '<i class="fas fa-swimmer"></i>' });
-        btnSwim.on('click', function (evt) {
-            $.putApiService(stateCmd + '/colorSwim', obj, function (data, status, xhr) {
-
-            });
-
         });
     },
     _setOverlay: function (action) {
@@ -327,23 +346,44 @@ $.widget('pic.lightGroupPanel', {
         var self = this, o = self.options, el = self.element;
         if (typeof action === 'undefined') action = { val: 0, name: 'ready', desc: 'Ready' };
         switch (action.name) {
+            case 'colorsync':
             case 'sync':
                 o.processing = true;
                 el.find('i.fa-sync').addClass('fa-spin');
                 break;
+            case 'colorset':
             case 'set':
                 o.processing = true;
                 el.find('i.fa-ellipsis-h').addClass('burst-animated');
                 break;
+            case 'colorswim':
             case 'swim':
                 o.processing = true;
                 el.find('i.fa-swimmer').addClass('burst-animated');
+                break;
+            case 'lightthumper':
+            case 'thumper':
+                o.processing = true;
+                el.find('i.fa-hammer').addClass('burst-animated');
+                break;
+            case 'colorhold':
+            case 'hold':
+                o.processing = true;
+                el.find('i.fa-eye-dropper').addClass('burst-animated');
+                break;
+            case 'colorrecall':
+            case 'recall':
+                o.processing = true;
+                el.find('i.fa-bookmark').addClass('burst-animated');
                 break;
             default:
                 o.processing = false;
                 el.find('i.fa-sync').removeClass('fa-spin');
                 el.find('i.fa-ellipsis-h').removeClass('burst-animated');
                 el.find('i.fa-swimmer').removeClass('burst-animated');
+                el.find('i.fa-eye-dropper').removeClass('burst-animated');
+                el.find('i.fa-bookmark').removeClass('burst-animated');
+                el.find('i.fa-hammer').removeClass('burst-animated');
                 break;
         }
         self._setOverlay(action);
@@ -355,10 +395,27 @@ $.widget('pic.lightGroupPanel', {
         //el.attr('data-state', data.isOn);
         el.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
         el.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+        console.log(data);
         self._setProcessing(data.action);
     },
     resetState: function () {
         var self = this, o = self.options, el = self.element;
         el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', makeBool(el.attr('data-state')) ? 'on' : 'off');
+    },
+    setThemesLoaded: function (val) {
+        var self = this, o = self.options, el = self.element;
+        o.themesLoaded = val;
+        if (o.themesLoaded && o.commandsLoaded) {
+            var evt = $.Event('loaded');
+            el.trigger(evt);
+        }
+    },
+    setCommandsLoaded: function (val) {
+        var self = this, o = self.options, el = self.element;
+        o.commandsLoaded = val;
+        if (o.themesLoaded && o.commandsLoaded) {
+            var evt = $.Event('loaded');
+            el.trigger(evt);
+        }
     }
 });
