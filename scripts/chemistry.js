@@ -325,6 +325,7 @@
             if (typeof data.status !== 'undefined' && data.status.val > 0) arr.push(data.status);
             if (typeof data.alarms !== 'undefined') {
                 var alarms = data.alarms;
+                if (typeof alarms.freezeProtect !== 'undefined' && alarms.freezeProtect.val > 0) arr.push(alarms.freezeProtect);
                 if (typeof alarms.flowSensorFault !== 'undefined' && alarms.flowSensorFault.val > 0) arr.push(alarms.flowSensorFault);
                 if (typeof alarms.pHPumpFault !== 'undefined' && alarms.pHPumpFault.val > 0) arr.push(alarms.pHPumpFault);
                 if (typeof alarms.pHProbeFault !== 'undefined' && alarms.pHProbeFault.val > 0) arr.push(alarms.pHProbeFault);
@@ -338,7 +339,6 @@
                 if (typeof alarms.orp !== 'undefined' && alarms.orp.val > 0) arr.push(alarms.orp);
                 if (typeof alarms.orpTank !== 'undefined' && alarms.orpTank.val > 0) arr.push(alarms.orpTank);
             }
-
             if (typeof data.warnings !== 'undefined') {
                 var warns = data.warnings;
                 if (typeof warns.waterChemistry !== 'undefined' && warns.waterChemistry.val > 0) arr.push(warns.waterChemistry);

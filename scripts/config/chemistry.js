@@ -366,6 +366,8 @@
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose-delay').hide();
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'ph.maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-phDose');
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Disable on Freeze', binding: 'ph.disableOnFreeze' }).attr('title', 'Check this box to disable pH dosing while freeze protection is active.');
 
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-phDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
@@ -533,6 +535,8 @@
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose-delay').hide();
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'orp.maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-orpDose');
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Disable on Freeze', binding: 'orp.disableOnFreeze' }).attr('title', 'Check this box to disable ORP dosing while freeze protection is active.');
 
 
             var grpMix = $('<fieldset></fieldset>').addClass('pnl-orpDose-mix').css({ display: 'block', verticalAlign: 'top' }).appendTo(sec).hide();
