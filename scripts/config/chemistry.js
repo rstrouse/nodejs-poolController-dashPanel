@@ -199,14 +199,14 @@
                             }
                         });
                     var chemTypes = [];
-                    for (var i = 0; i < chemOpts.types.length; i++) {
-                        console.log(chemOpts.types[i].name);
-                        switch (chemOpts.types[i].name) {
+                    for (var j = 0; j < chemOpts.types.length; j++) {
+                        //console.log(chemOpts.types[j].name);
+                        switch (chemOpts.types[j].name) {
                             case 'none':
                             case 'unknown':
                                 break;
                             default:
-                                chemTypes.push(chemOpts.types[i]);
+                                chemTypes.push(chemOpts.types[j]);
                                 break;
                         }
                     }

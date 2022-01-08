@@ -334,7 +334,6 @@
                 $('div.picBodyFilter[data-id=' + data.id + ']').each(function () {
                     this.setEquipmentData(data);
                 });
-                console.log({ evt: 'filter', data: data });
             });
             o.socket.on('config', function (data) {
                 console.log({ evt: 'config', data: data });
