@@ -198,7 +198,7 @@
                     divPopover.on('initPopover', function (evt) {
                         for (let i = 0; i < data.circuits.length; i++) {
                             let circuit = data.circuits[i];
-                            if (typeof circuit.circuit.type === 'undefined' || circuit.id <= 0) continue;
+                            if (typeof circuit.circuit === 'undefined' || typeof circuit.circuit.type === 'undefined' || circuit.circuit.id <= 0) continue;
                             
                             let div = $('<div class="picPumpCircuit"></div>');
                             div.attr('data-id', i + 1);
