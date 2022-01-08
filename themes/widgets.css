@@ -1058,6 +1058,8 @@ div.chem-balance-value {
     font-size:32pt;
     font-weight:bold;
     text-align:center;
+    margin-left:-12px;
+    margin-right:-12px;
 }
 div.picChemLevel {
     margin-top:1.77rem;

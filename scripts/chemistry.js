@@ -426,7 +426,7 @@
             $('<span></span>').addClass('phLevel').attr('data-bind', 'orp.level').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-emptymask', '-.-').appendTo(line);
             span = $('<span></span>').addClass('lsiIndex').addClass('picData').appendTo(line);
             $('<label></label>').addClass('picInline-label').addClass('siTitle').text('Bal').appendTo(line);
-            $('<span></span>').addClass('saturationIndex').attr('data-bind', 'saturationIndex').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-emptymask', '-.-').appendTo(line);
+            $('<span></span>').addClass('saturationIndex').attr('data-bind', 'saturationIndex').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0#').attr('data-emptymask', '-.-').appendTo(line);
 
             //$('<span class="orpLevel picData"><label class="picInline-label">ORP</label><span class="orpLevel" data-bind="orp.probe.level"></span></span>').appendTo(line);
             //$('<span class="lsiIndex picData"><label class="picInline-label">Bal</label><span class="saturationIndex" data-bind="saturationIndex"></span></span>').appendTo(line);
@@ -476,9 +476,10 @@
                 }
             }
             let siTitle = typeof data.siCalcType === 'undefined' || data.siCalcType.name === 'undefined' ? 'Water Balance' : data.siCalcType.name === 'lsi' ? 'LSI Balance' : 'CSI Balance';
-            el.find('div.chem-balance-label').each(function () {
-                $(this).text(siTitle);
-            });
+            el.find('div.chem-balance-label').text(siTitle);
+            //el.find('div.chem-balance-label').each(function () {
+            //    $(this).text(siTitle);
+            //});
             // If this is IntelliChem then all the manual dosing buttons need to go away.  We don't have
             // control over this for IntelliChem.
             if (typeof data.type === 'undefined' || data.type.name === 'intellichem') {
@@ -905,7 +906,7 @@
             divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
             var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
             $('<div></div>').addClass('chem-balance-label').text('Water Balance').appendTo(divVal);
-            $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0').attr('data-fmttype', 'number').appendTo(divVal);
+            $('<div></div>').addClass('chem-balance-value').attr('data-bind', 'saturationIndex').attr('data-fmtmask', '#,##0.0#').attr('data-fmttype', 'number').appendTo(divVal);
             var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').addClass('ph').css({ textAlign: 'left' }).on('click', () => { self._openHistoryDialog(); });
 
             $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight: '1' });
