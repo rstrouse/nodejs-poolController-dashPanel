@@ -259,9 +259,17 @@
             var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(el);
             $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
             line = $('<div></div>').appendTo(grpSetpoints);
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'pH Setpoint', binding: binding + 'ph.setpoint', fmtMask: "#,##0.#", emptyMask: "-.-", min: 7.0, max: 7.6, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'pH Setpoint', binding: binding + 'ph.setpoint', fmtMask: "#,##0.0#", emptyMask: "-.-", min: 7.0, max: 7.6, step: .1, units: '',
+                inputAttrs: { style: { width: '3.5rem' } },
+                labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } },
+            });
             line = $('<div></div>').appendTo(grpSetpoints);
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'ORP Setpoint', binding: binding + 'orp.setpoint', fmtMask: "#,##0", emptyMask: "---", min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'ORP Setpoint', binding: binding + 'orp.setpoint', fmtMask: "#,##0", emptyMask: "---", min: 400, max: 800, step: 10, units: 'mV',
+                inputAttrs: { style: { width: '3.5rem' } },
+                labelAttrs: { style: { width: '6.4rem', marginRight: '.25rem' } }
+            });
 
             var grpIndex = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(el);
             $('<legend></legend>').text('Index Values').appendTo(grpIndex);
