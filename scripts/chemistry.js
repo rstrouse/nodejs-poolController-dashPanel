@@ -876,13 +876,13 @@
             var type = typeof data !== 'undefined' && typeof data.type !== 'undefined' ? data.type : { val: 0 };
             var phRange = type.ph || { min: 7.2, max: 7.6 };
 
-            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: phRange.min, max: phRange.max, step: .1, units: '', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem' } } })
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'pH', binding: 'ph.setpoint', min: phRange.min, max: phRange.max, step: .1, units: '', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginRight: '.25rem' } } })
                 .on('change', function (e) {
                     el.find('div.picChemLevel[data-chemtype=pH').each(function () {
                         this.target(e.value);
                     });
                 });
-            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'ORP', binding: 'orp.setpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '2rem' } } })
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, labelText: 'ORP', binding: 'orp.setpoint', min: 400, max: 800, step: 10, units: 'mV', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginRight: '.25rem', marginLeft: '1.5rem' } } })
                 .on('change', function (e) {
                     el.find('div.picChemLevel[data-chemtype=ORP').each(function () {
                         this.target(e.value);
