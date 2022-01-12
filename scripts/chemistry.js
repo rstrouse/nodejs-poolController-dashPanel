@@ -282,7 +282,7 @@
         },
         setDosingStatus: function (stat, chem, type) {
             var self = this, o = self.options, el = self.element;
-            if (typeof chem === 'undefined' || typeof chem.dosingStatus === 'undefined')
+            if (typeof chem === 'undefined' || typeof chem.dosingStatus === 'undefined' || chem.enabled === false)
                 stat.hide();
             else {
                 switch (chem.dosingStatus.name) {
