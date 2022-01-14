@@ -1810,7 +1810,7 @@ $.ui.position.fieldTip = {
             if (o.canEdit)
                 $('<div class="picPickList-value fld-value-combo"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
             else
-                $('<div class="picPickList-value fld-value-combo"></div>').appendTo(el);
+                $('<div class="picPickList-value fld-value-combo"></div>').appendTo(el).attr('data-placeholder', o.placeHolder);
             var col = self._getColumn(o.displayColumn);
             if (itm && col) self.text(itm[col.binding]);
             $('<div class="picPickList-drop fld-btn-right"><i class="fas fa-caret-down"></i></div>').appendTo(el);
@@ -1825,6 +1825,7 @@ $.ui.position.fieldTip = {
             el[0].isEmpty = function () { return self.isEmpty(); };
             el[0].required = function (val) { return self.required(val); };
             el[0].items = function (val) { self.itemList(val); };
+            el[0].placeHolder = function (val) { el.find('div.picPickList-value:first').attr('data-placeholder', val); };
             if (typeof o.id !== 'undefined') el.attr('id', o.id);
             el.attr('data-val', o.value);
             if (o.required === true) self.required(true);
@@ -2101,16 +2102,16 @@ $.ui.position.fieldTip = {
                             var colText = self._getColumn(o.displayColumn);
                             // Trigger a selection changed.
                             oldItem = typeof o.value !== 'undefined' ? self._getItem(o.value) : undefined;
-                            var evt = $.Event('beforeselchange');
-                            evt.oldItem = oldItem;
-                            evt.newItem = itm;
-                            el.trigger(evt);
-                            if (!evt.isDefaultPrevented()) {
-                                o.value = itm[colVal.binding];
-                                self.text(itm[colText.binding]);
-                                evt = $.Event('selchanged');
-                                evt.oldItem = oldItem;
-                                evt.newItem = itm;
+                            let bcevt = $.Event('beforeselchange');
+                            bcevt.oldItem = oldItem;
+                            bcevt.newItem = itm;
+                            el.trigger(bcevt);
+                            if (!bcevt.isDefaultPrevented()) {
+                                o.value = bcevt.newItem[colVal.binding];
+                                self.text(bcevt.newItem[colText.binding]);
+                                let evt = $.Event('selchanged');
+                                evt.oldItem = bcevt.oldItem;
+                                evt.newItem = bcevt.newItem;
                                 el.trigger(evt);
                             }
                         }
@@ -3427,17 +3428,30 @@ $.ui.position.fieldTip = {
             var binding = '';
             el.addClass('picREMBinding');
             if (typeof o.binding !== 'undefined' && o.binding.length > 0) binding = `${o.binding}.`;
+            let srv = o.servers.slice();
+            srv.unshift({ uuid:'', name: 'No Connection', devices: [] });
             var conn = $('<div></div>').appendTo(line).pickList({
                 binding: `${binding}connectionId`,
                 bindColumn: 0, displayColumn: 1,
                 labelText: 'Connection',
                 columns: [{ binding: 'uuid', text: 'uuid', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
-                items: o.servers,
+                items: srv,
+                placeHolder: 'Select Server',
                 inputAttrs: { style: { width: '8.5rem' } },
                 labelAttrs: { style: { width: '5.4rem' } }
-            }).on('selchanged', function (evt) {
+            }).on('beforeselchange', function (evt) {
+                if (evt.newItem.uuid === '') evt.newItem = {uuid:null, name: '', devices: [] };
+            })
+            .on('selchanged', function (evt) {
                 el.find('div[data-bind$="deviceBinding"]').each(function () {
                     this.items(evt.newItem.devices);
+                    this.val('');
+                    if (evt.newItem.devices.length === 0) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
                 });
             }).addClass('pnl-rem-address');
             if (o.showLabel === false) conn.find('.field-label').css({ display: 'none' });
@@ -3448,9 +3462,10 @@ $.ui.position.fieldTip = {
                 labelText: 'Device',
                 columns: [{ binding: 'binding', text: 'binding', hidden: true }, { binding: 'category', text: 'Category', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Device', style: { whiteSpace: 'nowrap' } }],
                 items: [],
+                placeHolder: 'Select Device',
                 inputAttrs: { style: { width: '8.5rem' } },
                 labelAttrs: { style: { width: '5.4rem' } }
-            }).addClass('pnl-rem-address');
+            }).addClass('pnl-rem-address').hide();
             if (o.showLabel === false) bind.find('.field-label').css({ display: 'none' });
         }
     });
@@ -4094,13 +4109,14 @@ $.ui.position.fieldTip = {
                     let evt = $.Event('beforeselchange');
                     evt.oldItem = oldItem;
                     evt.newItem = newItem;
+                    evt.newIndex = newIndex;
                     el.trigger(evt);
                     if (!evt.isDefaultPrevented()) {
                         // The consumer said it was ok to change the value or didn't say no.
-                        self.setSelectedIndex(newIndex);
+                        self.setSelectedIndex(evt.newIndex);
                         evt = $.Event('selchanged');
-                        evt.oldItem = oldItem;
-                        evt.newItem = newItem;
+                        //evt.oldItem = oldItem;
+                        //evt.newItem = newItem;
                         el.trigger(evt);
                     }
                 }

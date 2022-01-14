@@ -20,6 +20,11 @@
     --dashContainer3-display: block;
     --show-time-remaining: inline-block;
 }
+div.picPickList > div.picPickList-value:empty:before {
+    content:attr(data-placeholder);
+    color:gray;
+}
+
 
 div.container1, div.container2, div.container3 {
     display: flex;
