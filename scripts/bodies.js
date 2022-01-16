@@ -254,7 +254,7 @@
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
                         if (settings.hasCooling) {
-                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Heat Point', val: settings.setPoint, min: units === "F" ? 65 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
+                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Heat Point', val: settings.setPoint, min: units === "F" ? 40 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
                                 .on('change', function (e) {
                                     var coolSetpoint;
                                     divPopover.find('div[data-bind="coolSetpoint"]').each(function () { this.minVal(e.value + 1); coolSetpoint = this.val(); });
@@ -264,7 +264,7 @@
                                 .on('change', function (e) { self.putSetpoints(undefined, e.value); });
                         }
                         else
-                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Set Point', val: settings.setPoint, min: units === "F" ? 65 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } })
+                            $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Set Point', val: settings.setPoint, min: units === "F" ? 40 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } })
                                 .on('change', function (e) { self.putSetpoint(e.value); });
                         $('<div></div>').appendTo(evt.contents()).selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data, bind: 'heatMode' });
                         evt.contents().find('div.picSelector').on('selchange', function (e) {
