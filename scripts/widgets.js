@@ -1265,7 +1265,9 @@ $.ui.position.fieldTip = {
             if (val > o.max) val = o.max;
             else if (val < o.min) val = o.min;
             o.val = Math.min(Math.max(o.min, val), o.max);
-            el.find('div.picSpinner-value').text(o.val.format(o.fmtMask, o.fmtEmpty));
+            let fld = el.find('div.picSpinner-value');
+            // Only set the value back if we are not editing it.
+            if (fld[0] !== document.activeElement) fld.text(o.val.format(o.fmtMask, o.fmtEmpty));
         },
         units: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -2228,8 +2230,11 @@ $.ui.position.fieldTip = {
             var fld = el.find('.picInputField-value:first');
             if (typeof val === 'undefined')
                 return dataBinder.parseValue(fld.val(), dataType);
-            else
+            else {
+                // Do not set the value on an active field the user is editing here.
+                //if (document.activeElement === fld[0]) return;
                 fld.val(dataBinder.formatValue(val, dataType, el.attr('data-fmtmask'), el.attr('data-emptymask')));
+            }
         },
         disabled: function (val) {
             var self = this, o = self.options, el = self.element;

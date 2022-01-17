@@ -834,6 +834,9 @@ div.picAccordian-titlecol > span {
 div.picAccordian-titlecol {
     display:inline-block;
 }
+.picSpinner-value {
+    user-select:text;
+}
 i.picAccordian-title-expand {
     float:right;
     display:inline-block;
