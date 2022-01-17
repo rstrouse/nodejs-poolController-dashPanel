@@ -534,6 +534,9 @@ div.picValueSpinner > input.picSpinner-value {
 }
 div.picSpinner-value {
     font-size: 1.1rem;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
 span.picSpinner-units {
     display:inline-block;
@@ -833,9 +836,6 @@ div.picAccordian-titlecol > span {
 }
 div.picAccordian-titlecol {
     display:inline-block;
-}
-.picSpinner-value {
-    user-select:text;
 }
 i.picAccordian-title-expand {
     float:right;
