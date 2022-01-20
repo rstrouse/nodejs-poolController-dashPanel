@@ -129,14 +129,6 @@
 
                         });
                     }
-
-
-
-
-
-
-
-
                     divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {

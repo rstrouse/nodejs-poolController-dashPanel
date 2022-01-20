@@ -449,14 +449,14 @@
         setEquipmentData: function (data) {
             var self = this, o = self.options, el = self.element;
             //console.log(data);
-            el.find('div.picChemLevel[data-chemtype="pH"]').each(function () {
-                this.val(data.ph.level);
-            });
-            el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () {
-                this.val(data.orp.level);
-            });
+            el.find('div.picChemLevel[data-chemtype="pH"]').each(function () { this.val(data.ph.level); });
+            el.find('div.picChemLevel[data-chemtype="ORP"]').each(function () { this.val(data.orp.level); });
+            if (typeof data.orp.pump.type !== 'undefined' && typeof data.ph.pump.type !== 'undefined') {
+                if (data.orp.doserType.val === 0 && data.ph.doserType.val === 0) el.find('div.chem-daily').hide();
+                else el.find('div.chem-daily').show();
+            }
             if (typeof data.orp.pump.type !== 'undefined') {
-                if ((data.orp.enabled && data.orp.pump.type.name !== 'none' && data.orp.useChlorinator !== true) || data.type.name === 'intellichem') {
+                if ((data.orp.enabled && (data.orp.pump.type.name !== 'none' || data.orp.doserType.val === 1) && data.orp.useChlorinator !== true)) {
                     el.find('div.picChemTank[data-chemtype="orp"]').show();
                     el.find('div.daily-dose[data-chemtype="orp"]').show();
                 }
@@ -466,7 +466,7 @@
                 }
             }
             if (typeof data.ph.pump.type !== 'undefined') {
-                if ((data.ph.enabled && data.ph.pump.type.name !== 'none') || data.type.name === 'intellichem') {
+                if ((data.ph.enabled && (data.ph.pump.type.name !== 'none' || data.orp.doserType.val === 1))) {
                     el.find('div.picChemTank[data-chemtype="acid"]').show();
                     el.find('div.daily-dose[data-chemtype="acid"]').show();
                 }
@@ -930,7 +930,7 @@
                     self._createTankAttributesDialog('ORP', $(evt.currentTarget));
                 }).hide();
             divLine = $('<div></div>').appendTo(grpLevels).css({ textAlign: 'center' });
-            if (data.ph.enabled === true && data.ph.pump.type.val !== 0) {
+            if (data.ph.enabled === true && data.ph.pump.type.val !== 0 && data.ph.doserType.val !== 0) {
                 var divBtnAcidCont = $('<div></div>').appendTo(divLine).addClass('divDoseOrp').css({ display: 'inline-block' });
                 $('<div></div>').appendTo(divBtnAcidCont).actionButton({ id: 'btnDoseAcid', text: 'Dose Acid', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
                     .on('click', function (evt) {
@@ -950,7 +950,7 @@
                     }).hide();
 
             }
-            if (data.orp.enabled === true && data.orp.pump.type.val !== 0 && data.orp.useChlorinator !== true) {
+            if (data.orp.enabled === true && data.orp.pump.type.val !== 0 && data.orp.useChlorinator !== true && data.orp.doserType.val !== 0) {
                 var divBtnOrpCont = $('<div></div>').appendTo(divLine).addClass('divDoseOrp').css({ display: 'inline-block' });
                 $('<div></div>').appendTo(divBtnOrpCont).actionButton({ id: 'btnDoseOrp', text: 'Dose Chlorine', icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
                     .on('click', function (evt) {
