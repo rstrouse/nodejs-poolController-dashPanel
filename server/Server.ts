@@ -142,7 +142,7 @@ export class HttpServer extends ProtoServer {
         }
     }
     public sockServer: SocketIoServer<DefaultEventsMap, DefaultEventsMap>;
-    private _sockets: RemoteSocket<DefaultEventsMap>[] = [];
+    private _sockets: RemoteSocket<DefaultEventsMap, any>[] = [];
     public emitToClients(evt: string, ...data: any) {
         if (this.isRunning) {
             this.sockServer.emit(evt, ...data);

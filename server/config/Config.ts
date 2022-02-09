@@ -15,6 +15,7 @@ class Config {
             const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").trim());
             this._cfg = extend(true, {}, def, this._cfg, { appVersion: {installed: packageJson.version }});
             this._isInitialized = true;
+            this.getEnvVariables();
             this.update();
         } catch (err) {
             console.log(`Error reading configuration information.  Aborting startup: ${err}`);
@@ -81,6 +82,15 @@ class Config {
             });
         }
     }
-
+    private getEnvVariables(){
+        // set docker env variables to config.json, if they are set
+        let env = process.env;
+        if (typeof env.POOL_HTTP_IP !== 'undefined' && env.POOL_HTTP_IP !== this._cfg.web.services.ip) {
+            this._cfg.web.services.ip = env.POOL_HTTP_IP;
+        }
+        if (typeof env.POOL_HTTP_PORT !== 'undefined' && parseInt(env.POOL_HTTP_PORT,10) !== this._cfg.web.services.port) {
+            this._cfg.web.services.port = parseInt(env.POOL_HTTP_PORT,10);
+        }
+    }
 }
 export var config:Config = new Config();

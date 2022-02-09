@@ -7,7 +7,8 @@ import { config } from "../config/Config";
 import { logger } from "../logger/Logger";
 import { utils } from "../../server/Constants";
 import { io as sockClient, Socket } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+// import { DefaultEventsMap } from "socket.io-client/build/typed-events";
+import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { webApp } from "../Server";
 
 export class RelayRoute {
