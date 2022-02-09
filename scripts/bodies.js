@@ -32,7 +32,7 @@
                 el.hide();
             }
             var delays = $('<div></div>').appendTo(el).systemDelays();
-            if (typeof data.delays !== 'undefined') delays[0].setEquipmentData(data.delays);
+            if (typeof data !== 'undefined' && typeof data.delays !== 'undefined') delays[0].setEquipmentData(data.delays);
         },
         setTemps: function (data) {
             var self = this, o = self.options, el = self.element;

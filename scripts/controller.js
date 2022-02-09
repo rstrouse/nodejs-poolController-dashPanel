@@ -174,7 +174,7 @@
                 el.attr('data-maxcircuits', 0);
                 el.attr('data-shared', false);
                 el.find('div.picModel > span.picModelData').text('Unknown Model');
-
+                el.find('div.picModel > i').click();
             }
         }
     });
@@ -926,7 +926,13 @@
                 self._buildLoggingTab();
                 self._buildFirmwareTab(configData.web);
                 self._buildBackupTab(configData);
-                tabs[0].selectTabById('tabAppearance');
+                let model = $('.picModelData').first().text();
+                if (model.includes('Unknown')){
+                    tabs[0].selectTabById('tabConnections');
+                }
+                else {
+                    tabs[0].selectTabById('tabAppearance');
+                }
                 var evt = $.Event('loaded');
                 o.initializing = false;
                 el.trigger(evt);

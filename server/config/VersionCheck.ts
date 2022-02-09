@@ -49,9 +49,17 @@ class VersionCheck {
   public checkGitLocal() {
     // check local git version
     let c = config.getSection('appVersion');
+    let env = process.env;
+    let out: string;
     try {
-      let res = execSync('git rev-parse --abbrev-ref HEAD');
-      let out = res.toString().trim();
+      if (typeof env.SOURCE_BRANCH !== 'undefined') 
+      {
+          out = env.SOURCE_BRANCH // check for docker variable
+      }
+      else {
+        let res = execSync('git rev-parse --abbrev-ref HEAD');
+        out = res.toString().trim();
+      }
       console.log(`The current git branch output is ${out}`);
       switch (out) {
         case 'fatal':
@@ -64,8 +72,14 @@ class VersionCheck {
     }
     catch (err) { logger.error(`Unable to retrieve local git branch.  ${err}`); }
     try {
-      let res = execSync('git rev-parse HEAD');
-      let out = res.toString().trim();
+      if (typeof env.SOURCE_COMMIT !== 'undefined') 
+      {
+          out = env.SOURCE_COMMIT; // check for docker variable
+      }
+      else {
+        let res = execSync('git rev-parse HEAD');
+        out = res.toString().trim();
+      }
       console.log(`The current git commit output is ${out}`);
       switch (out) {
         case 'fatal':
