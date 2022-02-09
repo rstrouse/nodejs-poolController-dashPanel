@@ -34,7 +34,7 @@ class VersionCheck {
   constructor() {
     this.userAgent = 'tagyoureit-nodejs-poolController-dashPanel-app';
     this.gitApiHost = 'api.github.com';
-    this.gitLatestReleaseJSONPath = '/repos/rstouse/nodejs-poolController-dashPanel/releases/latest';
+    this.gitLatestReleaseJSONPath = '/repos/rstrouse/nodejs-poolController-dashPanel/releases/latest';
   }
 
   public checkGitRemote() {
@@ -60,7 +60,7 @@ class VersionCheck {
         let res = execSync('git rev-parse --abbrev-ref HEAD');
         out = res.toString().trim();
       }
-      console.log(`The current git branch output is ${out}`);
+      logger.info(`The current git local branch output is ${out}`);
       switch (out) {
         case 'fatal':
         case 'command':
@@ -80,7 +80,7 @@ class VersionCheck {
         let res = execSync('git rev-parse HEAD');
         out = res.toString().trim();
       }
-      console.log(`The current git commit output is ${out}`);
+      logger.info(`The current git local commit output is ${out}`);
       switch (out) {
         case 'fatal':
         case 'command':
@@ -104,10 +104,12 @@ class VersionCheck {
       dt.setDate(dt.getDate() + 2); // check every 2 days
       c.nextCheckTime = Timestamp.toISOLocal(dt);
       this.getLatestRelease().then((publishedVersion) => {
-        c.githubRelease = publishedVersion;
-        this.compare();
+          c.githubRelease = publishedVersion;
+          config.setSection('appVersion', c);
+          this.compare();
+      }).catch((err)=>{
+        logger.warn(`Error get git latest release: ${err}`);
       });
-      config.setSection('appVersion', c);
     }
     catch (err) {
       logger.error(err);
@@ -115,48 +117,50 @@ class VersionCheck {
   }
 
   private async getLatestRelease(redirect?: string): Promise<string> {
-    var options = {
-      method: 'GET',
-      headers: {
-        'User-Agent': this.userAgent
+        var options = {
+        method: 'GET',
+        headers: {
+          'User-Agent': this.userAgent
+        }
       }
-    }
-    let url: string;
-    if (typeof redirect === 'undefined') {
-      url = `https://${this.gitApiHost}${this.gitLatestReleaseJSONPath}`;
-    }
-    else {
-      url = redirect;
-      this.redirects += 1;
-    }
-    if (this.redirects >= 20) return Promise.reject(`Too many redirects.`)
-    return new Promise<string>((resolve, reject) => {
-      try {
-        https.request(url, options, async res => {
-          if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) await this.getLatestRelease(res.headers.location);
-          let data = '';
-          res.on('data', d => { data += d; });
-          res.on('end', () => {
-            let jdata = JSON.parse(data);
-            if (typeof jdata.tag_name !== 'undefined')
-              resolve(jdata.tag_name.replace('v', ''));
-            else
-              reject(`No data returned.`)
+      let url: string;
+      if (typeof redirect === 'undefined') {
+        url = `https://${this.gitApiHost}${this.gitLatestReleaseJSONPath}`;
+      }
+      else {
+        url = redirect;
+        this.redirects += 1;
+      }
+      if (this.redirects >= 20) return Promise.reject(`Too many redirects.`)
+      return new Promise<string>((resolve, reject) => {
+        try {
+          https.request(url, options, async res => {
+            if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) await this.getLatestRelease(res.headers.location);
+            let data = '';
+            res.on('data', d => { data += d; });
+            res.on('end', () => {
+              let jdata = JSON.parse(data);
+              if (typeof jdata.tag_name !== 'undefined')
+                resolve(jdata.tag_name.replace('v', ''));
+              else
+                reject(`No data returned.`)
+            })
           })
-        })
-          .end();
-      }
-      catch (err) {
-        logger.error('Error contacting Github for latest published release: ' + err);
-        reject(err);
-      };
-    })
+            .end();
+        }
+        catch (err) {
+          logger.error('Error contacting Github for latest published release: ' + err);
+          reject(err);
+        };
+      })
   }
   public compare() {
     logger.info(`Checking dashPanel versions...`);
     let c = config.getSection('appVersion');
     if (typeof c.githubRelease === 'undefined' || typeof c.installed === 'undefined') {
       c.status = 'unknown';
+      logger.warn(`Unable to compare installed version to github version.`)
+      config.setSection('appVersion', c);
       return;
     }
     let publishedVersionArr = c.githubRelease.split('.');
@@ -165,19 +169,25 @@ class VersionCheck {
       // this is in case local a.b.c doesn't have same # of elements as another version a.b.c.d.  We should never get here.
       logger.warn(`Cannot check for updated app.  Version length of installed app (${installedVersionArr}) and remote (${publishedVersionArr}) do not match.`);
       c.status = 'unknown';
+      config.setSection('appVersion', c);
       return;
     } else {
       for (var i = 0; i < installedVersionArr.length; i++) {
         if (publishedVersionArr[i] > installedVersionArr[i]) {
           c.status = 'behind';
+          logger.info(`New version available. Current:${c.installed} Github:${c.githubRelease}`);
+          config.setSection('appVersion', c);
           return;
         } else if (publishedVersionArr[i] < installedVersionArr[i]) {
           c.status = 'ahead';
+          logger.info(`Currently running a newer version than released version. Current:${c.installed} Github:${c.githubRelease}`);
+          config.setSection('appVersion', c);
           return;
         }
       }
     }
     c.status = 'current';
+    logger.info(`Current installed dashPanel version matches Github release.  ${c.installed}`)
     config.setSection('appVersion', c);
   }
 }

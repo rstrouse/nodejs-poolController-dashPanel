@@ -46,8 +46,13 @@ class Config {
             }
             section = arr[arr.length - 1];
         }
-        c[section] = val;
-        this.update();
+        if (JSON.stringify(c[section]) === JSON.stringify(val)){
+            logger.silly(`setSection: Config section and val are identical.  Not updating.`)
+        }
+        else {
+            c[section] = val;
+            this.update();
+        }
     }
 
     public getSection(section?: string, opts?: any) : any {
