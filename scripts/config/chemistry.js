@@ -81,7 +81,9 @@
                                     poolSetpoint: 50,
                                     spaSetpoint: 10,
                                     superChlorHours: 8,
-                                    master: master.val === 0 ? 0 : 1
+                                    master: typeof master !== 'undefined' && master.val === 0 ? 0 : 1,
+                                    body: 0,
+                                    model: 0
                                 });
                                 divChlorinator.find('div.picAccordian:first').each(function () { this.expanded(true); });
                                 $.pic.modalDialog.closeDialog(dlg[0]);
@@ -94,9 +96,9 @@
                         $('<div></div>').css({ textAlign: 'center', fontSize: '8pt' }).appendTo(divSelection).text('Max Chlorinators Added');
                     }
                     else {
-
-
+                        
                         var chlorTypes = [];
+
                         for (var i = 0; i < chlorOpts.equipmentMasters.length; i++) {
                             console.log(chlorOpts.equipmentMasters[i].name);
                             switch (chlorOpts.equipmentMasters[i].name) {
@@ -115,20 +117,21 @@
                                     break;
                             }
                         }
-                        $('<div></div>').appendTo(divSelection).pickList({
-                            required: true,
-                            style: { textAlign: 'left' },
-                            bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>', binding: 'type',
-                            columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
-                            items: chlorTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
-                        }).on('mouseover', function (e) {
-                            divSelection.removeClass('button-hover');
-                            e.stopPropagation();
-                        }).on('mousedown', function (e) {
-                            e.stopImmediatePropagation();
-
-                        });
+                       if (!chlorTypes.every(el=>el.desc.includes('Nixie'))) {
+                            $('<div></div>').appendTo(divSelection).pickList({
+                                required: true,
+                                style: { textAlign: 'left'},
+                                bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>', binding: 'type',
+                                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
+                                items: chlorTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
+                            }).on('mouseover', function (e) {
+                                divSelection.removeClass('button-hover');
+                                e.stopPropagation();
+                            }).on('mousedown', function (e) {
+                                e.stopImmediatePropagation();
+                            })
                     }
+                }
                     divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {
