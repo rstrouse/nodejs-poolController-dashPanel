@@ -112,7 +112,7 @@
                                 case 'ncp':
                                     chlorTypes.push(chlorOpts.equipmentMasters[i]);
                                     chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
-                                    break
+                                    break;
                                 default:
                                     break;
                             }
