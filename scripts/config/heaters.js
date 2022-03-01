@@ -359,7 +359,7 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-            el.addClass('pnl-mastertemp-heater');
+            el.addClass('pnl-hybrid-heater');
             var pnlType = $('div.dashOuter').attr('data-controllertype').toLowerCase();
             var binding = '';
             var line = $('<div></div>').appendTo(el);
