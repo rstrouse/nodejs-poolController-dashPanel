@@ -360,6 +360,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('pnl-mastertemp-heater');
+            var pnlType = $('div.dashOuter').attr('data-controllertype').toLowerCase();
             var binding = '';
             var line = $('<div></div>').appendTo(el);
             $('<input type="hidden"></input>').appendTo(line).attr('data-bind', 'efficiencyMode').attr('data-datatype', 'int').val(3);
@@ -371,8 +372,12 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
                 items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width:'4rem' } }
             });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Boost Temp', binding: binding + 'boostTemp', min: 5, max: 10, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft:'1rem', marginRight: '.25rem' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Economy Time', binding: binding + 'economyTime', min: 1, max: 6, step: 1, units: 'hrs', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft:'1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Boost Temp', binding: binding + 'maxBoostTemp', min: 5, max: 10, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Economy Time', binding: binding + 'economyTime', min: 1, max: 6, step: 1, units: 'hrs', inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            if (!pnlType.endsWith('touch')) {
+                el.find('div[data-bind=maxBoostTemp]').each(function () { this.disabled(true); });
+                el.find('div[data-bind=economyTime]').each(function () { this.disabled(true); });
+            }
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

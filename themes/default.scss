@@ -31,6 +31,10 @@ a.btn.disabled,
 fieldset[disabled] a.btn {
     pointer-events: none;
 }
+div.picValueSpinner.disabled > div {
+    opacity: .5;
+    cursor:not-allowed;
+}
 .btn-panel {
     padding: .2rem;
     margin-top: .2rem;

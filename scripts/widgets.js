@@ -1122,6 +1122,7 @@ $.ui.position.fieldTip = {
             el[0].minVal = function (val) { return self.minVal(val); };
             el[0].maxVal = function (val) { return self.maxVal(val); };
             el[0].units = function (val) { return self.units(val); };
+            el[0].disabled = function (val) { return self.disabled(val); };
             if (o.required === true) self.required(true);
             //$('<label class="picSpinner-label"></label><div class="picSpinner-down fld-btn-left"><i class="fas fa-minus"></i></div><div class="picSpinner-value fld-value-center"></div><div class="picSpinner-up fld-btn-right"><i class="fas fa-plus"></i></div><span class="picSpinner-units picUnits"></span>').appendTo(el);
             $('<label></label>').addClass('picSpinner-label').appendTo(el);
@@ -1129,7 +1130,6 @@ $.ui.position.fieldTip = {
             if (o.canEdit) {
                 $('<div></div>').addClass('picSpinner-value').addClass('fld-value-center').attr('contenteditable', true).appendTo(el)
                     .on('focusout', function (evt) {
-                        console.log(evt);
                         var v = o.val;
                         var val = Number($(evt.target).text().replace(/[^0-9\.\-]+/g, ''));
                         if (isNaN(val)) self.val(o.min);
@@ -1152,12 +1152,12 @@ $.ui.position.fieldTip = {
             if (typeof o.binding !== 'undefined') el.attr('data-bind', o.binding);
             if (o.labelText) el.find('label.picSpinner-label:first').html(o.labelText);
             el.on('mousedown touchstart', 'div.picSpinner-down', function (evt) {
-                self._rampDecrement();
+                if (!el.hasClass('disabled')) self._rampDecrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
             el.on('mousedown touchstart', 'div.picSpinner-up', function (evt) {
-                self._rampIncrement();
+                if (!el.hasClass('disabled')) self._rampIncrement();
                 evt.preventDefault();
                 evt.stopPropagation();
             });
@@ -1272,7 +1272,23 @@ $.ui.position.fieldTip = {
         units: function (val) {
             var self = this, o = self.options, el = self.element;
             return el.find('span.picSpinner-units').text(val);
+        },
+        disabled: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof val === 'undefined') return el.hasClass('disabled');
+            else {
+                if (val) {
+                    el.addClass('disabled');
+                    el.children('div').addClass('disabled');
+                }
+                else {
+                    el.removeClass('disabled');
+                    el.children('div').removeClass('disabled');
+                }
+                el.find('.picSpinner-value').attr('contenteditable', val || !o.canEdit ? false : true);
+            }
         }
+
     });
     $.widget("pic.timeSpinner", {
         options: {

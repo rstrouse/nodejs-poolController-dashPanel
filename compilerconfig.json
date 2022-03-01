@@ -98,5 +98,9 @@
   {
     "outputFile": "themes/sketchy/colors.css",
     "inputFile": "themes/sketchy/colors.scss"
+  },
+  {
+    "outputFile": "themes/default.css",
+    "inputFile": "themes/default.scss"
   }
 ]

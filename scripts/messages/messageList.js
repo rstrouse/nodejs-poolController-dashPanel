@@ -577,6 +577,7 @@ mhelper.init();
             });
             el.on('click', 'div.picFilter', function (evt) {
                 let filt = { protocols: [] };
+                console.log(o.contexts);
                 for (var s in o.contexts) {
                     let c = o.contexts[s];
                     let p = filt.protocols.find(elem => elem.name === c.protocol.name);
@@ -604,6 +605,24 @@ mhelper.init();
                                 dest: { val: c.destAddr.val, name: c.destAddr.name }
                             });
                         }
+                    }
+                    else if (typeof c.requestor !== 'undefined') {
+                        let act = p.actions.find(elem => elem.endpoint === o.endpoint);
+                        if (typeof act === 'undefined') {
+                            act = { val: 1, name: c.endpoint, filters: [], sources: [], dests: [] };
+                            p.actions.push(act);
+                        }
+                        if (typeof act.filters.find(elem => elem.key === s) === 'undefined') {
+                            act.filters.push({
+                                key: s,
+                                filtered: o.filters.includes(s),
+                                category: 'API Call',
+                                actionExt: '',
+                                context: c,
+                                source: { val: null, name: c.requestor }
+                            });
+                        }
+
                     }
                 }
                 // We should have a complete list of what is contained in this so lets show a filter dialog.
@@ -642,9 +661,11 @@ mhelper.init();
         _filterMessages: function () {
             var self = this, o = self.options, el = self.element;
             let vlist = el.find('div.picVirtualList:first');
+            console.log(o.filters);
             vlist[0].applyFilter(function (obj) {
-                if (obj.isApiCall === true) obj.hidden = false;
-                else obj.hidden = self._calcMessageFilter(obj);
+                obj.hidden = self._calcMessageFilter(obj);
+                //if (obj.isApiCall === true) obj.hidden = false;
+                //else obj.hidden = self._calcMessageFilter(obj);
             });
         },
         _createFilterDialog: function (filt) {
@@ -701,10 +722,19 @@ mhelper.init();
                     for (let j = 0; j < act.filters.length; j++) {
                         let filter = act.filters[j];
                         let divFilter = $('<div></div>').css({ marginLeft: '2rem', fontSize: '.8rem' }).appendTo(divA);
-                        $('<div></div>').checkbox({
-                            labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${filter.actionExt}</span></span>`,
-                            value: filter.filtered
-                        }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
+                        if (typeof filter.dest !== 'undefined') {
+                            $('<div></div>').checkbox({
+                                labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${filter.actionExt}</span></span>`,
+                                value: filter.filtered
+                            }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
+                        }
+                        else if (typeof filter.source !== 'undefined') {
+                            $('<div></div>').checkbox({
+                                labelHtml: `<span><span class="msg-detail-byte">${filter.source.name}</span></span></span>`,
+                                value: filter.filtered
+                            }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
+
+                        }
                     }
                     let achecks = fnCalcChecks(divA);
                     if (achecks.checked.length === 0) divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(false); this.val(false); });
@@ -864,8 +894,14 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             var row = obj.row;
             var r = row[0];
+            msg.messageKey = `${msg.requestor}${msg.path}`;
+            o.contexts[msg.messageKey] = {
+                protocol: { name: 'api', desc: 'API Call' }, requestor: msg.requestor, endpoint: msg.path };
+            //keyFormat: key, protocol: proto, sourceByte: source, destByte: dest, controllerByte: controller,
+            //    actionByte: action, sourceAddr: addrSource, destAddr: addrDest, payloadLength: length
             row.attr('data-msgdir', msg.direction);
             row.addClass('msgApiRow');
+            row.attr('data-msgkey', `${msg.requestor}${msg.path}`);
             $('<span></span>').text('').appendTo(r.cells[1]);
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
             $('<span></span>').append(dir).appendTo(r.cells[2]);
@@ -885,6 +921,7 @@ mhelper.init();
             obj.isApiCall = true;
             row.attr('data-msgid', msg._id);
             o.messages['m' + obj.rowId] = msg;
+            obj.hidden = self._calcMessageFilter(obj);
 
         },
         _bindVListRow(obj, msg, autoSelect) {
