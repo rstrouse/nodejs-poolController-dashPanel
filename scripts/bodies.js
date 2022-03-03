@@ -327,6 +327,7 @@
                     case 'mtheat':
                     case 'hpheat':
                     case 'heater':
+                    case 'dual':
                         el.find('span.picSolarOn').hide();
                         el.find('span.picCoolingOn').hide();
                         el.find('span.picHeaterOn').css('display', 'inline-block');
