@@ -241,7 +241,7 @@
                     hasCooling: makeBool(body.attr('data-hascooling'))
                 };
                 $.getApiService('/config/body/' + el.attr('data-id') + '/heatModes', null, function (data, status, xhr) {
-                    //console.log(data);
+                    console.log(data);
                     var units = el.parents('div.picBodies:first').attr('data-unitsname');
                     // https://github.com/tagyoureit/nodejs-poolController/issues/314
                     // setPoint was null; added error checking if this is not set; also added server side validation
@@ -285,6 +285,10 @@
             try {
                 if (typeof data.isCovered !== 'undefined') el.attr('data-covered', data.isCovered);
                 if (typeof data.temp === 'undefined') el.find('span.picTempData').text('--');
+                if (typeof data.showInDashboard !== 'undefined') {
+                    if (makeBool(data.showInDashboard) === false) el.hide();
+                    else el.show();
+                }
                 el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
                 el.find('div.picIndicator').attr('data-status', data.isOn ? data.stopDelay ? 'delayoff' : 'on' : data.startDelay ? 'delayon': 'off');
                 el.attr('data-ison', data.isOn);
