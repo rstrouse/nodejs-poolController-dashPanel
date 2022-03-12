@@ -61,7 +61,7 @@
         _setControllerType: function (type) {
             var self = this, o = self.options, el = self.element;
             $('body').attr('data-controllertype', type);
-            switch (type.toLowerCase()) {
+            switch ((type || '').toLowerCase()) {
                 case 'intellicenter':
                     $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                     $('div.picDashboard').attr('data-hidethemes', 'false');
