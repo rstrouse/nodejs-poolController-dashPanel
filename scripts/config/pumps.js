@@ -52,7 +52,7 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-cog', style: { width: '9rem' } },
-                { binding: 'type', style: { width: '9rem' } },
+                    { binding: 'type', style: { width: '12rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' } },
                 { binding: 'circuits', style: { width: '15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle', textAlign: 'center' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
@@ -359,7 +359,7 @@
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
-            var type = o.pumpTypes.find(elem => elem.val === obj.type);
+            var type = o.pumpTypes.find(elem => elem.val === obj.type) || { val: -1, name: 'invalid', desc: 'Unknown Type' };
             var cols = acc[0].columns();
             self._resetPumpPanel(type);
             console.log(o);

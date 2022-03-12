@@ -4253,6 +4253,32 @@
     "name": "Ping OCP for an address",
     "desc": "The valve will ping the OCP for an address when it is on the bus."
   },
+  "16_2_64_4": {
+    "proto": "aqualink",
+    "keyBytes": [ 0 ],
+    "ocpSpecific": true,
+    "messageType": "Response",
+    "shortName": "Resp[display]",
+    "hasCategories": true,
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Line",
+        "desc": "The line that is displayed on the controller",
+        "values": {
+          "0": "Line #1",
+          "1": "Line #2",
+          "2": "Line #3",
+          "3": "Line #4",
+          "4": "Line #5",
+          "5": "Line #6",
+          "6": "Line #7",
+          "7": "Line #8"
+        }
+      }
+    ]
+  },
   "16_3_0": {
     "proto": "chlorinator",
     "ocpSpecific": false,
@@ -4332,6 +4358,22 @@
     "shortName": "Pump[runstate]",
     "name": "Response to setting the run state.",
     "desc": "This message is in response to the pump run state being set.  A return of 255 indicates that the local control panel on the drive has been disabled."
+  },
+  "165_P_PMP_CP_5": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[feature]",
+    "name": "Set pump drive feature",
+    "desc": "Sets the feature state of the pump.  This message is sent to set the ."
+  },
+  "165_P_CP_PMP_5": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[feature]",
+    "name": "Response to setting the drive feature.",
+    "desc": "This message is in response to the pump drive feature being set."
   },
   "165_P_PMP_CP_6": {
     "proto": "pump",

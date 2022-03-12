@@ -125,6 +125,7 @@
                         else
                             el.find('div.picRelay').hide();
                         break;
+                    case 'hwvs':
                     case 'vs':
                     case 'vs+svrs':
                         el.find('div.picFlow').hide();

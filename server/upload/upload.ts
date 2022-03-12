@@ -6,7 +6,12 @@ import * as fs from 'fs';
 
 import { config } from '../../server/config/Config';
 import { logger } from '../../server/logger/Logger';
-import { Message } from '../../server/messages/messages';
+import { Message, Inbound } from '../../server/messages/messages';
+export enum LogFileTypes {
+    HexStream = 'hexstream',
+    Messages = 'messages',
+    Unknown = 'unknown'
+}
 export class UploadRoute {
     public static initRoutes(app: express.Application) {
         app.post('/upload/logfile', (req, res, next) => {
@@ -17,7 +22,17 @@ export class UploadRoute {
                     res.status(500).send(err);
                 }
                 else {
-                    res.status(200).send(LogUpload.readLogFile(path.posix.join(process.cwd(), req.file.path)));
+                    let filePath = path.posix.join(process.cwd(), req.file.path);
+                    let lft = LogUpload.getLogFileType(filePath);
+                    switch (lft) {
+                        case LogFileTypes.HexStream:
+                            res.status(200).send(LogUpload.readAquaLinkDFile(filePath));
+                            break;
+                        case LogFileTypes.Messages:
+                            res.status(200).send(LogUpload.readLogFile(filePath));
+                            break;
+
+                    }
                 }
             });
         });
@@ -37,7 +52,6 @@ export class UploadRoute {
                 }
             });
         });
-        
     }
 }
 export class LogUpload {
@@ -89,7 +103,7 @@ export class LogUpload {
     }
     public static parsePacket(msg) {
         let m: Message = new Message();
-        m.parseV5(msg);
+        //m.parseV5(msg);
         return m;
     }
     public static fromVer5(msg) {
@@ -98,7 +112,7 @@ export class LogUpload {
         }
         else if (msg.type === 'url') {
             return {
-                id: ++Message._messageId,
+                id: Message.nextMessageId,
                 proto: 'api',
                 dir: msg.direction === 'inbound' ? 'in' : 'out',
                 requestor: '',
@@ -109,9 +123,124 @@ export class LogUpload {
             };
         }
     }
+    public static readAquaLinkDFile(filepath) {
+        let fd;
+        let messages = [];
+        try {
+            let stat = fs.statSync(filepath);
+            let pos = 0;
+            fd = fs.openSync(filepath, 'r');
+            let buff = Buffer.alloc(100);
+            let arrBytes: number[] = [];
+            let msg: Message;
+            while (pos < stat.size) {
+                let len = fs.readSync(fd, buff, 0, Math.min(stat.size - pos, 100), pos);
+                pos += len;
+                if (len > 0) {
+                    let bytes = buff.toString('utf8').split(/\|/).filter(Boolean);
+                    for (let i = 0; i < bytes.length; i++) arrBytes.push(parseInt(bytes[i], 16));
+                }
+                for (let ndx = 0; ndx < arrBytes.length;) {
+                    let msg: Message;
+                    do {
+                        if (typeof (msg) === 'undefined' || msg === null || msg.isComplete || !msg.isValid) {
+                            msg = new Message();
+                            ndx = msg.readPacket(arrBytes);
+                        }
+                        else ndx = msg.mergeBytes(arrBytes);
+                        if (msg.isComplete) {
+                            if (msg.isValid) {
+                                msg.id = Message.nextMessageId;
+                                messages.push(msg.toLogObject());
+                            }
+                            else {
+                                arrBytes = arrBytes.slice(ndx);
+                                arrBytes.unshift(...msg.term);
+                                arrBytes.unshift(...msg.payload);
+                                arrBytes.unshift(...msg.header.slice(1));
+                                ndx = 0;
+                                msg = null;
+                            }
+                        }
+                        if (ndx > 0) {
+                            arrBytes = arrBytes.slice(ndx);
+                            ndx = 0;
+                        }
+                        else break;
+
+                    } while (ndx < arrBytes.length);
+                    break;
+                }
+            }
+        }
+        catch (err) { logger.error(`Error reading ${filepath}: ${err.message}`); }
+        finally { if (typeof fd !== 'undefined') fs.closeSync(fd); }
+        return messages;
+    }
+    public static readAquaLinkDFile1(filepath) {
+        let bytes = fs.readFileSync(filepath, "utf8").split(/\|/).filter(Boolean);
+        // convert all the bytes to numbers.
+        let arrBytes: number[] = [];
+        for (let i = 0; i < bytes.length; i++) {
+            arrBytes.push(parseInt(bytes[i], 16));
+        }
+        // Ok so now we have the array of bytes we need to parse that into message structures.  We are simply
+        // going to read this in as an array of bytes just like it is read in njsPC.
+        let messages = [];
+        for (let ndx = 0; ndx < arrBytes.length;) {
+            let msg: Message;
+            do {
+                if (typeof (msg) === 'undefined' || msg === null || msg.isComplete || !msg.isValid) {
+                    msg = new Message();
+                    ndx = msg.readPacket(arrBytes);
+                }
+                else ndx = msg.mergeBytes(arrBytes);
+                if (msg.isComplete) {
+                    if (msg.isValid) {
+                        msg.id = Message.nextMessageId;
+                        messages.push(msg.toLogObject());
+                    }
+                    else {
+                        arrBytes = arrBytes.slice(ndx);
+                        arrBytes.unshift(...msg.term);
+                        arrBytes.unshift(...msg.payload);
+                        arrBytes.unshift(...msg.header.slice(1));
+                        ndx = 0;
+                        msg = null;
+                    }
+                }
+                if (ndx > 0) {
+                    arrBytes = arrBytes.slice(ndx);
+                    ndx = 0;
+                }
+                else break;
+
+            } while (ndx < arrBytes.length);
+        }
+        return messages;
+    }
+    public static getLogFileType(filePath) {
+        let lft = LogFileTypes.Unknown;
+        let fd;
+        try {
+            fd = fs.openSync(filePath, 'r');
+            let buff = Buffer.alloc(2);
+            let bytesRead = fs.readSync(fd, buff, 0, 2, 0);
+            if (bytesRead === 2) {
+                let s = buff.toString('utf8');
+                if (s[0] === '{') lft = LogFileTypes.Messages;
+                else if (s[0] === '0' && s[1].toLowerCase() === 'x') lft = LogFileTypes.HexStream;
+            }
+        }
+        catch (err) {
+            logger.error(`Error reading file ${filePath}`);
+        }
+        finally { if (typeof fd !== 'undefined') fs.closeSync(fd); }
+        return lft;
+    }
     public static readLogFile(filePath) {
-        let lines = fs.readFileSync(filePath, "utf8").split(/[\n\r]/).filter(Boolean);
-        let arr = [];
+        let lines = fs.readFileSync(filePath, 'utf8').split(/[\n\r]/).filter(Boolean);
+         let arr = [];
         Message._messageId = 0;
         let cmsg = null;
         for (let i = 0; i < lines.length; i++) {

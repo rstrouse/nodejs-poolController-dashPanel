@@ -332,7 +332,28 @@
       "controller": false,
       "length": false,
       "keyFormat": "165_P_<dest>_<source>_<action>"
+    },
+    {
+      "name": "aqualink",
+      "desc": "AquaLink",
+      "actions": {
+        "all": []
+      },
+      "source": false,
+      "controller": false,
+      "keyFormat": "16_2_<source>_<action>_<dest>"
+    },
+    {
+      "name": "hayward",
+      "desc": "Hayward",
+      "actions": {
+        "all": []
+      },
+      "source": false,
+      "controller": false,
+      "keyFormat": "16_2_<dest>_<action>"
     }
+
   ],
   "controllers": [
     {
@@ -393,6 +414,13 @@
   ],
   "addresses": [
     {
+      "val": 0,
+      "name": "OCP",
+      "desc": "AquaLink Control Panel",
+      "protocol": "aqualink",
+      "key": "CP"
+    },
+    {
       "val": 12,
       "name": "Valve",
       "desc": "IntelliValve",
@@ -400,59 +428,66 @@
       "key": "V"
     },
     {
+      "val": 12,
+      "name": "Broadcast",
+      "desc": "To whom it may concern",
+      "protocol": "hayward",
+      "key": "HW"
+    },
+    {
       "val": 15,
       "name": "Broadcast",
       "desc": "To whom it may concern",
-      "protocol": "!chlorinator,any",
+      "protocol": "!aqualink,any",
       "key": "BC"
     },
     {
       "val": 16,
       "desc": "OCP (Outdoor Control Panel)",
       "name": "OCP",
-      "protocol": "!chlorinator,any",
+      "protocol": "!aqualink,any",
       "key": "CP"
     },
     {
       "val": 17,
       "desc": "Expansion Panel 1",
       "name": "Exp1",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": 17
     },
     {
       "val": 18,
       "desc": "Expansion Panel 2",
       "name": "Exp2",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": 18
     },
     {
       "val": 19,
       "desc": "Expansion Panel 3",
       "name": "Exp3",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": 19
     },
     {
       "val": 32,
       "desc": "Indoor Control Panel",
       "name": "ICP",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },
     {
       "val": 33,
       "name": "Plugin",
       "desc": "Default plugin address",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },
     {
       "val": 34,
       "name": "SL",
       "desc": "ScreenLogic",
-      "protocol": "!chlorinator,any",
+      "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },
     {

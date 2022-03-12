@@ -857,7 +857,8 @@ mhelper.init();
             $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[6]);
             $('<span></span>').text(ctx.actionByte).appendTo(r.cells[7]);
             $(r.cells[7]).attr('title', ctx.actionName).addClass('msg-action');
-            $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[8]);
+            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[8]);
+            else console.log(msg);
             var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;
             if (typeof prev === 'undefined')

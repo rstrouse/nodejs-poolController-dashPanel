@@ -31,8 +31,23 @@ var msgManager = {
         var dest = msg.dest || this.extractDestByte(msg) || 0;
         var controller = msg.controller || this.extractControllerByte(msg) || 0;
         var action = msg.action || this.extractActionByte(msg) || 0;
-        var addrSource = this.constants.addresses.find(elem => elem.val === source) || { val: source || 0, key: source || 0, name: 'unk[' + source + ']' };
-        var addrDest = this.constants.addresses.find(elem => elem.val === dest) || { val: dest || 0, key: dest || 0, name:'unk[' + dest + ']' };
+        var addrSource = this.constants.addresses.find(elem => {
+            if (elem.val === source) {
+                if (elem.protocol.indexOf(`!${msg.protocol}`) >= 0) return false;
+                else if (elem.protocol.indexOf(msg.protocol) >= 0) return true;
+                else if (elem.protocol.indexOf(`any`) >= 0) return true;
+            }
+            return false;
+        }) || { val: source || 0, key: source || 0, name: 'unk[' + source + ']' };
+        var addrDest = this.constants.addresses.find(elem => {
+            if (elem.val === dest) {
+                if (elem.protocol.indexOf(`!${msg.protocol}`) >= 0) return false;
+                else if (elem.protocol.indexOf(msg.protocol) >= 0) return true;
+                else if (elem.protocol.indexOf(`any`) >= 0) return true;
+            }
+            return false;
+
+        }) || { val: dest || 0, key: dest || 0, name: 'unk[' + dest + ']' };
         //var addrSource = { val: source, key: source };
         //var addrDest = { val: dest, key: dest };
         var length = msg.payloadLength;
@@ -166,20 +181,30 @@ var msgManager = {
         };
     },
     extractActionByte: function (msg) {
-        if (msg.protocol === 'chlorinator') return this.extractByte(msg.header, 3);
+        if (msg.protocol === 'chlorinator' || msg.protocol === 'aqualink') return this.extractByte(msg.header, 3);
         return this.extractByte(msg.header, 4);
     },
     extractSourceByte: function (msg) {
-        if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 3);
-        var val = this.extractByte(msg.header, 2);
-        return (val >= 80) ? 15 : val + 80;
+        if (msg.protocol === 'aqualink') {
+            let val = this.extractByte(msg.header, 2);
+            return 0;
+        }
+        else if (msg.protocol === 'hayward') {
+            return this.extractByte(msg.header, 2);
+        }
+        else if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 3);
+        else {
+            var val = this.extractByte(msg.header, 2);
+            return (val >= 80) ? 16 : val + 80;
+        }
     },
     extractDestByte: function (msg) {
-        if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 2);
+        if (msg.protocol === 'hayward') return this.extractByte(msg.header, 4);
+        else if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 2);
         var val = this.extractByte(msg.header, 2);
-        return val >= 80 ? val : 15;
+        return val >= 80 ? val : 16;
     },
-    extractControllerByte: function (msg) { return msg.protocol === 'chlorinator' ? 0 : this.extractByte(msg.header, 1); },
+    extractControllerByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'aqualink' ? 0 : this.extractByte(msg.header, 1); },
     extractByte: function (arr, ndx, def) { return arr.length > ndx ? arr[ndx] : def; },
     toAscii: function (byte) { return (byte < 127 && byte > 31) ? String.fromCharCode(byte) : '.'; },
     toHex: function (byte, pad) {
@@ -194,7 +219,7 @@ var msgManager = {
         return sum;
     },
     calcChecksum: function (msg) {
-        if (msg.protocol !== 'chlorinator') {
+        if (msg.protocol !== 'chlorinator' && msg.protocol !== 'aqualink') {
             msg.header[5] = msg.payload.length;
             var checksum = this.sumArray(msg.header) + this.sumArray(msg.payload);
             msg.term = [Math.floor(checksum / 256), checksum - (Math.floor(checksum / 256) * 256)];
