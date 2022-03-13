@@ -72,16 +72,15 @@
                             if (btn.hasClass('disabled')) return;
                             if (dataBinder.checkRequired(btn)) {
                                 var data = dataBinder.fromElement(btn);
-                                var master = chlorOpts.equipmentMasters.find(elem => elem.val === data.type);
+                                var master = typeof data.master === 'undefined' ? 0 : data.master;
                                 var divChlorinator = $('<div></div>').appendTo(pnl).pnlChlorinatorConfig(chlorOpts);
-                                console.log(chlorOpts);
                                 divChlorinator[0].dataBind({
                                     id: -1,
                                     name: 'IntelliChlor' + (el.find('div.cfgChlorinator').length),
                                     poolSetpoint: 50,
                                     spaSetpoint: 10,
                                     superChlorHours: 8,
-                                    master: typeof master !== 'undefined' && master.val === 0 ? 0 : 1,
+                                    master: master,
                                     body: 0,
                                     model: 0
                                 });
@@ -91,47 +90,53 @@
                         });
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-soap" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chlorinator');
-                    if (el.find('div.picConfigCategory.cfgChlorinator').length >= chlorOpts.maxChlorinators) {
+                    let totalInternal = el.find('div.picConfigCategory.cfgChlorinator[data-master!=2]').length;
+                    var chlorTypes = [];
+                    for (var i = 0; i < chlorOpts.equipmentMasters.length; i++) {
+                        //console.log(chlorOpts.equipmentMasters[i].name);
+                        switch (chlorOpts.equipmentMasters[i].name) {
+                            case 'none':
+                            case 'unknown':
+                                break;
+                            case 'ocp':
+                                if (totalInternal < chlorOpts.maxChlorinators) {
+                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                    chlorTypes[chlorTypes.length - 1].desc = $('.picModelData').first().text();
+                                }
+                                break;
+                            case 'ncp':
+                                if (totalInternal < chlorOpts.maxChlorinators) {
+                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                    chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
+                                }
+                                break;
+                            case 'ext':
+                                chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if (chlorTypes.length === 0) {
                         divSelection.addClass('disabled');
                         $('<div></div>').css({ textAlign: 'center', fontSize: '8pt' }).appendTo(divSelection).text('Max Chlorinators Added');
                     }
                     else {
-                        
-                        var chlorTypes = [];
-
-                        for (var i = 0; i < chlorOpts.equipmentMasters.length; i++) {
-                            console.log(chlorOpts.equipmentMasters[i].name);
-                            switch (chlorOpts.equipmentMasters[i].name) {
-                                case 'none':
-                                case 'unknown':
-                                    break;
-                                case 'ocp':
-                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
-                                    chlorTypes[chlorTypes.length - 1].desc = $('.picModelData').first().text();
-                                    break;
-                                case 'ncp':
-                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
-                                    chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                       if (!chlorTypes.every(el=>el.desc.includes('Nixie'))) {
-                            $('<div></div>').appendTo(divSelection).pickList({
-                                required: true,
-                                style: { textAlign: 'left'},
-                                bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>', binding: 'type',
-                                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
-                                items: chlorTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
-                            }).on('mouseover', function (e) {
-                                divSelection.removeClass('button-hover');
-                                e.stopPropagation();
-                            }).on('mousedown', function (e) {
-                                e.stopImmediatePropagation();
-                            })
+                        $('<div></div>').appendTo(divSelection).pickList({
+                            required: true,
+                            binding: 'master',
+                            style: { textAlign: 'left' },
+                            bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>',
+                            columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
+                            items: chlorTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '1.15rem', visibility: 'hidden' } }
+                        }).on('mouseover', function (e) {
+                            divSelection.removeClass('button-hover');
+                            e.stopPropagation();
+                        }).on('mousedown', function (e) {
+                            e.stopImmediatePropagation();
+                        });
                     }
-                }
                     divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {
@@ -942,6 +947,8 @@
 
             cols[0].elText().text(obj.name || 'Chlorinator');
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
+            console.log(obj);
+            el.attr('data-master', obj.master || 0);
             dataBinder.bind(el, obj);
         }
     });
