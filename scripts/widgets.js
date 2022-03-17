@@ -4136,8 +4136,8 @@ $.ui.position.fieldTip = {
                         // The consumer said it was ok to change the value or didn't say no.
                         self.setSelectedIndex(evt.newIndex);
                         evt = $.Event('selchanged');
-                        //evt.oldItem = oldItem;
-                        //evt.newItem = newItem;
+                        evt.oldItem = oldItem;
+                        evt.newItem = newItem;
                         el.trigger(evt);
                     }
                 }
