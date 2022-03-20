@@ -105,7 +105,9 @@
             });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Heat', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cool', binding: binding + 'coolSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } }).hide();
-
+            if ($('div.dashOuter').data('controllertype').includes('Nixie')){
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Disabled', binding: binding + 'disabled' });
+            }
             $('<hr></hr>').appendTo(pnl);
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
 
@@ -278,6 +280,8 @@
             }
             cols[2].elText().text(daysTitle);
             if (typeof obj.display === 'undefined') obj.display = 0;
+            if (!obj.isActive || obj.disabled) cols[0].elGlyph().css({ color: 'silver' });
+            else cols[0].elGlyph().css({ color: '' });
             console.log(obj);
             dataBinder.bind(el, obj);
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);

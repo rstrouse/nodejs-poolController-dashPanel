@@ -18,6 +18,7 @@
                 var schedules = data.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     // Create a new schedule for each installed schedule.
+                    if (data.isActive === false || data.schedules[i].disabled) continue;
                     let divSched = $('<div class="picSchedule"></div>');
                     divSched.appendTo(el);
                     divSched.schedule(data.schedules[i]);
@@ -36,7 +37,7 @@
             var self = this, o = self.options, el = self.element;
             var pnl = $('div.picSchedule[data-id=' + data.id + ']');
             if (pnl.length === 0) {
-                if (data.isActive === false) $(this).remove();
+                if (data.isActive === false || data.disabled) $(this).remove();
                 else {
                     var scheds = el.find('div.picSchedule');
                     var div = $('<div class="picSchedule"><div>');
@@ -73,7 +74,7 @@
             var self = this, o = self.options, el = self.element;
             var pnl = el.parents('div.picSchedules:first');
             try {
-                if (data.circuit <= 0 || data.isActive === false) {
+                if (data.circuit <= 0 || data.isActive === false || data.disabled) {
                     el.attr('data-active', false);
                     if (pnl.find('div.picSchedule[data-active=true]').length > 0)
                         pnl.show();
