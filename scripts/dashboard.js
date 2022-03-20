@@ -389,9 +389,9 @@
             });
             o.socket.on('rs485Stats', function (data) {
                 console.log({ evt: 'rs485Stats', data: data });
-                var rs485Displays = el.find('div.rs485Stats');
+                var rs485Displays = el.find(`div.pnl-rs485Stats`);
                 rs485Displays.each(function () {
-                    this.setRS485Stats(data);
+                    if($(this).attr('data-portid') === data.portId.toString()) this.dataBind(data);
                 });
                 // Turn it off if there are no displays out there.
                 if (rs485Displays.length === 0) self.receivePortStats(false);

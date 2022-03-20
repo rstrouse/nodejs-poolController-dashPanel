@@ -94,7 +94,8 @@
                     break;
             }
             if (typeof evt.oldTab !== 'undefined') {
-                if (evt.oldTab.id === 'tabRS485') evt.oldTab.contents.empty();
+                // Need to clear the tab so that we stop getting the RS485 output messages
+                if (evt.oldTab.id === 'tabRS485' && evt.newTab.id !== 'tabRS485') evt.oldTab.contents.empty();
             }
         },
         _buildControls: function () {
