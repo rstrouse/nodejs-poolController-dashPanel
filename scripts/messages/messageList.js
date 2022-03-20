@@ -446,7 +446,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, filters: []
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, filters: [], rowIds:[]
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -541,7 +541,7 @@ mhelper.init();
                 var msgKey = evt.newRow.attr('data-msgkey');
                 var docKey = evt.newRow.attr('data-dockey');
                 var prev;
-
+                var forMsg;
                 for (var i = ndx - 1; i >= 0; i--) {
                     var p = $(evt.allRows[i].row);
                     if (p.attr('data-msgkey') === msgKey) {
@@ -550,8 +550,15 @@ mhelper.init();
                         break;
                     }
                 }
+                if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0) {
+                    let id = msg.responseFor[0];
+                    let rid = o.rowIds.find(elem => elem.msgId === id);
+                    if(typeof rid !== 'undefined')
+                        forMsg = o.messages['m' + rid.rowId];
+                    console.log({ rid: rid, forMsg: forMsg });
+                }
                 //console.log(docKey);
-                pnlDetail[0].bindMessage(msg, prev, o.contexts[docKey]);
+                pnlDetail[0].bindMessage(msg, prev, forMsg, o.contexts[docKey]);
             });
             el.on('click', 'div.picStartLogs', function (evt) {
                 var mm = $('div.picMessageManager')[0];
@@ -627,7 +634,7 @@ mhelper.init();
                 }
                 // We should have a complete list of what is contained in this so lets show a filter dialog.
                 // Protocol --> Action --> Source / Dest
-                console.log(filt);
+                //console.log(filt);
                 self._createFilterDialog(filt);
             });
 
@@ -661,7 +668,7 @@ mhelper.init();
         _filterMessages: function () {
             var self = this, o = self.options, el = self.element;
             let vlist = el.find('div.picVirtualList:first');
-            console.log(o.filters);
+            //console.log(o.filters);
             vlist[0].applyFilter(function (obj) {
                 obj.hidden = self._calcMessageFilter(obj);
                 //if (obj.isApiCall === true) obj.hidden = false;
@@ -797,8 +804,10 @@ mhelper.init();
         clear: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList')[0].clear();
+            o.messages = {};
             o.contexts = {};
             o.messageKeys = {};
+            o.rowIds = [];
         },
         clearOutbound: function () {
             var self = this, o = self.options, el = self.element;
@@ -879,6 +888,7 @@ mhelper.init();
             msg.messageKey = ctx.messageKey;
             //row.data('message', msg); Can't store jquery data. Create our own message cache.
             o.messages['m' + obj.rowId] = msg;
+            o.rowIds.push({ rowId: obj.rowId, msgId: msg._id });
             row.attr('data-msgkey', ctx.messageKey);
             row.attr('data-dockey', ctx.docKey);
             row.attr('data-msgid', msg._id);
@@ -1005,7 +1015,7 @@ mhelper.init();
         options: { message: null },
         _create: function () {
             var self = this, o = self.options, el = self.element;
-            el[0].bindMessage = function (msg, prev, ctx) { self.bindMessage(msg, prev, ctx); };
+            el[0].bindMessage = function (msg, prev, msgFor, ctx) { self.bindMessage(msg, prev, msgFor, ctx); };
             self._initHeader();
             self._initMessageDetails();
             self._initApiCallDetails();
@@ -1089,9 +1099,11 @@ mhelper.init();
             $('<label>Term:</label>').appendTo(line);
             $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'term');
 
-            line = $('<div class="dataline msg-detail-response"></div>').appendTo(div);
+            line = $('<div class="dataline msg-detail-response"></div>').appendTo(div).hide();
             $('<label title="Response For">Resp For:</label>').appendTo(line);
             $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'responseFor');
+            $('<span></span>').appendTo(line).attr('data-bind', 'responseTime').attr('data-fmttype', 'number').attr('data-fmtmask', '#,###').css({ marginLeft: '7px', verticalAlign:'top', display:'inline-block' });
+            $('<span></span>').appendTo(line).text('ms').css({ verticalAlign: 'top', display: 'inline-block' });;
             $('<div class="payloadBytes"></div>').appendTo(div);
             $('<div class="msg-payload"></div>').appendTo(msgDiv);
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section');
@@ -1165,7 +1177,7 @@ mhelper.init();
                }
             }
         },
-        _bindMessage: function (msg, prev, ctx) {
+        _bindMessage: function (msg, prev, msgFor, ctx) {
             var self = this, o = self.options, el = self.element;
             el.find('div.msg-detail-info').show();
             el.find('div.api-detail-info').hide();
@@ -1204,17 +1216,26 @@ mhelper.init();
                     term: msg.term.join(','),
                     responseFor: ''
                 };
+                if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0 && typeof msgFor !== 'undefined') {
+                    // Find the first message in the list.
+                    obj.responseTime = Date.parse(msg.timestamp.trim()) - Date.parse(msgFor.timestamp.trim());
+                }
                 obj.responseFor = typeof msg.responseFor !== 'undefined' && msg.responseFor.length ? msg.responseFor.join(',') : '';
                 // Delete all the dynamic styles for selection.
                 var styleResp = $('#responseStyles');
                 var sheet = styleResp[0].sheet;
                 for (var rule = sheet.cssRules.length - 1; rule >= 0; rule--) sheet.deleteRule(rule);
                 if (typeof msg.responseFor !== 'undefined') {
+                    el.find('div.msg-detail-response').show();
+
                     // Add in all the rules where the reference is valid.
                     for (var n = 0; n < msg.responseFor.length; n++) {
                         sheet.addRule('tr.msgRow[data-msgid="' + (msg.responseFor[n]) + '"] > td.msg-action', 'background-color:yellow;font-weight:bold;');
                     }
                 }
+                else
+                    el.find('div.msg-detail-response').hide();
+
                 //console.log(sheet);
             }
             if (msg.isValid === false) {
@@ -1226,7 +1247,6 @@ mhelper.init();
                 el.removeClass('invalid');
             }
             el.find('div.picAddToQueue').show();
-
             o.message = msg;
 
             dataBinder.bind(el, obj);
