@@ -305,7 +305,7 @@
             $.getApiService('/config/options/rs485', null, 'Getting Port Settings...', function (opts, status, xhr) {
                 console.log(opts);
                 for (let i = 0; i < opts.ports.length; i++) {
-                    $('<div></div>').appendTo(el).configRS485Port()[0].dataBind(opts.ports[i]);
+                    $('<div></div>').appendTo(el).configRS485Port({ ports: opts.local })[0].dataBind(opts.ports[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add RS485 Port', icon: '<i class="fas fa-plus" ></i>' });
@@ -368,9 +368,14 @@
                     pnl.find('div.pnl-rs485-local').show();
                 }
             });
-            line = $('<div></div>').appendTo(divSettings);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Port', binding: 'rs485Port', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width: '3.5rem' } } });
             var divLocal = $('<div></div>').addClass('pnl-rs485-local').appendTo(divSettings).hide();
+            line = $('<div></div>').appendTo(divLocal).addClass('pnlPortName');
+            $('<div></div>').appendTo(line).pickList({
+                canEdit: true,
+                bindColumn: 0, displayColumn: 0, labelText: 'Port', binding: binding + 'rs485Port',
+                columns: [{ binding: 'path', text: 'Port Name', style: { whiteSpace: 'nowrap', minWidth: '7rem', overflow: 'hidden', textOverflow: 'ellipsis' } }, { binding: 'manufacturer', hidden: false, text: 'Manufacturer', style: { whiteSpace: 'nowrap', minWidth: '15rem', maxWidth:'15rem', overflow: 'hidden', textOverflow: 'ellipsis' } }],
+                items: o.ports, inputAttrs: { style: { width: '13.4rem' } }, labelAttrs: { style: { marginRight: '.25rem', textAlign: 'right', padding: '0px' } }
+            });
             line = $('<div></div>').appendTo(divLocal);
             $('<div></div>').appendTo(line).pickList({
                 required: true,
