@@ -1103,7 +1103,7 @@ mhelper.init();
             $('<label title="Response For">Resp For:</label>').appendTo(line);
             $('<span></span>').appendTo(line).addClass('msg-detail-bytearray').attr('data-bind', 'responseFor');
             $('<span></span>').appendTo(line).attr('data-bind', 'responseTime').attr('data-fmttype', 'number').attr('data-fmtmask', '#,###').css({ marginLeft: '7px', verticalAlign:'top', display:'inline-block' });
-            $('<span></span>').appendTo(line).text('ms').css({ verticalAlign: 'top', display: 'inline-block' });;
+            $('<span></span>').appendTo(line).text('ms').css({ verticalAlign: 'top', display: 'inline-block' });
             $('<div class="payloadBytes"></div>').appendTo(div);
             $('<div class="msg-payload"></div>').appendTo(msgDiv);
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section');
