@@ -13,7 +13,7 @@
                 console.log(opts);
                 var pumps = opts.pumps;
                 for (var i = 0; i < pumps.length; i++) {
-                    $('<div></div>').appendTo(el).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models:opts.models, servers: opts.servers })[0].dataBind(pumps[i]);
+                    $('<div></div>').appendTo(el).pnlPumpConfig({ rs485ports: opts.rs485ports, pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models, servers: opts.servers })[0].dataBind(pumps[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" ></i>' });
@@ -21,10 +21,10 @@
                     var groups = el.find('div.picConfigCategory.cfgPump');
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
-                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models, servers: opts.servers });
+                    var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ rs485ports: opts.rs485ports, pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models, servers: opts.servers });
                     var pt = opts.pumpTypes[0];
                     pnl[0].dataBind({
-                        id: -1, name: 'Pump ' + (groups.length + 1),
+                        id: -1, name: 'Pump ' + (groups.length + 1), portId: 0,                        
                         type: pt.val, circuits: [],
                         minFlow: 0, maxFlow: 130,
                         minSpeed: 0, maxSpeed: 3450, primingTime: 0,
@@ -47,6 +47,7 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isNixie = $('body').attr('data-controllertype') === 'nixie';
             el.empty();
             el.addClass('picConfigCategory cfgPump');
             var binding = '';
@@ -65,17 +66,27 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.pumpTypes, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
+            $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Body', binding: binding + 'body',
+                columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
+                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            });
+            if (isNixie && o.rs485ports.length > 1) {
+                line = $('<div></div>').appendTo(pnl);
+            }
+            let ports = $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId', value: 0,
+                columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }],
+                items: o.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '3.25rem' } }
+            });
+            if (!isNixie) ports.hide();
+
             var addrs = [];
             for (var k = 0; k < o.maxPumps; k++) addrs.push({ val: k + 96, desc: k + 1 });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Address', style: { whiteSpace: 'nowrap' } }],
                 items: addrs, inputAttrs: { style: { width: '2rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
-            });
-            $('<div></div>').appendTo(line).pickList({
-                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Body', binding: binding + 'body',
-                columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
-                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
@@ -239,13 +250,10 @@
             clist.on('selchanged', 'div.picPickList[data-bind$=units]', function (e) {
                 if (typeof e.oldItem !== 'undefined') {
                     var pmp = dataBinder.fromElement(el);
-                    console.log(e);
-                    console.log(pmp);
                     self.dataBind(pmp);
                 }
             });
             tab = tabs[0].addTab({ id: 'tabPumpRelays', text: 'Relays' });
-            console.log(type);
             tabs[0].showTab('tabPumpRelays', type.maxRelays > 0);
             if (!(type.maxCircuits > 0)) tabs[0].selectTabById('tabPumpRelays');
             if (!(type.maxCircuits > 0) && !(type.maxRelays > 0)) tabs.hide();
@@ -361,8 +369,8 @@
             var acc = el.find('div.picAccordian:first');
             var type = o.pumpTypes.find(elem => elem.val === obj.type) || { val: -1, name: 'invalid', desc: 'Unknown Type' };
             var cols = acc[0].columns();
+            var isNixie = $('body').attr('data-controllertype') === 'nixie';
             self._resetPumpPanel(type);
-            console.log(o);
             var circuits = '';
             if (typeof obj.circuits !== 'undefined') {
                 for (var i = 0; i < obj.circuits.length; i++) {
@@ -392,6 +400,9 @@
             if (typeof type !== 'undefined') {
                 cols[1].elText().text(type.desc);
                 ddAddr[0].required(type.hasAddress);
+                if (obj.portId !== 0 && type.hasAddress) el.find('div[data-bind^=portId]').show(); // Let the user fix any mistakes.
+                else if (!type.hasAddress || !isNixie || typeof o.rs485ports === 'undefined' || o.rs485ports.length === 1) el.find('div[data-bind^=portId]').hide();
+                else el.find('div[data-bind^=portId]').show();
                 if (type.hasAddress) ddAddr.show();
                 else ddAddr.hide();
                 ddBody[0].required(type.hasBody);

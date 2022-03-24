@@ -310,7 +310,7 @@
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add RS485 Port', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
-                    var pnl = $('<div></div>').insertBefore(btnPnl).configRS485Port();
+                    var pnl = $('<div></div>').insertBefore(btnPnl).configRS485Port({ ports: opts.local });
                     pnl[0].dataBind({ portId: -1 });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
