@@ -111,6 +111,7 @@
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').hide();
+                        el.find('div.picCommand').hide();
                         break;
                     case 'ds':
                         el.find('div.picSpeed').hide();
@@ -124,6 +125,7 @@
                         }
                         else
                             el.find('div.picRelay').hide();
+                        el.find('div.picCommand').hide();
                         break;
                     case 'hwvs':
                     case 'vs':
@@ -132,24 +134,35 @@
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
+                        el.find('div.picCommand').hide();
                         break;
                     case 'vsf':
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
+                        el.find('div.picCommand').hide();
                         break;
                     case 'vf':
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').hide();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
+                        el.find('div.picCommand').hide();
+                        break;
+                    case 'hwrly':
+                        el.find('div.picFlow').hide();
+                        el.find('div.picSpeed').hide();
+                        el.find('div.picEnergy').hide();
+                        el.find('div.picRelay').hide();
+                        el.find('div.picCommand').show();
                         break;
                     case 'sf':
                         el.find('div.picSpeed').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').show();
+                        el.find('div.picCommand').hide();
                         if (typeof data.relay === 'undefined') data.relay = 0;
                         el.find('div.picRelay').html(self._createPrograms(data)[0].outerHTML);
 
@@ -185,6 +198,8 @@
             $('<div class="picFlow picData"><span class="picGpm" data-bind="flow" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">gpm</label></div>').appendTo(el);            
             $('<div class="picEnergy picData"><span class="picWatts" data-bind="watts" data-fmttype="number" data-fmtmask="#,##0" data-fmtempty="---"></span><label class="picUnits">watts</label></div>').appendTo(el);
             $('<div class="picRelay picData"><span class="picRelay" data-bind="relay" data-fmttype="number" data-fmtmask="#" data-fmtempty="---"></span></div>').appendTo(el);
+            $('<div class="picProgram"><span class=picCommand>Program #</span><span class="picCommand" data-bind="command" data-fmttype="number" data-fmtmask="#" data-fmtempty="---"></span></div>').appendTo(el);
+
             el.on('click', function (evt) {
                 let type = parseInt(el.attr('data-pumptype'), 10);
                 evt.stopImmediatePropagation();
@@ -231,7 +246,7 @@
                             
                             spin.attr('data-units', circuit.units.val);
                             if (data.type.maxRelays > 0) {
-                                spin.valueSpinner({ val: circuit.relay, min: 1, max: data.type.maxRelays, step: 1, binding: 'relay' });
+                                spin.valueSpinner({ val: circuit.relay, min: 1, max: data.type.maxSpeeds || data.type.maxRelays, step: 1, binding: 'relay' });
                                 spin.find('div.picSpinner-value').css({ width: '3.5rem' });
                             }
                             else {

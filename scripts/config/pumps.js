@@ -267,9 +267,10 @@
                 $('<hr></hr>').appendTo(pnlRelays).css({ margin: '3px' });
                 for (var i = 0; i < type.maxRelays; i++) {
                     var l = $('<div></div>').appendTo(pnlRelays).addClass('pmprelay-line').attr('data-relayid', i + 1);
+                    let rly = typeof type.relays !== 'undefined' ? type.relays.find(elem => elem.id === i + 1) || { id: i + 1, name: `Program #${i + 1}` } : { id: i + 1, name: `Program #${i + 1}` };
                     //if (i !== 0) $('<hr></hr>').appendTo(l).css({ margin: '3px' });
                     $('<input type="hidden"></input>').appendTo(l).attr('data-datatype', 'int').attr('data-bind', `relays[${i}].id`).val(i + 1);
-                    var relayName = `Program #${i + 1}`;
+                    var relayName = rly.name;
                     if (type.maxRelays === 1) relayName = 'Pump';
                     else if (type.maxRelays === 2) relayName = i === 0 ? 'Low Speed' : 'High Speed';
                     $('<span></span>').appendTo(l).text(relayName).css({ display: 'inline-block', width: '7rem' });
@@ -340,7 +341,7 @@
             else if (type.maxRelays > 0) {
                 $('<div></div>').appendTo(line).valueSpinner({
                     labelText: unitsType,
-                    binding: binding + 'relay', min: 1, max: type.maxRelays, step: 1,
+                    binding: binding + 'relay', min: 1, max: type.maxSpeeds || type.maxRelays, step: 1,
                     value: circ.relay,
                     style: { marginLeft: '.25rem' },
                     inputAttrs: { maxlength: 5 },
