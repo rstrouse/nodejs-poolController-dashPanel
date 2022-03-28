@@ -69,12 +69,12 @@
             }
             el.attr('data-state', data.isOn);
             if (typeof data.endTime === 'undefined') {
-                el.attr('data-endTime', null)
+                el.attr('data-endtime', null)
                 o.endTime = undefined;
                 $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
             }
             else {
-                el.attr('data-endTime', data.endTime);
+                el.attr('data-endtime', data.endTime);
             }
             self.countdownEndTime();
             el.parent().find('div.picLightSettings[data-circuitid=' + data.id + ']').each(function () {
@@ -92,8 +92,8 @@
     countdownEndTime: function () {
         var self = this, o = self.options, el = self.element;
         this.stopCountdownEndTime();
-        if (typeof el.attr('data-endTime') === 'undefined') return;
-        let endTime = new Date(el.attr('data-endTime'));
+        if (typeof el.attr('data-endtime') === 'undefined') return;
+        let endTime = new Date(el.attr('data-endtime'));
         if (isNaN(endTime) || !makeBool(el.attr('data-state')) || endTime.getTime() === 0 || endTime === null) {
             // el.find('span.picLightEndTime:first').empty();
             $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
