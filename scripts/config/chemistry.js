@@ -93,7 +93,7 @@
                     let totalInternal = el.find('div.picConfigCategory.cfgChlorinator[data-master!=2]').length;
                     var chlorTypes = [];
                     for (var i = 0; i < chlorOpts.equipmentMasters.length; i++) {
-                        //console.log(chlorOpts.equipmentMasters[i].name);
+                        console.log(chlorOpts.equipmentMasters[i].name);
                         switch (chlorOpts.equipmentMasters[i].name) {
                             case 'none':
                             case 'unknown':
@@ -105,10 +105,8 @@
                                 }
                                 break;
                             case 'ncp':
-                                if (totalInternal < chlorOpts.maxChlorinators) {
-                                    chlorTypes.push(chlorOpts.equipmentMasters[i]);
-                                    chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
-                                }
+                                chlorTypes.push(chlorOpts.equipmentMasters[i]);
+                                chlorTypes[chlorTypes.length - 1].desc = chlorOpts.equipmentMasters[i].desc.split(' ')[0];
                                 break;
                             case 'ext':
                                 chlorTypes.push(chlorOpts.equipmentMasters[i]);
@@ -874,7 +872,7 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '3.0rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
@@ -882,10 +880,17 @@
                 items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             $('<div></div>').appendTo(line).pickList({
+                required: true, bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId', value: 0,
+                columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }],
+                items: o.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '2.25rem', marginLeft: '.25rem' } }
+            }).hide();
+
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Model', binding: binding + 'model',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Model', style: { whiteSpace: 'nowrap' } }],
-                items: o.models, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                items: o.models, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: {  } }
             });
             /* $('<div></div>').appendTo(line).checkbox({ labelText: 'Virtual Controller', binding: 'isVirtual' }).attr('title', 'Check this only if the chlorinator is not being controlled by\r\na pool automation system.').hide(); */
             $('<hr></hr>').appendTo(pnl);
@@ -949,6 +954,14 @@
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
             console.log(obj);
             el.attr('data-master', obj.master || 0);
+            let pid = el.find('div[data-bind^=portId]');
+            if (obj.master === 1) {
+                pid.show();
+            }
+            else {
+                pid.hide();
+                obj.portId = 0; // Force the port id to be the OCP.
+            }
             dataBinder.bind(el, obj);
         }
     });
