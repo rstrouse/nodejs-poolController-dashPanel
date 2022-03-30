@@ -111,9 +111,10 @@
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').hide();
-                        el.find('div.picCommand').hide();
+                        el.find('div.picProgram').hide();
                         break;
                     case 'ds':
+                        el.find('div.picProgram').hide();
                         el.find('div.picSpeed').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
@@ -125,44 +126,43 @@
                         }
                         else
                             el.find('div.picRelay').hide();
-                        el.find('div.picCommand').hide();
                         break;
                     case 'hwvs':
                     case 'vs':
                     case 'vs+svrs':
+                        el.find('div.picProgram').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
-                        el.find('div.picCommand').hide();
                         break;
                     case 'vsf':
+                        el.find('div.picProgram').hide();
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').show();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
-                        el.find('div.picCommand').hide();
                         break;
                     case 'vf':
+                        el.find('div.picProgram').hide();
                         el.find('div.picFlow').show();
                         el.find('div.picSpeed').hide();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
-                        el.find('div.picCommand').hide();
                         break;
                     case 'hwrly':
+                        el.find('div.picProgram').show();
                         el.find('div.picFlow').hide();
                         el.find('div.picSpeed').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').hide();
-                        el.find('div.picCommand').show();
                         break;
                     case 'sf':
                         el.find('div.picSpeed').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').show();
-                        el.find('div.picCommand').hide();
+                        el.find('div.picProgram').show();
                         if (typeof data.relay === 'undefined') data.relay = 0;
                         el.find('div.picRelay').html(self._createPrograms(data)[0].outerHTML);
 
