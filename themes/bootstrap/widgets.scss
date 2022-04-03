@@ -59,6 +59,7 @@ div.picChlorinator,
 // div.picChemistry,
 div.chemControllerDiv,
 div.picPumpCircuit,
+div.picBodyFilter,
 div.picLightThemes {
     // padding-bottom:.4rem;
     display: flex;
@@ -89,6 +90,9 @@ div.picPump:not(:last-child) {
     border-bottom: solid 1px rgba(0, 0, 0, 0.125);
     margin-bottom: 5px;
 }
+span.picFilterPercentage {
+    text-align:right;
+}
 span.picPressureValue,
 span.picFilterPercent,
 span.picCurrentOutput, 
@@ -99,6 +103,9 @@ table.picSchedDays,
 label.picPumpPrograms,
 table.picPumpPrograms,
 span.saturationIndex,
+div.picRelay,
+div.picProgram,
+span.picFilterPercentage,
 label.picIBThemeLabel {
     margin-right: auto;
 }
@@ -268,4 +275,9 @@ div.picBody[data-covered=true]:before {
     position:absolute;
     left:-3.25em;
     top:2.5em;
+}
+span.picFilterPercentage,
+span.picFilterPressure {
+    width:5rem;
+    text-align:right;
 }

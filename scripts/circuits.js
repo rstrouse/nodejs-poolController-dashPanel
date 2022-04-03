@@ -45,6 +45,7 @@
             switch (name) {
                 case 'light':
                 case 'intellibrite':
+                case 'pooltone':
                 case 'colorlogic':
                 case 'globrite':
                 case 'globritewhite':
@@ -521,6 +522,7 @@
             switch (circuit.type.name) {
                 case 'colorlogic':
                 case 'intellibrite':
+                case 'pooltone':
                 case 'globrite':
                 case 'magicstream':
                 case 'colorcascade':
@@ -545,6 +547,7 @@
             switch (circuit.type.name) {
                 case 'light':
                 case 'intellibrite':
+                case 'pooltone':
                 case 'colorlogic':
                 case 'globrite':
                 case 'globritewhite':
@@ -708,6 +711,7 @@
                         switch (data.circuits[i].type.name) {
                             case 'light':
                             case 'intellibrite':
+                            case 'pooltone':
                             case 'colorlogic':
                             case 'globrite':
                             case 'globritewhite':
@@ -771,6 +775,7 @@
                 switch (circuit.type.name) {
                     case 'light':
                     case 'intellibrite':
+                    case 'pooltone':
                     case 'colorlogic':
                     case 'globrite':
                     case 'globritewhite':

@@ -162,7 +162,7 @@
                         el.find('div.picFlow').hide();
                         el.find('div.picEnergy').hide();
                         el.find('div.picRelay').show();
-                        el.find('div.picProgram').show();
+                        el.find('div.picProgram').hide();
                         if (typeof data.relay === 'undefined') data.relay = 0;
                         el.find('div.picRelay').html(self._createPrograms(data)[0].outerHTML);
 
