@@ -173,7 +173,7 @@
                         break;
                 }
                 // Bind up any associated circuit speeds.
-                if (typeof (data.circuits) !== 'undefined') {
+                if (typeof data.circuits !== 'undefined') {
                     el.parent().find('div.picPopover.picPumpSettings[data-id=' + el.attr('data-id') + ']').each(function () {
                         let $this = $(this);
                         for (let i = 0; i < data.circuits.length; i++)
@@ -224,7 +224,7 @@
                             spin.appendTo(div);
                             div.appendTo(evt.contents());
                             
-                            $('<input type="hidden" data-datatype="int" data-bind="units"></input>').appendTo(div).val(circuit.units.val);
+                            $('<input type="hidden" data-datatype="int" data-bind="units.val"></input>').appendTo(div).val(circuit.units.val);
                             if (circuit.circuit.equipmentType === 'feature') {
                                 div.attr('data-featureid', circuit.circuit.id);
                                 div.attr('data-eqid', circuit.circuit.id);

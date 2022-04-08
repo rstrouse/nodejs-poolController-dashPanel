@@ -212,7 +212,7 @@
                 $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxSpeed').appendTo(line);
-            line = $('<div></div>').appendTo(pnl);
+            line = $('<div></div>').appendTo(pnl).css({ marginLeft: '3px' });
             if (typeof type.minFlow !== 'undefined')
                 $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
@@ -358,7 +358,7 @@
                     labelText: 'Units', binding: binding + 'units', value: circ.units,
                     columns: [{ binding: 'val', hidden:true, text: 'value', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Units', style: { whiteSpace: 'nowrap' } }],
                     style: { marginLeft: '.25rem' },
-                    items: o.pumpUnits, inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display: 'none' } }
+                    items: o.pumpUnits, inputAttrs: { style: { width: '2.75rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display: 'none' } }
                 }).appendTo(line);
             }
             else
