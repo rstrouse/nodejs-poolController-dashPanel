@@ -410,6 +410,31 @@
     "name": "Sets the IntelliBrite configuration",
     "desc": "Sets the IntelliBrite configuration for all *Touch controllers."
   },
+  "165_P_17_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp1]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+  "165_P_18_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp2]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+  "165_P_19_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp3]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+
   "165_P_CP_CP_231": {
     "proto": "broadcast",
     "ocpSpecific": false,
@@ -418,6 +443,7 @@
     "name": "Gets the IntelliBrite configuration",
     "desc": "Gets the IntelliBrite configuration for all *Touch controllers."
   },
+
   "165_P_BC_CP_40": {
     "proto": "broadcast",
     "ocpSpecific": false,

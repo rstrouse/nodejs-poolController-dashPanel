@@ -375,6 +375,12 @@
       "class": "touch"
     },
     {
+      "val": 35,
+      "name": "screenlogic",
+      "desc": "ScreenLogic",
+      "class": "touch"
+    },
+    {
       "val": 63,
       "name": "intellicenter",
       "desc": "IntelliCenter",
@@ -487,6 +493,13 @@
       "val": 34,
       "name": "SL",
       "desc": "ScreenLogic",
+      "protocol": "!chlorinator,!aqualink,any",
+      "key": "CP"
+    },
+    {
+      "val": 35,
+      "name": "SL2",
+      "desc": "ScreenLogic2",
       "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },
