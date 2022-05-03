@@ -241,13 +241,14 @@ div.picBody {
 
 div.picBodyTemp {
     order: 1;
+    margin-left: auto;
 }
 div.picBodySetpoints {
     order: 2;
 }
 div.picBodyIcon {
     order: 3;
-    margin-left: auto;
+    margin-left: 0;
 }
 div.picBodyIcon > div:first-child{
     margin-bottom: 2px;
