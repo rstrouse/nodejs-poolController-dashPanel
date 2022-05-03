@@ -378,7 +378,7 @@ div.picIndicator[data-status="error"] {
     border-bottom: solid 1px black;
 }
 .picHeaterStatusIcon {
-    order: 2;
+    order: 0;
     margin-top: 20px;
 }
 
@@ -390,4 +390,4 @@ div.picFilters > *,
 div.picPumps > *, div.picVirtualCircuit.btn
 {
     align-items: center;
- }
+}
