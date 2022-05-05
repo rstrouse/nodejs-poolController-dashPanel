@@ -446,7 +446,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, filters: [], rowIds:[]
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters:[], filters: [], rowIds:[], ports:[]
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -497,6 +497,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             if (o.changesOnly && obj.hasChanged === false) return true;
             let msg = o.messages[`m${obj.rowId}`];
+            if (o.portFilters.includes(msg.port)) return true;
             if (o.filters.includes(msg.messageKey)) return true;
             return false;
         },
@@ -583,8 +584,13 @@ mhelper.init();
                 self._filterMessages();
             });
             el.on('click', 'div.picFilter', function (evt) {
-                let filt = { protocols: [] };
-                console.log(o.contexts);
+                let filt = { ports:[], protocols: [] };
+                //console.log(o.contexts);
+                console.log(o.portFilters);
+                console.log(o.ports);
+                for (let i = 0; i < o.ports.length; i++) {
+                    filt.ports.push({ port: o.ports[i], filtered: o.portFilters.includes(o.ports[i]) });
+                }
                 for (var s in o.contexts) {
                     let c = o.contexts[s];
                     let p = filt.protocols.find(elem => elem.name === c.protocol.name);
@@ -592,7 +598,6 @@ mhelper.init();
                         p = { name: c.protocol.name, desc: c.protocol.desc, actions: [] };
                         filt.protocols.push(p);
                     }
-
                     if (typeof c.actionByte !== 'undefined') {
                         let act = p.actions.find(elem => elem.val === c.actionByte);
                         if (typeof act === 'undefined') {
@@ -614,7 +619,7 @@ mhelper.init();
                         }
                     }
                     else if (typeof c.requestor !== 'undefined') {
-                        let act = p.actions.find(elem => elem.endpoint === o.endpoint);
+                        let act = p.actions.find(elem => elem.name === o.endpoint);
                         if (typeof act === 'undefined') {
                             act = { val: 1, name: c.endpoint, filters: [], sources: [], dests: [] };
                             p.actions.push(act);
@@ -693,11 +698,16 @@ mhelper.init();
                         text: 'Apply', icon: '<i class="fas fa-save"></i>',
                         click: function () {
                             let keys = [];
-                            dlg.find('div.picCheckbox').each(function () {
+                            dlg.find('div.picCheckbox.cb-filter').each(function () {
                                 if (this.val()) keys.push($(this).attr('data-messageKey'));
                             });
                             //console.log(keys);
                             o.filters = keys;
+                            let ports = [];
+                            dlg.find('div.picCheckbox.cb-port').each(function () {
+                                if (this.val()) ports.push(parseInt($(this).attr('data-port'), 10));
+                            });
+                            o.portFilters = ports;
                             self._filterMessages();
                         }
                     },
@@ -710,13 +720,20 @@ mhelper.init();
             var outer = $('<div></div>').appendTo(dlg).addClass('pnl-protofilter').css({
                 maxHeight: `calc(100vh - 177px)`, overflowY: 'auto'
             });
+            console.log(filt);
+            for (let i = 0; i < filt.ports.length; i++) {
+                let p = filt.ports[i];
+                let divP = $('<div></div>').appendTo(outer).addClass('pnl-port');
+                $('<div></div>').appendTo(divP).css({ fontWeight: 'bold' });
+                $('<div></div>').appendTo(divP).checkbox({ labelHtml: `<span>RS485 Port #${p.port}</span>`, value:p.filtered }).addClass('cb-port').css({ fontWeight: 'bold' }).attr('data-port', p.port);
+            }
             let fnCalcChecks = (div) => {
                 return {
                     checked: div.find('div.picCheckbox.cb-filter > input[type=checkbox]:checked'),
                     unchecked: div.find('div.picCheckbox.cb-filter > input[type=checkbox]:not(:checked)')
                 };
             };
-            for (var i = 0; i < filt.protocols.length; i++) {
+            for (let i = 0; i < filt.protocols.length; i++) {
                 let f = filt.protocols[i];
                 let divP = $('<div></div>').appendTo(outer).addClass('pnl-protocol');
                 $('<div></div>').appendTo(divP).css({ fontWeight: 'bold' });
@@ -740,7 +757,6 @@ mhelper.init();
                                 labelHtml: `<span><span class="msg-detail-byte">${filter.source.name}</span></span></span>`,
                                 value: filter.filtered
                             }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
-
                         }
                     }
                     let achecks = fnCalcChecks(divA);
@@ -808,6 +824,7 @@ mhelper.init();
             o.contexts = {};
             o.messageKeys = {};
             o.rowIds = [];
+            o.ports = [];
         },
         clearOutbound: function () {
             var self = this, o = self.options, el = self.element;
@@ -851,6 +868,7 @@ mhelper.init();
             var row = obj.row;
             var r = row[0];
             row.attr('data-msgdir', msg.direction);
+            row.attr('data-port', msg.port);
             row.addClass('msgRow');
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.messageKey] = ctx;
@@ -889,6 +907,9 @@ mhelper.init();
             //row.data('message', msg); Can't store jquery data. Create our own message cache.
             o.messages['m' + obj.rowId] = msg;
             o.rowIds.push({ rowId: obj.rowId, msgId: msg._id });
+            if (typeof msg.port !== 'undefined' && !o.ports.includes(msg.port)) {
+                o.ports.push(parseInt(msg.port, 10));
+            }
             row.attr('data-msgkey', ctx.messageKey);
             row.attr('data-dockey', ctx.docKey);
             row.attr('data-msgid', msg._id);
@@ -931,6 +952,7 @@ mhelper.init();
             obj.hasChanged = true;
             obj.isApiCall = true;
             row.attr('data-msgid', msg._id);
+            row.attr('data-port', msg.port);
             o.messages['m' + obj.rowId] = msg;
             obj.hidden = self._calcMessageFilter(obj);
 
@@ -958,6 +980,7 @@ mhelper.init();
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.docKey] = ctx;
             row.attr('data-msgdir', msg.direction);
+            row.attr('data-port', msg.port);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
             $('<span></span>').text(ctx.protocol.name).appendTo($('<td></td>').appendTo(row));
             $('<span></span>').text(ctx.sourceAddr.name).appendTo($('<td></td>').appendTo(row));
@@ -1027,7 +1050,6 @@ mhelper.init();
             $('<span class="picMessageDirection" data-bind="direction"></span><span>Message Details</span>').appendTo(div);
             $('<div class="picAddToQueue mmgrButton picIconRight" title="Push to Send Queue"><i class="far fa-hand-point-up"></i></div>').appendTo(div).hide();
             $('<div class="picDocumentSignature mmgrButton picIconRight" title="Document this Message Signature"><i class="fas fa-file-signature"></i></div>').appendTo(div).hide();
-
         },
         _initApiCallDetails: function () {
             var self = this, o = self.options, el = self.element;
@@ -1055,6 +1077,11 @@ mhelper.init();
 
             div = $('<div></div>').appendTo(divOuter).addClass('msg-detail-section').addClass('details');
             var line = $('<div class="dataline"><div>').appendTo(div);
+            line = $('<div class="dataline"><div>').appendTo(div);
+            $('<label>Port:</label>').appendTo(line);
+            $('<span></span>').appendTo(line).attr('data-bind', 'port');
+
+            line = $('<div class="dataline"><div>').appendTo(div);
             $('<label>Protocol:</label>').appendTo(line);
             $('<span></span>').appendTo(line).attr('data-bind', 'protocol');
 
@@ -1182,6 +1209,7 @@ mhelper.init();
             el.find('div.msg-detail-info').show();
             el.find('div.api-detail-info').hide();
             var obj = {
+                port: 0,
                 protocol: '',
                 title: '',
                 source: '',
@@ -1201,6 +1229,7 @@ mhelper.init();
                 o.context = ctx;
                 obj = {
                     isValid: msg.valid || msg.isValid,
+                    port: msg.port,
                     protocol: ctx.protocol.desc,
                     source: ctx.sourceAddr.name,
                     sourceByte: ctx.sourceByte,
@@ -2133,9 +2162,11 @@ mhelper.init();
             if (typeof msg !== 'undefined' && msg !== null) {
                 if (typeof msg !== 'undefined' && typeof msg.proto !== 'undefined' && msg.proto !== 'api') {
                     //if (msg.proto !== 'chlorinator' && msg.proto !== 'pump') {
+                    //console.log(msg.port);
                     msgList.addBulkMessage({
                         isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
                         _id: msg.id,
+                        port: typeof msg.port !== 'undefined' ? msg.port : msg.portId,
                         responseFor: msg.for,
                         protocol: msg.proto,
                         direction: msg.dir,

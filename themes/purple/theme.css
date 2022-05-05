@@ -123,6 +123,17 @@ tr.crud-header {
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black; }
 
+div.overlay-message > div > div.pic-waiticon > div.wait-roller div:after {
+  background: white;
+  transform: scale(1.3);
+  box-shadow: 0px 0px 8px oldlace; }
+
+div.overlay-message {
+  color: white;
+  border: solid 3px white;
+  background: cadetblue;
+  box-shadow: 0px 0px 30px white; }
+
 body {
   font-family: Roboto;
   background-image: url("background.jpg"); }

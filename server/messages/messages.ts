@@ -172,7 +172,7 @@ export class Message {
     public static _messageId: number = 0;
     public static get nextMessageId(): number { return this._messageId < 80000 ? ++this._messageId : this._messageId = 0; }
     public responseFor: number[] = [];
-
+    public port: number = 0;
     public timestamp: Date = new Date();
     public direction: Direction = Direction.In;
     public protocol: Protocol = Protocol.Unknown;

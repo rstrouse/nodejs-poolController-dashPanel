@@ -7,7 +7,6 @@
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
             el[0].receivePortStats = function (val) { self.receivePortStats(val); };
             el[0].reset = function () { self._reset(); };
-            console.log(el[0]);
         },
         _clearPanels: function () {
             var self = this, o = self.options, el = self.element;
