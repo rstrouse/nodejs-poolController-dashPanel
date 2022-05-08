@@ -48,7 +48,7 @@ export class ConfigRoute {
                             }
                         }
                     });
-                    ssdpClient.search('urn:schemas-tagoureit-org:device:PoolController:1');
+                    ssdpClient.search('urn:schemas-tagyoureit-org:device:PoolController:1');
                     setTimeout(() => {
                         resolve();
                         ssdpClient.stop(); console.log('done searching for poolController');
