@@ -77,7 +77,7 @@ export class ConfigRoute {
                             }
                         }
                     });
-                    ssdpClient.search('urn:schemas-rstrouse-org:device:REMController:1');
+                    ssdpClient.search('urn:schemas-rstrouse-org:device:relayEquipmentManager:1');
                     setTimeout(() => {
                         resolve();
                         ssdpClient.stop(); console.log('done searching for REM Controller');
