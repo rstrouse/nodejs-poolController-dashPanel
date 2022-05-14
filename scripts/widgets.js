@@ -532,8 +532,6 @@ function setCookie(name, value, days) {
     else if (typeof days === 'undefined')
     document.cookie = name + '=' + value + ';expires=' + expires + '; path=/';
 }
-
-
 var dataBinder = {
     checkRequired: function (el, show) {
         var isValid = true;
