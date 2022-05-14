@@ -38,7 +38,7 @@
             var self = this, o = self.options, el = self.element;
             var nSolar = 0;
             if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.##', '--'));
-            if(typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.##', '--'));
+            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.##', '--'));
             if (typeof data.units !== 'undefined') {
                 el.find('span.picTempUnits').text(data.units.name);
                 el.attr('data-unitsname', data.units.name);
@@ -164,8 +164,8 @@
             $('<label></label>').addClass('picUnitSymbol').html('&deg').css({ fontSize: '.4em', verticalAlign:'top', display:'inline-block', paddingTop:'.25em' }).appendTo(line);
             $('<span></span>').addClass('picTempUnits').text('-').css({ fontSize: '.4em', verticalAlign: 'top', display: 'inline-block', paddingTop: '.25em'}).appendTo(line);
             bodyTemp.appendTo(el);
-            
-            var setpointsWrapper = $('<div></div>').appendTo(el); 
+
+            var setpointsWrapper = $('<div></div>').appendTo(el);
             var setpoints = $('<div></div>').addClass('picBodySetpoints');
             line = $('<div></div>').addClass('heatSetpoint').appendTo(setpoints);
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').addClass('heatSetpoint').text('Set Point').appendTo(line);
@@ -181,7 +181,7 @@
 
             line = $('<div></div>').appendTo(setpoints);
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').text('Heat Mode').appendTo(line);
-            $('<span></span>').addClass('picModeData').css({ maxWidth: '5.1rem', display:'inline-block'}).attr('data-bind', 'heatMode.desc').text('----').appendTo(line);
+            $('<span></span>').addClass('picModeData').css({ maxWidth: '5.1rem', display: 'inline-block'}).attr('data-bind', 'heatMode.desc').text('----').appendTo(line);
             line = $('<div></div>').appendTo(setpoints);
             $('<label></label>').addClass('picInline-label').addClass('picSetpointText').text('Heater Status').appendTo(line);
             $('<span></span>').addClass('picStatusData').attr('data-bind', 'heatStatus.desc').text('----').css({ maxWidth: '5.1rem', display: 'inline-block' }).appendTo(line);
@@ -210,27 +210,56 @@
             self._createHeaterIcon(1).appendTo(el);
             self._createCoolingIcon(1).appendTo(el);
             self._createCooldownIcon(1).appendTo(el);
-            el.on('click', 'div.picIndicator', function (evt) {
+            let start = function (evt) {
+                $(this).data('lastPressed', new Date().getTime());
+            }
+            let end = function (evt) {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
+                var lastPressed = $(this).data('lastPressed');
                 if (el.hasClass('disabled')) return;
-                let ind = $(evt.target);
-                if (ind.attr('data-status') === 'delayon') {
-                    ind.attr('data-status', 'pending');
-                    //(url, data, message, successCallback, errorCallback, completeCallback)
-                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: false }, function (circ, status, xhr) {
-                        self.setCircuitState(circ);
-                    }, function () { ind.attr('data-status', 'delayon'); });
+                if (lastPressed) {
+                    let ind = $(evt.target);
+                    var duration = new Date().getTime() - lastPressed;
+                    $(this).data('lastPressed', false);
+                    if (duration > 750) {
+                        if (makeBool(ind.attr('data-state')) && ind.attr('data-status') !== 'delayon') {
+                            $.putApiService('state/manualOperationPriority', { id: parseInt(el.attr('data-circuitid'), 10) }, function (circ, status, xhr) {
+                                self.setCircuitState(circ);
+                            }, function () {
+                                if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
+                            });
+                            ind.attr('data-status', 'pending');
+                        }
+                    } else {
+                        if (ind.attr('data-status') === 'delayon') {
+                            ind.attr('data-status', 'pending');
+                            //(url, data, message, successCallback, errorCallback, completeCallback)
+                            $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: false }, function (circ, status, xhr) {
+                                self.setCircuitState(circ);
+                            }, function () { ind.attr('data-status', 'delayon'); });
+                        }
+                        else {
+                            ind.attr('data-status', 'pending');
+                            $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(ind.attr('data-state')) }, function (circ, status, xhr) {
+                                self.setCircuitState(circ);
+                            }, function () {
+                                if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
+                            });
+                        }
+                    }
                 }
-                else {
-                    ind.attr('data-status', 'pending');
-                    $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(ind.attr('data-state')) }, function (circ, status, xhr) {
-                        self.setCircuitState(circ);
-                    }, function () {
-                        if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
-                    });
-                }
-            });
+            }
+            el.find('div.picBodyIcon')
+            .on('mousedown', 'div.picIndicator', start)
+            .on('touchstart', 'div.picIndicator', start)
+            .on('click', 'div.picIndicator', end)
+            .on('mouseup', 'div.picIndicator', end)
+            .on('touchend', 'div.picIndicator', end)
+            .on('mouseout', 'div.picIndicator', end)
+            .on('touchcancel', 'div.picIndicator', end)
+                      
+               
             el.on('click', 'div.picBodySetpoints', function (evt) {
                 var body = el;
                 var settings = {

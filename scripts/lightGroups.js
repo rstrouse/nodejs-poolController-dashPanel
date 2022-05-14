@@ -29,14 +29,43 @@
         theme.appendTo(el);
         if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
         self.setState(o);
-        el.on('click', function (evt) {
-            el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
-            evt.stopPropagation();
-            $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
-                console.log('Put message');
+        el
+            .on('mousedown', function (evt) {
+                $(this).data('lastPressed', new Date().getTime());
+            })
+            .on('mouseup', function (evt) {
+                evt.stopPropagation();
+                var lastPressed = $(this).data('lastPressed');
+                if (lastPressed) {
+                    var duration = new Date().getTime() - lastPressed;
+                    $(this).data('lastPressed', false);
+                    let ind = el.find('div.picFeatureToggle').find('div.picIndicator')
+                    ind.attr('data-status', 'pending');
+                    if (duration > 750) {
+                        if (makeBool(el.attr('data-state'))) {
+                            $.putApiService('state/manualOperationPriority', { id: parseInt(el.attr('data-groupid'), 10) }, function (circ, status, xhr) {
+                                //self.setState(circ);
+                            }, function () {
+                                if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
+                            });
+                            ind.attr('data-status', 'pending');
+                        }
+                    } else {
+                        $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
+                            console.log('Put message');
+                        });
+                    }
+                    setTimeout(function () { self.resetState(); }, 2000);
+                }
             });
-            setTimeout(function () { self.resetState(); }, 2000);
-        });
+        // .on('click', function (evt) {
+        //     el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', 'pending');
+        //     evt.stopPropagation();
+        //     $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-groupid'), 10), state: !makeBool(el.attr('data-state')) }, function () {
+        //         console.log('Put message');
+        //     });
+        //     setTimeout(function () { self.resetState(); }, 2000);
+        // });
         el.on('click', 'i.picDropdownButton', function (evt) {
             var divPopover = $('<div class="picIBThemes"></div>');
             var btn = evt.currentTarget;
@@ -225,7 +254,7 @@ $.widget('pic.lightGroupPanel', {
     _buildCommands: function (group) {
         var self = this, o = self.options, el = self.element;
         $.getApiService(`/config/circuit/${group.id}/lightCommands`, function (commands, status, xhr) {
-                // Add in all our buttons.
+            // Add in all our buttons.
             //console.log(`div.picLightSettings[data-circuitid="${group.id}"] div.pnl-light-commands`);
             el.find(`div.pnl-light-commands`).each(function () {
                 // This should be the button panel
@@ -234,7 +263,7 @@ $.widget('pic.lightGroupPanel', {
                 pnl.empty();
                 let row1 = $('<div></div>').appendTo(pnl);
                 let row2 = $('<div></div>').appendTo(pnl);
-            
+
                 for (let i = 0; i < commands.length; i++) {
                     let cmd = commands[i];
                     let icon = 'fas fa-ghost';
