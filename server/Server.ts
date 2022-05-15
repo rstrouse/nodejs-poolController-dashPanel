@@ -125,6 +125,7 @@ export class HttpServer extends ProtoServer {
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
             this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
+            this.app.use('/icons', express.static(path.join(process.cwd(), '/themes/icons'), { maxAge: '1d' }));
             RelayRoute.initRoutes(this.app);
             ConfigRoute.initRoutes(this.app);
             MessagesRoute.initRoutes(this.app);
