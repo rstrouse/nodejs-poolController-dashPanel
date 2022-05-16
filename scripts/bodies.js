@@ -311,6 +311,7 @@
             if (typeof data.heatStatus === 'undefined') data.heatStatus = { val: 0, name: 'off', desc: 'Unknown' };
             if (typeof data.heatMode === 'undefined') data.heatMode = { val: 0, name: 'off', desc: 'Unknown' };
             dataBinder.bind(el, data);
+            let pnlType = $('div.dashOuter').attr('data-controllertype');
             try {
                 if (typeof data.isCovered !== 'undefined') el.attr('data-covered', data.isCovered);
                 if (typeof data.temp === 'undefined') el.find('span.picTempData').text('--');
@@ -334,7 +335,7 @@
                     el.find('div.picBodySetpoints').show();
                     if (data.heaterOptions.hasCoolSetpoint) {
                         el.find('label.picSetpointText.heatSetpoint').text('Heat Point');
-                        if (($('div.dashOuter').data('controllertype')).includes('center')){
+                        if (!pnlType.toLowerCase().includes('touch')){
                             el.find('div.coolSetpoint').show();
                         }
                         else {
