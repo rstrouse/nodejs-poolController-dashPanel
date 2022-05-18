@@ -446,7 +446,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters:[], filters: [], rowIds:[], ports:[]
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: []
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -504,7 +504,6 @@ mhelper.init();
         _initList: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
-
             var tblOuter = $('<table class="msgList-container"></table>').appendTo(el);
             var tbody = $('<tbody></tbody>').appendTo(tblOuter);
             var row = $('<tr></tr>').appendTo(tbody);
@@ -516,6 +515,8 @@ mhelper.init();
             $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom"></i></div>').appendTo(div);
             $('<div class="picFilter mmgrButton picIconRight" title="Filter Display"><i class="fas fa-filter"></i></div>').appendTo(div);
             $('<div class="picUploadLog mmgrButton picIconRight" title="Upload a Log File"><i class="fas fa-upload"></i></div>').appendTo(div);
+            $('<div class="picReplayLog mmgrButton picIconRight" title="Replay List To njsPC"><i class="fas fa-paper-plane"></i></div>').appendTo(div)
+                .on('click', (evt) => { self._promptReplayList(); });
 
 
             row = $('<tr></tr>').addClass('msgList-body').appendTo(tbody);
@@ -554,9 +555,8 @@ mhelper.init();
                 if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0) {
                     let id = msg.responseFor[0];
                     let rid = o.rowIds.find(elem => elem.msgId === id);
-                    if(typeof rid !== 'undefined')
+                    if (typeof rid !== 'undefined')
                         forMsg = o.messages['m' + rid.rowId];
-                    console.log({ rid: rid, forMsg: forMsg });
                 }
                 //console.log(docKey);
                 pnlDetail[0].bindMessage(msg, prev, forMsg, o.contexts[docKey]);
@@ -584,7 +584,7 @@ mhelper.init();
                 self._filterMessages();
             });
             el.on('click', 'div.picFilter', function (evt) {
-                let filt = { ports:[], protocols: [] };
+                let filt = { ports: [], protocols: [] };
                 //console.log(o.contexts);
                 console.log(o.portFilters);
                 console.log(o.ports);
@@ -669,6 +669,205 @@ mhelper.init();
             $(window).on('resize', function (evt) {
                 self._resetHeight();
             });
+        },
+        _promptReplayList: function () {
+            let self = this, o = self.options, el = self.element;
+            let dlg = $.pic.modalDialog.createDialog('dlgReplayList', {
+                width: '357px',
+                height: 'auto',
+                title: `Replay Messages to njsPC`,
+                position: { my: "center top", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () {
+                            divControls.attr('data-mode', 'stop');
+                            $.pic.modalDialog.closeDialog(this);
+                        }
+                    }
+                ]
+            });
+            let mm = $('.picMessageManager:first')[0];
+            let div = $('<div></div>').appendTo(dlg);
+            let divMessage = $('<div></div>').appendTo(div).css({ textAlign: 'center' }).text('Stopped');
+            $('<hr></hr>').appendTo(div).css({ margin: '2px' });
+            let divControls = $('<div></div>').attr('data-mode', 'stopped').appendTo(div).css({ textAlign: 'center' });
+            let divSlider = $('<div></div>').appendTo(div).css({ paddingLeft: '27px', paddingRight: '27px', paddingTop:'7px' });
+            let slider = $('<input></input>').attr('type', 'range').attr('min', -100).attr('max', 100).attr('value', 0).appendTo(divSlider).css({ width: '100%' });
+            let divSLabel = $('<div></div>').appendTo(divSlider).css({ fontSize: '.7rem', width: 'calc(100% + 14px)', height: '17px', marginLeft:'-7px' });
+            $('<span></span>').text('Faster').appendTo(divSLabel).css({ float: 'left'});
+            $('<span></span>').text('Slower').appendTo(divSLabel).css({ float: 'right' });
+            
+            el[0].pinSelection(true);
+            el[0].logMessages(false);
+
+            let fnCreateButton = (title, icon) => {
+                let btn = $('<span></span>').attr('title', title).addClass('btn').appendTo(divControls).css({ display: 'inline-block', width: '3rem', textAlign: 'center' });
+                $('<i></i>').appendTo(btn).addClass(icon);
+                return btn;
+            };
+            let fnGetNextMessage = () => {
+                if (currIndex >= vlist[0].totalRows()) return;
+                let obj = vlist[0].objByIndex(currIndex);
+                let msg = o.messages['m' + obj.rowId];
+                if (!obj.hidden && msg.isValid && msg.direction === 'in') {
+                    return msg;
+                }
+                if (currIndex + 1 >= vlist[0].totalRows()) return;
+                return fnGetNextMessage(++currIndex);
+            };
+            let fnGetPrevMessage = () => {
+                if (currIndex < 0) return;
+                let obj = vlist[0].objByIndex(currIndex);
+                let msg = o.messages['m' + obj.rowId];
+                if (!obj.hidden && msg.isValid && msg.direction === 'in') {
+                    return msg;
+                }
+                if (currIndex - 1 < 0) return;
+                return fnGetPrevMessage(--currIndex);
+            };
+
+            let playTimer = null;
+            let fnProcessMessage = async (msg) => {
+                if (typeof msg === 'undefined') return;
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                try {
+                    divMessage.text(`Processing Message ${msg._id || currIndex}`);
+                    let m = $.extend(true, {}, msg);
+                    m.direction = 'out';
+                    delete m.isValid;
+                    delete m.packetCount;
+                    delete m.complete;
+                    delete m.timestamp;
+                    delete m._complete;
+                    delete m.messageKey;
+                    delete m.rowId;
+                    vlist[0].selectedIndex(currIndex, true);
+                    mm.sendInboundMessage(m);
+                } catch (err) { console.log(`Error processing message ${err}`); }
+                finally {
+                    switch (divControls.attr('data-mode')) {
+                        case 'play':
+                            currIndex++;
+                            let next = fnGetNextMessage();
+                            if (typeof next !== 'undefined') {
+                                let tspan = (new Date(next.timestamp) - new Date(msg.timestamp).getTime());
+                                let t = tspan + (tspan * (slider.val() / 100));
+                                console.log({ text: 'Next', timeout: t, next: next, tspan: tspan });
+                                playTimer = setTimeout(async () => { await fnProcessMessage(next); }, t);
+                            }
+                            else {
+                                divControls.attr('data-mode', 'stopped');
+                                btnPrev.removeClass('disabled');
+                                btnNext.removeClass('disabled');
+                                btnPlay.removeClass('disabled');
+                                btnPause.removeClass('flicker-animated');
+                                if (!btnPause.hasClass('disabled')) btnPause.addClass('disabled');
+                                if (!btnStop.hasClass('disabled')) btnStop.addClass('disabled');
+                            }
+                            break;
+                    }
+                }
+            };
+            let vlist = el.find('div.picVirtualList:first');
+            let currIndex = vlist[0].selectedIndex();
+            let btnPrev = fnCreateButton('Previous Message', 'fas fa-backward-step').on('click', (evt) => {
+                if ($(evt.target).hasClass('disabled')) return;
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                if (currIndex > 0) {
+                    currIndex--;
+                    divControls.attr('data-mode', 'prev');
+                    let msg = fnGetPrevMessage();
+                    if (typeof msg !== 'undefined') playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
+                }
+            });
+            let btnPlay = fnCreateButton('Play from Selected', 'fas fa-play').on('click', (evt) => {
+                if ($(evt.target).hasClass('disabled')) return;
+                if (!btnPrev.hasClass('disabled')) btnPrev.addClass('disabled');
+                if (!btnNext.hasClass('disabled')) btnNext.addClass('disabled');
+                let msg = fnGetNextMessage();
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                if (typeof msg !== 'undefined') {
+                    btnPause.removeClass('flicker-animated');
+                    btnPause.removeClass('disabled');
+                    btnStop.removeClass('disabled');
+                    btnPlay.addClass('disabled');
+                    divControls.attr('data-mode', 'play');
+                    playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
+                }
+
+            });
+            let btnNext = fnCreateButton('Next Message', 'fas fa-forward-step').on('click', (evt) => {
+                if ($(evt.target).hasClass('disabled')) return;
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                if (currIndex < vlist[0].totalRows()) {
+                    currIndex++;
+                    divControls.attr('data-mode', 'next');
+                    let msg = fnGetNextMessage();
+                    if (typeof msg !== 'undefined') playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
+                }
+            });
+            let btnPause = fnCreateButton('Pause Replay', 'fas fa-pause').addClass('disabled').on('click', (evt) => {
+                if ($(evt.target).hasClass('disabled')) return;
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                let mode = divControls.attr('data-mode');
+                if (mode === 'paused' || mode === 'next' || mode === 'prev') {
+                    // Start playing again.
+                    btnPause.removeClass('flicker-animated');
+                    if (!btnPrev.hasClass('disabled')) btnPrev.addClass('disabled');
+                    if (!btnNext.hasClass('disabled')) btnNext.addClass('disabled');
+                    btnPlay.addClass('disabled');
+                    btnPause.removeClass('disabled');
+                    btnStop.removeClass('disabled');
+                    divControls.attr('data-mode', 'play');
+                    let msg = fnGetNextMessage();
+                    if (typeof msg !== 'undefined') playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
+                }
+                else {
+                    if (!btnPause.hasClass('flicker-animated')) btnPause.addClass('flicker-animated');
+                    divMessage.text('Paused');
+                    divControls.attr('data-mode', 'paused');
+                    btnStop.removeClass('disabled');
+                    btnPrev.removeClass('disabled');
+                    btnNext.removeClass('disabled');
+                    btnPlay.removeClass('disabled');
+                }
+            });
+            let btnStop = fnCreateButton('Stop Replay', 'fas fa-stop').addClass('disabled').on('click', (evt) => {
+                if ($(evt.target).hasClass('disabled')) return;
+                divControls.attr('data-mode', 'stopped');
+                divMessage.text('Stopped');
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                btnPrev.removeClass('disabled');
+                btnNext.removeClass('disabled');
+                btnPlay.removeClass('disabled');
+                btnPause.removeClass('flicker-animated');
+                if(!btnPause.hasClass('disabled')) btnPause.addClass('disabled');
+                if(!btnStop.hasClass('disabled')) btnStop.addClass('disabled');
+            });
+            if (currIndex === -1) {
+                divControls.find('span').addClass('disabled');
+                divMessage.text('No Starting Message Selected');
+            }
+            dlg.css({ overflow: 'visible' });
         },
         _filterMessages: function () {
             var self = this, o = self.options, el = self.element;
@@ -1171,7 +1370,6 @@ mhelper.init();
         _bindCallBody: function (level, obj, divObj) {
             var self = this, o = self.options, el = self.element;
             for (var s in obj) {
-                console.log(divObj);
                 var divVal = $('<div></div>').appendTo(divObj).addClass('callbody-value-outer');
                 var val = obj[s];
                 if (val === null) {

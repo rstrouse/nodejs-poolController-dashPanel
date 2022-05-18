@@ -2920,12 +2920,14 @@ $.ui.position.fieldTip = {
             el[0].addRow = function (data) { return self.addRow(data); };
             el[0].select = function (row) { return self.selectRow(row); };
             el[0].selectedIndex = function (ndx, scrollTo) { return typeof ndx === 'undefined' ? o.selectedIndex : self.selectRow($(o.rows[ndx].row), scrollTo); };
+            el[0].objByIndex = function (ndx) { return ndx >= 0 && ndx < o.rows.length ? o.rows[ndx] : undefined; };
+            el[0].rowByIndex = function (ndx) { return ndx >= 0 && ndx < o.rows.length ? $(o.rows[ndx].row) : undefined; };
             el[0].clear = function (fn) { self.clear(fn); };
             el[0].render = function (recalc) { if (recalc) self._calculateBlocks(); self.render(); };
             el[0].applyFilter = function (cb) { self.applyFilter(cb); self._calculateBlocks(); self.render(); };
             el[0].clearFilter = function () { o.hiddenRows = 0; self._calculateBlocks(true); self.render(); };
             el[0].scrollTo = function (ndx) { self.scrollTo(ndx); };
-
+            el[0].totalRows = function () { return o.rows.length; };
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
@@ -3011,7 +3013,6 @@ $.ui.position.fieldTip = {
             var offBottom = ((o.rows.length - o.hiddenRows) * o.rowHeight) - offTop - (rows.length * o.rowHeight);
             return { offset: { top: offTop, bottom: offBottom }, rows: rows };
         },
-
         render(startBlock) { // This is the same as the insertToDom method
             var self = this, o = self.options, el = self.element;
             var body = el.find('div.vlist-body');
@@ -3049,7 +3050,6 @@ $.ui.position.fieldTip = {
             //console.log({ cyCluster: o.clusterHeight, cyBlock: o.blockHeight, top: o.scrollTop });
             return Math.floor(o.scrollTop / o.blockHeight) || 0;
         },
-
         _getRowsHeight: function () {
             var self = this, o = self.options, el = self.element;
             o.blockHeight = o.rowHeight * o.rowsPerBlock;
@@ -3174,7 +3174,6 @@ $.ui.position.fieldTip = {
             o.selectedIndex = -1;
             self.render();
         },
-        
         scrollTo: function (ndx) {
             var self = this, o = self.options, el = self.element;
             if (ndx < o.rows.length) {
