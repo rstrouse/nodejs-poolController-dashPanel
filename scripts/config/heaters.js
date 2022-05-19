@@ -41,8 +41,8 @@
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-dumpster-fire', style: { width: '14rem' } },
-                    { binding: 'type', glyph: '', style: { width: '10rem' } },
-                    { binding: 'body', glyph: '', style: { width: '7rem' } }]
+                    { binding: 'type', glyph: '', style: { width: '10rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow:'ellipsis' } },
+                    { binding: 'body', glyph: '', style: { width: '10rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
@@ -58,7 +58,7 @@
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
-                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft:'1rem' } }
+                items: o.bodies, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft:'1rem' } }
             });
             $('<hr></hr>').appendTo(pnl);
             $('<div></div>').appendTo(pnl).addClass('pnl-heater-options');
