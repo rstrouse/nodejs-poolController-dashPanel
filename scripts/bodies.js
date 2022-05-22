@@ -211,9 +211,11 @@
             self._createCoolingIcon(1).appendTo(el);
             self._createCooldownIcon(1).appendTo(el);
             let start = function (evt) {
+                if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
             }
             let end = function (evt) {
+                if ($(evt.target).hasClass('picDropdownButton')) return;
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
                 var lastPressed = $(this).data('lastPressed');
