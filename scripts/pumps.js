@@ -177,7 +177,7 @@
                     el.parent().find('div.picPopover.picPumpSettings[data-id=' + el.attr('data-id') + ']').each(function () {
                         let $this = $(this);
                         for (let i = 0; i < data.circuits.length; i++)
-                            $this.find('div.picPumpCircuit[data-id=' + (i + 1) + ']').each(function () {
+                            $this.find(`div.picPumpCircuit[data-id="${i + 1}]"`).each(function () {
                                 dataBinder.bind($(this), data.circuits[i]);
                             });
                     });
