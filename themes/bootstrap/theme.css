@@ -665,10 +665,11 @@ div.picIndicator[data-status=true] {
 
 div.picIndicator[data-status=delayoff],
 div.picIndicator[data-status=delay] {
-  background-color: #28a745;
-  border-color: #28a745;
-  animation: blinker 1s linear infinite;
-  -webkit-animation: blinker 1s infinite linear;
+  background-color: rgb(255, 255, 28);
+  border-color: rgb(255, 255, 28);
+  color: rgba(27, 27, 27, 0.4);
+  /* animation: blinker 1s linear infinite;
+  -webkit-animation: blinker 1s infinite linear; */
 }
 
 div.picIndicator[data-status=delayon] {

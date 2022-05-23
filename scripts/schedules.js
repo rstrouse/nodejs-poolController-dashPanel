@@ -98,7 +98,7 @@
                 }
                 el.attr('data-active', true);
                 dataBinder.bind(el, data);
-                el.find('div.picIndicator').attr('data-status', data.manualPriorityActive ? 'pending' : data.isOn ? 'on' : 'off');
+                el.find('div.picIndicator').attr('data-status', data.manualPriorityActive ? 'delay' : data.isOn ? 'on' : 'off');
                 el.attr('data-id', data.id);
                 el.find('.picSchedDays').remove();
                 var startTime = parseInt(data.startTime);
