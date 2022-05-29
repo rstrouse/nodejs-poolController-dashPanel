@@ -541,9 +541,9 @@ var dataBinder = {
                 if (this.isEmpty()) {
                     isValid = false;
                     if (typeof this.label === 'function')
-                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' }).css({ whiteSpace: 'nowrap' });
                     else 
-                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' }).css({ whiteSpace: 'nowrap' });
                 }
             }
             else if (typeof this.val === 'function') {
@@ -551,9 +551,9 @@ var dataBinder = {
                 if (typeof val === 'undefined') {
                     isValid = false;
                     if (typeof this.label === 'function')
-                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: this.label().text() + ' is Required' }).css({ whiteSpace: 'nowrap' });
                     else
-                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' });
+                        $('<div></div>').appendTo($(this)).fieldTip({ message: 'Value is Required' }).css({ whiteSpace: 'nowrap' });
                 }
             }
         });

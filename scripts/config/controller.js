@@ -18,10 +18,123 @@
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Interface', icon: '<i class="fas fa-plus" ></i>' });
                 btnAdd.on('click', function (e) {
-                    console.log(`implement me`);
+                    self._addInterface();
                 });
             });
 
+        },
+        _createUploadBindingsDialog: function (interfaceDlg) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgUploadBackground', {
+                message: 'Upload Bindings File',
+                width: '470px',
+                height: 'auto',
+                title: 'Upload a Bindings File',
+                buttons: [{
+                    text: 'Upload File', icon: '<i class="fas fa-upload"></i>',
+                    click: function () {
+                        var bf = dataBinder.fromElement(dlg);
+                        var useProxy = makeBool($('body').attr('data-apiproxy'));
+                        var url = '/app/interfaceBindings/file';
+                        var serviceUrl = useProxy ? '/njsPC' + (!url.startsWith('/') ? '/' : '') + url : $('body').attr('data-apiserviceurl') + (!url.startsWith('/') ? '/' : '') + url;
+                        dlg.find('div.picFileUploader').each(function () {
+                            this.upload({ url: serviceUrl, showProgress: true });
+                        });
+                    }
+                },
+                {
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            var line = $('<div>Select a valid interface bindings file to upload then click the upload file button to add it to the list available bindings.</div>').appendTo(dlg);
+            $('<hr></hr>').appendTo(dlg);
+            line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).fileUpload({ binding: 'bindingsFile', showProgress: true, accept: '.json', labelText: 'Bindings File', inputAttrs: { style: { width: '24rem' } } })
+                .on('changed', function (e) {
+                    console.log(e);
+                })
+                .on('complete', function (e) {
+                    $.getApiService('/app/options/interfaces', null, 'Loading Interface Options...', function (opts, status, xhr) {
+                        interfaceDlg.find('#ddBindings')[0].items(opts.files);
+                        $.pic.modalDialog.closeDialog(dlg);
+                    });
+
+                    //if (restoreDialog.length > 0) restoreDialog[0].loadRestoreFiles(e.fileData.filePath);
+                });
+            line = $('<div></div>').appendTo(div);
+            dlg.css({ overflow: 'visible' });
+        },
+        _addInterface: function () {
+            let self = this, o = self.options, el = self.element;
+            $.getApiService('/app/options/interfaces', null, 'Loading Interface Options...', function (opts, status, xhr) {
+                let dlg = $.pic.modalDialog.createDialog('dlgSelectControllerType', {
+                    message: 'Add Interface',
+                    width: '470px',
+                    height: 'auto',
+                    title: 'New Interface',
+                    buttons: [
+                        {
+                            text: 'Add Interface', icon: '<i class="fas fa-save"></i>',
+                            click: function () {
+                                if (dataBinder.checkRequired(dlg)) {
+                                    let iface = dataBinder.fromElement(dlg);
+                                    console.log(iface);
+                                    $.putApiService('/app/interfaces/add', iface, 'Adding Interface to configuration...', (defn, status, xhr) => {
+                                        let lst = el.find('div.cfgInterfaces');
+                                        opts.interfaces[defn.id] = defn.opts;
+                                        $('<div></div>').appendTo(lst).pnlInterfaces(opts)[0].dataBind(defn.opts, defn.id);
+                                        $.pic.modalDialog.closeDialog(this);
+                                    });
+                                }
+                            }
+                        },
+                        {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }
+                    ]
+                });
+                let line = $('<div></div>').appendTo(dlg);
+                $('<div></div>').appendTo(line).addClass('status-text').css({ padding: '.5rem' }).text('Select the the file that contains the interface bindings from the dropdown.  If the file has not been uploaded to your njsPC server click the upload file button to upload it.');
+                line = $('<div></div>').appendTo(dlg);
+                $('<hr></hr>').appendTo(line);
+                $('<div></div>').appendTo(line).inputField({ binding: 'name', labelText: 'Name', maxlength: 16, required: true, labelAttrs: { style: { width: '4rem' } } });
+                $('<div></div>').appendTo(line).pickList({
+                    required: true,
+                    bindColumn: 0, displayColumn: 1, labelText: 'Type', binding: 'type',
+                    columns: [{ binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
+                    items: opts.types, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                }).on('selchanged', (evt) => {
+                    ddBindings[0].required(evt.newItem.hasBindings);
+                    if (evt.newItem.hasBindings) {
+                        ddBindings.show();
+                    }
+                    else ddBindings.hide();
+                });
+                line = $('<div></div>').appendTo(dlg);
+                let ddBindings = $('<div></div>').appendTo(line).pickList({
+                    id: 'ddBindings',
+                    binding: 'fileName',
+                    labelText: 'Binding',
+                    required: true,
+                    bindColumn: 1, displayColumn: 0,
+                    columns: [{ binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }, { binding: 'filename', text: 'Filename', style: { whiteSpace: 'nowrap' }, hidden: false }],
+                    inputAttrs: { style: { width: '10rem' } },
+                    labelAttrs: { style: { width: '4rem' } },
+                    items: opts.files
+                }).css({ marginRight: '.25rem' }).hide().on('selchanged', function (evt) {
+
+                });
+
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
+                btnPnl.appendTo(dlg);
+                $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Upload Bindings', icon: '<i class="fas fa-file-arrow-up"></i>' })
+                    .on('click', function (e) {
+                        self._createUploadBindingsDialog(dlg);
+                    });
+                dlg.css({ overflow: 'visible' });
+            });
         }
     });
     $.widget('pic.pnlInterfaces', {
@@ -47,7 +160,7 @@
             $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 32 }, labelAttrs: { style: {} } });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
-                bindColumn: 0, displayColumn: 0, labelText: 'Type', binding: binding + 'type',
+                bindColumn: 0, displayColumn: 1, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.types, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
@@ -130,7 +243,7 @@
             $('<div></div>').appendTo(pnl).addClass('pnl-appSettings-type');
 
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Interface', icon: '<i class="fas fa-save"></i>' });
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ id:'btnSave',  text: 'Save Interface', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -150,25 +263,23 @@
                     });
                 }
             });
-            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Interface', icon: '<i class="fas fa-trash"></i>' });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ id: 'btnDelete', text: 'Delete Interface', icon: '<i class="fas fa-trash"></i>' });
             btnDelete.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
-                $.pic.modalDialog.createConfirm('dlgConfirmDeleteController', {
-                    message: 'Are you sure you want to delete controller ' + v.name + '?',
+                let cfm = $.pic.modalDialog.createConfirm('dlgConfirmDeleteInterface', {
+                    message: 'Are you sure you want to delete interface [' + v.name + ']?',
                     width: '350px',
                     height: 'auto',
-                    title: 'Confirm Delete Controller',
+                    title: 'Confirm Delete Interface',
                     buttons: [{
                         text: 'Yes', icon: '<i class="fas fa-trash"></i>',
                         click: function () {
-                            $.pic.modalDialog.closeDialog(this);
-                            if (v.id <= 0) p.parents('div.picConfigCategory.cfgChemController:first').remove();
-                            else {
-                                $.deleteApiService('/config/chemController', v, 'Deleting Chem Controller...', function (c, status, xhr) {
-                                    p.parents('div.picConfigCategory.cfgChemController:first').remove();
-                                });
-                            }
+                            var iface = dataBinder.fromElement(p);
+                            $.deleteApiService('/app/interface', iface, 'Deleting Interface...', function (c, status, xhr) {
+                                p.parents('div.picAppCategory.cfgAppInterfaces:first').remove();
+                                $.pic.modalDialog.closeDialog(cfm);
+                            });
                         }
                     },
                     {
@@ -189,6 +300,12 @@
             // If the interface is enabled lets highlight the flask.
             if (!obj.enabled) cols[0].elGlyph().css({ color: 'silver' });
             else cols[0].elGlyph().css({ color: '' });
+            if (obj.isCustom === true) {
+                el.find('#btnDelete').show();
+            }
+            else {
+                el.find('#btnDelete').hide();
+            }
             if (typeof obj.type !== 'undefined' && obj.type === 'rem') {
                 el.find('div.findButton').show();
             }
@@ -239,7 +356,7 @@
                             bindColumn: 0, displayColumn: 2, labelText: `Expansion Module ${opts.equipment.expansions[i].id}`, binding: `expansion${opts.equipment.expansions[i].id}`,
                             columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap', marginTop: '1rem' } }, { binding: 'name', hidden: false, text: 'Expansion', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
                             items: type.expansionModules, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
-                        }).appendTo(line)
+                        }).appendTo(line);
                     }
                 }
 
