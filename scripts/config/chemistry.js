@@ -82,7 +82,8 @@
                                     superChlorHours: 8,
                                     master: master,
                                     body: 0,
-                                    model: 0
+                                    model: 0,
+                                    saltTarget: 3400
                                 });
                                 divChlorinator.find('div.picAccordian:first').each(function () { this.expanded(true); });
                                 $.pic.modalDialog.closeDialog(dlg[0]);
@@ -896,12 +897,13 @@
             $('<hr></hr>').appendTo(pnl);
 
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Pool Setpoint', binding: binding + 'poolSetpoint', min: 0, max: 100, step: 1, units: '%', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Spa Setpoint', binding: binding + 'spaSetpoint', min: 0, max: 100, step: 1, units: '%', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Pool Setpoint', binding: binding + 'poolSetpoint', min: 0, max: 100, step: 1, units: '%', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Spa Setpoint', binding: binding + 'spaSetpoint', min: 0, max: 100, step: 1, units: '%', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', marginRight: '.25rem' } } });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Super Chlor', binding: binding + 'superChlorHours', min: 1, max: 96, step: 1, units: 'hours', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Super Chlor', binding: binding + 'superChlorHours', min: 1, max: 96, step: 1, units: 'hours', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Ignore Salt Reading', binding: binding + 'ignoreSaltReading' }).attr('title', `Check this box if you are feeding the salt display reading from a source other than the onboard conductivity probe for the cell.`).css({ marginLeft: '1.7rem' });
-
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Salt Target', binding: binding + 'saltTarget', min: 1500, max: 5000, step: 10, units: 'ppm', inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { marginLeft: '4rem', width: '5.9rem', marginRight: '.25rem' } } });
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Chlorinator', icon: '<i class="fas fa-save"></i>' });
 
