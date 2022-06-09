@@ -255,6 +255,12 @@
                 self.countdownEndTime();
                 if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
                 if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
+                if (data.action.val !== 0) {
+                    el.find('i.picDropdownButton').addClass('fa-spin');
+                }
+                else {
+                    el.find('i.picDropdownButton').removeClass('fa-spin');
+                }
             } catch (err) { console.error(`Error processing circuit setState ${err.message}`); }
         },
         resetState: function () {
@@ -701,6 +707,12 @@
                 else {
                     el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 }
+                if (data.action.val !== 0) {
+                    el.find('i.picDropdownButton').addClass('fa-spin');
+                }
+                else {
+                    el.find('i.picDropdownButton').removeClass('fa-spin');
+                }
 
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
                 el.attr('data-state', data.isOn);
@@ -1112,6 +1124,12 @@
             try {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
                 el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
+                if (data.action.val !== 0) {
+                    el.find('i.picDropdownButton').addClass('fa-spin');
+                }
+                else {
+                    el.find('i.picDropdownButton').removeClass('fa-spin');
+                }
                 el.attr('data-state', data.isOn);
                 if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel').text(data.name);
                 if (typeof data.endTime === 'undefined' || !data.isOn) {
@@ -1316,6 +1334,9 @@
                 case 'recall':
                     o.processing = true;
                     el.find('i.fa-bookmark').addClass('burst-animated');
+                    break;
+                case 'settheme':
+                    o.processing = true;
                     break;
                 default:
                     o.processing = false;

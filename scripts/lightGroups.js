@@ -405,6 +405,9 @@ $.widget('pic.lightGroupPanel', {
                 o.processing = true;
                 el.find('i.fa-bookmark').addClass('burst-animated');
                 break;
+            case 'settheme':
+                o.processing = true;
+                break;
             default:
                 o.processing = false;
                 el.find('i.fa-sync').removeClass('fa-spin');
