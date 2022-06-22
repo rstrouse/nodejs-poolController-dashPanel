@@ -287,7 +287,9 @@
             el.find('div[data-bind=eggTimerMinutes]').css({ visibility: obj.dontStop ? 'hidden' : '' });
             if (obj.id === 1 || obj.id === 6) el.find('div.picPickList[data-bind=type]').addClass('disabled');
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
-            if (obj.master === 1 && obj.id !== 1 && obj.id !== 6) { // Can only delete and set address on REM circuits.
+            // Can only delete and set address on REM circuits.
+            // RSG - 6.22.22 - removed id not 1 or 6 so we can set the main pool/spa circuits #494
+            if (obj.master === 1){// && obj.id !== 1 && obj.id !== 6) { 
                 el.find('div#btnDeleteCircuit').show();
                 el.find('div.pnlDeviceBinding').show();
             }
