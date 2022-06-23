@@ -331,7 +331,7 @@
                                     console.log(opts);
                                     if (opts.reload) $.getApiService('/app/config/startPacketCapture');
                                     else $.getApiService('/app/config/startPacketCaptureWithoutReset');
-                                    btnStartCapture[0].buttonText('Cancel Capture');
+                                    btnStartCapture[0].buttonText('End Capture');
                                     divOuter.find('div.picOptionButton').each(function () { this.disabled(true); });
                                     divOuter.find('div.picPickList').each(function () { this.disabled(true); });
                                     btnStartCapture.show();
@@ -349,7 +349,7 @@
 
 
                         //$.getApiService('/app/config/startPacketCaptureWithoutReset');
-                        //btnStartCapture[0].buttonText('Cancel Capture');
+                        //btnStartCapture[0].buttonText('End Capture');
                         //divOuter.find('div.picOptionButton').each(function () { this.disabled(true); });
                         //divOuter.find('div.picPickList').each(function () { this.disabled(true); });
                         //btnStartCapture.show();
@@ -376,7 +376,7 @@
                     console.log(data);
                     dataBinder.bind(contents, data);
                     if (data.app.captureForReplay === true) {
-                        btnStartCapture[0].buttonText('Cancel Capture');
+                        btnStartCapture[0].buttonText('End Capture');
                         grp.find('div.picOptionButton').each(function () { this.disabled(true); });
                         btnStartCapture.show();
                         btnClearLog.hide();
