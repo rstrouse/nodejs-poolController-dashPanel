@@ -190,12 +190,22 @@
             $('<span class="picCircuitEndTime"></span>').appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
+            const delta = 6;
+            let startX;
+            let startY;
             let start = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
+                startX = evt.pageX;
+                startY = evt.pageY;
             }
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                const diffX = Math.abs(evt.pageX - startX);
+                const diffY = Math.abs(evt.pageY - startY);
+                if (diffX > delta && diffY > delta) {
+                   return;
+                }
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
                     var duration = new Date().getTime() - lastPressed;
@@ -315,12 +325,22 @@
             $('<span class="picCircuitEndTime"></span>').appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
+            const delta = 6;
+            let startX;
+            let startY;
             let start = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
+                startX = evt.pageX;
+                startY = evt.pageY;
             }
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                const diffX = Math.abs(evt.pageX - startX);
+                const diffY = Math.abs(evt.pageY - startY);
+                if (diffX > delta && diffY > delta) {
+                    return;
+                 }
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
                     var duration = new Date().getTime() - lastPressed;
@@ -567,12 +587,22 @@
             $('<label class="picFeatureLabel" data-bind="name"></label>').appendTo(el);
             $('<span class="picCircuitEndTime"></span>').appendTo(el);
             self._buildPopover();
+            const delta = 6;
+            let startX;
+            let startY;
             let start = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
+                startX = evt.pageX;
+                startY = evt.pageY;
             };
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                const diffX = Math.abs(evt.pageX - startX);
+                const diffY = Math.abs(evt.pageY - startY);
+                if (diffX > delta && diffY > delta) {
+                   return;
+                }
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
                 var lastPressed = $(this).data('lastPressed');
@@ -1010,12 +1040,22 @@
             theme.appendTo(el);
             if (typeof o.showInFeatures !== 'undefined') el.attr('data-showinfeatures', o.showInFeatures);
             self.setState(o);
+            const delta = 6;
+            let startX;
+            let startY;
             let start = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
+                startX = evt.pageX;
+                startY = evt.pageY;
             };
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                const diffX = Math.abs(evt.pageX - startX);
+                const diffY = Math.abs(evt.pageY - startY);
+                if (diffX > delta && diffY > delta) {
+                   return;
+                }
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
                     var duration = new Date().getTime() - lastPressed;
