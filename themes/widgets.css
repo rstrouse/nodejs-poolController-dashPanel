@@ -24,7 +24,12 @@ div.picPickList > div.picPickList-value:empty:before {
     content:attr(data-placeholder);
     color:gray;
 }
-
+.disable-overlay {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events:all;
+}
 
 div.container1, div.container2, div.container3 {
     display: flex;

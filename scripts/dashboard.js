@@ -364,6 +364,13 @@
                 console.log({ evt: 'valve', data: data });
 
             });
+            o.socket.on('panelMode', function (data) {
+                console.log({ evt: 'panelMode', data: data });
+                $('div.picController').each(function () {
+                    this.setPanelMode(data);
+                });
+
+            });
             o.socket.on('controller', function (data) {
                 console.log({ evt: 'controller', data: data });
                 $('div.picController').each(function () {
@@ -413,9 +420,9 @@
                 $('div.picController').each(function () {
                     this.setConnectionError({ status: { val: 255, name: 'error', desc: 'Connection Error' } });
                 });
-                el.find('div.picControlPanel').each(function () {
-                    $(this).addClass('picDisconnected');
-                });
+                //el.find('div.picControlPanel').each(function () {
+                //    $(this).addClass('picDisconnected');
+                //});
 
             });
             o.socket.on('connect_timeout', function (data) {
@@ -437,9 +444,9 @@
             o.socket.on('connect', function (sock) {
                 console.log({ msg: 'socket connected:', sock: sock });
                 o.isConnected = true;
-                el.find('div.picControlPanel').each(function () {
-                    $(this).removeClass('picDisconnected');
-                });
+                //el.find('div.picControlPanel').each(function () {
+                //$(this).removeClass('picDisconnected');
+                //});
                 self._resetState();
             });
             o.socket.on('close', function (sock) {

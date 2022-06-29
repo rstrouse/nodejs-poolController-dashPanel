@@ -7,6 +7,25 @@
             el[0].setControllerState = function (data) { self.setControllerState(data); };
             el[0].setEquipmentState = function (data) { self.setEquipmentState(data); };
             el[0].setConnectionError = function (data) { self.setConnectionError(data); };
+            el[0].setPanelMode = function (data) { self.setPanelMode(data); };
+            el[0].enablePanels = function (bEnable) { self.enablePanels(bEnable); };
+        },
+        _showPanelMode: function () {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgPanelMode', {
+                width: '357px',
+                height: 'auto',
+                title: `Select a Panel Mode`,
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).serviceModePanel();
+            dlg.css({ overflow: 'visible' });
         },
         _initController: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -15,15 +34,31 @@
             let row = $('<div class="picHeaderRow picControllerTitle control-panel-title"></div>').appendTo(el);
             $('<div class= "picModel"><i class="fas fa-bars"></i><span class="picModelData"></span></div>').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"></span></div>').appendTo(row);
-            if ($('div.dashOuter').length)
-                $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div><div class="picConfigIcon"><i class="fas fa-cogs"></i></div></div>').appendTo(row);
-            else
+            if ($('div.dashOuter').length) {
+                var divStatus = $('<div></div>').addClass('picControllerStatus').appendTo(row);
+                var cstatus = $('<div></div>').appendTo(divStatus)
+                    .on('click', function (evt) {
+                        var controller = $('body').attr('data-controllertype');
+                        if(controller === 'nixie') self._showPanelMode();
+
+                    }).css({ display: 'inline-block' });
+
+                $('<span></span>').addClass('picStatusData').appendTo(cstatus);
+                $('<span></span>').addClass('picPercentData').appendTo(cstatus);
+                $('<div></div>').addClass('picIndicator').attr('data-status', 'error').appendTo(cstatus);
+                $('<i></i>').addClass('fas fa-cogs').appendTo($('<div></div>').addClass('picConfigIcon').appendTo(divStatus));
+                //$('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div><div class="picConfigIcon"><i class="fas fa-cogs"></i></div></div>').appendTo(row);
+            }
+            else {
+                
                 $('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div></div>').appendTo(row);
+
+            }
             console.log('jQuery:' + jQuery.fn.jquery + ' jQueryUI:' + ($.ui.version || 'pre 1.6'));
 
             row = $('<div class="picFreezeProtect" data-status="off"><i class="fas fa-snowflake burst-animated"></i><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"></i></div>');
             row.appendTo(el);
-            row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><i class="far fa-pause-circle burst-animated"></i></div>');
+            row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><span class="service-timeout-remaining"></span><i class="far fa-pause-circle burst-animated"></i></div>');
             row.appendTo(el);
             $('<div class="picSpaDrain" data-status="off"><i class="fas fa-skull-crossbones burst-animated"></i><label>SPA DRAIN ACTIVE</label><i class="fas fa-skull-crossbones burst-animated"></i></div>').appendTo(el);
             el.find('div.picModel > i').on('click', function (evt) {
@@ -43,6 +78,7 @@
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             });
+
             el.find('div.picConfigIcon').on('click', function (evt) {
                 let btn = $(this);
                 let container = $('div.dashOuter');
@@ -80,6 +116,7 @@
         },
         setConnectionError: function (data) {
             var self = this, o = self.options, el = self.element;
+            self.enablePanels(false);
             if (typeof data.status === 'undefined') data.status = { val: 3, name: 'unknown', desc: 'Unknown Status' };
             el.find('span.picControllerTime').each(function () {
                 $(this).text('--/--/---- --:--');
@@ -94,6 +131,47 @@
             el.find('div.picPanelMode > label').text('Connection Error');
             el.find('div.picFreeze').attr('data-status', 'off');
 
+        },
+        enablePanels: function (bEnable) {
+            var self = this, o = self.options, el = self.element;
+            var dc = $('.dashContainer');
+            var cc = $('.configContainer');
+            if (!bEnable) {
+                cc.css({ opacity: .7 });
+                dc.css({ opacity: .7 });
+                if (dc.find('div.disable-overlay').length === 0) {
+                    $('<div></div>').appendTo(dc).addClass('disable-overlay').on('click', function (evt) { evt.preventDefault(); evt.stopImmediatePropagation(); });
+                }
+                if (cc.find('div.disable-overlay').length === 0) {
+                    $('<div></div>').appendTo(cc).addClass('disable-overlay').on('click', function (evt) { evt.preventDefault(); evt.stopImmediatePropagation(); });
+                }
+            }
+            else {
+                cc.css({ opacity: 1 });
+                dc.css({ opacity: 1 });
+                dc.find('div.disable-overlay').remove();
+                cc.find('div.disable-overlay').remove();
+            }
+        },
+        setPanelMode: function (data) {
+            var self = this, o = self.options, el = self.element;
+            try {
+                var pnlMode = el.find('div.picPanelMode');
+                pnlMode.attr('data-status', data.mode.name);
+                pnlMode.find('label').text(`${data.mode.desc} Mode`);
+                if (data.mode.name !== 'timeout' || isNaN(data.remaining) || !data.remaining) pnlMode.find('span').text('');
+                else {
+                    pnlMode.find('span').text(`: ${dataBinder.formatDuration(Math.round(data.remaining))} `);
+                }
+                var dc = $('.dashContainer');
+                if (data.mode.name !== 'auto') {
+                    self.enablePanels(false);
+                }
+                else {
+                    self.enablePanels(true);
+                }
+
+            } catch(err) { console.error(err); }
         },
         setControllerState: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -116,8 +194,12 @@
                         ln.find('span.picStatusData').text(status.desc);
                         ln.find('div.picIndicator').attr('data-status', status.name);
                     });
-                    el.find('div.picPanelMode').attr('data-status', data.mode.name);
-                    el.find('div.picPanelMode > label').text(data.mode.desc);
+                    var pnlMode = el.find('div.picPanelMode');
+                    pnlMode.attr('data-status', data.mode.name);
+                    pnlMode.find('label').text(`${data.mode.desc} Mode`);
+                    if (data.mode.name !== 'timeout') pnlMode.find('span').text('');
+                    if (data.mode.name !== 'auto') self.enablePanels(false);
+                    else self.enablePanels(true);
                     el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
                     if (typeof data.valveMode !== 'undefined') el.find('div.picSpaDrain').attr('data-status', data.valveMode.name === 'spadrain' ? 'on' : 'off');
                     el.attr('data-status', data.status.val);
@@ -176,6 +258,98 @@
                 el.find('div.picModel > span.picModelData').text('Unknown Model');
                 el.find('div.picModel > i').click();
             }
+        }
+    });
+    $.widget('pic.serviceModePanel', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            var line = $('<div></div>').appendTo(el);
+            $('<div></div>').addClass('info-message').text('Enabling Service or Timeout Modes will disable all circuits and returns local control to any connected equipment.').appendTo(line);
+            $('<hr></hr>').appendTo(el);
+            var btnStyle = { width: '7rem', margin: '0px auto', display: 'block' };
+            //var btnStyle = { width: '7rem', margin: '0px auto' };
+            line = $('<div></div>').appendTo(el).css({ marginBottom: '5px' });
+            $('<div></div>').appendTo(line).actionButton({ id: 'btnAutoMode', text: 'Auto', icon: '<i class="fas fa-circle-check"></i>' }).on('click', function (evt) {
+                // Maybe at some point we prompt for the user to restart any cancelled schedules.  At this point however popping back into auto mode does not do that.
+                $.putApiService('/state/panelMode', { mode: 'auto' }, 'Setting Auto Mode...', function (data, status, xhr) {
+
+                });
+
+            }).css(btnStyle);
+            line = $('<div></div>').appendTo(el).css({ marginBottom: '5px' });
+            $('<div></div>').appendTo(line).actionButton({ id: 'btnServiceMode', text: 'Service', icon: '<i class="fas fa-circle-pause"></i>' }).on('click', function (evt) {
+                self._promptService();
+
+            }).css(btnStyle);
+            line = $('<div></div>').appendTo(el).css({ marginBottom: '7px' });
+            $('<div></div>').appendTo(line).actionButton({ id: 'btnTimeoutMode', text: 'Timeout', icon: '<i class="fas fa-stopwatch"></i>' }).on('click', function (evt) {
+                // For this we will be bringing up another dialog so two deep
+                self._promptTimeout();
+            }).css(btnStyle);
+        },
+        _promptTimeout: function() {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgServiceTimeoutPrompt', {
+                width: '357px',
+                height: 'auto',
+                title: `Begin Service Timeout`,
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Begin Service Timeout', icon: '<i class="fas fa-stopwatch"></i>',
+                        click: function () {
+                            var t = dataBinder.fromElement(dlg);
+                            console.log(t);
+                            var sec = (t.hours * 3600) + (t.minutes * 60);
+                            if (!sec) $.pic.fieldTip.showTip(dlg.find('div[data-bind=hours'), { message: 'You must supply the time' });
+                            else {
+                                $.putApiService('/state/panelMode', { mode: 'timeout', timeout: sec }, 'Beginning Service Timeout...', function (data, status, xhr) {
+                                    $.pic.modalDialog.closeDialog(dlg);
+                                });
+                            }
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').addClass('warning-message').appendTo(dlg).html('<span style="font-weight:bold">WARNING:</span> When using this feature you should assume that equipment may start at any time.  Do not disassemble, disconnect, or maintain equipment without first removing power.').css({ margin: '4px', fontSize:'.9rem' });
+            $('<div></div>').addClass('info-message').text('The panel will return to Auto mode after the specified number of hours and minutes.').appendTo(dlg);
+
+            $('<hr></hr>').appendTo(dlg);
+            var line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding:'hours', labelText: 'Timeout', units: 'hrs', min: 0, max: 999, step: 1, fmtMask: '#,##0', labelAttrs: { style: { marginRight: '.25rem' } } }).css({ marginRight: '.25rem' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'minutes', labelText: 'Minutes', units: 'min', min: 0, max: 59, step: 1, fmtMask: '#,##0', labelAttrs: { style: { display: 'none' } } });
+            dlg.css({ overflow: 'visible' });
+        },
+        _promptService: function () {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgServicePrompt', {
+                width: '357px',
+                height: 'auto',
+                title: `Set Service Mode`,
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Begin Service', icon: '<i class="fas fa-stopwatch"></i>',
+                        click: function () {
+                            $.putApiService('/state/panelMode', { mode: 'service' }, 'Beginning Service Mode...', function (data, status, xhr) {
+                                $.pic.modalDialog.closeDialog(dlg);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').addClass('warning-message').appendTo(dlg).html('<span style="font-weight:bold">WARNING:</span> When using this feature you should assume that equipment may start at any time.  Do not disassemble, disconnect, or maintain equipment without first removing power.').css({ margin: '4px', fontSize: '.9rem' });
+            $('<div></div>').addClass('info-message').text('Are you sure you want to begin Service Mode?  The panel will remain in service mode until njsPC is restarted or you manually return to Auto mode.').appendTo(dlg);
+            dlg.css({ overflow: 'visible' });
         }
     });
     $.widget('pic.settingsPanel', {
@@ -500,7 +674,6 @@
                 self._setOrder(settings).appendTo(contents);
             });
         },
-
         _setOrder: function () {
             var self = this, o = self.options, el = self.element;
             var grp = $('<fieldset></fieldset>').attr('id', 'orderOfElements');
@@ -832,10 +1005,16 @@
                     });
                 });
                 btnApply.appendTo(btnPnl);
-
             });
-            let njsPcInfo = $('<div class="picFirmware"></div>').attr('id', 'picNjsPCInfo').appendTo($('div.picSystem'));
-            let dpInfo = $('<div class="picFirmware"></div>').attr('id', 'picdpInfo').appendTo($('div.picSystem'));
+            let pnl = el.find('div.picSystem');
+            let pnlVer = $('<div></div>').appendTo(pnl).css({ whiteSpace: 'nowrap' });
+            let njsPcInfo = $('<div></div>').addClass('picFirmware').attr('id', 'picNjsPCInfo').appendTo(pnlVer);
+            let dpInfo = $('<div></div>').addClass('picFirmware').attr('id', 'picdpInfo').appendTo(pnlVer);
+            pnlVer.find('div.picFirmware').css({ width: '50%', padding: '4px', display: 'inline-block' });
+            //let njsPcInfo = $('<div class="picFirmware"></div>').attr('id', 'picNjsPCInfo').appendTo($('div.picSystem'));
+            //let dpInfo = $('<div class="picFirmware"></div>').attr('id', 'picdpInfo').appendTo($('div.picSystem'));
+            //$('<div></div>').appendTo(pnl).serviceModePanel({});
+
             $.getApiService('/state/appVersion', null, function (sdata, status, xhr) {
                 console.log('getting the state from the server');
                 console.log(sdata);

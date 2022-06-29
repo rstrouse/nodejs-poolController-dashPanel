@@ -63,6 +63,10 @@ div.picValueSpinner.disabled > div {
 .btn-toggle {
   cursor: pointer; }
 
+div.dashContainer,
+div.configContainer {
+  position: relative; }
+
 span.picPercentData {
   padding-left: 2px;
   padding-right: 2px; }

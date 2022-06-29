@@ -521,3 +521,21 @@ table.picPumpPrograms > tbody > tr:nth-child(2) > td,
 table.picSchedDays > tbody > tr:nth-child(2) > td {
   border: solid 1px white;
   background-color: black; }
+
+div.picPanelMode,
+div.picFreezeProtect {
+  text-align: center;
+  color: white; }
+
+div.picSpaDrain {
+  text-align: center;
+  color: white; }
+
+div.picPanelMode > label,
+div.picFreezeProtect > label,
+div.picSpaDrain > label {
+  font-weight: bold;
+  color: mistyrose;
+  font-size: 1.2rem;
+  padding-left: .5rem;
+  padding-right: .5rem; }
