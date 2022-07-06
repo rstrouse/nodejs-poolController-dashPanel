@@ -137,8 +137,9 @@
             var dc = $('.dashContainer');
             var cc = $('.configContainer');
             if (!bEnable) {
+                dc.children('div').css({ opacity: .7 });
                 cc.css({ opacity: .7 });
-                dc.css({ opacity: .7 });
+                //dc.css({ opacity: .7 });
                 if (dc.find('div.disable-overlay').length === 0) {
                     $('<div></div>').appendTo(dc).addClass('disable-overlay').on('click', function (evt) { evt.preventDefault(); evt.stopImmediatePropagation(); });
                 }
@@ -147,8 +148,9 @@
                 }
             }
             else {
+                dc.children('div').css({ opacity: '' });
                 cc.css({ opacity: 1 });
-                dc.css({ opacity: 1 });
+                //dc.css({ opacity: 1 });
                 dc.find('div.disable-overlay').remove();
                 cc.find('div.disable-overlay').remove();
             }
