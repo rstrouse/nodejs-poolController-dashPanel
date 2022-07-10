@@ -343,7 +343,7 @@
                     labelText: unitsType,
                     binding: binding + 'relay', min: 1, max: type.maxSpeeds || type.maxRelays, step: 1,
                     value: circ.relay,
-                    style: { marginLeft: '.25rem' },
+                    style: { marginLeft: '.25rem', display: type.maxRelays === 1 ? 'none' : '' }, // no need to show if only 1 value
                     inputAttrs: { maxlength: 5 },
                     labelAttrs: { style: { marginLeft: '.25rem', marginRight: '.25rem', display: 'none' } }
                 });

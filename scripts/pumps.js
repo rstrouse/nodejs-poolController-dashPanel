@@ -236,6 +236,12 @@
                                 div.attr('data-eqid', circuit.circuit.id);
                                 btn.virtualCircuit(circuit.circuit);
                             }
+                            else if (circuit.circuit.equipmentType === 'circuitGroup') {
+                                div.attr('data-circuitid', circuit.circuit.id);
+                                div.attr('data-eqid', circuit.circuit.id);
+                                btn.circuitGroup(circuit.circuit);
+                                btn.addClass('picFeature').addClass('picCircuitGroup');
+                            }
                             else {
                                 div.attr('data-circuitid', circuit.circuit.id);
                                 div.attr('data-eqid', circuit.circuit.id);
@@ -245,7 +251,10 @@
                             }
                             
                             spin.attr('data-units', circuit.units.val);
-                            if (data.type.maxRelays > 0) {
+                            if (data.type.maxRelays === 1) {
+                                continue; // don't display relays if there is only one
+                            }
+                            else if (data.type.maxRelays > 1) {
                                 spin.valueSpinner({ val: circuit.relay, min: 1, max: data.type.maxSpeeds || data.type.maxRelays, step: 1, binding: 'relay' });
                                 spin.find('div.picSpinner-value').css({ width: '3.5rem' });
                             }

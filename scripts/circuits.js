@@ -265,11 +265,13 @@
                 self.countdownEndTime();
                 if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel:first').text(data.name);
                 if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
-                if (data.action.val !== 0) {
-                    el.find('i.picDropdownButton').addClass('fa-spin');
-                }
-                else {
-                    el.find('i.picDropdownButton').removeClass('fa-spin');
+                if (typeof data.action !== 'undefined')   { 
+                    if (data.action.val !== 0) {
+                        el.find('i.picDropdownButton').addClass('fa-spin');
+                    }
+                    else {
+                        el.find('i.picDropdownButton').removeClass('fa-spin');
+                    }
                 }
             } catch (err) { console.error(`Error processing circuit setState ${err.message}`); }
         },
