@@ -679,20 +679,24 @@
                 else {
                     console.log(v);
                     var hash = {};
+                    var isValid = true;
                     for (var i = 0; i < v.circuits.length; i++) {
                         var c = v.circuits[i];
                         var dd = el.find('div.picCircuitOption:nth-child(' + (i + 1) + ') > div.picPickList[data-bind$=circuit]');
-                        if (c.circuit === -1)
+                        if (c.circuit === -1) {
                             $('<div></div>').appendTo(dd).fieldTip({ message: 'Please select a circuit' });
+                            isValid = false;
+                        }
                         else {
                             if (typeof hash['c' + c.circuit] !== 'undefined') {
+                                isValid = false;
                                 $('<div></div>').appendTo(dd).fieldTip({ message: 'Group circuits<br></br>must be unique' });
                             }
                             hash['c' + c.circuit] = c.circuit;
                         }
                         c.position = i + 1;
                     }
-                    if (dataBinder.checkRequired(el)) {
+                    if (dataBinder.checkRequired(el) && isValid) {
                         // Send this off to the server.
                         $.putApiService('/config/lightGroup', v, 'Saving Light Group...', function (data, status, xhr) {
                             console.log({ data: data, status: status, xhr: xhr });

@@ -1149,6 +1149,7 @@
                 case 'light':
                 case 'intellibrite':
                 case 'colorlogic':
+                case 'pooltone':
                 case 'globrite':
                 case 'globritewhite':
                 case 'magicstream':
