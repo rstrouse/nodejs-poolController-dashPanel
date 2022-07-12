@@ -554,9 +554,15 @@
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
                 items: o.circuits, inputAttrs: { style: { width: '9rem', marginLeft:'.25rem' } }, labelAttrs: { style: { marginRight: '.25rem', display: 'none' } }
             }).appendTo(line);
-            $('<div></div>').appendTo(line).buttonOptions({ binding: binding + 'desiredState',
+            /* $('<div></div>').appendTo(line).buttonOptions({ binding: binding + 'desiredState',
                 items: o.circuitStates, value:circ.desiredState,
                 btnAttrs: { style: { width: '4rem', textAlign: 'center' } }
+            }).css({ marginLeft: '.25rem'}).appendTo(line); */
+            $('<div></div>').appendTo(line).pickList({ labelText: 'On/Off Behavior', 
+                binding: binding + 'desiredState',
+                items: o.circuitStates, value:circ.desiredState,
+                columns: [{ binding: 'val', hidden: true, text: 'Val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'On/Off Behavior', style: { whiteSpace: 'nowrap' } }],
+                inputAttrs: { style: { width: '9rem', marginLeft:'.25rem' } }, labelAttrs: { style: { marginRight: '.25rem', display: 'none' }}
             }).css({ marginLeft: '.25rem'}).appendTo(line);
             $('<i class="fas fa-trash picRemoveOption"></i>').appendTo(line);
         },
