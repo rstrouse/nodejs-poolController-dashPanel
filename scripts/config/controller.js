@@ -167,7 +167,7 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: 'enabled' });
 
 
-            var grpConnection = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(pnl);
+            var grpConnection = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).attr('id', 'grpConnection').appendTo(pnl);
             $('<legend></legend>').text('Connection').appendTo(grpConnection);
             line = $('<div></div>').appendTo(grpConnection);
             $('<div></div>').appendTo(line).pickList({
@@ -300,6 +300,17 @@
             // If the interface is enabled lets highlight the flask.
             if (!obj.enabled) cols[0].elGlyph().css({ color: 'silver' });
             else cols[0].elGlyph().css({ color: '' });
+            var grp = el.find('#grpConnection:first');
+            if (typeof type === 'undefined' || type.hasUrl === false) {
+                grp.hide();
+                grp.find('div.picPickList').each(function () { this.required(false); });
+                grp.find('div.picInputField').each(function () { this.required(false) });
+            }
+            else {
+                grp.show();
+                grp.find('div.picPickList').each(function () { this.required(true); });
+                grp.find('div.picInputField').each(function () { this.required(true) });
+            }
             if (obj.isCustom === true) {
                 el.find('#btnDelete').show();
             }
