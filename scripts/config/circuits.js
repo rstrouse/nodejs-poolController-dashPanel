@@ -187,16 +187,18 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
-            if (o.equipmentNames.length > 0) {
-                $('<div></div>').appendTo(line).pickList({
+            var nameId = $('<div></div>').appendTo(line).pickList({
                     required: true,
                     bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
                     items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+                nameId.show();
+            else {
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                nameId.hide();
             }
-            else
-                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { } } });
             $('<div></div>').appendTo(line).pickList({ required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Circuit Function', style: { whiteSpace: 'nowrap' } }],
@@ -323,15 +325,19 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            if (o.equipmentNames.length > 0) {
-                $('<div></div>').appendTo(line).pickList({ required: true,
-                    bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
-                }).appendTo(line);
+            var nameId = $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
+                items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
+            }).appendTo(line);
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+                nameId.show();
+            else {
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                nameId.hide();
             }
-            else
-                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
@@ -439,15 +445,27 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'type').appendTo(line);
-            if (o.equipmentNames.length > 0) {
-                $('<div></div>').appendTo(line).pickList({ required: true,
-                    bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
-                    items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
-                }).appendTo(line);
+            var nameId = $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
+                items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
+            }).appendTo(line);
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+                nameId.show();
+            else {
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                nameId.hide();
             }
-            else
-                $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            //if (o.equipmentNames.length > 0) {
+            //    $('<div></div>').appendTo(line).pickList({ required: true,
+            //        bindColumn: 0, displayColumn: 1, labelText: 'Name', binding: binding + 'nameId',
+            //        columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Custom Name', style: { whiteSpace: 'nowrap' } }],
+            //        items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
+            //    }).appendTo(line);
+            //}
+            //else
+            //    $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Show as Feature', binding: binding + 'showInFeatures', value: true });
 
             line = $('<div></div>').appendTo(pnl);
