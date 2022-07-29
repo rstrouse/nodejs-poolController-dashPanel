@@ -409,7 +409,12 @@
 
             });
             o.socket.on('chemicalDose', (data) => {
-                console.log({ evt: 'chemDose', data: data });
+                console.log({ evt: 'chemicalDose', data: data });
+                if (data.method === 'calibration') {
+                    $('div.chemCalibrateStatus').each(function () {
+                        if ($(this).attr('data-chemical').toLowerCase() === data.type.toLowerCase()) this.dataBind(data);
+                    });
+                }
             });
             o.socket.on('heater', function (data) {
                 console.log({ evt: 'heater', data: data });

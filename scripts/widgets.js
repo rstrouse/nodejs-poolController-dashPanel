@@ -938,6 +938,7 @@ $.ui.position.fieldTip = {
             if (typeof o.id !== 'undefined') el.attr('id', o.id);
             let icon = $('<span class="picButtonIcon"></span>');
             let text = $('<span class="picButtonText"></span>');
+            if (o.showLabel === false) text.hide();
             icon.appendTo(el);
             text.appendTo(el);
             if (o.icon) icon.html(o.icon);

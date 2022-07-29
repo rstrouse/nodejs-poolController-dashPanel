@@ -763,6 +763,96 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'REM Feed', binding: `${binding}remFeedEnabled` }).attr('title', 'This box will be checked if the feed for this probe is enabled in REM.  If this box is not checked, and you check it, the feed will be created for you.  Unchecking the feed will set it as disabled on REM.').addClass('pnl-rem-address').hide();
             return grpProbe;
         },
+        _showPumpCalibrateDialog: function (chemType) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgCalibrateChemPump', {
+                message: 'Calibrate Chemistry Pump',
+                width: '400px',
+                height: 'auto',
+                title: 'Calibrate Chemistry Pump',
+                position: { my: "center top", at: "center top", of: document },
+
+                buttons: [{
+                    id: 'btnCalibrate',
+                    text: 'Start Calibration', icon: '<i class="fas fa-fill-drip"></i>',
+                    click: function () {
+                        var cal = dataBinder.fromElement(dlg);
+                        var chem = dataBinder.fromElement(el.parents('div.cfgChemController:first'));
+                        cal.id = chem.id;
+                        cal.chemType = chemType.toLowerCase();
+                        var btnCal = dlg.find('#btnCalibrate');
+                        var btnCancel = dlg.find(`#btnCancel`);
+                        if (makeBool(dlg.attr('data-calibrating')) === true) {
+                            $.putApiService('/state/chemController/cancelDosing', cal, function (c, status, xhr) {
+                                dlg.attr('data-calibrating', false);
+                                dlg.find('div.calibrationTime').show();
+                                btnCancel.show();
+                                btnCal[0].buttonText('Start Calibration');
+                                dlg.find('div.calibrationStatus').hide();
+                            });
+                        }
+                        else {
+                            $.putApiService('/config/chemController/calibrateDose', cal, `Running ${chemType} pump for ${cal.time} seconds`, function (data, status, xhr) {
+                                dlg.attr('data-calibrating', true);
+                                dlg.find('div.calibrationTime').hide();
+                                btnCancel.hide();
+                                btnCal[0].buttonText('End Calibration');
+                                dlg.find('div.calibrationStatus').show();
+                                dlg.find('div.calibrationStatus > span').text(dataBinder.formatDuration(cal.time, '#,##0'));
+                            });
+                        }
+                    }
+                },
+                    {
+                    id: 'btnCancel',
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            var line = $('<div></div>').addClass('warning-message').css({ display: 'inline-block', verticalAlign: 'top', width: '22rem', fontSize: '8.5pt', marginLeft: '1rem' }).appendTo(dlg);
+            $('<div></div>').appendTo(line).html('<div><span style="font-weight:bold">WARNING:</span><span>This function is not intended to dose chemicals in your system.  Please disconnect the injector from the plumbing and place it in a measurement container before continuing.<span><hr style:"background:yellow"></hr>All run-time safety features are disabled when calibrating.</div>');
+            line = $('<div></div>').appendTo(dlg).text('Supply the calibration time in seconds below.  Then press the start calibration button to run the pump into a measurement container.');
+            line = $('<ul></ul>').appendTo(dlg).css({ fontSize: '8.5pt', marginTop:'4px' });
+            $('<li></li>').appendTo(line).text(`Purge all air from the system using consecutive calibration runs.`);
+            $('<li></li>').appendTo(line).text(`Once the pump shuts off measure the volume dispensed by the pump to determine the flow rate.`);
+            $('<li></li>').appendTo(line).text(`Ensure you have a large enough container to capture all of the liquid dispensed (most often 150+mL/min).`);
+            $('<li></li>').appendTo(line).text(`Ensure you multiply or divide the results to achieve exactly one minute of volume for the pump.`);
+            $('<li></li>').appendTo(line).text(`Press End Calibration to stop the pump at any time.`);
+            
+            $('<hr></hr>').appendTo(dlg);
+            line = $('<div></div>').addClass('calibrationTime').appendTo(dlg).css({ textAlign: 'center' });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `time`, labelText: 'Run Time', dataType: 'number', fmtType: '#,##0', min: 0, max: 300, step: 1, value: 60,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '5rem' } }, units: 'seconds'
+            });
+            line = $('<div></div>').appendTo(dlg).addClass('calibrationStatus').hide().css({ paddingLeft: '2rem', textAlign:'center' });
+            $('<label></label>').appendTo(line).text('Time Left:');
+            $('<span></span>').css({ display: 'inline-block', width: '5rem', paddingLeft: '.25rem' }).appendTo(line);
+            dlg.css({ overflow: 'visible' });
+            dlg.addClass('chemCalibrateStatus');
+            dlg.attr('data-chemical', chemType);
+            dlg[0].dataBind = (data) => {
+                var btnCal = dlg.find('#btnCalibrate');
+                var btnCancel = dlg.find(`#btnCancel`);
+                if (typeof data.end === 'undefined') {
+                    dlg.find('div.calibrationTime').hide();
+                    btnCancel.hide();
+                    btnCal[0].buttonText('End Calibration');
+                    dlg.find('div.calibrationStatus').show();
+                    dlg.find('div.calibrationStatus > span').text(dataBinder.formatDuration((data.time - data.timeDosed), '#,##0'));
+                    dlg.attr('data-calibrating', true);
+                }
+                else {
+                    dlg.find('div.calibrationTime').show();
+                    btnCancel.show();
+                    btnCal[0].buttonText('Start Calibration');
+                    dlg.find('div.calibrationStatus').hide();
+                    dlg.attr('data-calibrating', false);
+                }
+            };
+        },
         _buildPumpPanel: function (remServers, type) {
             var self = this, o = self.options, el = self.element;
             var grpPump = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
@@ -781,6 +871,7 @@
             }).on('selchanged', function (evt) {
                 let grp = $(evt.currentTarget).parents('fieldset:first');
                 evt.newItem.ratedFlow ? grp.find(`div[data-bind$=".ratedFlow"]`).show() : grp.find(`div[data-bind$=".ratedFlow"]`).hide();
+                evt.newItem.ratedFlow ? grp.find('div.picActionButton.calibrate').show() : grp.find('div.picActionButton.calibrate').hide();
                 evt.newItem.tank ? grp.find('div.pnl-tank-size').show() : grp.find('div.pnl-tank-size').hide();
                 evt.newItem.remAddress ? grp.find('.pnl-rem-address').show() : grp.find('.pnl-rem-address').hide();
             });
@@ -817,6 +908,11 @@
                 inputAttrs: { style: { width: '4rem' } },
                 labelAttrs: { style: { width: '3.5rem' } }, units: 'mL/min'
             }).hide();
+            $('<div></div>').appendTo(line).actionButton({ showLabel: false, icon: '<i class="fas fa-scale-balanced"></i>' }).css({ padding: '2px' }).addClass('calibrate').hide()
+                .on('click', function (evt) {
+                    // Open up a pump calibration dialog.
+                    self._showPumpCalibrateDialog(type);
+                });
             line = $('<div></div>').appendTo(grpPump).addClass('pnl-tank-size').hide();
             $('<div></div>').appendTo(line).valueSpinner({
                 canEdit: true,
