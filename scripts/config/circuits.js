@@ -193,11 +193,14 @@
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
                     items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
                 }).appendTo(line);
-            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch') {
+                nameId.required(true);
                 nameId.show();
+            }
             else {
                 var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
                 nameId.hide();
+                nameId.required(false);
             }
             $('<div></div>').appendTo(line).pickList({ required: true,
                 bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
@@ -331,11 +334,14 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
                 items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
             }).appendTo(line);
-            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch') {
                 nameId.show();
+                nameId.required(true);
+            }
             else {
                 var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
                 nameId.hide();
+                nameId.required(false);
             }
 
             $('<div></div>').appendTo(line).pickList({
@@ -451,11 +457,14 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Defined Name', style: { whiteSpace: 'nowrap' } }],
                 items: o.equipmentNames, inputAttrs: { style: { width: "7rem" } }
             }).appendTo(line);
-            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch')
+            if (o.equipmentNames.length > 0 && $('body').attr('data-controllertype') !== 'suntouch') {
                 nameId.show();
+                nameId.required(true);
+            }
             else {
                 var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
                 nameId.hide();
+                nameId.required(false);
             }
             //if (o.equipmentNames.length > 0) {
             //    $('<div></div>').appendTo(line).pickList({ required: true,
