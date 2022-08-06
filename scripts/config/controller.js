@@ -484,16 +484,26 @@
                 required: true,
                 bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }], inputAttrs: { style: { width: '6rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
             }).on('selchanged', function (evt) {
                 var pnl = el;
                 if (evt.newItem.val === 'network') {
                     pnl.find('div.pnl-rs485-network').show();
                     pnl.find('div.pnl-rs485-local').hide();
+                    pnl.find('div.pnl-rs485-mock').hide();
+                    pnl.find('div.pnl-rs485-inactivity').show();
+                }
+                else if (evt.newItem.val === 'mock') {
+                    pnl.find('div.pnl-rs485-network').hide();
+                    pnl.find('div.pnl-rs485-local').hide();
+                    pnl.find('div.pnl-rs485-mock').show();
+                    pnl.find('div.pnl-rs485-inactivity').hide();
                 }
                 else {
                     pnl.find('div.pnl-rs485-network').hide();
                     pnl.find('div.pnl-rs485-local').show();
+                    pnl.find('div.pnl-rs485-mock').hide();
+                    pnl.find('div.pnl-rs485-inactivity').show();
                 }
             });
             var divLocal = $('<div></div>').addClass('pnl-rs485-local').appendTo(divSettings).hide();
@@ -542,7 +552,7 @@
             $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'netHost', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width: '3.5rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType: 'number', fmtMask: '#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
             line = $('<div></div>').appendTo(divSettings);
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Inactivity Timeout', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'inactivityRetry', min: 1, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            $('<div></div>').addClass('pnl-rs485-inactivity').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Inactivity Timeout', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'inactivityRetry', min: 1, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
 
             // Create the statistics panel.
             $('<div></div>').appendTo(divStatus).css({ fontSize: '.8rem' }).configRS485PortStats();
@@ -583,6 +593,8 @@
                         self.dataBind(retPort);
                     });
                 }
+                var divMock = $('<div></div>').addClass('pnl-rs485-mock').appendTo(divSettings).hide();
+            line = $('<div></div>').appendTo(divMock);
             });
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Port', icon: '<i class="fas fa-trash"></i>' }).addClass('btnDeleteRS485Port')
                 .on('click', function (evt) {
