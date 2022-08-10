@@ -478,7 +478,7 @@
             var divStatus = $('<div></div>').appendTo(pnl).css({ display: 'inline-block', verticalAlign: 'top', paddingLeft: '1rem' });
             var line = $('<div></div>').appendTo(divSettings);
             var binding = '';
-            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'portId').appendTo(divSettings);
+            $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mockPort'}).css({display: 'none'}).appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
@@ -553,7 +553,8 @@
             $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType: 'number', fmtMask: '#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
             line = $('<div></div>').appendTo(divSettings);
             $('<div></div>').addClass('pnl-rs485-inactivity').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Inactivity Timeout', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'inactivityRetry', min: 1, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
-
+            var divMock = $('<div></div>').addClass('pnl-rs485-mock').appendTo(divSettings).hide();
+            line = $('<div></div>').appendTo(divMock);
             // Create the statistics panel.
             $('<div></div>').appendTo(divStatus).css({ fontSize: '.8rem' }).configRS485PortStats();
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -565,6 +566,7 @@
                 var obj = {};
                 obj.enabled = p.enabled;
                 obj.netConnect = p.type === 'network';
+                obj.mockPort = p.type === 'mock';
                 obj.rs485Port = p.rs485Port;
                 obj.netPort = p.netPort;
                 obj.netHost = p.netHost;
@@ -593,8 +595,7 @@
                         self.dataBind(retPort);
                     });
                 }
-                var divMock = $('<div></div>').addClass('pnl-rs485-mock').appendTo(divSettings).hide();
-            line = $('<div></div>').appendTo(divMock);
+ 
             });
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Port', icon: '<i class="fas fa-trash"></i>' }).addClass('btnDeleteRS485Port')
                 .on('click', function (evt) {
@@ -604,6 +605,7 @@
                     var obj = {};
                     obj.enabled = p.enabled;
                     obj.netConnect = p.type === 'network';
+                    obj.mockPort = p.type === 'mock';
                     obj.rs485Port = p.rs485Port;
                     obj.netPort = p.netPort;
                     obj.netHost = p.netHost;
@@ -645,7 +647,7 @@
             });
             let port = $.extend(true, {
                 "enabled": false,
-                "type": obj.netConnect ? 'network' : 'local',
+                "type": obj.netConnect ? 'network' : obj.mockPort ? 'mock' : 'local',
                 "rs485Port": "/dev/ttyUSB0",
                 "mockPort": false,
                 "netConnect": false,
@@ -664,7 +666,14 @@
             }, obj);
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
-            obj.netConnect === true ? cols[0].elGlyph().attr('class', 'fas fa-ethernet') : cols[0].elGlyph().attr('class', 'fas fa-route');
+            if (obj.netConnect === true) {
+                cols[0].elGlyph().attr('class', 'fas fa-ethernet')
+            }
+            else if (obj.mockPort === true) {
+                cols[0].elGlyph().attr('class', 'fas fa-fingerprint')
+            }
+            else 
+                cols[0].elGlyph().attr('class', 'fas fa-route');
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
             cols[1].elText().text(port.netConnect ? `${port.netHost}:${port.netPort}` : port.rs485Port);
             if (port.portId === 0) el.find('div.btnDeleteRS485Port').hide();
