@@ -978,7 +978,7 @@
             });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId', value: 0,
-                columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }],
+                columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }, { binding: 'rs485Port', text: 'Path', style: { whiteSpace: 'nowrap' } }],
                 items: o.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '2.25rem', marginLeft: '.25rem' } }
             }).hide();
 

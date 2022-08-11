@@ -475,6 +475,7 @@
             });
             var pnl = acc.find('div.picAccordian-contents');
             var divSettings = $('<div></div>').appendTo(pnl).addClass('pnl-rs485Port').css({ display: 'inline-block', verticalAlign: 'top', width:'22rem' });
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'portId').appendTo(divSettings);
             var divStatus = $('<div></div>').appendTo(pnl).css({ display: 'inline-block', verticalAlign: 'top', paddingLeft: '1rem' });
             var line = $('<div></div>').appendTo(divSettings);
             var binding = '';
