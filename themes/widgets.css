@@ -470,7 +470,7 @@ label.picUnits, span.picUnits {
     padding-right:.1em;
     font-size:.8em;
 }
-div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.picBodyFilter {
+div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.picChemDoser, div.picBodyFilter {
     font-size:.9rem;
     cursor:pointer;
 }
@@ -480,7 +480,8 @@ div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.pic
     }
     div.picBodyFilter > label.picFilterName,
     div.picChlorinator > label.picChlorinatorName,
-    div.picChemController label.picControllerName {
+    div.picChemController label.picControllerName,
+    div.picChemDoser label.picDoserName {
         display: inline-block;
         width: 30%;
         text-overflow: ellipsis;
@@ -488,22 +489,26 @@ div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.pic
         overflow-x: hidden;
         vertical-align: bottom;
     }
+    div.picChemDoser label.picInline-label,
     div.picChemController label.picInline-label {
         display: inline-block;
         padding-right:.25rem;
         min-width:0;
         width:auto;
     }
+    div.picChemDoser div.chemdoser-status,
     div.picChemController div.chemcontroller-status {
         padding-left:1rem;
     }
+    div.picChemDoser div.chemdoser-warning,
     div.picChemController div.chemcontroller-warning {
         padding-left:1rem;
     }
-    div.picChemController div.chemcontroller-warning > i {
-        color: red;
-        padding-right:.25rem;
-    }
+        div.picChemDoser div.chemdoser-warning > i,
+        div.picChemController div.chemcontroller-warning > i {
+            color: red;
+            padding-right: .25rem;
+        }
 div.picIndicator {
     width: 1em;
     height: 1em;

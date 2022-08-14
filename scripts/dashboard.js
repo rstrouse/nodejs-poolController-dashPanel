@@ -408,6 +408,12 @@
                 el.find(`div.pnl-chemcontroller-settings[data-eqid="${data.id}"]`).each(function () { this.setEquipmentData(data); });
 
             });
+            o.socket.on('chemDoser', function (data) {
+                console.log({ evt: 'chemDoser', data: data });
+                el.find('div.picChemistry').each(function () { this.setChemDoserData(data); });
+                el.find(`div.pnl-chemdoser-settings[data-eqid="${data.id}"]`).each(function () { this.setEquipmentData(data); });
+            });
+
             o.socket.on('chemicalDose', (data) => {
                 console.log({ evt: 'chemicalDose', data: data });
                 if (data.method === 'calibration') {

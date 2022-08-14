@@ -8,6 +8,7 @@
             el[0].initChemistry = function (data) { self._initChemistry(data); };
             el[0].setChlorinatorData = function (data) { self.setChlorinatorData(data); };
             el[0].setChemControllerData = function (data) { self.setChemControllerData(data); };
+            el[0].setChemDoserData = function (data) { self.setChemDoserData(data); };
         },
         setChlorinatorData: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -30,6 +31,16 @@
             else
                 el.find('div.picChemController[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
         },
+        setChemDoserData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            if (data.isActive !== false && el.find('div.picChemDoser[data-id=' + data.id + ']').length === 0) {
+                var div = $('<div></div>');
+                div.appendTo(el);
+                div.chemDoser(data);
+            }
+            else
+                el.find('div.picChemDoser[data-id=' + data.id + ']').each(function () { this.setEquipmentData(data); });
+        },
         _initChemistry: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picChlorinator').each(function () {
@@ -42,19 +53,30 @@
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
             span.text('Chemistry');
-            if (typeof data !== 'undefined' && data.chlorinators.length > 0) {
+            if (typeof data !== 'undefined' && (
+                (typeof data.chlorinators !== 'undefined' && data.chlorinators.length > 0) ||
+                (typeof data.chemControllers !== 'undefined' && data.chemControllers.length > 0) ||
+                (typeof data.chemDosers !== 'undefined' && data.chemDosers.length > 0)))
                 el.show();
-                for (let i = 0; i < data.chlorinators.length; i++) {
-                    $('<div></div>').appendTo(el).chlorinator(data.chlorinators[i]);
+            else
+                el.hide();
+            if (typeof data !== 'undefined') {
+                if (typeof data.chlorinators !== 'undefined' && data.chlorinators.length > 0) {
+                    for (let i = 0; i < data.chlorinators.length; i++) {
+                        $('<div></div>').appendTo(el).chlorinator(data.chlorinators[i]);
+                    }
+                }
+                if (typeof data.chemControllers !== 'undefined' && data.chemControllers.length > 0) {
+                    for (let i = 0; i < data.chemControllers.length; i++) {
+                        $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
+                    }
+                }
+                if (typeof data.chemDosers !== 'undefined' && data.chemDosers.length > 0) {
+                    for (let i = 0; i < data.chemDosers.length; i++) {
+                        $('<div></div>').appendTo(el).chemDoser(data.chemDosers[i]);
+                    }
                 }
             }
-            if (typeof data !== 'undefined' && data.chemControllers.length > 0) {
-                el.show();
-                for (let i = 0; i < data.chemControllers.length; i++) {
-                    $('<div></div>').appendTo(el).chemController(data.chemControllers[i]);
-                }
-            }
-            else el.hide();
         }
     });
     $.widget('pic.chlorinator', {
@@ -435,6 +457,134 @@
             $('<div></div>').addClass('chemcontroller-status').addClass('chemcontroller-status-ph').appendTo(el).hide();
             $('<div></div>').addClass('chemcontroller-status').addClass('chemcontroller-status-orp').appendTo(el).hide();
             $('<div></div>').addClass('chemcontroller-warnings').appendTo(el).hide();
+            self.setEquipmentData(o);
+            self._buildPopover();
+        }
+    });
+    $.widget('pic.chemDoser', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+        },
+        setDosingStatus: function (stat, chem) {
+            var self = this, o = self.options, el = self.element;
+            if (typeof chem === 'undefined' || typeof chem.dosingStatus === 'undefined' || chem.enabled === false)
+                stat.hide();
+            else {
+                switch (chem.dosingStatus.name) {
+                    case 'dosing':
+                        stat.empty();
+                        var vol = !isNaN(chem.doseVolume) ? chem.doseVolume : 0;
+                        var volDosed = !isNaN(chem.dosingVolumeRemaining) ? vol - chem.dosingVolumeRemaining : 0;
+                        if (chem.delayTimeRemaining > 0) {
+                            $('<span></span>').appendTo(stat).text(`Dosing: ${vol.format('#,##0')}mL`);
+                            $('<span></span>').appendTo(stat).css({ float: 'right' }).text(`Delay: ${dataBinder.formatDuration(chem.delayTimeRemaining)}`);
+                        }
+                        else {
+                            $('<span></span>').appendTo(stat).text(`Dosing: ${volDosed.format('#,##0')}mL of ${vol.format('#,##0')}mL - ${dataBinder.formatDuration(chem.dosingTimeRemaining)}`);
+                        }
+                        stat.show();
+                        break;
+                    case 'mixing':
+                        stat.empty();
+                        $('<span></span>').appendTo(stat).text(`Mixing: ${dataBinder.formatDuration(chem.mixTimeRemaining)}`);
+                        stat.show();
+                        break;
+                    default:
+                        stat.hide();
+                        break;
+                }
+            }
+        },
+        setWarnings: function (data) {
+            var self = this, o = self.options, el = self.element;
+            var arr = [];
+            // Put together the list of warnings.
+            if (typeof data.status !== 'undefined' && data.status.val > 0) arr.push(data.status);
+            if (typeof data.alarms !== 'undefined') {
+                var alarms = data.alarms;
+                if (typeof alarms.freezeProtect !== 'undefined' && alarms.freezeProtect.val > 0) arr.push(alarms.freezeProtect);
+                if (typeof alarms.flowSensorFault !== 'undefined' && alarms.flowSensorFault.val > 0) arr.push(alarms.flowSensorFault);
+                if (typeof alarms.pumpFault !== 'undefined' && alarms.pumpFault.val > 0) arr.push(alarms.pumpFault);
+                if (typeof alarms.bodyFault !== 'undefined' && alarms.bodyFault.val > 0) arr.push(alarms.bodyFault);
+                if (typeof alarms.flow !== 'undefined' && alarms.flow.val > 0) arr.push(alarms.flow);
+                if (typeof alarms.tank !== 'undefined' && alarms.tank.val > 0) arr.push(alarms.tank);
+            }
+            if (typeof data.warnings !== 'undefined') {
+                var warns = data.warnings;
+                if (typeof warns.chlorinatorCommError !== 'undefined' && warns.chlorinatorCommError.val > 0) arr.push(warns.chlorinatorCommError);
+                if (typeof warns.invalidSetup !== 'undefined' && warns.invalidSetup.val > 0 && warns.invalidSetup.name !== 'ok') arr.push(warns.invalidSetup);
+                if (typeof warns.dailyLimitReached !== 'undefined' && warns.dailyLimitReached.val > 0) arr.push(warns.dailyLimitReached);
+                if (typeof warns.lockout !== 'undefined' && warns.lockout.val > 0) arr.push(warns.lockout);
+            }
+            var divWarnings = el.find('div.chemdoser-warnings');
+            divWarnings.empty();
+            if (arr.length > 0) divWarnings.show();
+            else divWarnings.hide();
+            for (var i = 0; i < arr.length; i++) {
+                var w = arr[i];
+                var warn = $('<div></div>').addClass('chemdoser-warning').appendTo(divWarnings);
+                // Add in the icon.
+                $('<i></i>').addClass('fas').addClass('fa-exclamation-triangle').appendTo(warn);
+                $('<span></span>').addClass('chemcontroller-warning-text').text(w.desc).appendTo(warn);
+            }
+        },
+        setEquipmentData: function (data) {
+            var self = this, o = self.options, el = self.element;
+            try {
+                if (data.isActive === false) el.hide();
+                else el.show();
+                el.attr('data-active', data.isActive === false ? false : true);
+                el.find('div.picChemDoserState').attr('data-status', data.pump.isDosing ? 'on' : 'off');
+                dataBinder.bind(el, data);
+                if (typeof data.status !== 'undefined') el.attr('data-status', data.status.name);
+                else el.attr('data-status', '');
+            }
+            catch (err) { console.log({ m: 'Error setting chem doser data', err: err, chem: data }); }
+            var pnl = el.parents('div.picChemistry:first');
+            if (pnl.find('div.picChlorinator[data-active=true], div.picChemDoser[data-active=true]').length > 0) {
+                pnl.show();
+                // Now lets add in our status.
+                self.setDosingStatus(el.find('div.chemdoser-status'), data);
+                self.setWarnings(data);
+            }
+            else
+                pnl.hide();
+        },
+        _buildPopover: function () {
+            var self = this, o = self.options, el = self.element;
+            el.on('click', function (evt) {
+                $.getApiService('/state/chemDoser/' + el.attr('data-id'), function (data, status, xhr) {
+                    console.log(data);
+                    var divPopover = $('<div class="picChemDoserSettings"></div>');
+                    divPopover.appendTo(el);
+                    divPopover.on('initPopover', function (evt) {
+                        var divSettings = $('<div></div>').appendTo(evt.contents()).css({ display: 'inline-block', verticalAlign: 'top', width: '347px' }).chemDoserSettings(data);
+                    });
+                    divPopover.on('click', function (e) { e.stopImmediatePropagation(); e.preventDefault(); });
+                    divPopover.popover({ title: 'Chemistry Settings', popoverStyle: 'modal', placement: { target: evt.target } });
+                    divPopover[0].show(evt.target);
+                });
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+            });
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picChemDoser');
+            el.attr('data-id', o.id);
+
+            var line = $('<div class="chemDoserDiv"></div>').appendTo(el);
+            var div = $('<div class="picChemDoserState picIndicator"></div>');
+            div.appendTo(line);
+            $('<label></label>').addClass('picDoserName').attr('data-bind', 'name').appendTo(line);
+            $('<span></span>').addClass('picData').text(`Last 24 hours `).appendTo(line);
+            $('<span></span>').addClass('picData').attr('data-bind', 'dailyVolumeDosed').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0#').attr('data-emptymask', '--.--').appendTo(line);
+            $('<span></span>').addClass('picUnits').text('mL').appendTo(line);
+            $('<div></div>').addClass('chemdoser-status').appendTo(el).hide();
+            $('<div></div>').addClass('chemdoser-warnings').appendTo(el).hide();
             self.setEquipmentData(o);
             self._buildPopover();
         }
@@ -847,7 +997,8 @@
                             id: o.id,
                             chemType: 'pH',
                             chemical: o.ph,
-                            history: h.ph
+                            history: h.ph,
+                            equipmentType: 'chemController'
                         });
                     }
                     if (typeof h.orp !== 'undefined' && h.orp.length > 0) {
@@ -1004,6 +1155,358 @@
             });
         }
     });
+    $.widget('pic.chemDoserSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].setEquipmentData = function (data) { self.setEquipmentData(data); };
+        },
+        setEquipmentData: function (data) {
+            var self = this, o = self.options, el = self.element;
+                // If we are dosing I need to kill the manual dose window as well as change the buttons
+                // to stop dosing.
+            if (typeof data !== 'undefined' && typeof data.dosingStatus !== 'undefined') {
+                // We can be monitoring, mixing, or dosing.
+                // If we are monitoring we can mix or dose.
+                if (data.dosingStatus.name === 'monitoring') {
+                    el.find('div#btnCancelDose').hide();
+                    el.find('div#btnCancelMix').hide();
+                    // Don't let an idiot dose when the pool is off or flow is not detected.
+                    if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDose').show();
+                    else el.find('div#btnDose').hide();
+                    // The chem controller will take care of the countdown for mixing if the
+                    // settings are to mix only when flow is detected in the specified body.
+                    el.find('div#btnMix').show();
+                }
+                else if (data.dosingStatus.name === 'dosing') {
+                    el.find('div#btnCancelDose').show();
+                    el.find('div#btnCancelMix').hide();
+                    el.find('div#btnDose').hide();
+                    // If we are dosing the user can cancel the dose by starting the mix.
+                    el.find('div#btnMix').show();
+                }
+                else if (data.dosingStatus.name === 'mixing') {
+                    el.find('div#btnCancelDose').hide();
+                    el.find('div#btnCancelMix').show();
+                    el.find('div#btnMix').hide();
+                    if (data.flowDetected === true && data.isBodyOn === true) el.find('div#btnDose').show();
+                }
+                else {
+                    // No one knows what is going on so hide all the manual buttons.
+                    el.find('div#btnCancelDose').hide();
+                    el.find('div#btnCancelMix').hide();
+                    el.find('div#btnMix').hide();
+                    el.find('div#btnDose').hide();
+                }
+            }
+            if (typeof data.mixingTime === 'number' && (typeof data.mixingTimeHours === 'undefined' || typeof data.mixingTimeMinutes === 'undefined')) {
+                data.mixingTimeHours = Math.floor(data.mixingTime / 3600);
+                data.mixingTimeMinutes = (data.mixingTime - (data.mixingTimeHours * 3600)) / 60;
+            }
+            self.dataBind(data);
+        },
+        dataBind: function (data) {
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, data);
+        },
+        _createTankAttributesDialog(chemType, tankElem) {
+            var self = this, o = self.options, el = self.element;
+            var tank = tankElem[0].tank();
+            console.log(tank);
+            var chemName = tank.chemType ? tank.chemType.charAt(0).toUpperCase() + tank.chemType.slice(1) : chemType;
+            var dlg = $.pic.modalDialog.createDialog('dlgChemTankAttributes', {
+                width: '447px',
+                height: 'auto',
+                title: `${chemName} Supply Tank Level`,
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Save', icon: '<i class="fas fa-save"></i>',
+                        click: function (e) {
+                            var t = { id: parseInt(el.attr('data-eqid'), 10) };
+                            t.tank = dataBinder.fromElement(dlg);
+                            console.log(t);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemDoser', t, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Set the current level for the tank.  As ${chemName.toLowerCase()} is pumped from the tank the level will be reduced by the amount of the chemical dose.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+
+            var capacity = $('<div></div>').appendTo(line).staticField({
+                labelText: 'Capacity', dataType: 'number',
+                units: tank.units, value: tank.capacity, fmtMask: '#,##0.###',
+                labelAttrs: { style: { width: '4.7rem' } }
+            });
+            line = $('<div></div>').appendTo(divPnl);
+            var qty = $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Level', binding: 'level', min: 0, max: tank.capacity, step: tankElem[0].incrementStep(),
+                fmtMask: tankElem.attr('data-fmtMask'),
+                labelAttrs: { style: { width: '4.7rem' } },
+                inputAttrs: { style: { width: '7rem' } }
+            }).on('change', function (e) {
+                pct.text(`${capacity[0].val() !== 0 ? Math.round((qty[0].val() / capacity[0].val()) * 100) : 0}%`);
+            });
+
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            let pct = $('<div></div>').appendTo(divPnl).addClass('tank-attr-percent').css({ fontSize: '2em', textAlign: 'center', padding: '.5em' });
+            dataBinder.bind(dlg, tank);
+            pct.text(`${tank.capacity !== 0 ? Math.round((tank.level / tank.capacity) * 100) : 0}%`);
+            dlg.css({ overflow: 'visible' });
+        },
+        _createManualDoseDialog(chemical, chemType, elBtn) {
+            var self = this, o = self.options, el = self.element;
+            var chemName = chemical.charAt(0).toUpperCase() + chemical.slice(1);
+            var dlg = $.pic.modalDialog.createDialog('dlgManualChemDose', {
+                width: '357px',
+                height: 'auto',
+                title: `Start Manual ${chemName} Dose`,
+                position: { my: "center top", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Start Dosing', icon: '<i class="fas fa-fill-drip"></i>',
+                        click: function (e) {
+                            var d = dataBinder.fromElement(dlg);
+                            d = $.extend(true, d, { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType });
+                            console.log(d);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemDoser/manualDose', d, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Supply a manual ${chemName.toLowerCase()} dose amount in mL.  Then press the Start Dosing button.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Dose Amount', binding: 'volume', min: 0, max: 1000, step: 10,
+                fmtMask: '#,##0', units: 'mL',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '7rem' } }
+            }).on('change', function (e) {
+
+            });
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            dlg.css({ overflow: 'visible' });
+        },
+        _createManualMixDialog(chemical, chemType, elBtn) {
+            var self = this, o = self.options, el = self.element;
+            var chemName = chemical.charAt(0).toUpperCase() + chemical.slice(1);
+            var dlg = $.pic.modalDialog.createDialog('dlgManualChemMix', {
+                width: '357px',
+                height: 'auto',
+                title: `Start Manual ${chemName} Mix`,
+                position: { my: "center top", at: "center top", of: el },
+                buttons: [
+                    {
+                        text: 'Start Mixing', icon: '<i class="fas fa-blender"></i>',
+                        click: function (e) {
+                            var d = dataBinder.fromElement(dlg);
+                            d = $.extend(true, d, { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType });
+                            console.log(d);
+                            $.pic.modalDialog.closeDialog(this);
+                            $.putApiService('/state/chemController/manualMix', d, function (c, status, xhr) {
+                                self.setEquipmentData(c);
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }
+                ]
+            });
+            $('<div></div>').appendTo(dlg).html(`Supply the ${chemName.toLowerCase()} mixing time in hours and minutes.  Then press the Start Mixing button.`);
+            $('<hr></hr>').appendTo(dlg).css({ margin: '2px' });
+            var divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            var line = $('<div></div>').appendTo(divPnl);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: 'Mixing Time', binding: 'hours', min: 0, max: 48, step: 1,
+                fmtMask: '#,##0', units: 'hrs',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '3rem' } }
+            }).on('change', function (e) {
+
+            });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true, labelText: '', binding: 'minutes', min: 0, max: 59, step: 1,
+                fmtMask: '#,##0', units: 'min',
+                labelAttrs: { style: { marginRight: '.15rem' } },
+                inputAttrs: { style: { width: '3rem' } }
+            }).on('change', function (e) {
+
+            });
+
+            divPnl = $('<div></div>').appendTo(dlg).css({ display: 'inline-block' });
+            dlg.css({ overflow: 'visible' });
+        },
+        _confirmCancelDose: function (chemical, chemType) {
+            var self = this, o = self.options, el = self.element;
+            $.pic.modalDialog.createConfirm('dlgConfirmCancelDosing', {
+                message: `Are you sure you want to Cancel ${chemical} dosing?`,
+                width: '350px',
+                height: 'auto',
+                title: 'Confirm Cancel Dosing',
+                buttons: [{
+                    text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                    click: function () {
+                        var d = { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType };
+                        console.log(d);
+                        $.pic.modalDialog.closeDialog(this);
+                        $.putApiService('/state/chemDoser/cancelDosing', d, function (c, status, xhr) {
+                            self.setEquipmentData(c);
+                        });
+                    }
+                },
+                {
+                    text: 'No', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+        },
+        _confirmCancelMix: function (chemical, chemType) {
+            var self = this, o = self.options, el = self.element;
+            $.pic.modalDialog.createConfirm('dlgConfirmCancelDosing', {
+                message: `Are you sure you want to Cancel ${chemical} mixing?`,
+                width: '350px',
+                height: 'auto',
+                title: 'Confirm Cancel Mixing',
+                buttons: [{
+                    text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                    click: function () {
+                        var d = { id: parseInt(el.attr('data-eqid'), 10), chemType: chemType };
+                        console.log(d);
+                        $.pic.modalDialog.closeDialog(this);
+                        $.putApiService('/state/chemDoser/cancelMixing', d, function (c, status, xhr) {
+                            self.setEquipmentData(c);
+                        });
+                    }
+                },
+                {
+                    text: 'No', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+        },
+        saveControllerState: function () {
+            var self = this, o = self.options, el = self.element;
+            var cont = dataBinder.fromElement(el);
+            cont.tank = undefined;
+            console.log(cont);
+            $.putApiService('/state/chemDoser', cont, function (c, status, xhr) {
+                self.setEquipmentData(c);
+            });
+
+        },
+        _openHistoryDialog: function () {
+            var self = this, o = self.options, el = self.element;
+            $.getApiService(`/state/chemDoser/${o.id}/doseHistory`, null, 'Loading Dose History...', function (h, status, xhr) {
+                console.log(h);
+                if (h.length > 0) {
+                    var dlg = $.pic.modalDialog.createDialog('dlgDoseHistory', {
+                        message: 'Chemical Dose History',
+                        width: '390px',
+                        height: 'auto',
+                        title: 'Dose History',
+                        buttons: [{
+                            text: 'Close', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                    var tabBar = $('<div></div>').appendTo(dlg).tabBar();
+                    var tab = tabBar[0].addTab({ id: 'tabDoses', text: `${o.chemType} Doses` });
+                    $('<div></div>').appendTo(tab).pnlChemDoseHistory({
+                        id: o.id,
+                        chemType: o.chemType,
+                        chemical: o,
+                        history: h,
+                        equipmentType: 'chemDoser'
+                    });
+                    tabBar[0].selectFirstVisibleTab();
+                }
+            });
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            var divLine = $('<div></div>').appendTo(el);
+            var grpSetpoints = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(divLine);
+            var data = o;
+            console.log(data);
+            el.addClass('pnl-chemdoser-settings');
+            el.attr('data-eqid', data.id);
+            $('<input type="hidden"></input>').appendTo(el).attr('data-dataType', 'int').attr('data-bind', 'id');
+            $('<legend></legend>').text('Setpoints').appendTo(grpSetpoints);
+            divLine = $('<div></div>').appendTo(grpSetpoints);
+            $('<input type="hidden"></input>').attr('data-bind', 'id').attr('data-datatype', 'int').val(data.id).appendTo(divLine);
+            divLine = $('<div></div>').appendTo(grpSetpoints).addClass('pnl-dose-volume');
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'dosingVolume', labelText: 'Dose', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL per Dose' });
+            divLine = $('<div></div>').appendTo(grpSetpoints);
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'mixingTimeHours', labelText: 'Every', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3rem' } }, units: 'hrs' });
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'mixingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
+            divLine = $('<div></div>').appendTo(el);
+            var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(el);
+            $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
+            divLine = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpLevels);
+            var divVal = $('<div></div>').appendTo(divLine).css({ display: 'inline-block', verticalAlign: 'top', textAlign: 'center' });
+            var divTotal = $('<div></div>').appendTo(divVal).addClass('chem-daily').css({ textAlign: 'left' }).on('click', () => { self._openHistoryDialog(); });
+            $('<div></div>').appendTo(divTotal).text('Dosed last 24hrs').css({ fontSize: '10pt', lineHeight: '1' });
+            $('<hr></hr>').appendTo(divTotal).css({ margin: '1px' });
+            $('<div></div>').addClass('daily-dose').attr('data-chemtype', data.chemType.toLowerCase()).appendTo(divTotal).staticField({ labelText: data.chemType, binding: 'dailyVolumeDosed', dataType: 'number', fmtMask: '#,##0', emptyMask: '----', units: 'mL', inputAttrs: { style: { width: '2.25rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '3.3rem' } } }).css({ fontSize: '10pt', display: 'block', lineHeight: '1' });
+            divLine = $('<div></div>').css({ display: 'inline-block', margin: '0px auto', width: '210px', textAlign: 'center' }).appendTo(grpLevels);
+            $('<div></div>').chemTank({
+                chemType: data.chemType.toLowerCase(), labelText: `${data.chemType}`,
+                max: data.tank.capacity || 0
+            }).css({ width: '80px', height: '120px' }).attr('data-bind', 'tank').attr('data-datatype', 'number').appendTo(divLine)
+                .on('click', function (evt) {
+                    self._createTankAttributesDialog(data.chemType, $(evt.currentTarget));
+                }).hide();
+            divLine = $('<div></div>').appendTo(grpLevels).css({ textAlign: 'center' });
+            if (data.enabled === true && data.pump.type.val !== 0) {
+                var divBtnCont = $('<div></div>').appendTo(divLine).css({ display: 'inline-block' });
+                el.find('div.picChemTank').show();
+                $('<div></div>').appendTo(divBtnCont).actionButton({ id: 'btnDose', text: `Dose ${data.chemType || ''}`, icon: '<i class="fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualDoseDialog(data.chemType, 'ph');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnCont).actionButton({ id: 'btnCancelDose', text: 'Stop Dose', icon: '<i class="burst-animated fas fa-fill-drip"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelDose(data.chemType, 'ph');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnCont).actionButton({ id: 'btnMix', text: `Mix ${data.chemType || ''}`, icon: '<i class="fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._createManualMixDialog(data.chemType, 'ph');
+                    }).hide();
+                $('<div></div>').appendTo(divBtnCont).actionButton({ id: 'btnCancelMix', text: 'Stop Mix', icon: '<i class="burst-animated fas fa-blender"></i>' }).css({ width: '9rem', textAlign: 'left' })
+                    .on('click', function (evt) {
+                        self._confirmCancelMix(data.chemType, 'ph');
+                    }).hide();
+
+            }
+            self.setEquipmentData(data);
+            el.on('change', 'div.picValueSpinner', function () {
+                self.saveControllerState();
+            });
+        }
+    });
+
     $.widget('pic.pnlChemDoseHistory', {
         options: {},
         _create: function () {
@@ -1040,9 +1543,17 @@
             sel.find('div.slist-body').css({ fontSize: '.8rem', maxHeight: '97px', overflowY: 'auto' });
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Clear History', icon: '<i class="fas fa-broom" ></i>' }).on('click', function (evt) {
-                $.putApiService(`/state/chemController/${o.id}/doseHistory/${o.chemType.toLowerCase()}/clear`, {}, `Clearing ${o.chemType.toUpperCase()} history...`, function (data, status, xhr) {
-                    sel[0].clear();
-                });
+                if (o.equipmentType === 'chemDoser') {
+                    $.putApiService(`/state/chemDoser/${o.id}/doseHistory/clear`, {}, `Clearing ${o.chemType.toUpperCase()} history...`, function (data, status, xhr) {
+                        sel[0].clear();
+                    });
+
+                }
+                else {
+                    $.putApiService(`/state/chemController/${o.id}/doseHistory/${o.chemType.toLowerCase()}/clear`, {}, `Clearing ${o.chemType.toUpperCase()} history...`, function (data, status, xhr) {
+                        sel[0].clear();
+                    });
+                }
             });
             // Add in all the rows.
             for (var i = 0; i < o.history.length; i++)

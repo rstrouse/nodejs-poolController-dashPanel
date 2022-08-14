@@ -22,6 +22,7 @@
             el.addClass('cfgChemControllers');
             var chlorOpts;
             var chemOpts;
+            var doserOpts;
             var pnl = $('<div></div>').addClass('pnlControllers').appendTo(el);
             $.getApiService('/config/options/chlorinators', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
@@ -40,9 +41,10 @@
                 btnAdd.on('click', function (e) {
                     var dlg = $.pic.modalDialog.createDialog('dlgSelectControllerType', {
                         message: 'Select a Controller Type',
-                        width: '400px',
+                        width: '500px',
                         height: 'auto',
                         title: 'New Controller Type',
+                        position: { my: "center bottom", at: "center top", of: el },
                         buttons: [{
                             text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
                             click: function () { $.pic.modalDialog.closeDialog(this); }
@@ -53,7 +55,7 @@
                     line = $('<div></div>').appendTo(dlg);
                     $('<hr></hr>').appendTo(line);
                     line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
-                    var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
+                    var divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chlorinator').addClass('btn').css({ width: '157px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {
                             $(e.currentTarget).addClass('button-hover');
@@ -128,7 +130,7 @@
                             style: { textAlign: 'left' },
                             bindColumn: 0, displayColumn: 2, labelText: 'Chlorinator Type<br/>',
                             columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Master', style: { whiteSpace: 'nowrap' } }],
-                            items: chlorTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '1.15rem', visibility: 'hidden' } }
+                            items: chlorTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '0px', visibility: 'hidden' } }
                         }).on('mouseover', function (e) {
                             divSelection.removeClass('button-hover');
                             e.stopPropagation();
@@ -136,7 +138,7 @@
                             e.stopImmediatePropagation();
                         });
                     }
-                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '177px', height: '97px', verticalAlign: 'middle' })
+                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemController').addClass('btn').css({ width: '157px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) {
                             $(e.currentTarget).addClass('button-hover');
@@ -216,7 +218,7 @@
                         style: { textAlign: 'left' },
                         bindColumn: 0, displayColumn: 2, labelText: 'Chem Controller Type<br/>', binding: 'type',
                         columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                        items: chemTypes, inputAttrs: { style: { width: '7rem', marginLeft: '1.15rem' } }, labelAttrs: { style: { marginLeft: '1.15rem', display: 'none' } }
+                        items: chemTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '0px', visibility: 'hidden' } }
                     }).on('mouseover', function (e) {
                         divSelection.removeClass('button-hover');
                         e.stopPropagation();
@@ -224,10 +226,42 @@
                         e.stopImmediatePropagation();
 
                     });
+
+                    divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemDoser').addClass('btn').css({ width: '157px', height: '97px', verticalAlign: 'middle' })
+                        .appendTo(line)
+                        .on('mouseover', function (e) { $(e.currentTarget).addClass('button-hover'); })
+                        .on('mouseout', function (e) { $(e.target).removeClass('button-hover'); })
+                        .on('mousedown', function (e) { $(e.currentTarget).addClass('button-active'); })
+                        .on('mouseup', function (e) { $(e.currentTarget).removeClass('button-active'); })
+                        .on('click', function (e) {
+                            var btn = $(e.currentTarget);
+                            if (dataBinder.checkRequired(btn)) {
+                                var data = dataBinder.fromElement(btn);
+                                var divController = $('<div></div>').appendTo(pnl).pnlChemDoserConfig(opts);
+                                var cc = {
+                                    id: -1,
+                                    name: 'Chem Doser ' + (el.find('div.cfgChemDoser').length),
+                                    body: 0
+                                };
+                                divController[0].dataBind(cc);
+                                divController.find('div.picAccordian:first').each(function () { this.expanded(true); });
+                                $.pic.modalDialog.closeDialog(dlg[0]);
+                            }
+                        });
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-syringe" style="font-size:30pt;"></i>');
+                    $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chem Doser');
                     dlg.css({ overflow: 'visible' });
 
                 });
             });
+            $.getApiService('/config/options/chemDosers', null, 'Loading Options...', function (opts, status, xhr) {
+                console.log(opts);
+                doserOpts = opts;
+                for (var i = 0; i < opts.dosers.length; i++) {
+                    $('<div></div>').appendTo(pnl).pnlChemDoserConfig(opts)[0].dataBind(opts.dosers[i]);
+                }
+            });
+
         }
     });
     $.widget('pic.pnlChemSetpoints', {
@@ -1240,4 +1274,452 @@
         }
 
     });
+    $.widget('pic.pnlChemDoserConfig', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            el.addClass('picConfigCategory cfgChemDoser');
+            var binding = '';
+            var acc = $('<div></div>').appendTo(el).accordian({
+                columns: [{ binding: 'name', glyph: 'fas fa-syringe', style: { width: '14rem' } },
+                { binding: 'type', glyph: '', style: {} }]
+            });
+
+            var pnl = acc.find('div.picAccordian-contents');
+            var line = $('<div></div>').appendTo(pnl);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+            $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 2, labelText: 'Body', binding: binding + 'body',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Body', style: { whiteSpace: 'nowrap' } }],
+                items: o.bodies, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+            });
+
+            $('<hr></hr>').appendTo(pnl);
+            $('<div></div>').appendTo(pnl).addClass('pnl-chemdoser-type');
+
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Doser', icon: '<i class="fas fa-save"></i>' });
+            btnSave.on('click', function (e) {
+                var p = $(e.target).parents('div.picAccordian-contents:first');
+                var v = dataBinder.fromElement(p);
+                console.log(v);
+                if (dataBinder.checkRequired(p, true)) {
+                    $.putApiService('/config/chemDoser', v, 'Chem Doser...', function (c, status, xhr) {
+                        self.dataBind(c);
+                    });
+                }
+            });
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Doser', icon: '<i class="fas fa-trash"></i>' });
+            btnDelete.on('click', function (e) {
+                var p = $(e.target).parents('div.picAccordian-contents:first');
+                var v = dataBinder.fromElement(p);
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteDoser', {
+                    message: 'Are you sure you want to delete doser ' + v.name + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Doser',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            if (v.id <= 0) p.parents('div.picConfigCategory.cfgChemController:first').remove();
+                            else {
+                                $.deleteApiService('/config/chemDoser', v, 'Deleting Chem Doser...', function (c, status, xhr) {
+                                    p.parents('div.picConfigCategory.cfgChemDoser:first').remove();
+                                });
+                            }
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+            });
+
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            var acc = el.find('div.picAccordian:first');
+            var cols = acc[0].columns();
+            cols[0].elText().text(obj.name);
+            cols[1].elText().text(obj.chemType);
+
+            var ctype = el.attr('data-controllertype');
+            if (el.attr('data-controllertype') !== 'chemDoser') {
+                var pnl = el.find('div.pnl-chemdoser-type');
+                el.attr('data-controllerType', 'chemDoser');
+                pnl.empty();
+                var tabBar = $('<div></div>').appendTo(pnl).tabBar();
+                var tab = tabBar[0].addTab({ id: 'tabDosing', text: 'Dosing Parameters' });
+                $('<div></div>').appendTo(tab).pnlDoserDoseSettings(o);
+                tab = tabBar[0].addTab({ id: 'tabAlarms', text: 'Alarms' });
+                $('<div></div>').appendTo(tab).pnlDoserAlarmSettings(o);
+                tab = tabBar[0].addTab({ id: 'tabHardware', text: 'Hardware' });
+                $('<div></div>').appendTo(tab).pnlDoserHardware(o);
+                if (typeof obj.pump === 'undefined' || obj.pump.type === 0)
+                    tabBar[0].selectTabById('tabHardware');
+                else
+                    tabBar[0].selectFirstVisibleTab();
+            }
+            self.splitSeconds('mixingTime', obj, obj.mixingTime);
+            self.splitSeconds('maxDosingTime', obj, obj.maxDosingTime);
+            dataBinder.bind(el, obj);
+        },
+        splitSeconds: function (name, obj, seconds) {
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+            var secs = Math.floor((seconds - (hours * 3600) - (minutes * 60)));
+            obj[`${name}Hours`] = hours || 0;
+            obj[`${name}Minutes`] = minutes || 0;
+            obj[`${name}Seconds`] = secs || 0;
+        },
+        combineSeconds: function (name, obj) {
+            obj[`${name}Time`] =
+                ((typeof obj[`${name}Hours`] === 'number' ? obj[`${name}Hours`] : 0) * 3600)
+                + ((typeof obj[`${name}Minutes`] === 'number' ? obj[`${name}Minutes`] : 0) * 60)
+                + (typeof obj[`${name}Seconds`] === 'number' ? obj[`${name}Seconds`] : 0);
+        }
+
+    });
+    $.widget('pic.pnlDoserHardware', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildFlowSensorPanel: function (remServers) {
+            var self = this, o = self.options, el = self.element;
+            var grpSensor = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            let binding = 'flowSensor.';
+            $('<legend></legend>').text(`Flow Sensor`).appendTo(grpSensor);
+            var sec = $('<div></div>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(grpSensor);
+            var line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}type`, value: 0,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                items: o.flowSensorTypes,
+                inputAttrs: { style: { width: '8.5rem' } }
+            }).on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                evt.newItem.remAddress ? grp.find('.pnl-rem-address').show() : grp.find('.pnl-rem-address').hide();
+                if (evt.newItem.val === 4) grp.find('div[data-bind$=minimumPressure]').show();
+                else grp.find('div[data-bind$=minimumPressure]').hide();
+                if (evt.newItem.val === 2) grp.find('div[data-bind$=minimumFlow]').show();
+                else grp.find('div[data-bind$=minimumFlow]').hide();
+            });
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}connectionId`,
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Connection',
+                columns: [{ binding: 'uuid', text: 'uuid', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                items: remServers,
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).addClass('pnl-rem-address').hide().on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                grp.find('div[data-bind$=".deviceBinding"]').each(function () {
+                    this.items(evt.newItem.devices);
+                });
+            });
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}deviceBinding`,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Device',
+                columns: [{ binding: 'binding', text: 'binding', hidden: true }, { binding: 'category', text: 'Category', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Device', style: { whiteSpace: 'nowrap' } }],
+                items: [],
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).hide().addClass('pnl-rem-address');
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${binding}.minimumFlow`, labelText: 'Min Flow', dataType: 'number', fmtType: '#,##0.0#', min: 1, max: 140, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '6.2rem' } }, units: 'gpm'
+            }).hide();
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${binding}.minimumPressure`, labelText: 'Min Pressure', dataType: 'number', fmtType: '#,##0.0#', min: 1, max: 30, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '7rem' } }, units: 'psi'
+            }).hide();
+
+            sec = $('<div></div>').addClass('warning-message').css({ display: 'inline-block', verticalAlign: 'top', width: '16.5rem', fontSize: '8.5pt', marginLeft: '1rem' }).appendTo(grpSensor);
+            $('<div></div>').appendTo(sec).html('<div><span style="font-weight:bold">WARNING:</span><span> It is highly advisable that you install and specify a flow detection sensor.  This will ensure there is proper flow prior to turning on any of the dosing pumps.  Chemical dispensed while the pump is not running could result in equipment damage or risk to bathers.<span></div>');
+            return grpSensor;
+
+        },
+        _showPumpCalibrateDialog: function (chemType) {
+            var self = this, o = self.options, el = self.element;
+            var dlg = $.pic.modalDialog.createDialog('dlgCalibrateChemPump', {
+                message: 'Calibrate Chemistry Pump',
+                width: '400px',
+                height: 'auto',
+                title: 'Calibrate Chemistry Pump',
+                position: { my: "center top", at: "center top", of: document },
+
+                buttons: [{
+                    id: 'btnCalibrate',
+                    text: 'Start Calibration', icon: '<i class="fas fa-fill-drip"></i>',
+                    click: function () {
+                        var cal = dataBinder.fromElement(dlg);
+                        var chem = dataBinder.fromElement(el.parents('div.cfgChemDoser:first'));
+                        cal.id = chem.id;
+                        cal.chemType = chemType.toLowerCase();
+                        var btnCal = dlg.find('#btnCalibrate');
+                        var btnCancel = dlg.find(`#btnCancel`);
+                        if (makeBool(dlg.attr('data-calibrating')) === true) {
+                            $.putApiService('/state/chemDoser/cancelDosing', cal, function (c, status, xhr) {
+                                dlg.attr('data-calibrating', false);
+                                dlg.find('div.calibrationTime').show();
+                                btnCancel.show();
+                                btnCal[0].buttonText('Start Calibration');
+                                dlg.find('div.calibrationStatus').hide();
+                            });
+                        }
+                        else {
+                            $.putApiService('/config/chemDoser/calibrateDose', cal, `Running ${chemType} pump for ${cal.time} seconds`, function (data, status, xhr) {
+                                dlg.attr('data-calibrating', true);
+                                dlg.find('div.calibrationTime').hide();
+                                btnCancel.hide();
+                                btnCal[0].buttonText('End Calibration');
+                                dlg.find('div.calibrationStatus').show();
+                                dlg.find('div.calibrationStatus > span').text(dataBinder.formatDuration(cal.time, '#,##0'));
+                            });
+                        }
+                    }
+                },
+                {
+                    id: 'btnCancel',
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            var line = $('<div></div>').addClass('warning-message').css({ display: 'inline-block', verticalAlign: 'top', width: '22rem', fontSize: '8.5pt', marginLeft: '1rem' }).appendTo(dlg);
+            $('<div></div>').appendTo(line).html('<div><span style="font-weight:bold">WARNING:</span><span>This function is not intended to dose chemicals in your system.  Please disconnect the injector from the plumbing and place it in a measurement container before continuing.<span><hr style:"background:yellow"></hr>All run-time safety features are disabled when calibrating.</div>');
+            line = $('<div></div>').appendTo(dlg).text('Supply the calibration time in seconds below.  Then press the start calibration button to run the pump into a measurement container.');
+            line = $('<ul></ul>').appendTo(dlg).css({ fontSize: '8.5pt', marginTop: '4px' });
+            $('<li></li>').appendTo(line).text(`Purge all air from the system using consecutive calibration runs.`);
+            $('<li></li>').appendTo(line).text(`Once the pump shuts off measure the volume dispensed by the pump to determine the flow rate.`);
+            $('<li></li>').appendTo(line).text(`Ensure you have a large enough container to capture all of the liquid dispensed (most often 150+mL/min).`);
+            $('<li></li>').appendTo(line).text(`Ensure you multiply or divide the results to achieve exactly one minute of volume for the pump.`);
+            $('<li></li>').appendTo(line).text(`Press End Calibration to stop the pump at any time.`);
+
+            $('<hr></hr>').appendTo(dlg);
+            line = $('<div></div>').addClass('calibrationTime').appendTo(dlg).css({ textAlign: 'center' });
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `time`, labelText: 'Run Time', dataType: 'number', fmtType: '#,##0', min: 0, max: 300, step: 1, value: 60,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '5rem' } }, units: 'seconds'
+            });
+            line = $('<div></div>').appendTo(dlg).addClass('calibrationStatus').hide().css({ paddingLeft: '2rem', textAlign: 'center' });
+            $('<label></label>').appendTo(line).text('Time Left:');
+            $('<span></span>').css({ display: 'inline-block', width: '5rem', paddingLeft: '.25rem' }).appendTo(line);
+            dlg.css({ overflow: 'visible' });
+            dlg.addClass('chemCalibrateStatus');
+            dlg.attr('data-chemical', chemType);
+            dlg[0].dataBind = (data) => {
+                var btnCal = dlg.find('#btnCalibrate');
+                var btnCancel = dlg.find(`#btnCancel`);
+                if (typeof data.end === 'undefined') {
+                    dlg.find('div.calibrationTime').hide();
+                    btnCancel.hide();
+                    btnCal[0].buttonText('End Calibration');
+                    dlg.find('div.calibrationStatus').show();
+                    dlg.find('div.calibrationStatus > span').text(dataBinder.formatDuration((data.time - data.timeDosed), '#,##0'));
+                    dlg.attr('data-calibrating', true);
+                }
+                else {
+                    dlg.find('div.calibrationTime').show();
+                    btnCancel.show();
+                    btnCal[0].buttonText('Start Calibration');
+                    dlg.find('div.calibrationStatus').hide();
+                    dlg.attr('data-calibrating', false);
+                }
+            };
+        },
+        _buildPumpPanel: function (remServers, type) {
+            var self = this, o = self.options, el = self.element;
+            var grpPump = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' });
+            let binding = '.pump.';
+            let tankBinding = '.tank.';
+            $('<legend></legend>').text(`${type} Pump`).appendTo(grpPump);
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}type`, value: 0,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ binding: 'val', text: 'val', hidden: true }, { binding: 'name', text: 'name', hidden: true }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
+                items: o.pumpTypes,
+                //items: [{ val: 0, name: 'none', desc: 'No Pump' }, { val: 1, name: 'relay', desc: 'Relay Pump' }, { val: 2, name: 'ezo-pmp', desc: 'Atlas EZO-PMP' }],
+                inputAttrs: { style: { width: '8.5rem' } }
+            }).on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                evt.newItem.ratedFlow ? grp.find(`div[data-bind$=".ratedFlow"]`).show() : grp.find(`div[data-bind$=".ratedFlow"]`).hide();
+                evt.newItem.ratedFlow ? grp.find('div.picActionButton.calibrate').show() : grp.find('div.picActionButton.calibrate').hide();
+                evt.newItem.tank ? grp.find('div.pnl-tank-size').show() : grp.find('div.pnl-tank-size').hide();
+                evt.newItem.remAddress ? grp.find('.pnl-rem-address').show() : grp.find('.pnl-rem-address').hide();
+            });
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}connectionId`,
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Connection',
+                columns: [{ binding: 'uuid', text: 'uuid', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                items: remServers,
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).addClass('pnl-rem-address').hide().on('selchanged', function (evt) {
+                let grp = $(evt.currentTarget).parents('fieldset:first');
+                grp.find('div[data-bind$=".deviceBinding"]').each(function () {
+                    this.items(evt.newItem.devices);
+                });
+            });
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${binding}deviceBinding`,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Device',
+                columns: [{ binding: 'binding', text: 'binding', hidden: true }, { binding: 'category', text: 'Category', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Device', style: { whiteSpace: 'nowrap' } }],
+                items: [],
+                inputAttrs: { style: { width: '8.5rem' } },
+                labelAttrs: { style: { width: '5.4rem' } }
+            }).hide().addClass('pnl-rem-address');
+
+            line = $('<div></div>').appendTo(grpPump);
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${binding}.ratedFlow`, labelText: 'Flow', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }, units: 'mL/min'
+            }).hide();
+            $('<div></div>').appendTo(line).actionButton({ showLabel: false, icon: '<i class="fas fa-scale-balanced"></i>' }).css({ padding: '2px' }).addClass('calibrate').hide()
+                .on('click', function (evt) {
+                    // Open up a pump calibration dialog.
+                    self._showPumpCalibrateDialog(type);
+                });
+            line = $('<div></div>').appendTo(grpPump).addClass('pnl-tank-size').hide();
+            $('<div></div>').appendTo(line).valueSpinner({
+                canEdit: true,
+                binding: `${tankBinding}capacity`, labelText: 'Tank', dataType: 'number', fmtType: '#,##0.0#', min: 0, max: 300, step: 0.1,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { width: '3.5rem' } }
+            });
+            $('<div></div>').appendTo(line).pickList({
+                binding: `${tankBinding}units`, value: 'gal',
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Tank Units',
+                columns: [{ hidden: true, binding: 'val', text: 'val' }, { binding: 'name', text: 'name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                items: o.volumeUnits,
+                inputAttrs: { style: { width: '2.25rem' } },
+                labelAttrs: { style: { display: 'none' } }
+            });
+            return grpPump;
+        },
+        _buildControls: async function () {
+            var self = this, o = self.options, el = self.element;
+            var pnlControllers = el.parents('div.picConfigCategory.cfgChemControllers:first');
+            el.addClass('pnl-chemcontroller-hardware');
+            var line = $('<div></div>').appendTo(el);
+            sec = $('<div></div>').appendTo(line).css({ display: 'inline-block', verticalAlign: 'top' });
+            self._buildFlowSensorPanel(o.remServers).appendTo(sec).css({ display: 'block' });
+
+            line = $('<div></div>').appendTo(el);
+            sec = $('<div></div>').appendTo(line).css({ display: 'inline-block', verticalAlign: 'top' });
+            self._buildPumpPanel(o.remServers, 'Peristaltic').appendTo(sec).css({ display: 'block' });
+        }
+    });
+    $.widget('pic.pnlDoserDoseSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-chemdoser-dosesettings');
+            var sec = $('<div></div>').appendTo(el).css({ display: 'block', verticalAlign: 'top', paddingRight: '1rem' });
+            line = $('<div></div>').appendTo(sec);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Dose Enabled', binding: 'enabled' });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Dose Priority', binding: 'dosePriority' }).css({ marginLeft: '2rem' }).attr('title', 'Check this box to disable other dosers while this doser is dosing.  This includes disabling chlorinators on the body.');
+            var grpDose = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('Dosing Parameters').appendTo(grpDose);
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose-delay');
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'startDelay', labelText: 'Delay', min: 0, max: 59, step: .1, fmtMask: '#,##0.#', dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' });
+            $('<hr></hr>').appendTo(line).css({ margin: '3px' });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose-volume');
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'dosingVolume', labelText: 'Dose', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL per Dose' });
+            line = $('<div></div>').appendTo(grpDose);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'mixingTimeHours', labelText: 'Every', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3rem' } }, units: 'hrs' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'mixingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
+            line = $('<div></div>').appendTo(grpDose);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Mix only when flow detected', binding: 'flowOnlyMixing' }).css({ }).attr('title', 'Check this box to only mix chemicals when flow is detected.');
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose-delay');
+            $('<hr></hr>').appendTo(line).css({ margin: '3px' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
+            line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose');
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Disable on Freeze', binding: 'disableOnFreeze' }).attr('title', 'Check this box to disable dosing while freeze protection is active.');
+            var grpChemical = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
+            $('<legend></legend>').text('Chemical').appendTo(grpChemical);
+            line = $('<div></div>').appendTo(grpChemical).addClass('pnl-dose-chemical');
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'type', value: 0,
+                bindColumn: 0, displayColumn: 2,
+                labelText: 'Type',
+                columns: [{ hidden: true, binding: 'val', text: 'val' }, { hidden: true, binding: 'name', text: 'name', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                items: o.doserTypes,
+                inputAttrs: { style: { width: '7rem' } },
+                labelAttrs: { style: { display: 'none' } }
+            });
+        }
+    });
+    $.widget('pic.pnlDoserAlarmSettings', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildRangePanel: function () {
+            var self = this, o = self.options, el = self.element;
+            var outer = $('<div></div>');
+            var tankAlarm = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(outer);;
+            $('<legend></legend>').text(`Tank Alarm Settings`).appendTo(tankAlarm);
+            var tankLine = $('<div></div>').appendTo(tankAlarm).css({ marginTop: '-7px', width: '16rem', fontSize: '.7rem' }).html(`Set the % for which your tank will trigger the low alarm.`);
+
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<span></span>').appendTo(tankLine).css({ width: '5.7rem', display: 'inline-block' });
+            $('<label></label>').appendTo(tankLine).css({ width: '5.5rem', display: 'inline-block', textAlign: 'center', marginRight: '.15rem' }).text('Percentage');
+
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<hr></hr>').appendTo(tankLine).css({ margin: '2px' });
+            tankLine = $('<div></div>').appendTo(tankAlarm);
+            $('<div></div>').appendTo(tankLine).checkbox({ labelText: 'Tank', binding: 'tank.alarmEmptyEnabled' }).css({ width: '6.5rem' });
+            $('<div></div>').appendTo(tankLine).valueSpinner({ canEdit: true, min: 0, max: 100, step: 1, units: '%', binding: 'tank.alarmEmptyLevel' });
+            return outer;
+        },
+        _buildControls: async function () {
+            var self = this, o = self.options, el = self.element;
+            var pnlControllers = el.parents('div.picConfigCategory.cfgChemDosers:first');
+            el.addClass('pnl-chemDoser-alarms');
+            var sec = $('<div></div>').appendTo(el).css({ display: 'inline-block', verticalAlign: 'top' });
+            self._buildRangePanel().appendTo(sec).css({ display: 'block' });
+        }
+    });
+
+
 })(jQuery);
