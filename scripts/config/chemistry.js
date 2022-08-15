@@ -1663,7 +1663,7 @@
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'startDelay', labelText: 'Delay', min: 0, max: 59, step: .1, fmtMask: '#,##0.#', dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'min after pump start' });
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose-volume');
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'dosingVolume', labelText: 'Dose', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL per Dose' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'dosingVolume', labelText: 'Dose', min: 0, max: 9999, dataType: 'number', fmtMask: "#,##0", labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL per Dose' });
             line = $('<div></div>').appendTo(grpDose);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'mixingTimeHours', labelText: 'Every', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3rem' } }, units: 'hrs' });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'mixingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
@@ -1671,7 +1671,7 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Mix only when flow detected', binding: 'flowOnlyMixing' }).css({ }).attr('title', 'Check this box to only mix chemicals when flow is detected.');
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose-delay');
             $('<hr></hr>').appendTo(line).css({ margin: '3px' });
-            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, binding: 'maxDailyVolume', labelText: 'Max limit per rolling 24 hours', min: 0, max: 9999, dataType: 'number', fmtMask: '#,##0', labelAttrs: { style: { marginRight: '.15rem' } }, inputAttrs: { style: { width: '3.7rem' } }, units: 'mL' });
             line = $('<div></div>').appendTo(grpDose).addClass('pnl-dose');
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Disable on Freeze', binding: 'disableOnFreeze' }).attr('title', 'Check this box to disable dosing while freeze protection is active.');
             var grpChemical = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top' }).appendTo(sec);
