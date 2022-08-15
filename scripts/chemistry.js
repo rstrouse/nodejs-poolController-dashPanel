@@ -1461,6 +1461,10 @@
             divLine = $('<div></div>').appendTo(grpSetpoints);
             $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'mixingTimeHours', labelText: 'Every', min: 0, max: 23, dataType: 'number', labelAttrs: { style: { width: '3rem' } }, inputAttrs: { style: { width: '3rem' } }, units: 'hrs' });
             $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'mixingTimeMinutes', labelText: 'Minutes', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { display: 'none' } }, inputAttrs: { style: { width: '2.1rem' } }, style: { marginLeft: '.15rem' }, units: 'min' });
+            divLine = $('<div></div>').appendTo(grpSetpoints);
+            $('<hr></hr>').appendTo(divLine).css({ margin: '4px' });
+            divLine = $('<div></div>').appendTo(grpSetpoints);
+            $('<div></div>').appendTo(divLine).valueSpinner({ canEdit: true, binding: 'maxDailyVolume', labelText: 'Max 24 hour limit', min: 0, max: 59, dataType: 'number', labelAttrs: { style: { width:'8.7rem' } }, inputAttrs: { style: { width: '3.7rem' } }, style: { marginLeft: '.15rem' }, units: 'mL' });
             divLine = $('<div></div>').appendTo(el);
             var grpLevels = $('<fieldset></fieldset>').css({ display: 'inline-block', verticalAlign: 'top', width: '100%' }).appendTo(el);
             $('<legend></legend>').text('Current Levels').appendTo(grpLevels);
