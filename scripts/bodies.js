@@ -360,6 +360,7 @@
                         el.find('span.picHeaterOn').hide();
                         el.find('span.picCooldown').hide();
                         break;
+                    case 'hybheat':
                     case 'mtheat':
                     case 'hpheat':
                     case 'heater':

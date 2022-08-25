@@ -1073,7 +1073,7 @@
                     }
                     let divStats = $('<div></div>').appendTo($div).css({ paddingLeft: '1em' });
                     $('<div class="picOptionLine"><label>Firmware</label><span>' + data.equipment.softwareVersion + '</span></div>').appendTo(divStats);
-                    $('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo(divStats);
+                    //$('<div class="picOptionLine"><label>Schedules</label><span>' + data.schedules.length + '</span></div>').appendTo(divStats);
                     $('<div class="picOptionLine"><label>Circuits</label><span>' + data.circuits.length + '</span></div>').appendTo(divStats);
                     $('<div class="picOptionLine"><label>Features</label><span>' + data.features.length + '</span></div>').appendTo(divStats);
                     $('<div class="picOptionLine"><label>Valves</label><span>' + data.valves.length + '</span></div>').appendTo(divStats);
