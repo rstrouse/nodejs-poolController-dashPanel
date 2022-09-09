@@ -919,7 +919,7 @@
                 divPopover.appendTo(el.parent());
                 divPopover.on('initPopover', function (e) {
                     console.log('initializing popover');
-                    let divThemes = $('<div class= "picLightSettings" data-bind="lightingTheme"></div>');
+                    let divThemes = $('<div class="picLightSettings" data-bind="lightingTheme"></div>');
                     divThemes.appendTo(e.contents());
                     divThemes.attr('data-circuitid', '0');
                     divThemes.lightGroupPanel({ id: '0' });
