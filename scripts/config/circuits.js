@@ -294,8 +294,12 @@
             dataBinder.bind(el, $.extend({}, obj, { eggTimerHours: hrs, eggTimerMinutes: mins }));
             // Can only delete and set address on REM circuits.
             // RSG - 6.22.22 - removed id not 1 or 6 so we can set the main pool/spa circuits #494
-            if (obj.master === 1){// && obj.id !== 1 && obj.id !== 6) { 
-                el.find('div#btnDeleteCircuit').show();
+            if (obj.master === 1) {// && obj.id !== 1 && obj.id !== 6) { 
+                // RKS: 09-14-22 - Remove the delete button from the pool/spa circuits.  These are placed
+                // by the controller and must be tied to REM if this is a Nixie controller.  Users should
+                // not be able to delete these.
+                if (obj.id !== 1 && obj.id !== 6) el.find('div#btnDeleteCircuit').show();
+                else el.find('div#btnDeleteCircuit').hide();
                 el.find('div.pnlDeviceBinding').show();
             }
             else {
