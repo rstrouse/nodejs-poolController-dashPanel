@@ -104,7 +104,7 @@
                 var v = dataBinder.fromElement(p);
                 // Go back to the server and get the list of all installed pumps at the moment.
                 if (dataBinder.checkRequired(p)) {
-                    $.getApiService('/config/options/pumps', null, function (opts, status, xhr) {
+                    $.getApiService('/config/options/pumps', null, 'Saving Pump...', function (opts, status, xhr) {
                         console.log(v);
                         var valid = true;
                         // Verify all the addresses are unique.
@@ -139,7 +139,6 @@
                             }
                         }
                         if (valid) {
-                            console.log(v);
                             $.putApiService('/config/pump', v, 'Saving Pump...', function (data, status, xhr) {
                                 console.log(data);
                                 self.dataBind(data);
