@@ -66,6 +66,7 @@
                 $(document.body).css('background-image', '');
             var theme = getStorage('dashTheme', 'default');
             $('<link id="cssref_theme" rel="stylesheet" type="text/css" href="themes/' + theme + '/theme.css" />').appendTo($('head')).attr('data-theme', theme);
+            var bstyle = getStorage('dashBackgroundStyle', '');
         });
     </script>
 </head>
