@@ -4123,7 +4123,6 @@ $.ui.position.fieldTip = {
         options: {},
         _create: function () {
             let self = this, o = self.options, el = self.element;
-            console.log('In waitMessage._create()');
             o.layer = _screenLayer + 2;
             el.css({ zIndex: o.layer, visibility: 'hidden' });
             el.addClass('overlay-message');
@@ -4148,10 +4147,118 @@ $.ui.position.fieldTip = {
         },
         _destroy: function () {
             var self = this, o = self.options, el = self.element;
-            console.log('In Destroy');
-            console.log(o.overlay);
             if(typeof o.overlay !== 'undefined') o.overlay.remove();
         }
+    });
+    $.widget("pic.sysMessageIcon", {
+        options: {},
+        _create: function () {
+            let self = this, o = self.options, el = self.element;
+            el.addClass('sysmessage-button').appendTo(el);
+            $('<i></i>').appendTo(el).addClass(o.icon || 'fas fa-triangle-exclamation');
+            $('<div></div>').addClass('sysmessage-badge').appendTo(el).text(0);
+            if (o.hideOnEmpty) el.hide();
+            el[0].dataBind = function (data) { self.dataBind(data); };
+            el.on('click', function (evt) {
+                var div = el.find('div.message-list:first');
+                evt.stopImmediatePropagation();
+                evt.preventDefault();
+                if (div.length > 0) {
+                    div.remove();
+                    return;
+                }
+                else {
+                    $('div.message-list:first').remove();
+                    if (!el.hasClass('disabled'))
+                        self._buildMessageList();
+                }
+            });
+            el.find('div.picPickList-drop').on('mousedown touchstart', function (evt) {
+                evt.stopImmediatePropagation();
+
+            });
+        },
+        dataBind: function (messages) {
+            var self = this, o = self.options, el = self.element;
+            o.messages = messages;
+            self._bindMessageList();
+        },
+        _bindMessageList: function () {
+            var self = this, o = self.options, el = self.element;
+            var list = el.find('div.message-list:first');
+            if (list.length > 0) {
+                for (var i = 0; i < o.messages.length; i++) {
+                    var msg = o.messages[i];
+                    let div = list.find(`div.sys-message[data-code="${msg.code}"]`);
+                    if (div.length === 0) {
+                        div = $('<div></div>').addClass('sys-message').attr('data-code', msg.code).appendTo(list);
+                        $('<span></span>').appendTo(div).addClass('sys-message-text').attr('data-bind', 'message');
+                    }
+                    dataBinder.bind(div, msg);
+                }
+                // Remove any messages that should not be there.
+                list.find('div.sys-message').each(function () {
+                    if (typeof o.messages.find(elem => elem.code === $(this).attr('data-code')) === 'undefined') this.remove();
+                });
+                self._positionMessageList(list);
+            }
+            if (o.hideOnEmpty && o.messages.length === 0) el.fadeOut(500);
+            else {
+                el.fadeIn(500);
+                el.find('div.sysmessage-badge').text(o.messages.length);
+            }
+        },
+        _buildMessageList: function () {
+            var self = this, o = self.options, el = self.element;
+            div = $('<div></div>').addClass('message-list').addClass('dropdown-panel');
+            div.appendTo(el);
+            self._bindMessageList();
+            el.parents('body').one('click', function (evt) { div.remove(); });
+            self._positionMessageList(div);
+        },
+        _getOffset: function (el) {
+            var off = { left: 0, top: 0 };
+            el = el[0];
+            while (el) {
+                off.left += el.offsetLeft;
+                off.top += el.offsetTop;
+                el = el.offsetParent;
+            }
+            return off;
+        },
+        _getPosition: function (el) {
+            el = el[0];
+            parent = el.parent;
+            var rect = el.getBoundingClientRect(el);
+            var prect = parent ? parent.getBoundingClientRect(parent) : { left: 0, top: 0 };
+            return { left: rect.left - prect.left, top: rect.top - prect.top };
+        },
+        _positionMessageList: function (div) {
+            var self = this, o = self.options, el = self.element;
+            var fldDims = { pos: el.position(), off: el.offset() };
+            div.css({ left: '0px' });
+            var divDims = { off: self._getOffset(div), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
+            var docDims = { height: document.documentElement.clientHeight, width: $(document.body).width() };
+            if (divDims.height > docDims.height) {
+                div.css({ height: docDims.height + 'px' });
+                divDims.height = docDims.height;
+            }
+            if (divDims.off.top + divDims.height > docDims.height)
+                divDims.pos.top -= (divDims.off.top + divDims.height - docDims.height);
+            div.css({ top: divDims.pos.top + 'px' });
+
+            // We have to treat the width and height separately as we will be repositioning after a scrollbar disappears potentially.
+            divDims = { off: div.offset(), pos: div.position(), height: div.outerHeight(), width: div.outerWidth() };
+
+            docDims = { pos: $(document.documentElement).position(), height: document.documentElement.clientHeight, width: document.documentElement.clientWidth };
+            //console.log({ divDims: divDims, docDims: docDims, fldDims: fldDims });
+            if (divDims.off.left + divDims.width + 20 > docDims.width) {
+                let left = docDims.width - (divDims.off.left + divDims.width);
+                console.log(left);
+                div.css({ left: left + 'px' });
+            }
+        }
+
     });
 })(jQuery);
 $.pic.waitMessage.showWaitMessage = function (message, opts) {
