@@ -698,7 +698,7 @@ div.picControllerTitle > div:nth-child(1) {
   width: 20%;
 }
 
-div.picControllerTitle > div:nth-child(3) {
+div.picControllerTitle > div:nth-child(4) {
   width: 20%;
   text-align: right;
 }
@@ -828,6 +828,35 @@ div.ct-narrative {
 div.ct-narrative > hr {
   margin: 1px;
 }
+
+div.sysmessage-button {
+  display: inline-block;
+  position: relative;
+  width: 34px; }
+
+div.sysmessage-button > i {
+  color: red; }
+
+div.sysmessage-badge {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 12px;
+  font-size: 7pt;
+  border: solid 1px silver;
+  background: yellow;
+  text-align: center;
+  font-weight: bold;
+  top: -4px;
+  left: 10px;
+  border-radius: 3px;
+  color: black; }
+
+div.sysmessage-button > div.dropdown-panel {
+  position: absolute;
+  color: black;
+  padding: 4px;
+  z-index: 500; }
 
 #orderOfElements {
   display: none;

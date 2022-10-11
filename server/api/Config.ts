@@ -37,6 +37,8 @@ export class ConfigRoute {
                     ssdpClient.on('response', (headers, statusCode, rinfo) => {
                         if (statusCode === 200) {
                             let url = new URL(headers.LOCATION);
+                            console.log(url);
+                            console.log(headers.LOCATION);
                             if (typeof servers.find(elem => url.origin === elem.origin) === 'undefined') {
                                 let server = { origin: url.origin, username: url.username, password: url.password, protocol: url.protocol, host: url.host, hostname: url.hostname, port: url.port, hash: url.hash, hostnames: [] };
                                 servers.push(server);

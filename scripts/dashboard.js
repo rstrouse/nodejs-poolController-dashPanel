@@ -134,6 +134,13 @@
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     self._createFiltersPanel(data);
+                    if (typeof data.equipment !== 'undefined' && typeof data.equipment.messages !== 'undefined') {
+                        $('div.picSysMessages').each(function () {
+                            console.log('binding messages');
+                            this.dataBind(data.equipment.messages);
+                        });
+                    }
+
                     console.log(data);
                     self.receivePortStats(o.sendPortStatus);
                 })
@@ -177,7 +184,6 @@
                     self._initSockets();
                     console.log(data);
                     console.log('initializing element order');
-
 
                     if (typeof getStorage('--number-of-columns') === 'undefined') setStorage('--number-of-columns', $(':root').css('--number-of-columns'));
                     $(':root').css('--number-of-columns', getStorage('--number-of-columns'));
@@ -254,6 +260,13 @@
                 console.log({ msg: 'Connecting socket through proxy', url: window.location.origin.toString(), path: path });
                 o.socket = io(window.location.origin.toString(), { path: path, reconnectionDelay: 2000, reconnection: true, reconnectionDelayMax: 20000, upgrade: true });
             }
+            o.socket.on('sysmessages', function (data) {
+                console.log({ evt: 'sysmessages', data: data, controls: $('div.picSysMessages') });
+                $('div.picSysMessages').each(function () {
+                    this.dataBind(data);
+                });
+            });
+
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });
                 var circs = $('div.picCircuit[data-eqid=' + data.id + ']');
@@ -272,6 +285,9 @@
                 $('div.picVirtualCircuit[data-circuitid=' + data.id + ']').each(function () {
                     this.setState(data);
                 });
+            });
+            o.socket.on('equipmentMessage', function (data) {
+                console.log({ evt: 'equipmentMessage', data: data });
             });
             o.socket.on('circuitGroup', function (data) {
                 console.log({ evt: 'circuitGroup', data: data });
@@ -397,7 +413,7 @@
                 console.log({ evt: 'rs485Stats', data: data });
                 var rs485Displays = el.find(`div.pnl-rs485Stats`);
                 rs485Displays.each(function () {
-                    if($(this).attr('data-portid') === data.portId.toString()) this.dataBind(data);
+                    if ($(this).attr('data-portid') === data.portId.toString()) this.dataBind(data);
                 });
                 // Turn it off if there are no displays out there.
                 if (rs485Displays.length === 0) self.receivePortStats(false);
@@ -464,9 +480,9 @@
                 console.log({ msg: 'socket closed:', sock: sock });
                 o.isConnected = false;
             });
-            o.socket.on('*', function (event, data) {
-                console.log({ evt: event, data: data });
-            });
+            //o.socket.onAny((e, data) => {
+            //    console.log({ any: e, data: data });
+            //});
         },
         receiveLogMessages: function (val) {
             var self = this, o = self.options, el = self.element;

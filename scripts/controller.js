@@ -34,6 +34,7 @@
             let row = $('<div class="picHeaderRow picControllerTitle control-panel-title"></div>').appendTo(el);
             $('<div class= "picModel"><i class="fas fa-bars"></i><span class="picModelData"></span></div>').appendTo(row);
             $('<div class="picControllerTime"><span class="picControllerTime"></span></div>').appendTo(row);
+            $('<div></div>').appendTo(row).sysMessageIcon({hideOnEmpty: true}).addClass('picSysMessages');
             if ($('div.dashOuter').length) {
                 var divStatus = $('<div></div>').addClass('picControllerStatus').appendTo(row);
                 var cstatus = $('<div></div>').appendTo(divStatus)
@@ -55,7 +56,6 @@
 
             }
             console.log('jQuery:' + jQuery.fn.jquery + ' jQueryUI:' + ($.ui.version || 'pre 1.6'));
-
             row = $('<div class="picFreezeProtect" data-status="off"><i class="fas fa-snowflake burst-animated"></i><label>FREEZE PROTECTION</label><i class="fas fa-snowflake burst-animated"></i></div>');
             row.appendTo(el);
             row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><span class="service-timeout-remaining"></span><i class="far fa-pause-circle burst-animated"></i></div>');
