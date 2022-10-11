@@ -90,8 +90,8 @@
                             }
                         },
                         {
-                        text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
-                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                            text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
                         }
                     ]
                 });
@@ -243,7 +243,7 @@
             $('<div></div>').appendTo(pnl).addClass('pnl-appSettings-type');
 
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ id:'btnSave',  text: 'Save Interface', icon: '<i class="fas fa-save"></i>' });
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ id: 'btnSave', text: 'Save Interface', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
@@ -474,12 +474,12 @@
                 { binding: 'name', glyph: '', style: { width: '7rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
-            var divSettings = $('<div></div>').appendTo(pnl).addClass('pnl-rs485Port').css({ display: 'inline-block', verticalAlign: 'top', width:'22rem' });
+            var divSettings = $('<div></div>').appendTo(pnl).addClass('pnl-rs485Port').css({ display: 'inline-block', verticalAlign: 'top', width: '22rem' });
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'portId').appendTo(divSettings);
             var divStatus = $('<div></div>').appendTo(pnl).css({ display: 'inline-block', verticalAlign: 'top', paddingLeft: '1rem' });
             var line = $('<div></div>').appendTo(divSettings);
             var binding = '';
-            $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mockPort'}).css({display: 'none'}).appendTo(line);
+            $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mockPort' }).css({ display: 'none' }).appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
             $('<div></div>').appendTo(line).pickList({
                 required: true,
@@ -512,13 +512,13 @@
             $('<div></div>').appendTo(line).pickList({
                 canEdit: true,
                 bindColumn: 0, displayColumn: 0, labelText: 'Port', binding: binding + 'rs485Port',
-                columns: [{ binding: 'path', text: 'Port Name', style: { whiteSpace: 'nowrap', minWidth: '7rem', overflow: 'hidden', textOverflow: 'ellipsis' } }, { binding: 'manufacturer', hidden: false, text: 'Manufacturer', style: { whiteSpace: 'nowrap', minWidth: '15rem', maxWidth:'15rem', overflow: 'hidden', textOverflow: 'ellipsis' } }],
+                columns: [{ binding: 'path', text: 'Port Name', style: { whiteSpace: 'nowrap', minWidth: '7rem', overflow: 'hidden', textOverflow: 'ellipsis' } }, { binding: 'manufacturer', hidden: false, text: 'Manufacturer', style: { whiteSpace: 'nowrap', minWidth: '15rem', maxWidth: '15rem', overflow: 'hidden', textOverflow: 'ellipsis' } }],
                 items: o.ports, inputAttrs: { style: { width: '13.4rem' } }, labelAttrs: { style: { marginRight: '.25rem', textAlign: 'right', padding: '0px' } }
             });
             line = $('<div></div>').appendTo(divLocal);
             $('<div></div>').appendTo(line).pickList({
                 required: true,
-                bindColumn: 0, displayColumn: 1, labelText: 'Baud Rate', binding: binding + 'portSettings.baudRate', units:'bps',
+                bindColumn: 0, displayColumn: 1, labelText: 'Baud Rate', binding: binding + 'portSettings.baudRate', units: 'bps',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Speed', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: '', style: { whiteSpace: 'nowrap' } }],
                 items: [
                     { val: 1200, name: '1,200', desc: '1,200 Baud' },
@@ -529,7 +529,7 @@
                     { val: 19200, name: '19,200', desc: '19,200 Baud' },
                     { val: 38400, name: '38,400', desc: '38,400 Baud' },
                     { val: 115200, name: '115,200', desc: '115,200 Baud' }
-                ], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginRight: '.25rem', textAlign:'right', width:'8.3rem', padding:'0px' } }
+                ], inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginRight: '.25rem', textAlign: 'right', width: '8.3rem', padding: '0px' } }
             });
             line = $('<div></div>').appendTo(divLocal);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Data Bits', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'portSettings.dataBits', min: 7, max: 8, step: 1, units: 'bits', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem', textAlign: 'right' } } });
@@ -596,7 +596,7 @@
                         self.dataBind(retPort);
                     });
                 }
- 
+
             });
             $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Port', icon: '<i class="fas fa-trash"></i>' }).addClass('btnDeleteRS485Port')
                 .on('click', function (evt) {
@@ -673,7 +673,7 @@
             else if (obj.mockPort === true) {
                 cols[0].elGlyph().attr('class', 'fas fa-fingerprint')
             }
-            else 
+            else
                 cols[0].elGlyph().attr('class', 'fas fa-route');
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
             cols[1].elText().text(port.netConnect ? `${port.netHost}:${port.netPort}` : port.rs485Port);
@@ -738,6 +738,195 @@
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
             el.attr('data-portid', obj.portId);
+            dataBinder.bind(el, obj);
+        }
+    });
+    $.widget('pic.configMockControllerType', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picConfigCategory');
+            el.addClass('cfgControllerType');
+
+            // Alright so now we need to allow the user to select a controller type but only if we are a 
+            $.getApiService('/config/options/anslq25ControllerType', null, function (opts, status, xhr) {
+                console.log(opts);
+                // var type = opts.isActive ? opts.controllerTypes[0] : opts.controllerTypes.find(elem => elem.type === opts.controllerType);
+                // var model = opts.isActive === false ? type.models.find(elem => elem.val === opts.model) : type.models[0];
+
+                var line = $('<div></div>').appendTo(el);
+                $('<div></div>').appendTo(el).addClass('anslq25-ct-narrative-warning').html(`EXTREMELY EXPERIMENTAL`);
+                $('<div></div>').appendTo(el).addClass('anslq25-ct-narrative').html(`This will enable an AN-SLQ25 MOCK controller on your system. \nIf you have a NIXIE system it convert your Nixie controller to the selected mock controller because it will see the packets and believe it is talking to a real controller.  If you have an OCP (Outdoor Control Panel = Pentair or Aqualink etc) your hardware may get very confused.\nThis should ONLY be used for testing purposes.`);
+                $('<hr></hr>').appendTo(el);
+                line = $('<div class="anslq25Details"></div>').appendTo(el);
+                self._resetAnslq25Panel(opts);
+            });
+        },
+        _setModelAttributes: function (model) {
+            var self = this, o = self.options, el = self.element;
+            var narr = el.find('div.ct-narrative');
+            narr.empty();
+            var bdy = model.shared || model.dual ? 'dual' : model.bodies === 0 ? 'zero' : 'single';
+            $('<div></div>').appendTo(narr).html(`The ${model.desc} controller is a ${bdy} body controller.`);
+            $('<hr></hr>').appendTo(narr);
+            switch (bdy) {
+                case 'zero':
+                    $('<div></div>').appendTo(narr).html(`Zero body controllers provide no control over body features or filters.  As a result, features such as heaters, water temperature, and chemistry controllers are not defined for this type of controller.`);
+                    break;
+                case 'single':
+                    $('<div></div>').appendTo(narr).html(`Single body controllers are capable of controlling only a single body of water.  For instance a stand-alone pool or spa.`);
+                    break;
+                case 'dual':
+                    if (model.shared) {
+                        $('<div></div>').appendTo(narr).html(`This controller is capable of controlling two bodies of water in a shared mode.  This gives you the capability of controlling a pool/spa, pool/pool, or spa/spa combination where there is shared equipment.  An intake and return valve is used to redirect the water through a single filter to the appropriate body depending on which mode is selected.`);
+                    }
+                    else {
+                        $('<div></div>').appendTo(narr).html(`This controller is capable of controlling two bodies of water separately.  The bodies are separate and use their own filtration system and pumps.`);
+                    }
+                    break;
+            }
+        },
+        _resetAnslq25Panel: function (opts) {
+            var self = this, o = self.options, el = self.element;
+            var type = opts.isActive ? opts.controllerTypes.find(elem => elem.type === opts.controllerType) : opts.controllerTypes[0];
+            var model = opts.isActive ? type.models.find(elem => elem.val === opts.model) : type.models[0];
+
+            let binding = 'anslq25';
+            var pnl = el.find('div.anslq25Details');
+            pnl.empty();
+            var line = $('<div></div>').appendTo(pnl);
+            console.log(type);
+            // $('<input type="hidden" data-bind="controllerType"></input>').appendTo(line).val(opts.controllerType);
+        $('<div></div>').staticField({ labelText: `Current Panel Type`, value: typeof opts.controllerType === 'undefined' || opts.controllerType === 'none' || opts.isActive === false ? 'None' : model.desc}).appendTo(line);
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').appendTo(line).pickList({
+                required: true, 
+                value: opts.portId || 0,
+                bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId', 
+                columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }, { binding: 'rs485Port', text: 'Path', style: { whiteSpace: 'nowrap' } }],
+                items: opts.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '2.25rem', marginLeft: '.25rem' } }
+            });
+            //$('<div></div>').staticField({ labelText: `Current Model`, value: opts.model || 'None' }).appendTo(line);
+            line = $('<div></div>').appendTo(pnl);
+            $('<div></div>').pickList({
+                required: true, value: type.type,
+                bindColumn: 0, displayColumn: 1, labelText: 'Controller Type', binding: binding + 'ControllerType',
+                columns: [{ binding: 'type', text: 'Type', hidden: true, style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Model', style: { whiteSpace: 'nowrap' } }],
+                items: opts.controllerTypes, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+            }).appendTo(line).on('selchanged', function (evt) {
+                type = evt.newItem;
+                self._resetAnslq25Panel(opts);
+            })[0];
+            $('<div></div>').pickList({
+                required: true, value: model.val,
+                bindColumn: 0, displayColumn: 2, labelText: 'Model', binding: binding + 'model',
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Model', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                items: type.models, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+            }).appendTo(line).on('selchanged', function (evt) {
+                self._setModelAttributes(evt.newItem);
+
+            })[0];
+            
+            if (typeof type.expansionModules !== 'undefined' && type.expansionModules.length > 0 && type.type === 'intellitouch') {
+                for (let i = 0; i < type.expansionModules.length; i++) {
+                    line = $('<div></div>').appendTo(line);
+                    $('<div></div>').pickList({
+                        required: true,
+                        value: type.expansionModules[i].type,
+                        bindColumn: 0, displayColumn: 2, labelText: `Expansion Module ${i+1}`, binding: `expansion${i+1}`,
+                        columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap', marginTop: '1rem' } }, { binding: 'name', hidden: false, text: 'Expansion', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                        items: type.expansionModules, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                    }).appendTo(line);
+                }
+            }
+            $('<div></div>').appendTo(line).addClass('ct-narrative');
+            self._setModelAttributes(model);
+            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+
+            var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete Anslq-25', icon: '<i class="fas fa-trash"></i>' })
+            if (makeBool(typeof opts.controllerType === 'undefined' || opts.controllerType === 'none' || opts.isActive === false || opts.isActive === false)) btnDelete.addClass('disabled');
+            btnDelete.on('click', function (e) {
+                var p = $(e.target).parents('div.picAccordian-contents:first');
+                var v = dataBinder.fromElement(p);
+                $.pic.modalDialog.createConfirm('dlgConfirmDeleteAnslq25', {
+                    message: 'Are you sure you want to delete Anslq25 ' + v.name + '?',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Delete Anslq25 Mock Controller',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            // if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
+                            // else {
+                                console.log('Deleting Anslq25');
+                                $.deleteApiService('/app/anslq25', v, 'Deleting Anslq25 Mock Controller...', function (data, status, xhr) {
+                                    //p.parents('div.picConfigCategory.cfgPump:first').remove();
+                                    opts.controllerType = data.controllerType;
+                                    opts.model = data.model;
+                                    opts.isActive = data.isActive;
+                                    self._resetAnslq25Panel(opts);
+                                });
+                            // }
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+            });
+
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Anslq-25', icon: '<i class="fas fa-save"></i>' });
+            btnSave.on('click', function (e) {
+                var v = dataBinder.fromElement(pnl);
+                console.log(v);
+                
+                $.pic.modalDialog.createConfirm('dlgConfirmAddAnslq25', {
+                    message: 'Are you sure you have read the fine print and know what you are doing?  You may overwrite your entire pool configuration.  njsPC will now sense an ' + v.anslq25ControllerType + ' on the bus and change to this controller type.',
+                    width: '350px',
+                    height: 'auto',
+                    title: 'Confirm Anslq-25 Mock Controller',
+                    buttons: [{
+                        text: 'Yes', icon: '<i class="fas fa-check"></i>',
+                        click: function () {
+                            $.pic.modalDialog.closeDialog(this);
+                            // if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
+                            
+                                console.log('Adding Anslq-25');
+                                if (dataBinder.checkRequired(pnl)) {
+                                    $.putApiService('/config/anslq25ControllerType', v, 'Adding Anslq-25 Mock Controller...', function (data, status, xhr) {
+                                            opts.controllerType = data.controllerType;
+                                            opts.model = data.model;
+                                            opts.isActive = data.isActive;
+                                        self._resetAnslq25Panel(opts);
+                                    });
+                                }
+                            
+                        }
+                    },
+                    {
+                        text: 'No', icon: '<i class="far fa-window-close"></i>',
+                        click: function () { $.pic.modalDialog.closeDialog(this); }
+                    }]
+                });
+                
+                
+
+            });
+            
+
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            var type = o.controllerType !== '' ? o.controllerTypes.find(elem => elem.type === obj.controllerType) : o.controllerTypes[0];
+            var model = o.model !== '' ? type.models.find(elem => elem.val === obj.equipment.modules[0].type) : type.models[0];
+
             dataBinder.bind(el, obj);
         }
     });

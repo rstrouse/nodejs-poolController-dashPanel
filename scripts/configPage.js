@@ -92,6 +92,10 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configInterfaces();
                     break;
+                case 'tabMockControllerType':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configMockControllerType();
+                    break;
             }
             if (typeof evt.oldTab !== 'undefined') {
                 // Need to clear the tab so that we stop getting the RS485 output messages
@@ -113,7 +117,8 @@
                 tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
                     [{ id: 'tabControllerType', text: 'Model', cssClass: 'cfgControllerType' },
                     { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
-                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' }]
+                    { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' },
+                    { id: 'tabMockControllerType', text: 'Anslq25 (Mock Controller)', cssClass: 'cfgMockControllerType' }],
                 );
                 //tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });

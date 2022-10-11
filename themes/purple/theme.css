@@ -1,104 +1,123 @@
-﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver; }
+  color: silver;
+}
 
 div.picConfigTabContents {
-  background-color: white; }
+  background-color: white;
+}
 
 div.picConfigPage {
-  margin-top: .4rem; }
+  margin-top: 0.4rem;
+}
 
 div.picController {
-  padding: 0px; }
+  padding: 0px;
+}
 
 div.picAmbientTemp label {
-  color: white; }
+  color: white;
+}
 
 div.picController > div.picControllerTitle {
-  margin: 0px; }
+  margin: 0px;
+}
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.picSaltReqd {
-  padding: .2rem;
+  padding: 0.2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: .4rem; }
+  margin-bottom: 0.4rem;
+}
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver; }
+  color: silver;
+}
 
 span.picUnits {
-  color: gray; }
+  color: gray;
+}
 
 div.picAccordian-title {
   border: solid 1px gray;
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   border: solid 1px gray;
   color: white;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px; }
+  border-top-right-radius: 5px;
+}
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white; }
+  color: white;
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
-  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: #4DB6AC; }
+  background: #4DB6AC;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
-  background: #7b1fa2;
-  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
-  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }
+  background: rgb(123, 31, 162);
+  background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: 'Font Awesome 5 Free'; }
+  font-family: "Font Awesome 5 Free";
+}
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: "\f057";
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "\f111";
-  font-weight: 400; }
+  font-weight: 400;
+}
 
 .slist-caption,
 .crud-caption,
@@ -107,9 +126,9 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   border-top-right-radius: 3px;
   border: solid 1px gray;
   color: white;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 tr.slist-header,
 tr.crud-header {
@@ -119,130 +138,140 @@ tr.crud-header {
   color: white;
   background: #fde4be;
   background: #fde4be;
-  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
-  color: black; }
+  color: black;
+}
 
 div.overlay-message > div > div.pic-waiticon > div.wait-roller div:after {
   background: white;
   transform: scale(1.3);
-  box-shadow: 0px 0px 8px oldlace; }
+  box-shadow: 0px 0px 8px oldlace;
+}
 
 div.overlay-message {
   color: white;
   border: solid 3px white;
   background: cadetblue;
-  box-shadow: 0px 0px 30px white; }
+  box-shadow: 0px 0px 30px white;
+}
 
 body {
   font-family: Roboto;
-  background-image: url("background.jpg"); }
+  background-image: url("background.jpg");
+}
 
 select, input[type=text], fieldset {
   font-size: 1rem;
-  border-radius: 3px; }
+  border-radius: 3px;
+}
 
 .popover,
 .control-panel {
   vertical-align: top;
   display: inline-block;
-  margin-top: .4rem;
-  margin-right: .2rem;
-  padding: .4em;
+  margin-top: 0.4rem;
+  margin-right: 0.2rem;
+  padding: 0.4em;
   border: solid 1px silver;
   border-radius: 3px;
-  background: white;
-  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
-  background: linear-gradient(0deg, white 0%, white 100%);
+  background: rgb(255, 255, 255);
+  background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4); }
+  -moz-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
+}
 
 .control-panel-title {
   white-space: nowrap;
   border-bottom: solid 1px gray;
-  margin-left: -.4rem;
-  margin-right: -.4rem;
-  margin-top: -.4rem;
-  padding-top: .4rem;
+  margin-left: -0.4rem;
+  margin-right: -0.4rem;
+  margin-top: -0.4rem;
+  padding-top: 0.4rem;
   color: white;
-  padding-left: .4rem;
-  padding-right: .2rem;
-  padding-bottom: .2rem;
-  margin-bottom: .2rem;
+  padding-left: 0.4rem;
+  padding-right: 0.2rem;
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.2rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   background: #673ab7;
-  background: -webkit-linear-gradient(90deg, #673ab7 0%, #673ab7 100%);
   background: linear-gradient(0deg, #673ab7 0%, #673ab7 100%);
   box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
-  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4); }
+  -moz-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
+}
 
 .body-text {
-  font-family: Arial; }
+  font-family: Arial;
+}
 
 .fld-value {
   border: solid 1px gray;
-  border-radius: 5px; }
+  border-radius: 5px;
+}
 
 .fld-value-combo {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   border: solid 1px gray;
   background-color: white;
-  color: black; }
+  color: black;
+}
 
 .fld-value-center {
   border-radius: 0px !important;
-  border: solid 1px gray !important; }
+  border: solid 1px gray !important;
+}
 
 .btn-border {
   white-space: nowrap;
   border: solid 1px gray;
   border-radius: 3px;
   display: inline-block;
-  padding-top: .4rem;
-  padding-bottom: .4rem;
-  padding-right: .2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
   padding-left: 0px;
-  margin: .1rem;
+  margin: 0.1rem;
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5); }
+  -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
+}
 
 .btn {
   white-space: nowrap;
   border: solid 1px gray;
   border-radius: 3px;
   display: inline-block;
-  padding-top: .4rem;
-  padding-bottom: .4rem;
-  padding-right: .2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-right: 0.2rem;
   padding-left: 0px;
-  margin: .1rem;
+  margin: 0.1rem;
   color: white;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%);
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
-  -moz-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5); }
+  -moz-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
+}
 
 .btn-stateonly {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  background: white;
-  background: -webkit-linear-gradient(90deg, white 0%, white 100%);
-  background: linear-gradient(0deg, white 0%, white 100%);
-  color: gray; }
+  background: rgb(255, 255, 255);
+  background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
+  color: gray;
+}
 
 .btn-panel {
-  padding: .2rem;
-  margin-top: .2rem;
+  padding: 0.2rem;
+  margin-top: 0.2rem;
   text-align: right;
-  border-top: solid 3px gainsboro; }
+  border-top: solid 3px gainsboro;
+}
 
 .fld-btn-right {
   color: white;
@@ -250,9 +279,9 @@ select, input[type=text], fieldset {
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   border: solid 1px gray;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 .fld-btn-left {
   color: white;
@@ -260,9 +289,9 @@ select, input[type=text], fieldset {
   border: solid 1px gray;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 .btn-toggle:not([disabled]):not(.disabled):hover,
 .fld-btn-left:not([disabled]):not(.disabled):hover,
@@ -274,7 +303,8 @@ select, input[type=text], fieldset {
 .btn:not([disabled]):not(.disabled):hover,
 .btn:not([disabled]):not(.disabled).hover {
   color: white;
-  background: #4DB6AC; }
+  background: #4DB6AC;
+}
 
 .btn-toggle:not([disabled]):not(.disabled):active,
 .fld-btn-left:not([disabled]):not(.disabled):active,
@@ -286,22 +316,24 @@ select, input[type=text], fieldset {
 .btn:not([disabled]):not(.disabled):active,
 .btn:not([disabled]):not(.disabled).active {
   color: white;
-  background: #7b1fa2;
-  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
-  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%);
-  opacity: .5; }
+  background: rgb(123, 31, 162);
+  background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
+  opacity: 0.5;
+}
 
 .tab-contents {
   border: solid 1px silver;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 .tab-item {
   border: solid 1px silver;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
-  background-color: white; }
+  background-color: white;
+}
 
 .dropdown-panel {
   background-color: white;
@@ -309,151 +341,157 @@ select, input[type=text], fieldset {
   box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
-  border-radius: 3px; }
+  border-radius: 3px;
+}
 
 .header-background {
   color: white;
-  background: #673ab7; }
+  background: #673ab7;
+}
 
 table.optOuter {
   border-radius: 3px;
-  color: black; }
+  color: black;
+}
 
 tr.optHeader > td {
   border-bottom: solid 2px black;
   border-top-right-radius: 3px;
-  border-top-left-radius: 3px; }
+  border-top-left-radius: 3px;
+}
 
 table.optBody > tbody > tr > td:last-child,
 table.optHeader > tbody > tr > td:last-child {
-  border: none; }
+  border: none;
+}
 
 table.optBody td,
 table.optHeader td {
-  border-right: solid 1px gray; }
+  border-right: solid 1px gray;
+}
 
 table.crud-table > tbody > tr.selected > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr.selected {
   background: #a64dff;
-  color: white; }
+  color: white;
+}
 
 table.crud-table > tbody > tr:hover > td:not(.btn-remove, .btn-edit),
 table.optBody > tbody > tr:hover {
   background: #4DB6AC;
-  color: white; }
+  color: white;
+}
 
 div.picIndicator {
   display: inline-block;
   border: solid 1px silver;
   background: white;
   vertical-align: text-top;
-  border-radius: 25%; }
+  border-radius: 25%;
+}
 
 div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],
 div.picIndicator[data-status=selected],
 div.picIndicator[data-status=true] {
-  background: -moz-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-  background: -o-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #d2ff52 0%, #91e842 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
 
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
 
 div.picIndicator[data-status=delay] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1);
+  background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: blinker 1s linear infinite;
-  -webkit-animation: blinker 1s infinite linear; }
+  -webkit-animation: blinker 1s infinite linear;
+}
 
 div.picIndicator[data-status=delayoff] {
-  background: -moz-radial-gradient(center, ellipse cover, #00f000 0%, black 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #00f000 0%, black 100%);
-  background: -o-radial-gradient(center, ellipse cover, #00f000 0%, black 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #00f000 0%, black 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #00f000 0%, black 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1);
-  animation: delayoff .5s ease infinite;
-  -webkit-animation: delayoff .5s infinite ease; }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  animation: delayoff 0.5s ease infinite;
+  -webkit-animation: delayoff 0.5s infinite ease;
+}
 
 div.picIndicator[data-status=delayon] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #ffff1c 0%, #ccc949 85%, #c4c051 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1);
-  animation: delayon .5s ease infinite;
-  -webkit-animation: delayon .5s infinite ease; }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  animation: delayon 0.5s ease infinite;
+  -webkit-animation: delayon 0.5s infinite ease;
+}
+
+@-webkit-keyframes delayoff {
+  0% {
+    background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  }
+  100% {
+    background: white;
+  }
+}
 
 @keyframes delayoff {
   0% {
-    background: -moz-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-    background: -webkit-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-    background: -o-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-    background: -ms-radial-gradient(center, ellipse cover, #d2ff52 0%, #91e842 100%);
-    background: radial-gradient(ellipse farthest-corner at center, #d2ff52 0%, #91e842 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+    background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  }
   100% {
-    background: white; } }
-
+    background: white;
+  }
+}
+@-webkit-keyframes delayon {
+  0% {
+    background: white;
+  }
+  100% {
+    background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  }
+}
 @keyframes delayon {
   0% {
-    background: white; }
+    background: white;
+  }
   100% {
-    background: -moz-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-    background: -webkit-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-    background: -o-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-    background: -ms-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-    background: radial-gradient(ellipse farthest-corner at center, #ffaf4b 0%, #ff920a 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); } }
-
+    background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+  }
+}
 div.picIndicator[data-status=loading] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffaf4b 0%, #ff920a 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #ffaf4b 0%, #ff920a 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
 
 div.picIndicator[data-status=error] {
-  background: -moz-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -webkit-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -o-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: -ms-radial-gradient(center, ellipse cover, #ffad29 0%, red 100%);
-  background: radial-gradient(ellipse farthest-corner at center, #ffad29 0%, red 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='nth(nth($color-stops, 1), 1)', endColorstr='nth(nth($color-stops, 2), 1)', GradientType=1); }
+  background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
+}
 
 .btn-toggle.fld-btn-left {
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
   color: black;
-  background: none; }
+  background: none;
+}
 
 .btn-toggle.fld-btn-right {
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
   color: black;
-  background: none; }
+  background: none;
+}
 
 .btn-toggle.fld-btn-center {
   border: solid 1px black;
-  color: black; }
+  color: black;
+}
 
-.btn-toggle[data-selected="true"] {
+.btn-toggle[data-selected=true] {
   color: white;
-  background: #7b1fa2;
-  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
-  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }
+  background: rgb(123, 31, 162);
+  background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
+}/*# sourceMappingURL=theme.css.map */

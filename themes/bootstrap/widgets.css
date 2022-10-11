@@ -1,11 +1,13 @@
-﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 label,
 span,
 div:not(.picIBColor) {
-  line-height: 1; }
+  line-height: 1;
+}
 
 div.picBody > div {
-  padding-right: 0; }
+  padding-right: 0;
+}
 
 div.picTabs {
   background-color: white;
@@ -14,32 +16,41 @@ div.picTabs {
   border: none;
   border-top: solid 1px silver;
   border-left: solid 1px silver;
-  border-right: solid 1px silver; }
+  border-right: solid 1px silver;
+}
 
 div.picTab {
-  border: none; }
+  border: none;
+}
 
 div.picTab > .picTabText {
-  margin-bottom: .4rem; }
+  margin-bottom: 0.4rem;
+}
 
 div.tab-contents {
-  border-top: none; }
+  border-top: none;
+}
 
 div.picTab.picTabSelected > span.picTabText {
-  border-bottom: solid 2px teal; }
+  border-bottom: solid 2px teal;
+}
 
 div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver; }
+  color: silver;
+}
 
 div.picConfigTabContents {
-  background-color: white; }
+  background-color: white;
+}
 
 div.picConfigPage {
-  margin-top: .4rem; }
+  margin-top: 0.4rem;
+}
 
 div.picController {
-  padding: 0px; }
+  padding: 0px;
+}
 
 /* div.picFeatureGrid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -47,7 +58,8 @@ div.picController {
     width: 100%;
 } */
 div.picFeatures {
-  display: block; }
+  display: block;
+}
 
 div.picSchedule,
 div.picPump,
@@ -58,24 +70,30 @@ div.picPumpCircuit,
 div.picBodyFilter,
 div.picLightThemes {
   display: flex;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+}
 
 div.picIBColorSelector > div.picToggleButton > div.picIndicator {
-  margin-left: .15em;
-  margin-right: -.19em;
-  margin-top: -.47em; }
+  margin-left: 0.15em;
+  margin-right: -0.19em;
+  margin-top: -0.47em;
+}
 
 div.picSchedule > span, div.picSchedule > label, div.picChemistry label, div.picChemistry span {
-  line-height: 2; }
+  line-height: 2;
+}
 
 div.picChlorinator {
-  justify-content: space-between; }
+  justify-content: space-between;
+}
 
 div.picChemistry {
-  width: 100%; }
+  width: 100%;
+}
 
 div.picIBColorSelector {
-  display: flex; }
+  display: flex;
+}
 
 div.picBodyFilter:not(:last-child),
 div.picBody:not(:last-child),
@@ -83,10 +101,12 @@ div.picChlorinator:not(:last-child),
 div.picSchedule:not(:last-child),
 div.picPump:not(:last-child) {
   border-bottom: solid 1px rgba(0, 0, 0, 0.125);
-  margin-bottom: 5px; }
+  margin-bottom: 5px;
+}
 
 span.picFilterPercentage {
-  text-align: right; }
+  text-align: right;
+}
 
 span.picPressureValue,
 span.picFilterPercent,
@@ -102,67 +122,83 @@ div.picRelay,
 div.picProgram,
 span.picFilterPercentage,
 label.picIBThemeLabel {
-  margin-right: auto; }
+  margin-right: auto;
+}
 
 label.picIBThemeLabel {
   width: 100%;
-  margin-left: 10px; }
+  margin-left: 10px;
+}
 
 div.picChlorStatus,
 div.picSuperChlor {
-  order: 20; }
+  order: 20;
+}
 
 div.picFeature,
 div.picCircuit,
 div.picVirtualCircuit {
-  display: flex; }
+  display: flex;
+}
 
 div.picFeature > label,
 div.picCircuit > label,
 div.picVirtualCircuit > label {
   top: 6px;
-  margin-right: auto; }
+  margin-right: auto;
+}
 
 div.picToggleButton {
   order: 10;
-  margin-right: auto; }
+  margin-right: auto;
+}
 
 div.picPopoverHeader,
 div.picCircuitTitle {
-  flex: 1 1 100%; }
+  flex: 1 1 100%;
+}
 
 div.picAmbientTemp label {
-  color: white; }
+  color: white;
+}
 
 div.picController > div.picControllerTitle {
-  margin: 0px; }
+  margin: 0px;
+}
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.picSaltReqd {
-  padding: .2rem;
+  padding: 0.2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: .4rem; }
+  margin-bottom: 0.4rem;
+}
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver; }
+  color: silver;
+}
 
 span.picUnits {
-  color: gray; }
+  color: gray;
+}
 
 div.picAccordian-title {
   border: solid 1px gray;
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays {
-  margin-top: .2rem; }
+  margin-top: 0.2rem;
+}
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 3px;
@@ -170,105 +206,128 @@ div.pnl-scheduleDays div.table-caption {
   border: solid 1px gray;
   color: white;
   background: #7bff9d;
-  background: linear-gradient(180deg, #7bff9d, #7bff9d); }
+  background: linear-gradient(180deg, #7bff9d, #7bff9d);
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px; }
+  border-top-right-radius: 5px;
+}
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white; }
+  color: white;
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: white;
   background: #007bff linear-gradient(180deg, #007bff, #007bff);
   color: black;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: #88acda; }
+  background: #88acda;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: #2196F3;
-  background: linear-gradient(180deg, #42a6f5, #2196F3); }
+  background: linear-gradient(180deg, #42a6f5, #2196F3);
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: 'Font Awesome 5 Free'; }
+  font-family: "Font Awesome 5 Free";
+}
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: "\f057";
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "\f111";
-  font-weight: 400; }
+  font-weight: 400;
+}
 
 div.picSelector {
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+}
 
 div.picOption {
   width: 100%;
   margin-bottom: 10px;
   display: flex;
-  align-items: center; }
+  align-items: center;
+}
 
 div.picOption > label {
-  margin-right: auto; }
+  margin-right: auto;
+}
 
 div.picOption:first-child {
-  margin-top: 10px; }
+  margin-top: 10px;
+}
 
 i.picDropdownButton {
-  margin-right: 10px; }
+  margin-right: 10px;
+}
 
 div.picVirtualCircuit {
-  padding-left: .5em;
-  display: flex; }
+  padding-left: 0.5em;
+  display: flex;
+}
 
 div.picBodyFilter > label.picFilterName,
 div.picChlorinator > label.picChlorinatorName,
 div.picChemController label.picControllerName {
-  overflow-y: hidden; }
+  overflow-y: hidden;
+}
 
 div.picSpinner-up, div.picSpinner-down {
-  line-height: 1.4rem !important; }
+  line-height: 1.4rem !important;
+}
 
 div.picModules > table > tbody > tr:nth-child(n+1) > td {
-  color: rgba(0, 0, 0, 0.125); }
+  color: rgba(0, 0, 0, 0.125);
+}
 
 span.picCircuitEndTime {
   position: unset;
-  right: unset; }
+  right: unset;
+}
 
 span.picLightEndTime {
   margin-top: -10px;
   margin-right: 5px;
   position: unset;
-  right: unset; }
+  right: unset;
+}
 
 div.picBody[data-covered=true]:before {
   text-align: right;
   display: block;
   position: absolute;
   left: -3.25em;
-  top: 2.5em; }
+  top: 2.5em;
+}
 
 span.picFilterPercentage,
 span.picFilterPressure {
   width: 5rem;
-  text-align: right; }
+  text-align: right;
+}/*# sourceMappingURL=widgets.css.map */

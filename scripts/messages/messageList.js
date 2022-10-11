@@ -497,7 +497,7 @@ mhelper.init();
             var self = this, o = self.options, el = self.element;
             if (o.changesOnly && obj.hasChanged === false) return true;
             let msg = o.messages[`m${obj.rowId}`];
-            if (o.portFilters.includes(msg.port)) return true;
+            if (o.portFilters.includes(msg.portId)) return true;
             if (o.filters.includes(msg.messageKey)) return true;
             return false;
         },
@@ -1067,7 +1067,7 @@ mhelper.init();
             var row = obj.row;
             var r = row[0];
             row.attr('data-msgdir', msg.direction);
-            row.attr('data-port', msg.port);
+            row.attr('data-port', msg.portId);
             row.addClass('msgRow');
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.messageKey] = ctx;
@@ -1106,8 +1106,8 @@ mhelper.init();
             //row.data('message', msg); Can't store jquery data. Create our own message cache.
             o.messages['m' + obj.rowId] = msg;
             o.rowIds.push({ rowId: obj.rowId, msgId: msg._id });
-            if (typeof msg.port !== 'undefined' && !o.ports.includes(msg.port)) {
-                o.ports.push(parseInt(msg.port, 10));
+            if (typeof msg.portId !== 'undefined' && !o.ports.includes(msg.portId)) {
+                o.ports.push(parseInt(msg.portId, 10));
             }
             row.attr('data-msgkey', ctx.messageKey);
             row.attr('data-dockey', ctx.docKey);
@@ -1151,7 +1151,7 @@ mhelper.init();
             obj.hasChanged = true;
             obj.isApiCall = true;
             row.attr('data-msgid', msg._id);
-            row.attr('data-port', msg.port);
+            row.attr('data-portId', msg.portId);
             o.messages['m' + obj.rowId] = msg;
             obj.hidden = self._calcMessageFilter(obj);
 
@@ -1179,7 +1179,7 @@ mhelper.init();
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.docKey] = ctx;
             row.attr('data-msgdir', msg.direction);
-            row.attr('data-port', msg.port);
+            row.attr('data-portId', msg.portId);
             (msg.direction === 'out') ? row.addClass('outbound') : row.addClass('inbound');
             $('<span></span>').text(ctx.protocol.name).appendTo($('<td></td>').appendTo(row));
             $('<span></span>').text(ctx.sourceAddr.name).appendTo($('<td></td>').appendTo(row));
@@ -1278,7 +1278,7 @@ mhelper.init();
             var line = $('<div class="dataline"><div>').appendTo(div);
             line = $('<div class="dataline"><div>').appendTo(div);
             $('<label>Port:</label>').appendTo(line);
-            $('<span></span>').appendTo(line).attr('data-bind', 'port');
+            $('<span></span>').appendTo(line).attr('data-bind', 'portId');
 
             line = $('<div class="dataline"><div>').appendTo(div);
             $('<label>Protocol:</label>').appendTo(line);
@@ -1407,7 +1407,7 @@ mhelper.init();
             el.find('div.msg-detail-info').show();
             el.find('div.api-detail-info').hide();
             var obj = {
-                port: 0,
+                portId: 0,
                 protocol: '',
                 title: '',
                 source: '',
@@ -1427,7 +1427,7 @@ mhelper.init();
                 o.context = ctx;
                 obj = {
                     isValid: msg.valid || msg.isValid,
-                    port: msg.port,
+                    portId: msg.portId,
                     protocol: ctx.protocol.desc,
                     source: ctx.sourceAddr.name,
                     sourceByte: ctx.sourceByte,
@@ -2364,7 +2364,7 @@ mhelper.init();
                     msgList.addBulkMessage({
                         isValid: typeof msg.valid !== 'undefined' ? msg.valid : typeof msg.isValid !== 'undefined' ? msg.isValid : true,
                         _id: msg.id,
-                        port: typeof msg.port !== 'undefined' ? msg.port : msg.portId,
+                        portId: typeof msg.port !== 'undefined' ? msg.port : msg.portId,
                         responseFor: msg.for,
                         protocol: msg.proto,
                         direction: msg.dir,

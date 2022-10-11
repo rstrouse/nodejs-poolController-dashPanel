@@ -1,113 +1,140 @@
-﻿html {
+html {
   width: 100%;
   height: 100%;
-  margin: 0px; }
+  margin: 0px;
+}
 
 * {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+}
 
 * {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+}
 
 body {
   width: 100%;
   height: 100%;
-  margin: 0px; }
+  margin: 0px;
+}
 
 .header {
   display: block;
   opacity: 1;
   grid-area: header;
   background-color: #ffd800;
-  border: solid 1px green; }
+  border: solid 1px green;
+}
 
 [tabindex="-1"]:focus {
-  outline: none !important; }
+  outline: none !important;
+}
 
 .text-instructions {
-  font-size: .8rem;
-  font-style: italic; }
+  font-size: 0.8rem;
+  font-style: italic;
+}
 
 a.btn.disabled,
 fieldset[disabled] a.btn {
-  pointer-events: none; }
+  pointer-events: none;
+}
 
 div.picValueSpinner.disabled > div {
-  opacity: .5;
-  cursor: not-allowed; }
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .btn-panel {
-  padding: .2rem;
-  margin-top: .2rem; }
+  padding: 0.2rem;
+  margin-top: 0.2rem;
+}
 
 .btn {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .btn > * {
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .btn-stateonly {
   pointer-events: none;
-  cursor: no-drop; }
+  cursor: no-drop;
+}
 
 .btnarray {
-  display: inline-block; }
+  display: inline-block;
+}
 
 .btnarray > div {
-  display: inline-block; }
+  display: inline-block;
+}
 
 .btn-toggle {
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.dashContainer,
 div.configContainer {
-  position: relative; }
+  position: relative;
+}
 
 span.picPercentData {
   padding-left: 2px;
-  padding-right: 2px; }
+  padding-right: 2px;
+}
 
 div.picControllerTitle {
   display: table;
-  width: 100%; }
+  width: 100%;
+}
 
 input.picServerAddress {
-  width: 10rem; }
+  width: 10rem;
+}
 
 input.picServerPort {
-  width: 4rem; }
+  width: 4rem;
+}
 
 div.picOptionLine > label {
   width: 9rem;
-  display: inline-block; }
+  display: inline-block;
+}
 
 div.picPanelMode,
 div.picFreezeProtect {
   text-align: center;
-  color: blue; }
+  color: blue;
+}
 
 div.picSpaDrain {
   text-align: center;
-  color: black; }
+  color: black;
+}
 
 div.picPanelMode[data-status=""],
 div.picPanelMode[data-status=auto],
 div.picFreezeProtect[data-status=off],
 div.picSpaDrain[data-status=off] {
-  display: none; }
+  display: none;
+}
 
 div.picModel > i {
   cursor: pointer;
-  padding-right: .2rem; }
+  padding-right: 0.2rem;
+}
 
 div.picModel > i:hover {
   cursor: pointer;
-  padding-right: .2rem;
-  color: orange; }
+  padding-right: 0.2rem;
+  color: orange;
+}
 
 div.picPanelMode > label,
 div.picFreezeProtect > label,
@@ -115,128 +142,165 @@ div.picSpaDrain > label {
   font-weight: bold;
   color: red;
   font-size: 1.2rem;
-  padding-left: .5rem;
-  padding-right: .5rem; }
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 
 div.picControllerTitle > div {
-  display: table-cell; }
+  display: table-cell;
+}
 
 div.picControllerTitle > div:nth-child(2) {
-  text-align: center; }
+  text-align: center;
+}
 
 div.picControllerTitle > div:nth-child(1) {
-  width: 20%; }
+  width: 20%;
+}
 
 div.picControllerTitle > div:nth-child(3) {
   width: 20%;
-  text-align: right; }
+  text-align: right;
+}
 
 div.picAppLogging > label,
 div.picPacketLogging > label {
   min-width: 4rem;
-  display: inline-block; }
+  display: inline-block;
+}
 
 div.picBS {
-  color: purple; }
+  color: purple;
+}
 
 div.picFirmware {
-  font-size: .8rem;
+  font-size: 0.8rem;
   display: block;
-  /* vertical-align:top; */ }
+  /* vertical-align:top; */
+}
 
 div.picFirmware > div.picOptionLine > label {
-  width: 4.5rem; }
+  width: 4.5rem;
+}
 
 div.picFirmware > div.picOptionLine > span {
   display: inline-block;
   width: 2rem;
-  text-align: right; }
+  text-align: right;
+}
 
 div.picModules {
   display: inline-block;
   vertical-align: top;
   padding-left: 1em;
   padding-right: 1em;
-  font-size: .8rem; }
+  font-size: 0.8rem;
+}
 
 div.picModules > table > tbody > tr > td:nth-child(1) {
   width: 70px;
-  text-align: left; }
+  text-align: left;
+}
 
 div.picModules > table > tbody > tr > td:nth-child(2) {
   width: 200px;
-  text-align: left; }
+  text-align: left;
+}
 
 div.picModules > table {
   border-collapse: collapse;
   box-sizing: border-box;
-  border-spacing: 0px; }
+  border-spacing: 0px;
+}
 
 div.picModules > table > tbody > tr:nth-child(1) {
   color: white;
   font-weight: bold;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
-  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
-  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
-  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
-  background-image: linear-gradient(to bottom, #ffaf4b, #ff920a); }
+  background-image: linear-gradient(to bottom, #ffaf4b, #ff920a);
+}
 
 div.picModules > table > tbody > tr:nth-child(n+2) {
   width: 100%;
   top: 0;
   margin: 0px;
-  background-color: white; }
+  background-color: white;
+}
 
 div.picModules > table > tbody > tr:nth-child(n+1) > td {
   border: solid 1px teal;
   padding-left: 4px;
   padding-right: 4px;
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 div.picModules > table > tbody > tr:nth-child(1) > td {
   border: solid 1px black;
   padding-left: 4px;
   padding-right: 4px;
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 div.picConfigIcon, div.picStartLogs {
   display: inline-block;
   cursor: pointer;
-  margin-left: .5rem;
-  vertical-align: text-top; }
+  margin-left: 0.5rem;
+  vertical-align: text-top;
+}
 
 div.picConfigIcon:hover, div.picStartLogs:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.picOptionField > label {
   display: inline-block;
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
-  overflow: hidden; }
+  overflow: hidden;
+}
 
 div.picAmbientTemp > div {
-  display: inline-block; }
+  display: inline-block;
+}
 
 div.picAmbientTemp > div:nth-child(2) {
-  float: right; }
+  float: right;
+}
 
 div.picAmbientTemp label {
-  color: gray; }
+  color: gray;
+}
 
 div.picBodyTemp > div:nth-child(2) {
-  font-size: 2em; }
+  font-size: 2em;
+}
 
 div.ct-narrative {
   width: 100%;
   overflow: hidden;
-  font-size: .8em;
+  font-size: 0.8em;
   margin-top: 1em;
-  max-width: 37rem; }
+  max-width: 37rem;
+}
 
 div.ct-narrative > hr {
-  margin: 1px; }
+  margin: 1px;
+}
+
+div.anslq25-ct-narrative {
+  width: 100%;
+  overflow: hidden;
+  font-size: 0.8em;
+  margin-top: 1em;
+  max-width: 37rem;
+}
+
+div.anslq25-ct-narrative-warning {
+  font: bold;
+  color: red;
+}
 
 div.dashOuter {
   /* width: calc(var(--number-of-columns)*377)px; */
@@ -246,32 +310,35 @@ div.dashOuter {
   grid-auto-rows: auto;
   grid-row-gap: 0px;
   margin: auto;
-  max-width: 1240px; }
+  max-width: 1240px;
+}
 
 div.dashContainer {
   /*   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(377px, 1fr));  */
   display: flex;
   flex-flow: row wrap;
-  /* flex-flow: column wrap; */ }
+  /* flex-flow: column wrap; */
+}
 
 div.dashContainer > div > div.control-panel {
-  width: 23.5rem; }
+  width: 23.5rem;
+}
 
-div.dashOuter[data-panel="dashboard"] > div.configContainer {
-  display: none; }
+div.dashOuter[data-panel=dashboard] > div.configContainer {
+  display: none;
+}
 
-div.dashOuter[data-panel="configuration"] > div.dashContainer {
-  display: none; }
+div.dashOuter[data-panel=configuration] > div.dashContainer {
+  display: none;
+}
 
-div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes="true"]
-div.picCircuit[data-type="circuit"]
-div.picLight
-i.picDropdownButton.fa-palette,
-div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] div.picIBColor,
-div.picDashboard[data-hidethemes="true"] div.picCircuit[data-type="circuit"] div.picLight div.picIBColor {
-  display: none; }
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type=circuit] i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type=circuit] div.picLight i.picDropdownButton.fa-palette,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type=circuit] div.picIBColor,
+div.picDashboard[data-hidethemes=true] div.picCircuit[data-type=circuit] div.picLight div.picIBColor {
+  display: none;
+}
 
 /*
 div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
@@ -279,76 +346,99 @@ div.picDashboard[data-hidethemes=false] span.picIntelliBriteIcon {
 }
 */
 div.picDashboard span.picIntelliBriteIcon {
-  display: none; }
+  display: none;
+}
 
 .control-panel {
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   vertical-align: top;
   display: inline-block;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none; }
+  -ms-user-select: none;
+}
 
 .control-panel-title {
-  white-space: nowrap; }
+  white-space: nowrap;
+}
 
 div.picBodyTemp > div:nth-child(2) {
   font-size: 2.5em;
-  min-width: 2.25em; }
+  min-width: 2.25em;
+}
 
 .orderInstructions {
   margin-top: -7px;
-  font-size: 0.7rem; }
+  font-size: 0.7rem;
+}
 
 @media screen and (min-width: 745px) {
   div.lgOrderInstructions {
-    display: block; }
+    display: block;
+  }
   div.orderDiv {
-    display: block; } }
-
+    display: block;
+  }
+}
 @media screen and (max-width: 744px) {
   div.picController {
     min-width: 100%;
-    max-width: 100%; }
+    max-width: 100%;
+  }
   div.picController div.picModel {
     min-width: 0px;
-    width: auto; }
+    width: auto;
+  }
   div.dashOuter {
-    justify-content: unset; }
-  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
+    justify-content: unset;
+  }
+  div.dashOuter:not([data-panel=configuration]) div.dashContainer {
     display: contents !important;
-    overflow-y: auto; }
+    overflow-y: auto;
+  }
   div.control-panel {
-    margin-right: 0px; }
+    margin-right: 0px;
+  }
   div.picBodyTemp .picTempText,
-  div.picBodyTemp .picTempUnits {
-    display: none; }
+div.picBodyTemp .picTempUnits {
+    display: none;
+  }
   div.picBodies,
-  div.picPumps,
-  div.picChemistry,
-  div.picSchedules,
-  div.picCircuits {
-    max-width: 100%; }
+div.picPumps,
+div.picChemistry,
+div.picSchedules,
+div.picCircuits {
+    max-width: 100%;
+  }
   div.control-panel {
     width: 100% !important;
-    margin: 0px !important; } }
-
+    margin: 0px !important;
+  }
+}
 @media screen and (max-width: 540px) {
   div.picController span.picModelData {
-    display: none; }
+    display: none;
+  }
   div.picController div.picModel {
     min-width: 0px;
-    width: auto; } }
-
+    width: auto;
+  }
+}
 @media screen and (max-width: 370px) {
-  div.dashOuter:not([data-panel="configuration"]) div.dashContainer {
+  div.dashOuter:not([data-panel=configuration]) div.dashContainer {
     display: contents !important;
     overflow-x: auto;
-    width: 100%; }
+    width: 100%;
+  }
   div.picBodies {
-    min-width: 100%; }
+    min-width: 100%;
+  }
   div.picBodyFilter > label.picFilterName,
-  div.picChlorinator > label.picChlorinatorName,
-  div.picChemController > label.picControllerName {
-    max-width: 25%; } }
+div.picChlorinator > label.picChlorinatorName,
+div.picChemController > label.picControllerName {
+    max-width: 25%;
+  }
+}/*# sourceMappingURL=dashboard.css.map */

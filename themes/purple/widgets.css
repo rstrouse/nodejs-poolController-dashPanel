@@ -1,103 +1,122 @@
-﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
-  color: silver; }
+  color: silver;
+}
 
 div.picConfigTabContents {
-  background-color: white; }
+  background-color: white;
+}
 
 div.picConfigPage {
-  margin-top: .4rem; }
+  margin-top: 0.4rem;
+}
 
 div.picController {
-  padding: 0px; }
+  padding: 0px;
+}
 
 div.picAmbientTemp label {
-  color: white; }
+  color: white;
+}
 
 div.picController > div.picControllerTitle {
-  margin: 0px; }
+  margin: 0px;
+}
 
 div.pover-icon:hover {
   color: orange;
-  text-shadow: 3px 3px 16px #272634; }
+  text-shadow: 3px 3px 16px #272634;
+}
 
 div.picSaltReqd {
-  padding: .2rem;
+  padding: 0.2rem;
   border-bottom: solid 1px gainsboro;
-  margin-bottom: .4rem; }
+  margin-bottom: 0.4rem;
+}
 
 div.picBody[data-ison=false] div.picBodyTemp {
-  color: silver; }
+  color: silver;
+}
 
 span.picUnits {
-  color: gray; }
+  color: gray;
+}
 
 div.picAccordian-title {
   border: solid 1px gray;
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays > div.table {
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px; }
+  border-top-right-radius: 3px;
+}
 
 div.pnl-scheduleDays div.table-caption {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   border: solid 1px gray;
   color: white;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px; }
+  border-top-right-radius: 5px;
+}
 
 div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   border: solid 1px gray;
   font-weight: bold;
-  color: white; }
+  color: white;
+}
 
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
-  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 div.pnl-scheduleDays div.table-cell.day:hover {
-  background: #4DB6AC; }
+  background: #4DB6AC;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
-  background: #7b1fa2;
-  background: -webkit-linear-gradient(-90deg, #7b1fa2 0%, #7b1fa2 100%);
-  background: linear-gradient(180deg, #7b1fa2 0%, #7b1fa2 100%); }
+  background: rgb(123, 31, 162);
+  background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   border: solid 1px gainsboro;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 div.pnl-scheduleDays div.table-cell.day {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
-  font-family: 'Font Awesome 5 Free'; }
+  font-family: "Font Awesome 5 Free";
+}
 
 div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
   content: "\f057";
-  font-weight: 900; }
+  font-weight: 900;
+}
 
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "\f111";
-  font-weight: 400; }
+  font-weight: 400;
+}
 
 .slist-caption,
 .crud-caption,
@@ -106,9 +125,9 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   border-top-right-radius: 3px;
   border: solid 1px gray;
   color: white;
-  background: #02969b;
-  background: -webkit-linear-gradient(-90deg, #02969b 0%, #02969b 100%);
-  background: linear-gradient(180deg, #02969b 0%, #02969b 100%); }
+  background: rgb(2, 150, 155);
+  background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
+}
 
 tr.slist-header,
 tr.crud-header {
@@ -118,17 +137,19 @@ tr.crud-header {
   color: white;
   background: #fde4be;
   background: #fde4be;
-  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
-  color: black; }
+  color: black;
+}
 
 div.overlay-message > div > div.pic-waiticon > div.wait-roller div:after {
   background: white;
   transform: scale(1.3);
-  box-shadow: 0px 0px 8px oldlace; }
+  box-shadow: 0px 0px 8px oldlace;
+}
 
 div.overlay-message {
   color: white;
   border: solid 3px white;
   background: cadetblue;
-  box-shadow: 0px 0px 30px white; }
+  box-shadow: 0px 0px 30px white;
+}/*# sourceMappingURL=widgets.css.map */
