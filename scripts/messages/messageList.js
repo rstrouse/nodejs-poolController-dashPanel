@@ -525,6 +525,7 @@ mhelper.init();
                 selectionType: 'single',
                 columns: [
                     { width: '18px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                    { width: '18px', header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
                     { width: '37px', header: { label: 'Id', style: { textAlign: 'center' } }, data: { style: { textAlign: 'right' } } },
                     { width: '18px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
                     { width: '18px', header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
@@ -1073,17 +1074,18 @@ mhelper.init();
             o.contexts[ctx.messageKey] = ctx;
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
 
-            $('<span></span>').text(msg._id).appendTo(r.cells[1]);
+            $('<span></span>').text(msg.portId).appendTo(r.cells[1]);
+            $('<span></span>').text(`${msg._id}${msg.tries>1?'-'+msg.tries:''}`).appendTo(r.cells[2]);
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
-            $('<span></span>').append(dir).appendTo(r.cells[2]);
-            var spChg = $('<span class="changed"></span>').appendTo(r.cells[3]);
+            $('<span></span>').append(dir).appendTo(r.cells[3]);
+            var spChg = $('<span class="changed"></span>').appendTo(r.cells[4]);
             var chg = $('<i class="fas"></i>').appendTo(spChg);
-            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[4]);
-            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[5]);
-            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[6]);
-            $('<span></span>').text(ctx.actionByte).appendTo(r.cells[7]);
-            $(r.cells[7]).attr('title', ctx.actionName).addClass('msg-action');
-            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[8]);
+            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[5]);
+            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[6]);
+            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[7]);
+            $('<span></span>').text(ctx.actionByte).appendTo(r.cells[8]);
+            $(r.cells[8]).attr('title', ctx.actionName).addClass('msg-action');
+            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[9]);
             else console.log(msg);
             var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;

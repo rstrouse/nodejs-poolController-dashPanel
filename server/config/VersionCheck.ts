@@ -52,9 +52,8 @@ class VersionCheck {
     let env = process.env;
     let out: string;
     try {
-      if (typeof env.SOURCE_BRANCH !== 'undefined') 
-      {
-          out = env.SOURCE_BRANCH // check for docker variable
+      if (typeof env.SOURCE_BRANCH !== 'undefined') {
+        out = env.SOURCE_BRANCH // check for docker variable
       }
       else {
         let res = execSync('git rev-parse --abbrev-ref HEAD');
@@ -72,9 +71,8 @@ class VersionCheck {
     }
     catch (err) { logger.error(`Unable to retrieve local git branch.  ${err}`); }
     try {
-      if (typeof env.SOURCE_COMMIT !== 'undefined') 
-      {
-          out = env.SOURCE_COMMIT; // check for docker variable
+      if (typeof env.SOURCE_COMMIT !== 'undefined') {
+        out = env.SOURCE_COMMIT; // check for docker variable
       }
       else {
         let res = execSync('git rev-parse HEAD');
@@ -104,10 +102,10 @@ class VersionCheck {
       dt.setDate(dt.getDate() + 2); // check every 2 days
       c.nextCheckTime = Timestamp.toISOLocal(dt);
       this.getLatestRelease().then((publishedVersion) => {
-          c.githubRelease = publishedVersion;
-          config.setSection('appVersion', c);
-          this.compare();
-      }).catch((err)=>{
+        c.githubRelease = publishedVersion;
+        config.setSection('appVersion', c);
+        this.compare();
+      }).catch((err) => {
         logger.warn(`Error get git latest release: ${err}`);
       });
     }
@@ -117,42 +115,47 @@ class VersionCheck {
   }
 
   private async getLatestRelease(redirect?: string): Promise<string> {
-        var options = {
-        method: 'GET',
-        headers: {
-          'User-Agent': this.userAgent
-        }
+    var options = {
+      method: 'GET',
+      headers: {
+        'User-Agent': this.userAgent
       }
-      let url: string;
-      if (typeof redirect === 'undefined') {
-        url = `https://${this.gitApiHost}${this.gitLatestReleaseJSONPath}`;
-      }
-      else {
-        url = redirect;
-        this.redirects += 1;
-      }
-      if (this.redirects >= 20) return Promise.reject(`Too many redirects.`)
-      return new Promise<string>((resolve, reject) => {
-        try {
-          https.request(url, options, async res => {
+    }
+    let url: string;
+    if (typeof redirect === 'undefined') {
+      url = `https://${this.gitApiHost}${this.gitLatestReleaseJSONPath}`;
+    }
+    else {
+      url = redirect;
+      this.redirects += 1;
+    }
+    if (this.redirects >= 20) return Promise.reject(`Too many redirects.`)
+
+      return new Promise<string>(async (resolve, reject) => {
+
+          let r = https.request(url, options, async res => {
             if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) await this.getLatestRelease(res.headers.location);
             let data = '';
-            res.on('data', d => { data += d; });
-            res.on('end', () => {
-              let jdata = JSON.parse(data);
-              if (typeof jdata.tag_name !== 'undefined')
-                resolve(jdata.tag_name.replace('v', ''));
-              else
-                reject(`No data returned.`)
-            })
+            res.on('data', d => { data += d; })
+              .on('end', () => {
+                let jdata = JSON.parse(data);
+                if (typeof jdata.tag_name !== 'undefined')
+                  resolve(jdata.tag_name.replace('v', ''));
+                else
+                  reject(`No data returned.`)
+              })
+              .on('error', (err) => {
+                logger.error(`Error with getLatestRelease: ${err.message}`);
+              })
+
           })
             .end();
-        }
-        catch (err) {
-          logger.error('Error contacting Github for latest published release: ' + err);
-          reject(err);
-        };
+          r.on('error', (err) => {
+            logger.error(`here??? ${err.message}`);
+          })
+
       })
+
   }
   public compare() {
     logger.info(`Checking dashPanel versions...`);

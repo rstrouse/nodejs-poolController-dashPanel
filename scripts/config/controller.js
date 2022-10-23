@@ -676,7 +676,7 @@
             else
                 cols[0].elGlyph().attr('class', 'fas fa-route');
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
-            cols[1].elText().text(port.netConnect ? `${port.netHost}:${port.netPort}` : port.rs485Port);
+            cols[1].elText().text(port.netConnect ? `${port.netHost}:${port.netPort}` : port.mockPort ? `Mock Port` : port.rs485Port);
             if (port.portId === 0) el.find('div.btnDeleteRS485Port').hide();
             else el.find('div.btnDeleteRS485Port').show();
             dataBinder.bind(el, port);
@@ -811,6 +811,7 @@
                 columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }, { binding: 'rs485Port', text: 'Path', style: { whiteSpace: 'nowrap' } }],
                 items: opts.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '2.25rem', marginLeft: '.25rem' } }
             });
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Broadcast comms to other ports.', binding: 'broadcastComms' }).attr('title', 'Check if you want to communication packets sent internally to other ports and want packets from other ports cloned to this ANSLQ25 server.  This is useful with mock ports and not needed if you have two physical ports and have them connected.  Communications will only be cloned to other ports that do not have a pump or chlorinator assigned to them.');
             //$('<div></div>').staticField({ labelText: `Current Model`, value: opts.model || 'None' }).appendTo(line);
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').pickList({
