@@ -685,6 +685,151 @@
             });
         }
     });
+    $.widget('pic.configScreenlogic', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+            el[0].setScreenlogicStats = function (stat) { return self.setScreenlogicStats(stat); };
+        },
+        setScreenlogicStats: function (stat) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.cfgScreenlogic').each(function () {
+                dataBinder.bind($(this), stat);
+            });
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picConfigCategory');
+            el.addClass('cfgScreenlogic');
+            var pnl = $('<div></div>').appendTo(el);
+            $.getApiService('/config/options/screenlogic', null, 'Searching for units...', function (opts, status, xhr) {
+                console.log(opts);
+                var slDivSettings = $('<div></div>').appendTo(pnl).addClass('pnl-screenlogic').css({ display: 'inline-block', verticalAlign: 'top' });
+                var line = $('<div></div>').css({ display: 'flex', flexFlow: 'column' }).appendTo(slDivSettings);
+                var binding = '';
+
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled', value: opts.cfg.enabled });
+                $('<div></div>').appendTo(line).pickList({
+                    required: true,
+                    value: opts.cfg.type,
+                    bindColumn: 0, displayColumn: 1, labelText: 'Connection Type', binding: binding + 'type',
+                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
+                    items: opts.types, inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
+                });
+                $('<div></div>').appendTo(line).inputField({ value: opts.cfg.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ value: opts.cfg.password, canEdit: true, labelText: 'Password', fmtMask: "###0", emptyMask: "----", binding: binding + 'password', min: 1, max: 9999, step: 1, inputAttrs: { maxlength: 4, style: { width: '8.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+
+                $('<div></div>').appendTo(slDivSettings).css({ fontSize: '.8rem' }).configScreenlogicStats();
+                let local = $('<div></div>').css({ display: 'flex', marginTop: "1rem" }).appendTo(line);
+                let localSL;
+                if (typeof opts.localUnit.gatewayName !== 'undefined') localSL = `Local Screenlogic: ${opts.localUnit.gatewayName} found at ${opts.localUnit.address}:${opts.localUnit.port}`;
+                if (typeof localSL !== 'undefined') {
+                    $('<div></div>').appendTo(local).html(localSL);
+                    var btnCopy = $('<div><i class="fas fa-arrow-up-from-bracket"></i></div>').css({ marginLeft: '3px' }).appendTo(local)
+                    // .actionButton({ icon: '<i class="fas fa-arrow-up-from-bracket"></i>' });
+                    btnCopy.on('click', function (evt) {
+                        var p = dataBinder.fromElement(slDivSettings);
+                        p.systemName = opts.localUnit.gatewayName;
+                        p.type = 'local';
+                        dataBinder.bind(el, p);
+                    });
+                }
+                else {
+                    $('<div></div>').css({ display: 'flex' }).appendTo(local).html(`No local Screenlogic found.`);
+                }
+                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+                var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Screenlogic', icon: '<i class="fas fa-save" ></i>' });
+                btnSave.on('click', function (evt) {
+                    $.pic.fieldTip.clearTips(slDivSettings);
+                    var obj = dataBinder.fromElement(slDivSettings);
+                    console.log(obj);
+
+                    var bValid = true;
+                    if (obj.enabled) {
+                        let regexMatch = /Pentair: (?:(?:\d|[A-Z])(?:\d|[A-Z])-){2}(?:\d|[A-Z])(?:\d|[A-Z])/gm
+                        // /Pentair: (?:(?:\d|[A-Z])(?:\d|[A-Z])-){2}(?:\d|[A-Z])(?:\d|[A-Z])/g
+                        if (obj.systemName.match(regexMatch) === null) {
+                            $('<div></div>').appendTo(el.find('div[data-bind$=systemName]:first')).fieldTip({ message: 'Format must be `Pentair: xx-xx-xx`' });
+                            bValid = false;
+                        }
+                    }
+                    if (bValid) {
+                        $.putApiService('/app/screenlogic', obj, 'Setting Screenlogic...', function (retSL, status, xhr) {
+                            self.dataBind(retSL);
+                        });
+                    }
+
+                });
+                
+            });
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            el.attr('data-portid', obj.portId);
+            el.find('div.pnl-screenlogicStats').each(function () {
+                $(this);
+            });
+            let port = $.extend(true,
+                {
+                    "cfg": {
+                        "enabled": false,
+                        "type": "local",
+                        "systemName": "Pentair: 00-00-00",
+                        "password": 0000
+                    },
+                    "localUnit": {
+                
+                    },
+                }, obj);
+            dataBinder.bind(el, port);
+            if (typeof port.stats !== 'undefined') el.find('div.pnl-screenlogicStats').each(function () {
+                this.dataBind(port.stats);
+            });
+        }
+    });
+    $.widget('pic.configScreenlogicStats', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+            el[0].setScreenlogicStats = function (stat) { return self.setScreenlogicStats(stat); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('pnl-screenlogicStats');
+                var grpSl
+                    = $('<fieldset></fieldset>').appendTo(el).css({ fontSize: '.8rem' });
+                $('<legend></legend>').appendTo(grpSl).text('Screenlogic Stats');
+                line = $('<div></div>').appendTo(grpSl);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Status', binding: 'status', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSl);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Ready State', binding: 'readyState', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSl);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Connecting', binding: 'connecting', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSl);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Destroyed', binding: 'destroyed', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+
+                // Create the statistics panel.
+                line = $('<div></div>').appendTo(grpSl);
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+                line = $('<div></div>').appendTo(grpSl);
+
+                $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+
+                var db = $('div.picDashboard').each(function () {
+                    this.receiveScreenlogicStats(true);
+                });
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            obj.connecting = obj.connecting ? 'true' : 'false';
+            obj.destroyed = obj.destroyed ? 'true' : 'false';
+            dataBinder.bind(el, obj);
+        }
+    });
     $.widget('pic.configRS485PortStats', {
         options: {},
         _create: function () {
@@ -732,7 +877,7 @@
             line = $('<div></div>').appendTo(grpSend);
             $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units: '%', binding: 'sndFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
             var db = $('div.picDashboard').each(function () {
-                this.receivePortStats(true);
+                this.receiveScreenlogicStats(true);
             });
         },
         dataBind: function (obj) {
@@ -802,12 +947,12 @@
             var line = $('<div></div>').appendTo(pnl);
             console.log(type);
             // $('<input type="hidden" data-bind="controllerType"></input>').appendTo(line).val(opts.controllerType);
-        $('<div></div>').staticField({ labelText: `Current Panel Type`, value: typeof opts.controllerType === 'undefined' || opts.controllerType === 'none' || opts.isActive === false ? 'None' : model.desc}).appendTo(line);
+            $('<div></div>').staticField({ labelText: `Current Panel Type`, value: typeof opts.controllerType === 'undefined' || opts.controllerType === 'none' || opts.isActive === false ? 'None' : model.desc }).appendTo(line);
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
-                required: true, 
+                required: true,
                 value: opts.portId || 0,
-                bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId', 
+                bindColumn: 0, displayColumn: 1, labelText: 'Port', binding: binding + 'portId',
                 columns: [{ binding: 'portId', hidden: true, text: 'portId', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Port', style: { whiteSpace: 'nowrap' } }, { binding: 'rs485Port', text: 'Path', style: { whiteSpace: 'nowrap' } }],
                 items: opts.rs485ports, inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { width: '2.25rem', marginLeft: '.25rem' } }
             });
@@ -832,14 +977,14 @@
                 self._setModelAttributes(evt.newItem);
 
             })[0];
-            
+
             if (typeof type.expansionModules !== 'undefined' && type.expansionModules.length > 0 && type.type === 'intellitouch') {
                 for (let i = 0; i < type.expansionModules.length; i++) {
                     line = $('<div></div>').appendTo(line);
                     $('<div></div>').pickList({
                         required: true,
                         value: type.expansionModules[i].type,
-                        bindColumn: 0, displayColumn: 2, labelText: `Expansion Module ${i+1}`, binding: `expansion${i+1}`,
+                        bindColumn: 0, displayColumn: 2, labelText: `Expansion Module ${i + 1}`, binding: `expansion${i + 1}`,
                         columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap', marginTop: '1rem' } }, { binding: 'name', hidden: false, text: 'Expansion', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
                         items: type.expansionModules, inputAttrs: { style: { width: '9.7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
                     }).appendTo(line);
@@ -865,14 +1010,14 @@
                             $.pic.modalDialog.closeDialog(this);
                             // if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
                             // else {
-                                console.log('Deleting Anslq25');
-                                $.deleteApiService('/app/anslq25', v, 'Deleting Anslq25 Mock Controller...', function (data, status, xhr) {
-                                    //p.parents('div.picConfigCategory.cfgPump:first').remove();
-                                    opts.controllerType = data.controllerType;
-                                    opts.model = data.model;
-                                    opts.isActive = data.isActive;
-                                    self._resetAnslq25Panel(opts);
-                                });
+                            console.log('Deleting Anslq25');
+                            $.deleteApiService('/app/anslq25', v, 'Deleting Anslq25 Mock Controller...', function (data, status, xhr) {
+                                //p.parents('div.picConfigCategory.cfgPump:first').remove();
+                                opts.controllerType = data.controllerType;
+                                opts.model = data.model;
+                                opts.isActive = data.isActive;
+                                self._resetAnslq25Panel(opts);
+                            });
                             // }
                         }
                     },
@@ -887,7 +1032,7 @@
             btnSave.on('click', function (e) {
                 var v = dataBinder.fromElement(pnl);
                 console.log(v);
-                
+
                 $.pic.modalDialog.createConfirm('dlgConfirmAddAnslq25', {
                     message: 'Are you sure you have read the fine print and know what you are doing?  You may overwrite your entire pool configuration.  njsPC will now sense an ' + v.anslq25ControllerType + ' on the bus and change to this controller type.',
                     width: '350px',
@@ -898,17 +1043,17 @@
                         click: function () {
                             $.pic.modalDialog.closeDialog(this);
                             // if (v.id <= 0) p.parents('div.picConfigCategory.cfgPump:first').remove();
-                            
-                                console.log('Adding Anslq-25');
-                                if (dataBinder.checkRequired(pnl)) {
-                                    $.putApiService('/config/anslq25ControllerType', v, 'Adding Anslq-25 Mock Controller...', function (data, status, xhr) {
-                                            opts.controllerType = data.controllerType;
-                                            opts.model = data.model;
-                                            opts.isActive = data.isActive;
-                                        self._resetAnslq25Panel(opts);
-                                    });
-                                }
-                            
+
+                            console.log('Adding Anslq-25');
+                            if (dataBinder.checkRequired(pnl)) {
+                                $.putApiService('/config/anslq25ControllerType', v, 'Adding Anslq-25 Mock Controller...', function (data, status, xhr) {
+                                    opts.controllerType = data.controllerType;
+                                    opts.model = data.model;
+                                    opts.isActive = data.isActive;
+                                    self._resetAnslq25Panel(opts);
+                                });
+                            }
+
                         }
                     },
                     {
@@ -916,11 +1061,11 @@
                         click: function () { $.pic.modalDialog.closeDialog(this); }
                     }]
                 });
-                
-                
+
+
 
             });
-            
+
 
         },
         dataBind: function (obj) {

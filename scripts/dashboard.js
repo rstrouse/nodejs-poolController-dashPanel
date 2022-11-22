@@ -6,6 +6,7 @@
             self._initState();
             el[0].receiveLogMessages = function (val) { self.receiveLogMessages(val); };
             el[0].receivePortStats = function (val) { self.receivePortStats(val); };
+            el[0].receiveScreenlogicStats = function (val) { self.receiveScreenlogicStats(val); };
             el[0].reset = function () { self._reset(); };
         },
         _clearPanels: function () {
@@ -418,6 +419,16 @@
                 // Turn it off if there are no displays out there.
                 if (rs485Displays.length === 0) self.receivePortStats(false);
             });
+            o.socket.on('screenlogicStats', function (data) {
+                console.log({ evt: 'rs485Stats', data: data });
+                var screenlogic = el.find(`div.pnl-screenlogicStats`);
+                screenlogic.each(function () {
+                    this.dataBind(data);
+                });
+                if (screenlogic.length === 0){
+                    self.receiveScreenlogicStats(false);
+                }
+            });
             o.socket.on('chemController', function (data) {
                 console.log({ evt: 'chemController', data: data });
                 el.find('div.picChemistry').each(function () { this.setChemControllerData(data); });
@@ -500,6 +511,16 @@
                 if (typeof val !== 'undefined') {
                     console.log(`sendPortStatus Emit ${val}`);
                     o.socket.emit('sendRS485PortStats', makeBool(val));
+                    o.sendPortStatus = makeBool(val);
+                }
+            }
+        },
+        receiveScreenlogicStats: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof val !== 'undefined') {
+                    console.log(`sendScreenlogicStatus Emit ${val}`);
+                    o.socket.emit('sendScreenlogicStats', makeBool(val));
                     o.sendPortStatus = makeBool(val);
                 }
             }

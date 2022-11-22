@@ -153,6 +153,19 @@
                 }
             }
         },
+        receiveScreenlogicStats: function (val) {
+            var self = this, o = self.options, el = self.element;
+            if (o.isConnected) {
+                if (typeof val !== 'undefined') {
+                    console.log(`sendScreenlogicStats Emit ${val}`);
+                    o.socket.emit('sendScreenlogicStats', makeBool(val));
+                    o.sendScreenlogicStats = makeBool(val);
+                    $('div.picScreenlogics').each(function () {
+                        this.setScreenlogics(o.sendScreenlogicStats);
+                    });
+                }
+            }
+        },
         sendOutboundMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
             if (o.isConnected) {

@@ -40,6 +40,10 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configRS485();
                     break;
+                case 'tabScreenlogic':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configScreenlogic();
+                    break;
                 case 'tabEquipment':
                     self._buildEquipmentTab(evt.newTab.contents);
                     break;
@@ -116,8 +120,9 @@
                 var tab;
                 tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
                     [{ id: 'tabControllerType', text: 'Model', cssClass: 'cfgControllerType' },
-                    { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
                     { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' },
+                    { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
+                    { id: 'tabScreenlogic', text: 'Screenlogic', cssClass: 'cfgScreenlogic' },
                     { id: 'tabMockControllerType', text: 'Anslq25 (Mock Controller)', cssClass: 'cfgMockControllerType' }],
                 );
                 //tabs[0].showTab('tabController', false);
@@ -222,8 +227,9 @@
             //tabs.showTab('tabRS485', false);
             switch (tabId) {
                 case 'tabControllerType':
-                case 'tabRS485':
-                case 'tabInterfaces':
+                    case 'tabInterfaces':
+                    case 'tabRS485':
+                    case 'tabScreenlogic':
                     //tabs.selectedTabId(tabId);
                     break;
                 default:
