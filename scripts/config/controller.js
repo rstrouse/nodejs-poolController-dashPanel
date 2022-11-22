@@ -552,6 +552,13 @@
             line = $('<div></div>').appendTo(divNet);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'netHost', inputAttrs: { maxlength: 22 }, labelAttrs: { style: { width: '3.5rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'netPort', dataType: 'number', fmtMask: '#', inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '.15rem' } } });
+            line = $('<div></div>').appendTo(divNet);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Allow Half Open', binding: binding + 'netSettings.allowHalfOpen' });
+            line = $('<div></div>').appendTo(divNet);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Keep Alive', binding: binding + 'netSettings.keepAlive' });
+            line = $('<div></div>').appendTo(divNet);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Initial Delay', fmtMask: "#,##0", binding: binding + 'netSettings.keepAliveInitialDelay', min: 0, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { marginLeft: '3.2rem', marginRight: '.25rem' } } });
+            
             line = $('<div></div>').appendTo(divSettings);
             $('<div></div>').addClass('pnl-rs485-inactivity').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Inactivity Timeout', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'inactivityRetry', min: 1, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             var divMock = $('<div></div>').addClass('pnl-rs485-mock').appendTo(divSettings).hide();
@@ -573,6 +580,7 @@
                 obj.netHost = p.netHost;
                 obj.portId = p.portId;
                 obj.portSettings = p.portSettings;
+                obj.netSettings = p.netSettings;
                 obj.inactivityRetry = p.inactivityRetry;
                 var bValid = true;
                 if (p.enabled) {
@@ -663,6 +671,11 @@
                     "flowControl": false,
                     "autoOpen": false,
                     "lock": false
+                },
+                "netSettings": {
+                    "keepAlive": false,
+                    "allowHalfOpen": false,
+                    "keepAliveInitialDelay": 5
                 }
             }, obj);
             var acc = el.find('div.picAccordian:first');
