@@ -1,4 +1,4 @@
-html {
+﻿html {
   width: 100%;
   height: 100%;
   margin: 0px;
@@ -82,4 +82,4 @@ div.picValueSpinner.disabled > div {
 div.dashContainer,
 div.configContainer {
   position: relative;
-}/*# sourceMappingURL=default.css.map */
+}

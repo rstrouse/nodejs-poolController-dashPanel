@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picIBColor {
@@ -357,7 +357,7 @@ span.picFilterPressure {
 
 @media screen and (max-width: 744px) {
   div.picChlorStatus,
-div.picSuperChlor {
+  div.picSuperChlor {
     order: 4;
     margin-right: auto;
   }
@@ -402,6 +402,7 @@ fieldset {
   border: solid 1px silver;
   border-radius: 3px;
   background: rgb(255, 255, 255);
+  background: -webkit-linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
@@ -493,6 +494,7 @@ fieldset {
 
 .btn-stateonly {
   background: rgb(255, 255, 255);
+  background: -webkit-linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
 }
 
@@ -730,16 +732,28 @@ div.picBodyIcon > div.picIndicator::before {
 
 div.picIndicator[data-status=pending],
 div.piscIndicator[data-status=timeout] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=loading] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=error] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
@@ -774,4 +788,4 @@ div.picCircuit.btn, div.picFeature.btn, div.picCircuitGroup.btn,
 div.picFilters > *,
 div.picPumps > *, div.picVirtualCircuit.btn {
   align-items: center;
-}/*# sourceMappingURL=theme.css.map */
+}

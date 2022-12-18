@@ -1,4 +1,4 @@
-div.configContainer {
+﻿div.configContainer {
   min-width: 627px;
 }
 
@@ -119,4 +119,4 @@ div.pnl-scheduleDays div.table-cell.dayheader {
   text-align: center;
   width: 2.4rem;
   font-weight: bold;
-}/*# sourceMappingURL=configPage.css.map */
+}

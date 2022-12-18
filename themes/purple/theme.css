@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
@@ -61,6 +61,7 @@ div.pnl-scheduleDays div.table-caption {
   border: solid 1px gray;
   color: white;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -80,6 +81,7 @@ div.pnl-scheduleDays div.table-cell.dayheader {
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
   font-weight: bold;
@@ -92,6 +94,7 @@ div.pnl-scheduleDays div.table-cell.day:hover {
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
 }
 
@@ -127,6 +130,7 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   border: solid 1px gray;
   color: white;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -138,6 +142,7 @@ tr.crud-header {
   color: white;
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
 }
@@ -175,6 +180,7 @@ select, input[type=text], fieldset {
   border: solid 1px silver;
   border-radius: 3px;
   background: rgb(255, 255, 255);
+  background: -webkit-linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 2px rgba(27, 27, 27, 0.4);
@@ -196,6 +202,7 @@ select, input[type=text], fieldset {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   background: #673ab7;
+  background: -webkit-linear-gradient(90deg, #673ab7 0%, #673ab7 100%);
   background: linear-gradient(0deg, #673ab7 0%, #673ab7 100%);
   box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
   -webkit-box-shadow: 2px 2px 5px rgba(27, 27, 27, 0.4);
@@ -251,6 +258,7 @@ select, input[type=text], fieldset {
   margin: 0.1rem;
   color: white;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
   -webkit-box-shadow: 1px 1px 1px rgba(127, 127, 127, 0.5);
@@ -262,6 +270,7 @@ select, input[type=text], fieldset {
   -webkit-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   -moz-box-shadow: 3px 3px 3px rgba(127, 127, 127, 0.5);
   background: rgb(255, 255, 255);
+  background: -webkit-linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%);
   color: gray;
 }
@@ -280,6 +289,7 @@ select, input[type=text], fieldset {
   border-bottom-left-radius: 0px;
   border: solid 1px gray;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -290,6 +300,7 @@ select, input[type=text], fieldset {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -317,6 +328,7 @@ select, input[type=text], fieldset {
 .btn:not([disabled]):not(.disabled).active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   opacity: 0.5;
 }
@@ -394,16 +406,28 @@ div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],
 div.picIndicator[data-status=selected],
 div.picIndicator[data-status=true] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=delay] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: blinker 1s linear infinite;
@@ -411,6 +435,10 @@ div.picIndicator[data-status=delay] {
 }
 
 div.picIndicator[data-status=delayoff] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: delayoff 0.5s ease infinite;
@@ -418,38 +446,27 @@ div.picIndicator[data-status=delayoff] {
 }
 
 div.picIndicator[data-status=delayon] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: delayon 0.5s ease infinite;
   -webkit-animation: delayon 0.5s infinite ease;
 }
 
-@-webkit-keyframes delayoff {
-  0% {
-    background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
-  }
-  100% {
-    background: white;
-  }
-}
-
 @keyframes delayoff {
   0% {
+    background: -moz-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
     background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
   100% {
     background: white;
-  }
-}
-@-webkit-keyframes delayon {
-  0% {
-    background: white;
-  }
-  100% {
-    background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
 }
 @keyframes delayon {
@@ -457,16 +474,28 @@ div.picIndicator[data-status=delayon] {
     background: white;
   }
   100% {
+    background: -moz-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
     background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
 }
 div.picIndicator[data-status=loading] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=error] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
@@ -493,5 +522,6 @@ div.picIndicator[data-status=error] {
 .btn-toggle[data-selected=true] {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
-}/*# sourceMappingURL=theme.css.map */
+}

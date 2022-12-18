@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch");
+﻿@import url("https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
   color: silver;
@@ -160,8 +160,7 @@ input[type=checkbox] {
   -webkit-appearance: none;
   -mos-appearance: none;
   outline: 0px;
-  -moz-appearance: none;
-       appearance: none;
+  appearance: none;
 }
 
 input[type=checkbox]:before {
@@ -291,7 +290,10 @@ div.picPopover {
   border-radius: 555px 55px 525px 55px/35px 225px 45px 125px;
   border: solid 1px gray;
   margin: 0.1rem;
+  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
 }
 
 .btn {
@@ -316,8 +318,12 @@ div.picPopover {
   border: solid 1px gray;
   margin: 0.1rem;
   background: ghostwhite;
+  background: -webkit-linear-gradient(-90deg, ghostwhite, 1deg, rgb(240, 240, 240) 0%, rgb(249, 249, 249) 15%, rgb(255, 255, 255) 24%, rgb(255, 255, 255) 82%, rgb(222, 222, 222) 100%);
   background: linear-gradient(180deg, ghostwhite, 1deg, rgb(240, 240, 240) 0%, rgb(249, 249, 249) 15%, rgb(255, 255, 255) 24%, rgb(255, 255, 255) 82%, rgb(222, 222, 222) 100%);
+  -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
 }
 
 .fld-value {
@@ -346,6 +352,7 @@ div.picPopover {
 
 .btn:focus, .btn.focus {
   outline: 0;
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
   box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
 }
 
@@ -518,21 +525,6 @@ div.picIndicator[data-status=delayon] {
   -webkit-animation: delayon 0.5s infinite ease;
 }
 
-@-webkit-keyframes delayoff {
-  0% {
-    background: url("pencilshade-yellow.png") !important;
-    background-size: auto;
-    background-attachment: fixed;
-    background-position: left top;
-  }
-  100% {
-    background: url("pencilshade-green.png") !important;
-    background-size: auto;
-    background-attachment: fixed;
-    background-position: right bottom;
-  }
-}
-
 @keyframes delayoff {
   0% {
     background: url("pencilshade-yellow.png") !important;
@@ -545,14 +537,6 @@ div.picIndicator[data-status=delayon] {
     background-size: auto;
     background-attachment: fixed;
     background-position: right bottom;
-  }
-}
-@-webkit-keyframes delayon {
-  0% {
-    background: url("pencilshade-yellow.png") !important;
-  }
-  100% {
-    background: url("pencilshade-green.png") !important;
   }
 }
 @keyframes delayon {
@@ -595,4 +579,4 @@ div.picIndicator[data-status=error] {
 
 div.picModules {
   margin-bottom: 5px;
-}/*# sourceMappingURL=theme.css.map */
+}

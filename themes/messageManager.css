@@ -1,4 +1,4 @@
-html {
+﻿html {
   width: 100%;
   height: 100%;
   margin: 0px;
@@ -258,6 +258,7 @@ div.mmgrButton.selected {
 
 div.queued-message.selected {
   color: black;
+  background: -webkit-linear-gradient(-90deg, white 0%, #AEBF76 65%);
   background: linear-gradient(180deg, white 0%, #AEBF76 65%);
 }
 
@@ -273,6 +274,7 @@ div.picMessages.changesOnly tr.msgRow.nochange {
 tr.msgApiRow.selected,
 tr.msgRow.selected {
   color: black;
+  background: -webkit-linear-gradient(-90deg, white 0%, #AEBF76 65%);
   background: linear-gradient(180deg, white 0%, #AEBF76 65%);
 }
 
@@ -280,6 +282,9 @@ tr.msgApiRow:hover,
 tr.msgRow:hover {
   color: white;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background: -ms-linear-gradient(top, #159FCF, #13647F);
+  background: -moz-linear-gradient(top, #159FCF, #13647F);
+  background: -webkit-linear-gradient(top, #159FCF, #13647F);
   background: linear-gradient(to bottom, #159FCF, #13647F);
 }
 
@@ -403,6 +408,9 @@ table.msg-payload {
 tr.msg-payload-header {
   color: white;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background: -ms-linear-gradient(top, #159FCF, #13647F);
+  background: -moz-linear-gradient(top, #159FCF, #13647F);
+  background: -webkit-linear-gradient(top, #159FCF, #13647F);
   background: linear-gradient(top, #159FCF, #13647F);
 }
 
@@ -471,6 +479,7 @@ tr.bytediff-prev > td {
 tr.msg-payload-header > td.selected,
 tr.bytediff-header > td {
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
   font-weight: bold;
@@ -495,6 +504,9 @@ table.queue-list-header {
   border-spacing: 0px;
   border-collapse: collapse;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background-image: -ms-linear-gradient(top, #159FCF, #13647F);
+  background-image: -moz-linear-gradient(top, #159FCF, #13647F);
+  background-image: -webkit-linear-gradient(top, #159FCF, #13647F);
   background-image: linear-gradient(to bottom, #159FCF, #13647F);
 }
 
@@ -558,6 +570,7 @@ div.cancelButton {
 }
 
 div.queued-message.sending {
+  background: -webkit-linear-gradient(-90deg, white 0%, #AEBF76 65%);
   background: linear-gradient(180deg, white 0%, #AEBF76 65%);
 }
 
@@ -757,6 +770,9 @@ div.picModules > table > tbody > tr:nth-child(1) {
   color: white;
   font-weight: bold;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
+  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
   background-image: linear-gradient(to bottom, #ffaf4b, #ff920a);
 }
 
@@ -829,13 +845,28 @@ div.ct-narrative > hr {
   margin: 1px;
 }
 
+div.anslq25-ct-narrative {
+  width: 100%;
+  overflow: hidden;
+  font-size: 0.8em;
+  margin-top: 1em;
+  max-width: 37rem;
+}
+
+div.anslq25-ct-narrative-warning {
+  font: bold;
+  color: red;
+}
+
 div.sysmessage-button {
   display: inline-block;
   position: relative;
-  width: 34px; }
+  width: 34px;
+}
 
 div.sysmessage-button > i {
-  color: red; }
+  color: red;
+}
 
 div.sysmessage-badge {
   display: block;
@@ -850,14 +881,16 @@ div.sysmessage-badge {
   top: -4px;
   left: 10px;
   border-radius: 3px;
-  color: black; }
+  color: black;
+}
 
 div.sysmessage-button > div.dropdown-panel {
   position: absolute;
   color: black;
   padding: 4px;
-  z-index: 500; }
+  z-index: 500;
+}
 
 #orderOfElements {
   display: none;
-}/*# sourceMappingURL=messageManager.css.map */
+}

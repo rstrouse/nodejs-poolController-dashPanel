@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picTabs {
   background-color: white;
   border-top-left-radius: 3px;
@@ -145,4 +145,4 @@ div.pnl-scheduleDays div.table-cell.day[data-selected=true]:before {
 div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   content: "\f111";
   font-weight: 400;
-}/*# sourceMappingURL=widgets.css.map */
+}
