@@ -411,7 +411,7 @@
                 console.log({ evt: 'logMessage', data: data });
             });
             o.socket.on('rs485Stats', function (data) {
-                console.log({ evt: 'rs485Stats', data: data });
+                //console.log({ evt: 'rs485Stats', data: data });
                 var rs485Displays = el.find(`div.pnl-rs485Stats`);
                 rs485Displays.each(function () {
                     if ($(this).attr('data-portid') === data.portId.toString()) this.dataBind(data);
