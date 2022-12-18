@@ -1,4 +1,4 @@
-div.picIBColor {
+﻿div.picIBColor {
   border-radius: 5px;
   align-self: flex-end;
 }
@@ -13,4 +13,4 @@ div.picLightGroup > label,
 div.picLightGroup > i {
   align-self: center;
   margin-top: -10px;
-}/*# sourceMappingURL=intellibrite.css.map */
+}

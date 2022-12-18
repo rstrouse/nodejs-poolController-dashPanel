@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.dashContainer {
   grid-template-columns: 377px calc(22.4rem + 4px);
@@ -114,6 +114,7 @@ div.pnl-scheduleDays div.table-cell.day:hover {
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
 }
 
@@ -355,6 +356,7 @@ select, input[type=text], fieldset {
 .btn:not([disabled]):not(.disabled).active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   opacity: 0.5;
 }
@@ -436,16 +438,28 @@ div.picIndicator[data-status=on],
 div.picIndicator[data-status=ready],
 div.picIndicator[data-status=selected],
 div.picIndicator[data-status=true] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=pending], div.piscIndicator[data-status=timeout] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=delay] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: blinker 1s linear infinite;
@@ -453,6 +467,10 @@ div.picIndicator[data-status=delay] {
 }
 
 div.picIndicator[data-status=delayoff] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(0, 240, 0) 0%, rgb(0, 0, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: delayoff 0.5s ease infinite;
@@ -460,49 +478,35 @@ div.picIndicator[data-status=delayoff] {
 }
 
 div.picIndicator[data-status=delayon] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   animation: delayon 0.5s ease infinite;
   -webkit-animation: delayon 0.5s infinite ease;
 }
 
-@-webkit-keyframes delayoff {
-  0% {
-    background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
-  }
-  50% {
-    background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
-  }
-  100% {
-    background: gray;
-  }
-}
-
 @keyframes delayoff {
   0% {
+    background: -moz-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
     background: radial-gradient(ellipse farthest-corner at center, rgb(210, 255, 82) 0%, rgb(145, 232, 66) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
   50% {
+    background: -moz-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
     background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
   100% {
     background: gray;
-  }
-}
-@-webkit-keyframes delayon {
-  0% {
-    background: white;
-  }
-  50% {
-    background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
-  }
-  100% {
-    background: yellow;
   }
 }
 @keyframes delayon {
@@ -510,6 +514,10 @@ div.picIndicator[data-status=delayon] {
     background: white;
   }
   50% {
+    background: -moz-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
     background: radial-gradient(ellipse farthest-corner at center, rgb(255, 255, 28) 0%, rgb(204, 201, 73) 85%, rgb(196, 192, 81) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
   }
@@ -518,11 +526,19 @@ div.picIndicator[data-status=delayon] {
   }
 }
 div.picIndicator[data-status=loading] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 175, 75) 0%, rgb(255, 146, 10) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
 
 div.picIndicator[data-status=error] {
+  background: -moz-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   background: radial-gradient(ellipse farthest-corner at center, rgb(255, 173, 41) 0%, rgb(255, 0, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="nth(nth($color-stops, 1), 1)", endColorstr="nth(nth($color-stops, 2), 1)", GradientType=1);
 }
@@ -545,6 +561,7 @@ div.picIndicator[data-status=error] {
 .btn-toggle[data-selected=true] {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
 }
 
@@ -563,6 +580,7 @@ tr.msgRow:nth-child(2n) > td {
 tr.msgRow.selected, tr.msgApiRow.selected {
   color: white !important;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   border-color: white;
 }
@@ -613,4 +631,4 @@ div.picSpaDrain > label {
   font-size: 1.2rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-}/*# sourceMappingURL=theme.css.map */
+}

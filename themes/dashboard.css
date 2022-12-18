@@ -1,4 +1,4 @@
-html {
+﻿html {
   width: 100%;
   height: 100%;
   margin: 0px;
@@ -217,6 +217,9 @@ div.picModules > table > tbody > tr:nth-child(1) {
   color: white;
   font-weight: bold;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
+  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
   background-image: linear-gradient(to bottom, #ffaf4b, #ff920a);
 }
 
@@ -305,10 +308,12 @@ div.anslq25-ct-narrative-warning {
 div.sysmessage-button {
   display: inline-block;
   position: relative;
-  width: 34px; }
+  width: 34px;
+}
 
 div.sysmessage-button > i {
-  color: red; }
+  color: red;
+}
 
 div.sysmessage-badge {
   display: block;
@@ -323,13 +328,15 @@ div.sysmessage-badge {
   top: -4px;
   left: 10px;
   border-radius: 3px;
-  color: black; }
+  color: black;
+}
 
 div.sysmessage-button > div.dropdown-panel {
   position: absolute;
   color: black;
   padding: 4px;
-  z-index: 500; }
+  z-index: 500;
+}
 
 div.dashOuter {
   /* width: calc(var(--number-of-columns)*377)px; */
@@ -379,8 +386,6 @@ div.picDashboard span.picIntelliBriteIcon {
 }
 
 .control-panel {
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
   height: fit-content;
   vertical-align: top;
   display: inline-block;
@@ -432,14 +437,14 @@ div.picBodyTemp > div:nth-child(2) {
     margin-right: 0px;
   }
   div.picBodyTemp .picTempText,
-div.picBodyTemp .picTempUnits {
+  div.picBodyTemp .picTempUnits {
     display: none;
   }
   div.picBodies,
-div.picPumps,
-div.picChemistry,
-div.picSchedules,
-div.picCircuits {
+  div.picPumps,
+  div.picChemistry,
+  div.picSchedules,
+  div.picCircuits {
     max-width: 100%;
   }
   div.control-panel {
@@ -466,8 +471,8 @@ div.picCircuits {
     min-width: 100%;
   }
   div.picBodyFilter > label.picFilterName,
-div.picChlorinator > label.picChlorinatorName,
-div.picChemController > label.picControllerName {
+  div.picChlorinator > label.picChlorinatorName,
+  div.picChemController > label.picControllerName {
     max-width: 25%;
   }
-}/*# sourceMappingURL=dashboard.css.map */
+}

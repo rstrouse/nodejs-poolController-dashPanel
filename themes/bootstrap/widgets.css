@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 label,
 span,
 div:not(.picIBColor) {
@@ -330,4 +330,4 @@ span.picFilterPercentage,
 span.picFilterPressure {
   width: 5rem;
   text-align: right;
-}/*# sourceMappingURL=widgets.css.map */
+}

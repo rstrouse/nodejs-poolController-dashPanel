@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.picTab:not(.picTabSelected) {
   border-color: silver;
   color: silver;
@@ -60,6 +60,7 @@ div.pnl-scheduleDays div.table-caption {
   border: solid 1px gray;
   color: white;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -79,6 +80,7 @@ div.pnl-scheduleDays div.table-cell.dayheader {
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
   font-weight: bold;
@@ -91,6 +93,7 @@ div.pnl-scheduleDays div.table-cell.day:hover {
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
 }
 
@@ -126,6 +129,7 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   border: solid 1px gray;
   color: white;
   background: rgb(2, 150, 155);
+  background: -webkit-linear-gradient(-90deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
   background: linear-gradient(180deg, rgb(2, 150, 155) 0%, rgb(2, 150, 155) 100%);
 }
 
@@ -137,6 +141,7 @@ tr.crud-header {
   color: white;
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
 }
@@ -152,4 +157,4 @@ div.overlay-message {
   border: solid 3px white;
   background: cadetblue;
   box-shadow: 0px 0px 30px white;
-}/*# sourceMappingURL=widgets.css.map */
+}

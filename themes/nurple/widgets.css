@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+﻿@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 div.dashContainer {
   grid-template-columns: 377px calc(22.4rem + 4px);
 }
@@ -113,6 +113,7 @@ div.pnl-scheduleDays div.table-cell.day:hover {
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: rgb(123, 31, 162);
+  background: -webkit-linear-gradient(-90deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
   background: linear-gradient(180deg, rgb(123, 31, 162) 0%, rgb(123, 31, 162) 100%);
 }
 
@@ -180,4 +181,4 @@ div.overlay-message > div > div.pic-waiticon > div.wait-roller div:after {
 div.overlay-message {
   border: solid 3px white;
   background: lightgray;
-}/*# sourceMappingURL=widgets.css.map */
+}

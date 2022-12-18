@@ -1,4 +1,4 @@
-span.picPercentData {
+﻿span.picPercentData {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -131,6 +131,9 @@ div.picModules > table > tbody > tr:nth-child(1) {
   color: white;
   font-weight: bold;
   filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#ffaf4b, EndColorStr=#ff920a);
+  background-image: -ms-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -moz-linear-gradient(top, #ffaf4b, #ff920a);
+  background-image: -webkit-linear-gradient(top, #ffaf4b, #ff920a);
   background-image: linear-gradient(to bottom, #ffaf4b, #ff920a);
 }
 
@@ -214,15 +217,17 @@ div.anslq25-ct-narrative {
 div.anslq25-ct-narrative-warning {
   font: bold;
   color: red;
-  margin: 1px; }
+}
 
 div.sysmessage-button {
   display: inline-block;
   position: relative;
-  width: 34px; }
+  width: 34px;
+}
 
 div.sysmessage-button > i {
-  color: red; }
+  color: red;
+}
 
 div.sysmessage-badge {
   display: block;
@@ -237,10 +242,12 @@ div.sysmessage-badge {
   top: -4px;
   left: 10px;
   border-radius: 3px;
-  color: black; }
+  color: black;
+}
 
 div.sysmessage-button > div.dropdown-panel {
   position: absolute;
   color: black;
   padding: 4px;
-  z-index: 500; }
+  z-index: 500;
+}

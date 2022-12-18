@@ -1,5 +1,6 @@
-div.picConfigTabContents {
+﻿div.picConfigTabContents {
   background: rgb(240, 240, 240);
+  background: -webkit-linear-gradient(90deg, rgb(240, 240, 240) 0%, rgb(249, 249, 249) 15%, rgb(255, 255, 255) 24%, rgb(255, 255, 255) 82%, rgb(222, 222, 222) 100%);
   background: linear-gradient(0deg, rgb(240, 240, 240) 0%, rgb(249, 249, 249) 15%, rgb(255, 255, 255) 24%, rgb(255, 255, 255) 82%, rgb(222, 222, 222) 100%);
 }
 
@@ -48,6 +49,7 @@ div.pnl-scheduleDays div.table-caption {
   border-top-right-radius: 5px;
   border: solid 1px gray;
   background: rgb(246, 248, 249);
+  background: -webkit-linear-gradient(-90deg, rgb(246, 248, 249) 0%, rgb(229, 235, 238) 50%, rgb(215, 222, 227) 51%, rgb(245, 247, 249) 100%);
   background: linear-gradient(180deg, rgb(246, 248, 249) 0%, rgb(229, 235, 238) 50%, rgb(215, 222, 227) 51%, rgb(245, 247, 249) 100%);
 }
 
@@ -67,6 +69,7 @@ div.pnl-scheduleDays div.table-cell.dayheader {
 div.pnl-scheduleDays div.table-row.dayheader {
   background: #fde4be;
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
   color: black;
   font-weight: bold;
@@ -74,6 +77,7 @@ div.pnl-scheduleDays div.table-row.dayheader {
 
 div.pnl-scheduleDays div.table-cell.day:hover {
   background: #ffaf4b;
+  background: -webkit-linear-gradient(-90deg, #ffaf4b, #ff920a);
   background: linear-gradient(180deg, #ffaf4b, #ff920a);
 }
 
@@ -86,6 +90,7 @@ div.pnl-scheduleDays div.table-cell.day:hover {
 div.pnl-scheduleDays div.table-cell.day:not(.disabled):active {
   color: white;
   background: #159FCF;
+  background: -webkit-linear-gradient(-90deg, #159FCF, #13647F);
   background: linear-gradient(180deg, #159FCF, #13647F);
 }
 
@@ -117,11 +122,13 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
 .crud-caption,
 .list-caption {
   background: #fde4be;
+  background: -webkit-linear-gradient(-90deg, #fde4be 0%, #E78F08 65%);
   background: linear-gradient(180deg, #fde4be 0%, #E78F08 65%);
 }
 
 tr.slist-header,
 tr.crud-header {
   background: rgb(246, 248, 249);
+  background: -webkit-linear-gradient(-90deg, rgb(246, 248, 249) 0%, rgb(229, 235, 238) 50%, rgb(215, 222, 227) 51%, rgb(245, 247, 249) 100%);
   background: linear-gradient(180deg, rgb(246, 248, 249) 0%, rgb(229, 235, 238) 50%, rgb(215, 222, 227) 51%, rgb(245, 247, 249) 100%);
-}/*# sourceMappingURL=widgets.css.map */
+}

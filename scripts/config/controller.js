@@ -481,45 +481,60 @@
             var binding = '';
             $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mock' }).css({ display: 'none' }).appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
-            let portTypes = [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'netConnect', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'screenlogic', name: 'Screenlogic', desc: 'Screenlogic TCP Connection' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }]
+            let portTypes = [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'netConnect', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'screenlogic', name: 'ScreenLogic', desc: 'ScreenLogic TCP Connection' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }]
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: portTypes, inputAttrs: { style: { width: '6rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                items: portTypes, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
             }).on('selchanged', function (evt) {
                 var pnl = el;
-                if (evt.newItem.val === 'netConnect') {
-                    pnl.find('div.pnl-rs485-network').show();
-                    pnl.find('div.pnl-rs485-local').hide();
-                    pnl.find('div.pnl-rs485-mock').hide();
-                    pnl.find('div.pnl-rs485-inactivity').show();
-                    pnl.find('div.pnl-screenlogic').hide();
-                    pnl.find('div.pnl-rs485Stats').show();
-                }
-                else if (evt.newItem.val === 'mock') {
-                    pnl.find('div.pnl-rs485-network').hide();
-                    pnl.find('div.pnl-rs485-local').hide();
-                    pnl.find('div.pnl-rs485-mock').show();
-                    pnl.find('div.pnl-rs485-inactivity').hide();
-                    pnl.find('div.pnl-screenlogic').hide();
-                    pnl.find('div.pnl-rs485Stats').show();
-                }
-                else if (evt.newItem.val === 'screenlogic') {
-                    pnl.find('div.pnl-rs485-network').hide();
-                    pnl.find('div.pnl-rs485-local').hide();
-                    pnl.find('div.pnl-rs485-mock').hide();
-                    pnl.find('div.pnl-rs485-inactivity').hide();
-                    pnl.find('div.pnl-screenlogic').show();
-                    pnl.find('div.pnl-rs485Stats').hide();
+                console.log(evt);
+                if (typeof evt.newItem !== 'undefined') {
+                    switch (evt.newItem.val) {
+                        case 'network':
+                        case 'netConnect':
+                            pnl.find('div.pnl-rs485-network').show();
+                            pnl.find('div.pnl-rs485-local').hide();
+                            pnl.find('div.pnl-rs485-mock').hide();
+                            pnl.find('div.pnl-rs485-inactivity').show();
+                            pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-rs485Stats').show();
+                            break;
+                        case 'mock':
+                            pnl.find('div.pnl-rs485-network').hide();
+                            pnl.find('div.pnl-rs485-local').hide();
+                            pnl.find('div.pnl-rs485-mock').show();
+                            pnl.find('div.pnl-rs485-inactivity').hide();
+                            pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-rs485Stats').show();
+                            break;
+                        case 'screenlogic':
+                            pnl.find('div.pnl-rs485-network').hide();
+                            pnl.find('div.pnl-rs485-local').hide();
+                            pnl.find('div.pnl-rs485-mock').hide();
+                            pnl.find('div.pnl-rs485-inactivity').hide();
+                            pnl.find('div.pnl-screenlogic').show();
+                            pnl.find('div.pnl-rs485Stats').hide();
+                            break;
+                        case 'local':
+                        default:
+                            pnl.find('div.pnl-rs485-network').hide();
+                            pnl.find('div.pnl-rs485-local').show();
+                            pnl.find('div.pnl-rs485-mock').hide();
+                            pnl.find('div.pnl-rs485-inactivity').show();
+                            pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-rs485Stats').show();
+                            break;
+                    }
                 }
                 else {
                     pnl.find('div.pnl-rs485-network').hide();
                     pnl.find('div.pnl-rs485-local').show();
                     pnl.find('div.pnl-rs485-mock').hide();
-                    pnl.find('div.pnl-rs485-inactivity').show();
+                    pnl.find('div.pnl-rs485-inactivity').hide();
                     pnl.find('div.pnl-screenlogic').hide();
-                    pnl.find('div.pnl-rs485Stats').show();
+                    pnl.find('div.pnl-rs485Stats').hide();
                 }
             });
             var divLocal = $('<div></div>').addClass('pnl-rs485-local').appendTo(divSettings).hide();
@@ -642,7 +657,7 @@
                     }
                 }
                 if (bValid) {
-                    $.putApiService('/app/rs485Port', obj, 'Setting RS485 Port or Screenlogic...', function (retPort, status, xhr) {
+                    $.putApiService('/app/rs485Port', obj, 'Setting RS485 Port or ScreenLogic...', function (retPort, status, xhr) {
                         self.dataBind(retPort);
                     });
                 }
@@ -737,8 +752,9 @@
             }
             else
                 cols[0].elGlyph().attr('class', 'fas fa-route');
+            console.log(obj);
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
-            cols[1].elText().text(obj.type === 'screenlogic' ? `Screenlogic ${obj.screenlogic.systemName}` : port.netConnect ? `${port.netHost}:${port.netPort}` : port.mock ? `Mock Port` : port.rs485Port);
+            cols[1].elText().text(obj.type === 'screenlogic' ? `ScreenLogic ${obj.screenlogic.systemName}` : port.netConnect ? `${port.netHost}:${port.netPort}` : port.mock ? `Mock Port` : port.rs485Port);
             if (port.portId === 0) {
                 el.find('div.btnDeleteRS485Port').hide();
                 let sl = el.find('div.pnl-screenlogic')
@@ -784,7 +800,7 @@
                 value: o.connectionType,
                 bindColumn: 0, displayColumn: 1, labelText: 'Connection Type', binding: binding + 'connectionType',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: [{ val: 'local', name: 'Local', desc: 'Local Screenlogic' }, { val: 'remote', name: 'Remote', desc: 'Remote Screenlogic' }], inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
+                items: [{ val: 'local', name: 'Local', desc: 'Local ScreenLogic' }, { val: 'remote', name: 'Remote', desc: 'Remote ScreenLogic' }], inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
             });
             $('<div></div>').appendTo(line).inputField({ value: o.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ value: o.password, canEdit: true, labelText: 'Password', fmtMask: "###0", emptyMask: "----", binding: binding + 'password', min: 1, max: 9999, step: 1, inputAttrs: { maxlength: 4, style: { width: '8.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
@@ -793,7 +809,7 @@
 
 
             /* var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Screenlogic', icon: '<i class="fas fa-save" ></i>' });
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save ScreenLogic', icon: '<i class="fas fa-save" ></i>' });
             btnSave.on('click', function (evt) {
                 $.pic.fieldTip.clearTips(slDivSettings);
                 var obj = dataBinder.fromElement(slDivSettings);
@@ -809,7 +825,7 @@
                     }
                 }
                 if (bValid) {
-                    $.putApiService('/app/screenlogic', obj, 'Setting Screenlogic...', function (retSL, status, xhr) {
+                    $.putApiService('/app/screenlogic', obj, 'Setting ScreenLogic...', function (retSL, status, xhr) {
                         self.dataBind(retSL);
                     });
                 }
@@ -818,17 +834,17 @@
             $('<div></div>').appendTo(pnl).actionButton({ text: 'Find Units', icon: '<i class="fas fa-binoculars"></i>' })
                 .on('click', function (e) {
                     var dlg = $.pic.modalDialog.createDialog('dlgFindPoolController', {
-                        message: 'Searching for Screenlogic Units',
+                        message: 'Searching for ScreenLogic Units',
                         width: '400px',
                         height: 'auto',
-                        title: 'Screenlogic',
+                        title: 'ScreenLogic',
                         buttons: [{
                             text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
                             click: function () { $.pic.modalDialog.closeDialog(this); }
                         }]
                     });
                     var line = $('<div></div>').appendTo(dlg);
-                    var searchStatus = $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Searching for Screenlogic units.');
+                    var searchStatus = $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Searching for ScreenLogic units.');
                     line = $('<div></div>').appendTo(dlg);
                     $('<hr></hr>').appendTo(line);
                     line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
@@ -836,7 +852,7 @@
 
                     $.getApiService('/config/options/screenlogic/search', null, 'Searching for Units...', function (units, status, xhr) {
                         if (units.length > 0) {
-                            searchStatus.text(units.length + ' Screenlogic unit(s) found.');
+                            searchStatus.text(units.length + ' ScreenLogic unit(s) found.');
 
                             for (var i = 0; i < units.length; i++) {
                                 var unit = units[i];
@@ -844,7 +860,7 @@
                                     // .addClass('REM')
                                     // .addClass('server')
                                     .addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
-                                $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fa-solid fa-pager" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Screenlogic</span>');
+                                $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fa-solid fa-pager" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> ScreenLogic</span>');
 
 
 
@@ -860,7 +876,7 @@
                             }
                         }
                         else {
-                            searchStatus.text('No local Screenlogic units found.');
+                            searchStatus.text('No local ScreenLogic units found.');
                         }
                     });
                 });

@@ -1,4 +1,4 @@
-div.picTab:not(.picTabSelected) {
+﻿div.picTab:not(.picTabSelected) {
   border-color: silver;
   color: silver;
 }
@@ -118,4 +118,4 @@ div.pnl-scheduleDays div.table-cell.day:not([data-selected=true]):before {
   bottom: 0px;
   width: 1rem;
   height: 1rem;
-}/*# sourceMappingURL=widgets.css.map */
+}
