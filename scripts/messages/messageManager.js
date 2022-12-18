@@ -160,8 +160,8 @@
                     console.log(`sendScreenlogicStats Emit ${val}`);
                     o.socket.emit('sendScreenlogicStats', makeBool(val));
                     o.sendScreenlogicStats = makeBool(val);
-                    $('div.picScreenlogics').each(function () {
-                        this.setScreenlogics(o.sendScreenlogicStats);
+                    $('div.picScreenlogicStats').each(function () {
+                        this.setScreenlogicStats(o.sendScreenlogicStats);
                     });
                 }
             }

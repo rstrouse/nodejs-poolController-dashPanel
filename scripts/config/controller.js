@@ -433,7 +433,7 @@
             $.getApiService('/config/options/rs485', null, 'Getting Port Settings...', function (opts, status, xhr) {
                 console.log(opts);
                 for (let i = 0; i < opts.ports.length; i++) {
-                    $('<div></div>').appendTo(el).configRS485Port({ ports: opts.local })[0].dataBind(opts.ports[i]);
+                    $('<div></div>').appendTo(el).configRS485Port({ ports: opts.local })[0].dataBind({...opts.ports[i]});
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add RS485 Port', icon: '<i class="fas fa-plus" ></i>' });
@@ -470,7 +470,7 @@
             el.addClass('cfgRS485Port');
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-route', style: { width: '14rem' } },
-                { binding: 'type', glyph: '', style: { width: '10rem' } },
+                { binding: 'type', glyph: '', style: { width: '14rem' } },
                 { binding: 'name', glyph: '', style: { width: '7rem' } }]
             });
             var pnl = acc.find('div.picAccordian-contents');
@@ -479,32 +479,47 @@
             var divStatus = $('<div></div>').appendTo(pnl).css({ display: 'inline-block', verticalAlign: 'top', paddingLeft: '1rem' });
             var line = $('<div></div>').appendTo(divSettings);
             var binding = '';
-            $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mockPort' }).css({ display: 'none' }).appendTo(line);
+            $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mock' }).css({ display: 'none' }).appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
+            let portTypes = [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'screenlogic', name: 'Screenlogic', desc: 'Screenlogic TCP Connection' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }]
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                items: [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'network', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }], inputAttrs: { style: { width: '6rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
+                items: portTypes, inputAttrs: { style: { width: '6rem' } }, labelAttrs: { style: { marginLeft: '1rem' } }
             }).on('selchanged', function (evt) {
                 var pnl = el;
-                if (evt.newItem.val === 'network') {
+                if (evt.newItem.val === 'netConnect') {
                     pnl.find('div.pnl-rs485-network').show();
                     pnl.find('div.pnl-rs485-local').hide();
                     pnl.find('div.pnl-rs485-mock').hide();
                     pnl.find('div.pnl-rs485-inactivity').show();
+                    pnl.find('div.pnl-screenlogic').hide();
+                    pnl.find('div.pnl-rs485Stats').show();
                 }
                 else if (evt.newItem.val === 'mock') {
                     pnl.find('div.pnl-rs485-network').hide();
                     pnl.find('div.pnl-rs485-local').hide();
                     pnl.find('div.pnl-rs485-mock').show();
                     pnl.find('div.pnl-rs485-inactivity').hide();
+                    pnl.find('div.pnl-screenlogic').hide();
+                    pnl.find('div.pnl-rs485Stats').show();
+                }
+                else if (evt.newItem.val === 'screenlogic') {
+                    pnl.find('div.pnl-rs485-network').hide();
+                    pnl.find('div.pnl-rs485-local').hide();
+                    pnl.find('div.pnl-rs485-mock').hide();
+                    pnl.find('div.pnl-rs485-inactivity').hide();
+                    pnl.find('div.pnl-screenlogic').show();
+                    pnl.find('div.pnl-rs485Stats').hide();
                 }
                 else {
                     pnl.find('div.pnl-rs485-network').hide();
                     pnl.find('div.pnl-rs485-local').show();
                     pnl.find('div.pnl-rs485-mock').hide();
                     pnl.find('div.pnl-rs485-inactivity').show();
+                    pnl.find('div.pnl-screenlogic').hide();
+                    pnl.find('div.pnl-rs485Stats').show();
                 }
             });
             var divLocal = $('<div></div>').addClass('pnl-rs485-local').appendTo(divSettings).hide();
@@ -558,11 +573,17 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Keep Alive', binding: binding + 'netSettings.keepAlive' });
             line = $('<div></div>').appendTo(divNet);
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Initial Delay', fmtMask: "#,##0", binding: binding + 'netSettings.keepAliveInitialDelay', min: 0, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { marginLeft: '3.2rem', marginRight: '.25rem' } } });
-            
+
             line = $('<div></div>').appendTo(divSettings);
             $('<div></div>').addClass('pnl-rs485-inactivity').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Inactivity Timeout', fmtMask: "#,##0", emptyMask: "---", binding: binding + 'inactivityRetry', min: 1, max: 1000, step: 1, units: 'sec', inputAttrs: { maxlength: 5 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
             var divMock = $('<div></div>').addClass('pnl-rs485-mock').appendTo(divSettings).hide();
             line = $('<div></div>').appendTo(divMock);
+
+            var divSL = $('<div></div>').addClass('pnl-screenlogic').appendTo(divSettings).hide();
+
+            line = $('<div></div>').appendTo(divSL);
+
+
             // Create the statistics panel.
             $('<div></div>').appendTo(divStatus).css({ fontSize: '.8rem' }).configRS485PortStats();
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -571,17 +592,30 @@
                 $.pic.fieldTip.clearTips(divSettings);
                 var p = dataBinder.fromElement(divSettings);
                 console.log(p);
+                if (p.portId === 0 && pnl.find('div.cfgRS485Port').length > 1 && p.type === 'screenlogic') {
+                    // throw error
+                    console.log(`Cannot have additional ports when using Screenlogic.`)
+                }
+
                 var obj = {};
                 obj.enabled = p.enabled;
-                obj.netConnect = p.type === 'network';
-                obj.mockPort = p.type === 'mock';
+                obj.netConnect = p.type === 'netConnect';
+                obj.mock = p.type === 'mock';
                 obj.rs485Port = p.rs485Port;
                 obj.netPort = p.netPort;
                 obj.netHost = p.netHost;
                 obj.portId = p.portId;
                 obj.portSettings = p.portSettings;
                 obj.netSettings = p.netSettings;
+                obj.type = p.type;
                 obj.inactivityRetry = p.inactivityRetry;
+                if (p.portId === 0 && p.type === 'screenlogic'){
+                    obj.screenlogic = {
+                        systemName: p.screenlogic.systemName,
+                        connectionType: p.screenlogic.connectionType,
+                        password: p.screenlogic.password,
+                    }
+                }
                 var bValid = true;
                 if (p.enabled) {
                     if (obj.rs485Port.trim() === '') {
@@ -598,9 +632,17 @@
                             bValid = false;
                         }
                     }
+                    if (obj.screenlogic){
+                        let regexMatch = /Pentair: (?:(?:\d|[A-Z])(?:\d|[A-Z])-){2}(?:\d|[A-Z])(?:\d|[A-Z])/gm
+                        // /Pentair: (?:(?:\d|[A-Z])(?:\d|[A-Z])-){2}(?:\d|[A-Z])(?:\d|[A-Z])/g
+                        if (obj.screenlogic.systemName.match(regexMatch) === null) {
+                            $('<div></div>').appendTo(el.find('div[data-bind$=systemName]:first')).fieldTip({ message: 'Format must be `Pentair: xx-xx-xx`' });
+                            bValid = false;
+                        }
+                    }
                 }
                 if (bValid) {
-                    $.putApiService('/app/rs485Port', obj, 'Setting RS485 Port...', function (retPort, status, xhr) {
+                    $.putApiService('/app/rs485Port', obj, 'Setting RS485 Port or Screenlogic...', function (retPort, status, xhr) {
                         self.dataBind(retPort);
                     });
                 }
@@ -612,9 +654,10 @@
                     var p = dataBinder.fromElement(divSettings);
                     console.log(p);
                     var obj = {};
+                    obj.type = p.type;
                     obj.enabled = p.enabled;
-                    obj.netConnect = p.type === 'network';
-                    obj.mockPort = p.type === 'mock';
+                    obj.netConnect = p.type === 'netConnect';
+                    obj.mock = p.type === 'mock';
                     obj.rs485Port = p.rs485Port;
                     obj.netPort = p.netPort;
                     obj.netHost = p.netHost;
@@ -656,9 +699,9 @@
             });
             let port = $.extend(true, {
                 "enabled": false,
-                "type": obj.netConnect ? 'network' : obj.mockPort ? 'mock' : 'local',
+                "type": obj.type, // obj.type === 'screenlogic' ? 'screenlogic' : obj.netConnect ? 'network' : obj.mockPort ? 'mock' : 'local',
                 "rs485Port": "/dev/ttyUSB0",
-                "mockPort": false,
+                "mock": false,
                 "netConnect": false,
                 "netHost": "raspberrypi",
                 "netPort": 9801,
@@ -676,21 +719,33 @@
                     "keepAlive": false,
                     "allowHalfOpen": false,
                     "keepAliveInitialDelay": 5
-                }
+                },
+                "screenlogic": {
+                    "enabled": false,
+                    "connectionType": "local",
+                    "systemName": "Pentair: 00-00-00",
+                    "password": "1234"
+                  },
             }, obj);
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
             if (obj.netConnect === true) {
                 cols[0].elGlyph().attr('class', 'fas fa-ethernet')
             }
-            else if (obj.mockPort === true) {
+            else if (obj.mock === true) {
                 cols[0].elGlyph().attr('class', 'fas fa-fingerprint')
             }
             else
                 cols[0].elGlyph().attr('class', 'fas fa-route');
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
-            cols[1].elText().text(port.netConnect ? `${port.netHost}:${port.netPort}` : port.mockPort ? `Mock Port` : port.rs485Port);
-            if (port.portId === 0) el.find('div.btnDeleteRS485Port').hide();
+            cols[1].elText().text(obj.type === 'screenlogic' ? `Screenlogic ${obj.screenlogic.systemName}` : port.netConnect ? `${port.netHost}:${port.netPort}` : port.mock ? `Mock Port` : port.rs485Port);
+            if (port.portId === 0) {
+                el.find('div.btnDeleteRS485Port').hide();
+                let sl = el.find('div.pnl-screenlogic')
+                el.find('div.cfgScreenlogic').empty();
+                $('<div></div>').appendTo(sl).configScreenlogic(obj.screenlogic);
+            }
+
             else el.find('div.btnDeleteRS485Port').show();
             dataBinder.bind(el, port);
             if (typeof port.stats !== 'undefined') el.find('div.pnl-rs485Stats').each(function () {
@@ -717,42 +772,27 @@
             el.addClass('picConfigCategory');
             el.addClass('cfgScreenlogic');
             var pnl = $('<div></div>').appendTo(el);
-            $.getApiService('/config/options/screenlogic', null, 'Searching for units...', function (opts, status, xhr) {
-                console.log(opts);
+            // $.getApiService('/config/options/screenlogic', null, function (o, status, xhr) {
+                console.log(o);
                 var slDivSettings = $('<div></div>').appendTo(pnl).addClass('pnl-screenlogic').css({ display: 'inline-block', verticalAlign: 'top' });
                 var line = $('<div></div>').css({ display: 'flex', flexFlow: 'column' }).appendTo(slDivSettings);
-                var binding = '';
+                var binding = 'screenlogic.';
 
-                $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled', value: opts.cfg.enabled });
+                // $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled', value: opts.cfg.enabled });
                 $('<div></div>').appendTo(line).pickList({
                     required: true,
-                    value: opts.cfg.type,
-                    bindColumn: 0, displayColumn: 1, labelText: 'Connection Type', binding: binding + 'type',
+                    value: o.connectionType,
+                    bindColumn: 0, displayColumn: 1, labelText: 'Connection Type', binding: binding + 'connectionType',
                     columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Type', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Type', style: { whiteSpace: 'nowrap' } }],
-                    items: opts.types, inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
+                    items: [{ val: 'local', name: 'Local', desc: 'Local Screenlogic' }, { val: 'remote', name: 'Remote', desc: 'Remote Screenlogic' }], inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
                 });
-                $('<div></div>').appendTo(line).inputField({ value: opts.cfg.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
-                $('<div></div>').appendTo(line).valueSpinner({ value: opts.cfg.password, canEdit: true, labelText: 'Password', fmtMask: "###0", emptyMask: "----", binding: binding + 'password', min: 1, max: 9999, step: 1, inputAttrs: { maxlength: 4, style: { width: '8.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+                $('<div></div>').appendTo(line).inputField({ value: o.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ value: o.password, canEdit: true, labelText: 'Password', fmtMask: "###0", emptyMask: "----", binding: binding + 'password', min: 1, max: 9999, step: 1, inputAttrs: { maxlength: 4, style: { width: '8.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
 
                 $('<div></div>').appendTo(slDivSettings).css({ fontSize: '.8rem' }).configScreenlogicStats();
-                let local = $('<div></div>').css({ display: 'flex', marginTop: "1rem" }).appendTo(line);
-                let localSL;
-                if (typeof opts.localUnit.gatewayName !== 'undefined') localSL = `Local Screenlogic: ${opts.localUnit.gatewayName} found at ${opts.localUnit.address}:${opts.localUnit.port}`;
-                if (typeof localSL !== 'undefined') {
-                    $('<div></div>').appendTo(local).html(localSL);
-                    var btnCopy = $('<div><i class="fas fa-arrow-up-from-bracket"></i></div>').css({ marginLeft: '3px' }).appendTo(local)
-                    // .actionButton({ icon: '<i class="fas fa-arrow-up-from-bracket"></i>' });
-                    btnCopy.on('click', function (evt) {
-                        var p = dataBinder.fromElement(slDivSettings);
-                        p.systemName = opts.localUnit.gatewayName;
-                        p.type = 'local';
-                        dataBinder.bind(el, p);
-                    });
-                }
-                else {
-                    $('<div></div>').css({ display: 'flex' }).appendTo(local).html(`No local Screenlogic found.`);
-                }
-                var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
+
+
+                /* var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
                 var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save Screenlogic', icon: '<i class="fas fa-save" ></i>' });
                 btnSave.on('click', function (evt) {
                     $.pic.fieldTip.clearTips(slDivSettings);
@@ -774,9 +814,57 @@
                         });
                     }
 
+                }); */
+                $('<div></div>').appendTo(pnl).actionButton({ text: 'Find Units', icon: '<i class="fas fa-binoculars"></i>' })
+                .on('click', function (e) {
+                    var dlg = $.pic.modalDialog.createDialog('dlgFindPoolController', {
+                        message: 'Searching for Screenlogic Units',
+                        width: '400px',
+                        height: 'auto',
+                        title: 'Screenlogic',
+                        buttons: [{
+                            text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                    var line = $('<div></div>').appendTo(dlg);
+                    var searchStatus = $('<div></div>').appendTo(line).css({ padding: '.5rem' }).addClass('status-text').addClass('picSearchStatus').text('Searching for Screenlogic units.');
+                    line = $('<div></div>').appendTo(dlg);
+                    $('<hr></hr>').appendTo(line);
+                    line = $('<div></div>').css({ textAlign: 'center' }).appendTo(dlg);
+                    dlg.css({ overflow: 'visible' });
+
+                    $.getApiService('/config/options/screenlogic/search', null, 'Searching for Units...', function (units, status, xhr) {
+                        if (units.length > 0) {
+                            searchStatus.text(units.length + ' Screenlogic unit(s) found.');
+
+                            for (var i = 0; i < units.length; i++) {
+                                var unit = units[i];
+                                var divSelection = $('<div></div>').addClass('picButton')
+                                // .addClass('REM')
+                                // .addClass('server')
+                                .addClass('btn').css({ maxWidth: '227px', height: '97px', verticalAlign: 'middle', minWidth: '210px' }).appendTo(line);
+                                $('<div></div>').addClass('body-text').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fa-solid fa-pager" style="font-size:30pt;color:green;vertical-align:middle;"></i>').append('<span style="vertical-align:middle;"> Screenlogic</span>');
+
+
+
+
+                                $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(unit.gatewayName);
+                                $('<div></div>').css({ textAlign: 'center', marginLeft: '1rem', marginRight: '1rem' }).appendTo(divSelection).text(`${unit.address}:${unit.port}`);
+                                divSelection.data('unit', unit);
+                                divSelection.on('click', function (e) {
+                                    var unit = $(e.currentTarget).data('unit');
+                                    dataBinder.bind(pnl, {screenlogic: { systemName: unit.gatewayName, type: 'local' }});
+                                    $.pic.modalDialog.closeDialog(dlg[0]);
+                                });
+                            }
+                        }
+                        else {
+                            searchStatus.text('No local Screenlogic units found.');
+                        }
+                    });
                 });
-                
-            });
+            // });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -793,7 +881,7 @@
                         "password": 0000
                     },
                     "localUnit": {
-                
+
                     },
                 }, obj);
             dataBinder.bind(el, port);
@@ -813,28 +901,29 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('pnl-screenlogicStats');
-                var grpSl
-                    = $('<fieldset></fieldset>').appendTo(el).css({ fontSize: '.8rem' });
-                $('<legend></legend>').appendTo(grpSl).text('Screenlogic Stats');
-                line = $('<div></div>').appendTo(grpSl);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Status', binding: 'status', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
-                line = $('<div></div>').appendTo(grpSl);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Ready State', binding: 'readyState', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
-                line = $('<div></div>').appendTo(grpSl);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Connecting', binding: 'connecting', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
-                line = $('<div></div>').appendTo(grpSl);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Destroyed', binding: 'destroyed', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            let binding = 'screenlogic.';
+            var grpSl
+                = $('<fieldset></fieldset>').appendTo(el).css({ fontSize: '.8rem' });
+            $('<legend></legend>').appendTo(grpSl).text('Screenlogic Stats');
+            line = $('<div></div>').appendTo(grpSl);
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Status', binding: binding+'status', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            line = $('<div></div>').appendTo(grpSl);
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Ready State', binding: binding+'readyState', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            line = $('<div></div>').appendTo(grpSl);
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Connecting', binding: binding+'connecting', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            line = $('<div></div>').appendTo(grpSl);
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Socket Destroyed', binding: binding+'destroyed', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
 
-                // Create the statistics panel.
-                line = $('<div></div>').appendTo(grpSl);
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
-                line = $('<div></div>').appendTo(grpSl);
+            // Create the statistics panel.
+            line = $('<div></div>').appendTo(grpSl);
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Received', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: binding+'bytesReceived', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            line = $('<div></div>').appendTo(grpSl);
 
-                $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: 'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
+            $('<div></div>').appendTo(line).staticField({ labelText: 'Sent', units: 'bytes', dataType: 'number', fmtMask: '#,##0', emptyMask: '0', binding: binding+'bytesSent', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '8.5rem' } } }).css({ lineHeight: 1 });
 
-                var db = $('div.picDashboard').each(function () {
-                    this.receiveScreenlogicStats(true);
-                });
+            var db = $('div.picDashboard').each(function () {
+                this.receiveScreenlogicStats(true);
+            });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;

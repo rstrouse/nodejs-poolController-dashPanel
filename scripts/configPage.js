@@ -121,8 +121,8 @@
                 tab = self._addConfigTab({ id: 'tabController', text: 'Controller', cssClass: 'cfgController' },
                     [{ id: 'tabControllerType', text: 'Model', cssClass: 'cfgControllerType' },
                     { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' },
-                    { id: 'tabRS485', text: 'RS485 Port', cssClass: 'cfgRS485Port' },
-                    { id: 'tabScreenlogic', text: 'Screenlogic', cssClass: 'cfgScreenlogic' },
+                    { id: 'tabRS485', text: 'Comms', cssClass: 'cfgRS485Port' },
+                    // { id: 'tabScreenlogic', text: 'Screenlogic', cssClass: 'cfgScreenlogic' },
                     { id: 'tabMockControllerType', text: 'Anslq25 (Mock Controller)', cssClass: 'cfgMockControllerType' }],
                 );
                 //tabs[0].showTab('tabController', false);

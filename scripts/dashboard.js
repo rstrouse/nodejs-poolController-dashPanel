@@ -422,8 +422,10 @@
             o.socket.on('screenlogicStats', function (data) {
                 console.log({ evt: 'rs485Stats', data: data });
                 var screenlogic = el.find(`div.pnl-screenlogicStats`);
+                data.connecting = data.connecting ? 'true' : 'false';
+                data.destroyed = data.destroyed ? 'true' : 'false';
                 screenlogic.each(function () {
-                    this.dataBind(data);
+                    this.dataBind({screenlogic: data});
                 });
                 if (screenlogic.length === 0){
                     self.receiveScreenlogicStats(false);
