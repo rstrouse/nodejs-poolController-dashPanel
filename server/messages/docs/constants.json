@@ -352,8 +352,478 @@
       "source": false,
       "controller": false,
       "keyFormat": "16_2_<dest>_<action>"
+    },
+    {
+      "name": "screenlogic",
+      "desc": "ScreenLogic",
+      "actions": {
+        "all": [
+          {
+            "val": 4,
+            "desc": "Ping Brick Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 5,
+            "desc": "Ping Brick Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 16,
+            "desc": "Ping Server Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 17,
+            "desc": "Ping Server Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 18,
+            "desc": "Remove Client Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 4565,
+            "desc": "Player Get Area Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 4566,
+            "desc": "Player Get Area Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 4567,
+            "desc": "Player Set Area Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 4568,
+            "desc": "Player Set Area Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12500,
+            "desc": "Start/Status CHANGED",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12501,
+            "desc": "Schedule Changed",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12502,
+            "desc": "History Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12503,
+            "desc": "Runtime Changed",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12504,
+            "desc": "Color Update",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12505,
+            "desc": "Chemdata Changed",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12506,
+            "desc": "Chem History Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12510,
+            "desc": "Get Circuit Definitions Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12511,
+            "desc": "Get Circuit Definitions Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12518,
+            "desc": "Get Circuit Info by Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12519,
+            "desc": "Get Circuit Info by Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12520,
+            "desc": "Set Circuit Info by Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12521,
+            "desc": "Set Circuit Info by Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12522,
+            "desc": "Add Client Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12523,
+            "desc": "Add Client Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12524,
+            "desc": "Remove Client Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12525,
+            "desc": "Remove Client Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12526,
+            "desc": "Get Status Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12527,
+            "desc": "Get Status Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12528,
+            "desc": "Set Heat Setpoint Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12529,
+            "desc": "Set Heat Setpoint Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12530,
+            "desc": "Button Press Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12531,
+            "desc": "Button Press Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12532,
+            "desc": "Get Controller Config Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12533,
+            "desc": "Get Controller Config Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12534,
+            "desc": "Get History Data Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12535,
+            "desc": "Get History Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12538,
+            "desc": "Set Heat Mode Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12539,
+            "desc": "Set Heat Mode Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12542,
+            "desc": "Get Schedule Data Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12543,
+            "desc": "Get Schedule Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12544,
+            "desc": "Add New Schedule Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12545,
+            "desc": "Add New Schedule Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12546,
+            "desc": "Del Schedule by Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12547,
+            "desc": "Del Schedule by Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12548,
+            "desc": "Set Sched by Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12549,
+            "desc": "Set Sched by Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12550,
+            "desc": "Set Circuit Runtime by Id Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12551,
+            "desc": "Set Circuit Runtime by Id Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12554,
+            "desc": "Config Light Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12555,
+            "desc": "Config Light Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12556,
+            "desc": "Color Light Command Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12557,
+            "desc": "Color Light Command Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12558,
+            "desc": "Get N Circuit Names Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12559,
+            "desc": "Get N Circuit Names Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12560,
+            "desc": "Get Circuit Names Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12561,
+            "desc": "Get Circuit Names Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12562,
+            "desc": "Get Custom Names Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12563,
+            "desc": "Get Custom Names Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12564,
+            "desc": "Set Custom Name Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12565,
+            "desc": "Set Custom Name Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12566,
+            "desc": "Get Equipment Config Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12567,
+            "desc": "Get Equipment Config Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12568,
+            "desc": "Set Equipment Config Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12569,
+            "desc": "Set Equipment Config Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12570,
+            "desc": "Set Cal Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12571,
+            "desc": "Set Cal Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12572,
+            "desc": "Get Chlor Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12573,
+            "desc": "Get Chlor Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12574,
+            "desc": "Set Chlor Enable Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12575,
+            "desc": "Set Chlor Enable Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12576,
+            "desc": "Set Chlor Config Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12577,
+            "desc": "Set Chlor Config Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12578,
+            "desc": "Enable Remotes Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12579,
+            "desc": "Enable Remotes Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12580,
+            "desc": "Cancel Delays Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12581,
+            "desc": "Cancel Delays Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12582,
+            "desc": "Get All Errors Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12583,
+            "desc": "Get All Errors Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12584,
+            "desc": "Get Pump Status Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12585,
+            "desc": "Get Pump Status Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12586,
+            "desc": "Set Pump Speed Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12587,
+            "desc": "Set Pump Speed Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12588,
+            "desc": "Reset House Code Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12589,
+            "desc": "Reset House Code Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12590,
+            "desc": "Set Cool Setpoint Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12591,
+            "desc": "Set Cool Setpoint Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12592,
+            "desc": "Get Chem Data Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12593,
+            "desc": "Get Chem Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12594,
+            "desc": "Set Chem Data Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12595,
+            "desc": "Set Chem Data Response",
+            "defaultType": "Response"
+          },
+          {
+            "val": 12596,
+            "desc": "Get Chem History Request",
+            "defaultType": "Request"
+          },
+          {
+            "val": 12597,
+            "desc": "END",
+            "defaultType": "Request"
+          }
+        ]
+      },
+      "source": false,
+      "controller": false,
+      "keyFormat": "SL_<dest>_<action>"
     }
-
   ],
   "controllers": [
     {

@@ -192,6 +192,7 @@ var msgManager = {
         else if (msg.protocol === 'hayward') {
             return this.extractByte(msg.header, 2);
         }
+        else if (msg.protocol === 'screenlogic') return msg.dir === 'in' ? 16 : 34
         else if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 3);
         else {
             var val = this.extractByte(msg.header, 2);
@@ -200,11 +201,12 @@ var msgManager = {
     },
     extractDestByte: function (msg) {
         if (msg.protocol === 'hayward') return this.extractByte(msg.header, 4);
+        else if (msg.protocol === 'screenlogic') return msg.dir === 'in' ? 34 : 16;
         else if (msg.protocol !== 'chlorinator') return this.extractByte(msg.header, 2);
         var val = this.extractByte(msg.header, 2);
         return val >= 80 ? val : 16;
     },
-    extractControllerByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'aqualink' ? 0 : this.extractByte(msg.header, 1); },
+    extractControllerByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'aqualink' ? 0 : msg.protocol === 'screenlogic' ? msg.controllerId : this.extractByte(msg.header, 1); },
     extractByte: function (arr, ndx, def) { return arr.length > ndx ? arr[ndx] : def; },
     toAscii: function (byte) { return (byte < 127 && byte > 31) ? String.fromCharCode(byte) : '.'; },
     toHex: function (byte, pad) {

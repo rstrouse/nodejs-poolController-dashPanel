@@ -134,29 +134,31 @@ export class MessageDocs {
         messages = JSON.parse(data);
         return messages;
     }
-    public static findMessageByKey(key:string) {
+    public static findMessageByKey(key: string) {
         let messages = MessageDocs.loadMessages();
         return messages[key];
     }
     public static getKeyBytes() {
         let messages = MessageDocs.loadMessages();
         let keys = {};
-        for (let key in messages) {
-            let msg = messages[key];
-            //console.log(`key:${key} bytes:${messages[key].keyBytes}`);
-            if (typeof msg.keyBytes !== 'undefined') {
-                let kb: any = { keyBytes: messages[key].keyBytes, shortName: msg.shortName, hasCategories: msg.hasCategories, category: msg.category, minLength: msg.minLength };
-                if (typeof msg.payloadKeys !== 'undefined') {
-                    kb.payloadKeys = {};
-                    for (let pkey in msg.payloadKeys) {
-                        let pb = msg.payloadKeys[pkey];
-                        if (typeof pb !== 'undefined') kb.payloadKeys[pkey] = { shortName: pb.shortName, category: pb.category };
+        for (let proto in messages) {
+            for (let key in messages[proto]) {
+                let msg = messages[proto][key];
+                //console.log(`key:${key} bytes:${messages[key].keyBytes}`);
+                if (typeof msg.keyBytes !== 'undefined') {
+                    let kb: any = { keyBytes: messages[proto][key].keyBytes, shortName: msg.shortName, hasCategories: msg.hasCategories, category: msg.category, minLength: msg.minLength };
+                    if (typeof msg.payloadKeys !== 'undefined') {
+                        kb.payloadKeys = {};
+                        for (let pkey in msg.payloadKeys) {
+                            let pb = msg.payloadKeys[pkey];
+                            if (typeof pb !== 'undefined') kb.payloadKeys[pkey] = { shortName: pb.shortName, category: pb.category };
+                        }
                     }
+                    keys[key] = kb;
                 }
-                keys[key] = kb;
-            }
-            else {
-                keys[key] = { shortName: msg.shortName };
+                else {
+                    keys[key] = { shortName: msg.shortName };
+                }
             }
         }
         return keys;
@@ -656,5 +658,5 @@ export class Inbound extends Message {
     // Factory
     public responseFor: number[] = [];
     public isProcessed: boolean = false;
-  
+
 }

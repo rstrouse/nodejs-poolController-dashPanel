@@ -1158,11 +1158,84 @@ mhelper.init();
             obj.hidden = self._calcMessageFilter(obj);
 
         },
+        _bindVListScreenLogicRow(obj, msg, autoSelect) {
+            var self = this, o = self.options, el = self.element;
+            var row = obj.row;
+            var r = row[0];
+            msg.messageKey = `${msg.systemName}${msg.action}`;
+            o.contexts[msg.messageKey] = {
+                protocol: { name: 'screenlogic', desc: 'ScreenLogic' }, 
+                action: msg.action };
+            row.attr('data-msgdir', msg.direction);
+            // row.attr('data-port', msg.portId);
+            row.addClass('msgRow');
+            var ctx = msgManager.getListContext(msg);
+            o.contexts[ctx.messageKey] = ctx;
+            if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
+
+            $('<span></span>').text(msg.controllerId).appendTo(r.cells[1]);
+            $('<span></span>').text(`${msg._id}`).appendTo(r.cells[2]);
+            var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
+            $('<span></span>').append(dir).appendTo(r.cells[3]);
+            var spChg = $('<span class="changed"></span>').appendTo(r.cells[4]);
+            var chg = $('<i class="fas"></i>').appendTo(spChg);
+            $('<span></span>').text(ctx.protocol.name).appendTo(r.cells[5]);
+            $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[6]);
+            $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[7]);
+            $('<span></span>').text(ctx.actionByte).appendTo(r.cells[8]);
+            $(r.cells[8]).attr('title', ctx.actionName).addClass('msg-action');
+            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[9]);
+            else console.log(msg);
+            var prev = o.messageKeys[ctx.messageKey];
+            var hasChanged = false;
+            if (typeof prev === 'undefined')
+                hasChanged = true;
+            else if (msgManager.isMessageDiff(msg, prev, ctx))
+                hasChanged = true;
+            if (hasChanged) {
+                row.addClass('changed');
+                typeof prev === 'undefined' ? spChg.addClass('new') : spChg.addClass('changed');
+                chg.addClass('fa-dot-circle');
+            }
+            else
+                row.addClass('nochange');
+            //if (o.changesOnly && !hasChanged) obj.hidden = true;
+
+            o.messageKeys[ctx.messageKey] = msg;
+            msg.rowId = obj.rowId;
+            msg.messageKey = ctx.messageKey;
+            //row.data('message', msg); Can't store jquery data. Create our own message cache.
+            o.messages['m' + obj.rowId] = msg;
+            o.rowIds.push({ rowId: obj.rowId, msgId: msg._id });
+            if (typeof msg.portId !== 'undefined' && !o.ports.includes(msg.portId)) {
+                o.ports.push(parseInt(msg.portId, 10));
+            }
+            row.attr('data-msgkey', ctx.messageKey);
+            row.attr('data-dockey', ctx.docKey);
+            row.attr('data-msgid', msg._id);
+            obj.hasChanged = hasChanged;
+            obj.hidden = self._calcMessageFilter(obj);
+            if (typeof prev !== 'undefined') obj.prevId = prev.rowId;
+            if (!o.pinScrolling) {
+                if (!o.changesOnly || (o.changesOnly && hasChanged)) {
+                    self.selectRowByIndex(obj.rowId, true);
+                }
+            }
+
+
+            obj.hasChanged = true;
+            row.attr('data-msgid', msg._id);
+            // row.attr('data-portId', msg.portId);
+            o.messages['m' + obj.rowId] = msg;
+            obj.hidden = self._calcMessageFilter(obj);
+
+        },
         _bindVListRow(obj, msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
             var row = obj.row;
             var r = row[0];
             if (msg.protocol === 'api') self._bindVListApiRow(obj, msg, autoSelect);
+            else if (msg.protocol === 'screenlogic') self._bindVListScreenLogicRow(obj, msg, autoSelect);
             else self._bindVListMessageRow(obj, msg, autoSelect);
         },
         selectRowByIndex: function (ndx, scroll) {
@@ -1440,9 +1513,9 @@ mhelper.init();
                     timestamp: msg.timestamp,
                     dataLen: msg.payload.length,
                     direction: msg.direction === 'in' ? 'Inbound ' : 'Outbound ',
-                    header: msg.header.join(','),
-                    padding: msg.padding.join(','),
-                    term: msg.term.join(','),
+                    header: typeof msg.header !== 'undefined' ? msg.header.join(',') : [],
+                    padding: typeof msg.padding !== 'undefined' ? msg.padding.join(',') : [],
+                    term: typeof msg.term !== 'undefined' ? msg.term.join(',') : [],
                     responseFor: ''
                 };
                 if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0 && typeof msgFor !== 'undefined') {

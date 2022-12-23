@@ -907,7 +907,7 @@
         }
     });
     $.widget('pic.configScreenlogicStats', {
-        options: {},
+        options: {}, 
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._buildControls();

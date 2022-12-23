@@ -403,17 +403,6 @@
                 btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'File', bind: 'app.logToFile' });
 
 
-
-                //var selApp = $('<select data-bind="app.level"></select>');
-                //selApp.appendTo(divLine);
-                //$('<option value="info">Info</option>').appendTo(selApp);
-                //$('<option value="debug">Debug</option>').appendTo(selApp);
-                //$('<option value="warn">Warn</option>').appendTo(selApp);
-                //$('<option value="verbose">Verbose</option>').appendTo(selApp);
-                //$('<option value="error">Error</option>').appendTo(selApp);
-                //$('<option value="silly">Silly</option>').appendTo(selApp);
-                //$('').appendTo(divLine);
-
                 grp = $('<fieldset></fieldset>');
                 leg = $('<legend></legend>').appendTo(grp);
 
@@ -461,17 +450,36 @@
                 divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
 
                 btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Invalid', bind: 'packet.invalid' });
-                divLine = $('<div class="picPacketLogging"><label></label></div>').appendTo(grp);
 
-                //btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Replay', bind: 'packet.replay' });
+
+
 
                 contents.on('click', 'div.picOptionButton.logger', function (evt) {
                     var opt = $(evt.currentTarget);
                     var obj = dataBinder.fromElement(opt);
                     $.putApiService('app/logger/setOptions', obj);
                 });
+
+                grp = $('<fieldset></fieldset>');
+                leg = $('<legend></legend>').appendTo(grp);
+
+                grp.appendTo(divOuter);
+                btn = $('<div class="logger"></div>').appendTo(leg).optionButton({ text: 'Screenlogic', bind: 'screenlogic.enabled' });
+
+                divLine = $('<div class="picPacketLogging"><label>Log to</label></div>');
+                divLine.appendTo(grp);
+
+
+                btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'Console', bind: 'screenlogic.logToConsole' });
+                btn = $('<div class="logger"></div>').appendTo(divLine).optionButton({ text: 'File', bind: 'screenlogic.logToFile' });
+        
+                contents.on('click', 'div.picOptionButton.logger', function (evt) {
+                    var opt = $(evt.currentTarget);
+                    var obj = dataBinder.fromElement(opt);
+                    $.putApiService('app/logger/setOptions', obj);
+                });
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
-                btnPnl.appendTo(grp);
+                btnPnl.appendTo(divOuter);
 
                 var btnStartCapture = $('<div></div>');
                 btnStartCapture.appendTo(btnPnl).actionButton({ text: 'Capture Replay', icon: '<i class="fas fa-bug"></i>' });
