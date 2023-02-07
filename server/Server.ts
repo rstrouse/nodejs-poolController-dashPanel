@@ -1,4 +1,5 @@
-﻿import * as path from "path";
+﻿import * as os from 'os';
+import * as path from "path";
 import * as express from "express";
 import { URL } from "url";
 import { Client } from "node-ssdp";
@@ -71,10 +72,38 @@ export class HttpServer extends ProtoServer {
     // Http protocol
     public app: express.Application;
     public server: http.Server;
+    private family = 'IPv4';
+    private _httpPort: number;
+
+    private getInterface() {
+        const networkInterfaces = os.networkInterfaces();
+        // RKS: We need to get the scope-local nic. This has nothing to do with IP4/6 and is not necessarily named en0 or specific to a particular nic.  We are
+        // looking for the first IPv4 interface that has a mac address which will be the scope-local address.  However, in the future we can simply use the IPv6 interface
+        // if that is returned on the local scope but I don't know if the node ssdp server supports it on all platforms.
+        let fallback; // Use this for WSL adapters.
+        for (let name in networkInterfaces) {
+            let nic = networkInterfaces[name];
+            for (let ndx in nic) {
+                let addr = nic[ndx];
+                // All scope-local addresses will have a mac.  In a multi-nic scenario we are simply grabbing
+                // the first one we come across.
+                if (!addr.internal && addr.mac.indexOf('00:00:00:') < 0 && addr.family === this.family) {
+                    if (!addr.mac.startsWith('00:'))
+                        return addr;
+                    else if (typeof fallback === 'undefined') fallback = addr;
+                }
+            }
+        }
+        return fallback;
+    }
+    public ip() { return typeof this.getInterface() === 'undefined' ? '0.0.0.0' : this.getInterface().address; }
+    public mac() { return typeof this.getInterface() === 'undefined' ? '00:00:00:00' : this.getInterface().mac; }
+    public httpPort(): number { return this._httpPort }
+
     public init(cfg) {
         if (cfg.enabled) {
             this.app = express();
-
+            this._httpPort = cfg.port;
             //this.app.use();
             this.server = http.createServer(this.app);
             if (cfg.httpsRedirect) {
@@ -82,6 +111,7 @@ export class HttpServer extends ProtoServer {
                 this.app.get('*', (res: express.Response, req: express.Request) => {
                     let host = res.get('host');
                     host = typeof cfgHttps.port !== 'undefined' ? host.replace(/:\d+$/, ':' + cfgHttps.port) : host;
+                    this._httpPort = cfgHttps.port;
                     return res.redirect('https://' + host + req.url);
                 });
             }
@@ -116,7 +146,7 @@ export class HttpServer extends ProtoServer {
             let self = this;
             this.server.listen(cfg.port, cfg.ip, function () {
                 //console.log(self);
-                logger.info('Server is now listening on %s:%s', cfg.ip, cfg.port);
+                logger.info('Server is now listening on %s:%s - %s:%s', cfg.ip, cfg.port, self.ip(), self.httpPort());
             });
             this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
             this.app.use('/jquery', express.static(path.join(process.cwd(), '/node_modules/jquery/'), { maxAge: '60d' }));
