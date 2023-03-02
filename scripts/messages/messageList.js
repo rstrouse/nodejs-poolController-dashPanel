@@ -1075,7 +1075,7 @@ mhelper.init();
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
 
             $('<span></span>').text(msg.portId).appendTo(r.cells[1]);
-            $('<span></span>').text(`${msg._id}${msg.tries>1?'-'+msg.tries:''}`).appendTo(r.cells[2]);
+            $('<span></span>').text(`${msg._id}${msg.tries>=1?'-'+msg.tries:''}`).appendTo(r.cells[2]);
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
             $('<span></span>').append(dir).appendTo(r.cells[3]);
             var spChg = $('<span class="changed"></span>').appendTo(r.cells[4]);
