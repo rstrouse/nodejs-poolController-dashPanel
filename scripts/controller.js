@@ -1536,20 +1536,22 @@
                 if (!fileOpts.options.njsPC) cb.disabled(true);
 
                 dataBinder.bind(selectOpts, fileOpts);
-                for (let i = 0; i < fileOpts.options.servers.length; i++) {
-                    let srv = fileOpts.options.servers[i];
-                    line = $('<div></div>').appendTo(restoreOpts);
-                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].uuid`).val(srv.uuid);
-                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].name`).val(srv.name);
-                    $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].host`).val(srv.host);
-                    cb = $('<div></div>').appendTo(line).checkbox({ labelText: srv.name, binding: `options.servers[${i}].restore` });
-                    if (!srv.backup) line.hide();
-                    else if (!srv.success) cb[0].disabled(true);
-                    cb[0].val(srv.backup && srv.success);
-                    if (typeof srv.errors !== 'undefined' && srv.errors.length > 0) {
-                        for (let j = 0; j < srv.errors.length; j++) {
-                            line = $('<div></div>').css({ paddingLeft: '2rem', fontSize:'.7em'}).appendTo(restoreOpts);
-                            $('<span></span>').appendTo(line).text(srv.errors[j]);
+                if (typeof fileOpts.options.servers !== 'undefined') {
+                    for (let i = 0; i < fileOpts.options.servers.length; i++) {
+                        let srv = fileOpts.options.servers[i];
+                        line = $('<div></div>').appendTo(restoreOpts);
+                        $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].uuid`).val(srv.uuid);
+                        $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].name`).val(srv.name);
+                        $('<input></input>').appendTo(line).attr('type', 'hidden').attr('data-bind', `options.servers[${i}].host`).val(srv.host);
+                        cb = $('<div></div>').appendTo(line).checkbox({ labelText: srv.name, binding: `options.servers[${i}].restore` });
+                        if (!srv.backup) line.hide();
+                        else if (!srv.success) cb[0].disabled(true);
+                        cb[0].val(srv.backup && srv.success);
+                        if (typeof srv.errors !== 'undefined' && srv.errors.length > 0) {
+                            for (let j = 0; j < srv.errors.length; j++) {
+                                line = $('<div></div>').css({ paddingLeft: '2rem', fontSize: '.7em' }).appendTo(restoreOpts);
+                                $('<span></span>').appendTo(line).text(srv.errors[j]);
+                            }
                         }
                     }
                 }
