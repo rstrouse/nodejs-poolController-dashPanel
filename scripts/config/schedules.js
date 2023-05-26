@@ -83,8 +83,8 @@
                     items: o.displayTypes, inputAttrs: { style: { width: '6.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
                 });
             }
-            line = $('<div></div>').addClass('schedule-heatsource').appendTo(pnl).hide();
-            $('<div></div>').appendTo(line).pickList({
+            var line_outer = $('<div></div>').appendTo(pnl); 
+            line = $('<div></div>').addClass('schedule-heatsource').css({display: 'inline-block'}).appendTo(line_outer).hide();$('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Heat Source', binding: binding + 'heatSource',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heat Source', style: { whiteSpace: 'nowrap' } }],
                 items: o.heatSources, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { width: '5.75rem', marginLeft: '.25rem' } }
@@ -106,7 +106,7 @@
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Heat', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cool', binding: binding + 'coolSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } }).hide();
             if ($('div.dashOuter').data('controllertype').includes('Nixie')){
-                $('<div></div>').appendTo(line).checkbox({ labelText: 'Disabled', binding: binding + 'disabled' });
+                $('<div></div>').appendTo(line_outer).checkbox({ labelText: 'Disabled', binding: binding + 'disabled', display: 'inline-block' });
             }
             $('<hr></hr>').appendTo(pnl);
             var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
