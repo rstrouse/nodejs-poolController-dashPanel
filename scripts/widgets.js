@@ -1643,6 +1643,7 @@ $.ui.position.fieldTip = {
             el.addClass('picPopover');
             el.addClass('popover');
             el.attr('data-popoverid', o.id);
+            el.attr('popover', 'manual');
             el[0].toggle = function (elTarget) { self.toggle(elTarget); };
             el[0].show = function (elTarget) { self.show(elTarget); };
             el[0].hide = function () { self.hide(); };
