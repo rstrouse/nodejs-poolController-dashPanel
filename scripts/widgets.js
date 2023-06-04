@@ -1643,7 +1643,7 @@ $.ui.position.fieldTip = {
             el.addClass('picPopover');
             el.addClass('popover');
             el.attr('data-popoverid', o.id);
-            el.attr('popover', 'manual');
+            //el.attr('popover', 'manual');
             el[0].toggle = function (elTarget) { self.toggle(elTarget); };
             el[0].show = function (elTarget) { self.show(elTarget); };
             el[0].hide = function () { self.hide(); };
@@ -1698,7 +1698,8 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             if (self.isOpen() || !o.isInteractive) return;
 
-            var evt = $.Event('showPopover');
+            //var evt = $.Event('showPopover');
+            var evt = $.Event('displayPopover');
             evt.contents = function () { return el.find('div.picPopoverBody'); };
             el.trigger(evt);
             if (evt.isDefaultPrevented() || !self.isInDOM()) return;
@@ -3201,7 +3202,7 @@ $.ui.position.fieldTip = {
             $('<div></div>').addClass('chemTank-level-top').appendTo(liquid);
             $('<div></div>').addClass('chemTank-level').appendTo(liquid);
             $('<div></div>').addClass('chemTank-scale').appendTo(liquid);
-
+            console.log(o);
             // Create all the ticks for the scale by starting at the top and drawing down.
             var tickpos = 100 / 7;
             el.attr('data-chemtype', o.chemType);
