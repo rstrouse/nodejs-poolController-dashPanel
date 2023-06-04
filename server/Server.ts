@@ -1,6 +1,7 @@
 ﻿import * as os from 'os';
 import * as path from "path";
 import * as express from "express";
+import * as fs from "fs";
 import { URL } from "url";
 import { Client } from "node-ssdp";
 import { config } from "../server/config/Config";
@@ -14,6 +15,7 @@ import { UploadRoute, BackgroundUpload } from "./upload/upload";
 import { setTimeout } from "timers";
 import { ConfigRoute } from "./api/Config";
 import { MessagesRoute } from "./api/Messages";
+import { Timestamp, utils } from "./Constants";
 import { RelayRoute, njsPCRelay } from "./relay/relayRoute";
 import { Namespace, RemoteSocket, Server as SocketIoServer, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
@@ -240,6 +242,108 @@ export class HttpServer extends ProtoServer {
         sock.on('echo', (msg) => { sock.emit('echo', msg); });
     }
 }
+export class HttpsServer extends HttpServer {
+    declare server: https.Server;
+
+    public async init(cfg) {
+        // const auth = require('http-auth');
+	// this.uuid = cfg.uuid;
+        if (!cfg.enabled) return;
+        try {
+            this.app = express();
+            // Enable Authentication (not yet implemented - this code from nodejs-poolController)
+            /*             if (cfg.authentication === 'basic') {
+                            let basic = auth.basic({
+                                realm: "nodejs-poolController.",
+                                file: path.join(process.cwd(), cfg.authFile)
+                            })
+                            this.app.use(function(req, res, next) {
+                                    (auth.connect(basic))(req, res, next);
+                            });
+                        } */
+            if (cfg.sslKeyFile === '' || cfg.sslCertFile === '' || !fs.existsSync(path.join(process.cwd(), cfg.sslKeyFile)) || !fs.existsSync(path.join(process.cwd(), cfg.sslCertFile))) {
+                logger.warn(`HTTPS not enabled because key or crt file is missing.`);
+                return;
+            }
+            let opts = {
+                key: fs.readFileSync(path.join(process.cwd(), cfg.sslKeyFile), 'utf8'),
+                cert: fs.readFileSync(path.join(process.cwd(), cfg.sslCertFile), 'utf8'),
+                requestCert: false,
+                rejectUnauthorized: false
+            }
+            this.server = https.createServer(opts, this.app);
+
+	    this.app.use(express.static(path.join(process.cwd(), 'pages'), { maxAge: '1d' }));
+            this.app.use(express.json());
+            this.app.use((req, res, next) => {
+                res.header('Access-Control-Allow-Origin', '*');
+                res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, api_key, Authorization'); // api_key and Authorization needed for Swagger editor live API document calls
+                res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
+                if ('OPTIONS' === req.method) { res.sendStatus(200); }
+                else {
+                    if (!req.url.startsWith('/upnp.xml')) {
+                        logger.info(`[${new Date().toLocaleString()}] ${req.ip} ${req.method} ${req.url} ${typeof req.body === 'undefined' ? '' : JSON.stringify(req.body)}`);
+	    //   logger.logAPI(`{"dir":"in","proto":"api","requestor":"${req.ip}","method":"${req.method}","path":"${req.url}",${typeof req.body === 'undefined' ? '' : `"body":${JSON.stringify(req.body)},`}"ts":"${Timestamp.toISOLocal(new Date())}"}${os.EOL}`);
+                    }
+                    next();
+                }
+            });
+
+
+            // Put in a custom replacer so that we can send error messages to the client.  If we don't do this the base properties of Error
+            // are omitted from the output.
+            this.app.set('json replacer', (key, value) => {
+                if (value instanceof Error) {
+                    var err = {};
+                    Object.getOwnPropertyNames(value).forEach((prop) => {
+                        if (prop === "level") err[prop] = value[prop].replace(/\x1b\[\d{2}m/g, '') // remove color from level
+                        else err[prop] = value[prop];
+                    });
+                    return err;
+                }
+                return value;
+            });
+
+	    ConfigRoute.initRoutes(this.app);
+	    // StateRoute.initRoutes(this.app);
+	    // UtilitiesRoute.initRoutes(this.app);
+	    
+            // The socket initialization needs to occur before we start listening.  If we don't then
+            // the headers from the server will not be picked up.
+	    this.initSockets();
+	    let serlf = this;
+	    this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
+            this.app.use('/jquery', express.static(path.join(process.cwd(), '/node_modules/jquery/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
+            this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
+            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
+            this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
+            this.app.use('/icons', express.static(path.join(process.cwd(), '/themes/icons'), { maxAge: '1d' }));
+            RelayRoute.initRoutes(this.app);
+            ConfigRoute.initRoutes(this.app);
+            MessagesRoute.initRoutes(this.app);
+            UploadRoute.initRoutes(this.app);
+            this.app.use((error, req, res, next) => {
+                logger.error(error);
+                if (!res.headersSent) {
+                    let httpCode = error.httpCode || 500;
+                    res.status(httpCode).send(error);
+                }
+            });
+
+            // start our server on port
+            this.server.listen(cfg.port, cfg.ip, function () {
+                logger.info('HTTPS Server is now listening on %s:%s', cfg.ip, cfg.port);
+	    });
+            this.isRunning = true;
+        }
+        catch (err) {
+            logger.error(`Error starting up https server: ${err}`)
+        }
+    }
+}
+
 export class SspdServer extends ProtoServer {
     // Simple service discovery protocol
     public server: any;
