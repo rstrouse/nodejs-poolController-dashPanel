@@ -3202,7 +3202,6 @@ $.ui.position.fieldTip = {
             $('<div></div>').addClass('chemTank-level-top').appendTo(liquid);
             $('<div></div>').addClass('chemTank-level').appendTo(liquid);
             $('<div></div>').addClass('chemTank-scale').appendTo(liquid);
-            console.log(o);
             // Create all the ticks for the scale by starting at the top and drawing down.
             var tickpos = 100 / 7;
             el.attr('data-chemtype', o.chemType);
