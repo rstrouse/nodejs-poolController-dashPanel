@@ -36,7 +36,7 @@ export class WebServer {
                     srv.init(c);
                     break;
                 case 'https':
-                    srv = new Http2Server();
+                    srv = new HttpsServer();
                     this._servers.push(srv);
                     srv.init(cfg.servers[s]);
                     break;
