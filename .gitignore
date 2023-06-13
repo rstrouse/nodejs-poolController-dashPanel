@@ -272,3 +272,7 @@ dist/
 uploads/
 
 /themes/Images/2022-06-24_10-42-18.png
+
+# SSL Certificates
+*.pem
+ssl/
