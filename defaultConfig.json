@@ -11,13 +11,13 @@
         "authFile": "/users.htpasswd"
       },
       "https": {
-        "enabled": true,
-        "ip": "127.0.0.1",
+        "enabled": false,
+        "ip": "0.0.0.0",
         "port": 5151,
         "authentication": "none",
         "authFile": "/users.htpasswd",
-        "sslKeyFile": "",
-        "sslCertFile": ""
+        "sslKeyFile": "/ssl/privkey.pem",
+        "sslCertFile": "/ssl/cert.pem"
       },
       "mdns": { "enabled": false },
       "sspd": { "enabled": false },
