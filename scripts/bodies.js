@@ -37,8 +37,8 @@
         setTemps: function (data) {
             var self = this, o = self.options, el = self.element;
             var nSolar = 0;
-            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.##', '--'));
-            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.##', '--'));
+            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.#', '--'));
+            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.#', '--'));
             if (typeof data.units !== 'undefined') {
                 el.find('span.picTempUnits').text(data.units.name);
                 el.attr('data-unitsname', data.units.name);
