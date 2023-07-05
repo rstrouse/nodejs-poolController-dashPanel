@@ -61,7 +61,7 @@
             });
             var pnl = acc.find('div.picAccordian-contents');
             // Figure out our formats.
-            o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'H:mm';
+            o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'HH:mm';
             o.fmtTimeEmpty = o.clockMode === 12 ? '12:00am' : '24:00';
 
             var line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
