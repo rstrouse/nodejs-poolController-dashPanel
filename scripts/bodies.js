@@ -37,8 +37,8 @@
         setTemps: function (data) {
             var self = this, o = self.options, el = self.element;
             var nSolar = 0;
-            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.#', '--'));
-            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.#', '--'));
+            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.0', '--'));
+            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.0', '--'));
             if (typeof data.units !== 'undefined') {
                 el.find('span.picTempUnits').text(data.units.name);
                 el.attr('data-unitsname', data.units.name);
@@ -93,8 +93,8 @@
             div.attr('data-ison', o.isOn);
             div.attr('data-status', o.isOn ? 'on' : 'off');
             $('<label class="picFilterName" data-bind="name"></label>').appendTo(el);
-            $('<span class="picFilterPressure picData"></label><span class="picPressureValue" data-bind="pressure" data-fmttype="number" data-fmtmask="#,##0.##" data-fmtempty="----"></span><label class="picUnits" data-bind="pressureUnits.name"></label></span>').appendTo(el);
-            $('<span class="picFilterPercentage picData"></label><span class="picPercentValue" data-bind="cleanPercentage" data-fmttype="number" data-fmtmask="#,##0.##" data-fmtempty="----"></span><label class="picUnits">%</label></span>').appendTo(el);
+            $('<span class="picFilterPressure picData"></label><span class="picPressureValue" data-bind="pressure" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="----"></span><label class="picUnits" data-bind="pressureUnits.name"></label></span>').appendTo(el);
+            $('<span class="picFilterPercentage picData"></label><span class="picPercentValue" data-bind="cleanPercentage" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="----"></span><label class="picUnits">%</label></span>').appendTo(el);
             self.setEquipmentData(o);
         },
         setEquipmentData: function (data) {
@@ -160,7 +160,7 @@
             $('<label></label>').attr('data-bind', 'name').appendTo(line);
             $('<label></label>').text(' Temp').appendTo(line);
             line = $('<div></div>').addClass('body-temp').appendTo(bodyTemp);
-            $('<span></span>').addClass('picTempData').attr('data-bind', 'temp').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-fmtempty', '--.-').appendTo(line);
+            $('<span></span>').addClass('picTempData').attr('data-bind', 'temp').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.0').attr('data-fmtempty', '--.-').appendTo(line);
             $('<label></label>').addClass('picUnitSymbol').html('&deg').css({ fontSize: '.4em', verticalAlign:'top', display:'inline-block', paddingTop:'.25em' }).appendTo(line);
             $('<span></span>').addClass('picTempUnits').text('-').css({ fontSize: '.4em', verticalAlign: 'top', display: 'inline-block', paddingTop: '.25em'}).appendTo(line);
             bodyTemp.appendTo(el);
@@ -197,7 +197,7 @@
 
             //    + '<div class="picBodyTemp">'
             //    + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-            //    + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
+            //    + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.0" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
             //    + '</div>'
 
             //    + '<div class= "picBodySetPoints">'
