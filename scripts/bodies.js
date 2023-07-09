@@ -37,8 +37,10 @@
         setTemps: function (data) {
             var self = this, o = self.options, el = self.element;
             var nSolar = 0;
-            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format('#,##0.##', '--'));
-            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format('#,##0.##', '--'));
+            var tempFmt = $('body').attr('data-controllertype') === 'nixie' ? '#,##0.0' : '#,##0';
+
+            if (typeof data.air !== 'undefined') el.find('span.picAirTemp').text(data.air.format(tempFmt, '--'));
+            if (typeof data.solar !== 'undefined') el.find('span.picSolarTemp').text(data.solar.format(tempFmt, '--'));
             if (typeof data.units !== 'undefined') {
                 el.find('span.picTempUnits').text(data.units.name);
                 el.attr('data-unitsname', data.units.name);
@@ -143,6 +145,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var tempFmt = $('body').attr('data-controllertype') === 'nixie' ? '#,##0.0' : '#,##0';
+
             el.addClass('picBody');
             el.addClass('pic' + o.name);
             el.attr('data-body', o.name);
@@ -160,7 +164,7 @@
             $('<label></label>').attr('data-bind', 'name').appendTo(line);
             $('<label></label>').text(' Temp').appendTo(line);
             line = $('<div></div>').addClass('body-temp').appendTo(bodyTemp);
-            $('<span></span>').addClass('picTempData').attr('data-bind', 'temp').attr('data-fmttype', 'number').attr('data-fmtmask', '#,##0.#').attr('data-fmtempty', '--.-').appendTo(line);
+            $('<span></span>').addClass('picTempData').attr('data-bind', 'temp').attr('data-fmttype', 'number').attr('data-fmtmask', tempFmt).attr('data-fmtempty', '--.-').appendTo(line);
             $('<label></label>').addClass('picUnitSymbol').html('&deg').css({ fontSize: '.4em', verticalAlign:'top', display:'inline-block', paddingTop:'.25em' }).appendTo(line);
             $('<span></span>').addClass('picTempUnits').text('-').css({ fontSize: '.4em', verticalAlign: 'top', display: 'inline-block', paddingTop: '.25em'}).appendTo(line);
             bodyTemp.appendTo(el);
@@ -189,23 +193,6 @@
             line = $('<div></div>').attr('data-circuitid', o.circuit).addClass('outerBodyEndTime').appendTo(setpointsWrapper).css('display', 'none');
             $('<label></label>').addClass('picInline-label').attr('data-circuitid', o.circuit).addClass('picSetpointText').text('Time to off').appendTo(line);
             $('<span class="bodyCircuitEndTime"></span>').appendTo(line);
-
-
-            //$('<div class="picBodyIcon">'
-            //    + '<div><label class="picBodyText"></label></div>'
-            //    + '<div class="picIndicator"></div></div>'
-
-            //    + '<div class="picBodyTemp">'
-            //    + '<div><label data-bind="name"></label><label class="picTempText"> Temp</label></div>'
-            //    + '<div class="body-temp"><span class="picTempData" data-bind="temp" data-fmttype="number" data-fmtmask="#,##0.#" data-fmtempty="--.-"></span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span></div>'
-            //    + '</div>'
-
-            //    + '<div class= "picBodySetPoints">'
-            //    + '<div><label class="picInline-label picSetPointText">Set Point</label><span class="picSetPointData" data-bind="setPoint">--.-</span><label class="picUnitSymbol">&deg;</label><span class="picTempUnits">-</span><div>'
-            //    + '<div><label class="picInline-label picSetPointText">Heat Mode</label><span style="max-width:5.1rem;display:inline-block;" class="picModeData" data-bind="heatMode.desc">----</span>'
-            //    + '<div><label class="picInline-label picSetPointText">Heater Status</label><span class="picStatusData" data-bind="heatStatus.desc">----</span>'
-            //    + '</div>'
-            //).appendTo(el);
             self._createSolarIcon(1).appendTo(el);
             self._createHeaterIcon(1).appendTo(el);
             self._createCoolingIcon(1).appendTo(el);
