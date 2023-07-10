@@ -167,7 +167,14 @@
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
+            console.log(obj);
             dataBinder.bind(el, obj);
+            var disableTz = typeof obj !== 'undefined' && typeof obj.options !== 'undefined' && obj.options.clockSource === 'server';
+            el.find('*[data-bind="location.timeZone"]').each(function () {
+                console.log(this);
+                this.disabled(disableTz);
+            });
+            el.find('*[data-bind="options.adjustDST"]').each(function () { this.disabled(disableTz); });
         }
     });
 })(jQuery); // Time & Date
