@@ -1420,15 +1420,17 @@ $.ui.position.fieldTip = {
             else if (stripped.length === 2) arr = [stripped, '0'];
             else if (stripped.length === 3) arr = [stripped.substring(0, 1), stripped.substring(1)];
             else if (stripped.length > 2) arr = [stripped.substring(0, 1), stripped.substring(2)];
-            if (arr.length > 0) {
-                hrs = parseInt(arr[0].replace(/\D/g), 10);
-                //bAddHrs = (indexOfAny(arr[0], ['P', 'p']) !== -1);
-                if (hrs === 12 && !bAddHrs) hrs = 0;
-            }
-            if (arr.length > 1) {
-                mins = parseInt(arr[1].replace(/\D/g), 10);
-                //bAddHrs = (indexOfAny(arr[1], ['P', 'p']) !== -1);
-                //if (hrs === 12 && !bAddHrs) hrs = 0;
+            if (typeof arr !== 'undefined') {
+                if (arr.length > 0) {
+                    hrs = parseInt(arr[0].replace(/\D/g), 10);
+                    //bAddHrs = (indexOfAny(arr[0], ['P', 'p']) !== -1);
+                    if (hrs === 12 && !bAddHrs) hrs = 0;
+                }
+                if (arr.length > 1) {
+                    mins = parseInt(arr[1].replace(/\D/g), 10);
+                    //bAddHrs = (indexOfAny(arr[1], ['P', 'p']) !== -1);
+                    //if (hrs === 12 && !bAddHrs) hrs = 0;
+                }
             }
             if (isNaN(hrs)) hrs = 0;
             if (isNaN(mins)) mins = 0;
