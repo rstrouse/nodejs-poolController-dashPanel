@@ -105,9 +105,9 @@
                 var endTime = parseInt(data.endTime);
                 var startTimeType = data.startTimeType || { val: 0, name: 'manual', desc: 'Manual' };
                 var endTimeType = data.endTimeType || { val: 0, name: 'manual', desc: 'Manual' };
-
-                el.find('.picStartTime').text(startTimeType.name !== 'manual' ? data.startTimeType.desc : startTime.formatTime('hh:mmtt', '--:--'));
-                el.find('.picEndTime').text(endTimeType.name !== 'manual' ? data.endTimeType.desc : endTime.formatTime('hh:mmtt', '--:--'));
+                var clockMode = typeof data.clockMode !== 'undefined' && data.clockMode.val !== 'undefined' ? data.clockMode.val : 12;
+                el.find('.picStartTime').text(startTimeType.name !== 'manual' ? data.startTimeType.desc : startTime.formatTime(clockMode === 12 ? 'hh:mmtt' : 'HH:mm', '--:--'));
+                el.find('.picEndTime').text(endTimeType.name !== 'manual' ? data.endTimeType.desc : endTime.formatTime(clockMode === 12 ? 'hh:mmtt' : 'HH:mm', '--:--'));
                 self._createDays(data).appendTo(el);
             } catch (err) { console.error({ m: 'Error setting schedule', err: err, schedule: data }); }
             if (pnl.find('div.picSchedule[data-active=true]').length > 0)

@@ -61,9 +61,9 @@
             });
             var pnl = acc.find('div.picAccordian-contents');
             // Figure out our formats.
-            o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'H:mm';
-            o.fmtTimeEmpty = o.clockMode === 12 ? '12:00am' : '24:00';
-
+            o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'HH:mm';
+            o.fmtTimeEmpty = o.clockMode === 12 ? '12:00am' : '00:00';
+            
             var line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<div></div>').appendTo(line).pickList({
