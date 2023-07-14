@@ -63,8 +63,12 @@
             // Figure out our formats.
             o.fmtTime = o.clockMode === 12 ? 'h:mmtt' : 'HH:mm';
             o.fmtTimeEmpty = o.clockMode === 12 ? '12:00am' : '00:00';
-            
+
             var line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
+            if ($('div.dashOuter').data('controllertype').includes('Nixie')) {
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Disabled', binding: binding + 'disabled', display: 'inline-block' });
+            }
+            line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Circuit', binding: binding + 'circuit',
@@ -83,8 +87,8 @@
                     items: o.displayTypes, inputAttrs: { style: { width: '6.7rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
                 });
             }
-            var line_outer = $('<div></div>').appendTo(pnl); 
-            line = $('<div></div>').addClass('schedule-heatsource').css({display: 'inline-block'}).appendTo(line_outer).hide();$('<div></div>').appendTo(line).pickList({
+            var line_outer = $('<div></div>').appendTo(pnl);
+            line = $('<div></div>').addClass('schedule-heatsource').css({ display: 'inline-block' }).appendTo(line_outer).hide(); $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Heat Source', binding: binding + 'heatSource',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heat Source', style: { whiteSpace: 'nowrap' } }],
                 items: o.heatSources, inputAttrs: { style: { width: '8rem' } }, labelAttrs: { style: { width: '5.75rem', marginLeft: '.25rem' } }
@@ -96,7 +100,7 @@
                 }
                 else {
                     p.find('div.picValueSpinner[data-bind=heatSetpoint]').show()[0].required(true);
-                    if (evt.newItem.hasCoolSetpoint === true && ($('div.dashOuter').data('controllertype')).includes('center'))
+                    if (evt.newItem.hasCoolSetpoint === true && $('div.dashOuter').data('controllertype').indexOf('touch') === -1)
                         p.find('div.picValueSpinner[data-bind=coolSetpoint]').show()[0].required(true);
                     else
                         p.find('div.picValueSpinner[data-bind=coolSetpoint]').hide()[0].required(false);
@@ -105,37 +109,56 @@
             });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Heat', binding: binding + 'heatSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cool', binding: binding + 'coolSetpoint', min: 0, max: 104, step: 1, maxlength: 5, units: '°' + o.tempUnits.name, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } }).hide();
-            if ($('div.dashOuter').data('controllertype').includes('Nixie')){
-                $('<div></div>').appendTo(line_outer).checkbox({ labelText: 'Disabled', binding: binding + 'disabled', display: 'inline-block' });
-            }
             $('<hr></hr>').appendTo(pnl);
-            var inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
+            var pnlTime = $('<div></div>').appendTo(pnl).css({ display: 'table-row' });
+            var inline = $('<div></div>').addClass('inline-line').appendTo(pnlTime).css({ display: 'table-cell', width: '100%' });
 
             line = $('<div></div>').addClass('schedule-time').addClass('start-time').appendTo(inline);
-            $('<label></label>').appendTo(line).text('Start Time').css({ marginLeft: '.25rem', width: '5.75rem', display: 'inline-block' });
+            $('<label></label>').appendTo(line).text('Start Time').css({ marginLeft: '.25rem', width: '5rem', display: 'inline-block' });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'startTimeType',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Start Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.scheduleTimeTypes, inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { display: 'none' } }
             }).css({ marginRight: '.25rem' });
             $('<div></div>').appendTo(line).timeSpinner({ labelText: '', binding: binding + 'startTime', min: 0, max: 1440, step: 30, fmtMask: o.fmtTime, emptyMask: o.fmtTimeEmpty, inputAttrs: { maxlength: 7 }, labelAttrs: {} });
+            $('<div></div>').appendTo(line).pickList({
+                value: -1,
+                bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'startTimeMult',
+                columns: [{ binding: 'val', hidden: true, text: 'mult' }, { binding: 'direction', text: 'Offset' }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: -1, direction: 'minus', desc: 'Shedule time will start before sunrise/sunset' }, { val: 1, direction: 'plus', desc: 'Shedule time will start after sunrise/sunset' }],
+                inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { display: 'none' } }, style: {}
+            });
 
-            line = $('<div></div>').addClass('schedule-time').addClass('end-time').appendTo(inline);
-            $('<label></label>').appendTo(line).text('End Time').css({ marginLeft: '.25rem', width: '5.75rem', display: 'inline-block' });
+            var line1 = $('<div></div>').addClass('schedule-time').addClass('timeoffset').appendTo(line);
+            $('<div></div>').appendTo(line1).valueSpinner({ canEdit: true, labelText: '', binding: binding + 'startTimeOffsetHours', min: 0, max: 6, step: 1, units: 'hrs', inputAttrs: { maxlength: 2 }, labelAttrs: { style: { marginLeft: '.25rem', width: '5rem' } }, style: { marginRight: '.25rem' } });
+            $('<div></div>').appendTo(line1).valueSpinner({ canEdit: true, labelText: '', binding: binding + 'startTimeOffsetMins', min: 0, max: 59, step: 1, units: 'min', inputAttrs: { maxlength: 3 }, labelAttrs: {} });
+
+            line = $('<div></div>').addClass('schedule-time').addClass('end-time').appendTo(inline).css({ marginTop: '3px' });
+            $('<label></label>').appendTo(line).text('End Time').css({ marginLeft: '.25rem', width: '5rem', display: 'inline-block' });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'endTimeType',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'End Type', style: { whiteSpace: 'nowrap' } }],
                 items: o.scheduleTimeTypes, inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { display: 'none' } }
             }).css({ marginRight: '.25rem' });
             $('<div></div>').appendTo(line).timeSpinner({ labelText: '', binding: binding + 'endTime', min: 0, max: 1440, step: 30, fmtMask: o.fmtTime, emptyMask: o.fmtTimeEmpty, inputAttrs: { maxlength: 7 }, labelAttrs: {} });
+            $('<div></div>').appendTo(line).pickList({
+                value: -1,
+                bindColumn: 0, displayColumn: 1, labelText: '', binding: binding + 'endTimeMult',
+                columns: [{ binding: 'val', hidden: true, text: 'mult' }, { binding: 'direction', text: 'Offset' }, { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }],
+                items: [{ val: -1, direction: 'minus', desc: 'Shedule time will end before sunrise/sunset' }, { val: 1, direction: 'plus', desc: 'Shedule time will end after sunrise/sunset' }],
+                inputAttrs: { style: { width: '4rem' } }, labelAttrs: { style: { display: 'none' } }, style: {}
+            });
+            line1 = $('<div></div>').addClass('schedule-time').addClass('timeoffset').appendTo(line);
+            $('<div></div>').appendTo(line1).valueSpinner({ canEdit: true, labelText: '', binding: binding + 'endTimeOffsetHours', min: 0, max: 6, step: 1, units: 'hrs', inputAttrs: { maxlength: 2 }, labelAttrs: { style: { marginLeft: '.25rem', width: '5rem' } }, style: { marginRight: '.25rem' } });
+            $('<div></div>').appendTo(line1).valueSpinner({ canEdit: true, labelText: '', binding: binding + 'endTimeOffsetMins', min: 0, max: 59, step: 1, units: 'min', inputAttrs: { maxlength: 3 }, labelAttrs: {} });
 
-            inline = $('<div></div>').addClass('inline-line').appendTo(pnl);
+            inline = $('<div></div>').addClass('inline-line').appendTo(pnlTime).css({ display: 'table-cell', paddingRight: '7px' });
             $('<div></div>').appendTo(inline).pnlScheduleDays({ singleSelect: false, days: o.scheduleDays, binding: binding + 'scheduleDays' }).css({ paddingLeft: '.25rem' });
             line = $('<div></div>').appendTo(inline);
             $('<div></div>').appendTo(line).dateField({
                 labelText: 'Schedule Date', binding: binding + 'startDate', canEdit: true,
                 labelAttrs: {}, inputAttrs: { maxlength: 15, style: { width: '7rem' } }
-            });
+            }).css({ whiteSpace: 'nowrap' });
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
@@ -152,12 +175,18 @@
             el.on('selchanged', 'div.picPickList[data-bind$=TimeType]', function (evt) {
                 var p = $(evt.currentTarget).parents('div.schedule-time:first');
                 var spin = p.find('div.picValueSpinner[data-bind$=Time]:first');
+                var mult = p.find('div.picPickList[data-bind$=Mult]:first');
+                var off = p.find('div.timeoffset:first');
                 if (evt.newItem.name !== 'manual') {
                     spin.hide();
+                    mult.show();
+                    off.show();
                     spin[0].required(false);
                 }
                 else {
                     spin.show();
+                    mult.hide();
+                    off.hide();
                     spin[0].required(true);
                 }
             });
@@ -165,7 +194,51 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
+                let st = o.scheduleTimeTypes.find(elem => elem.val === v.startTimeType);
+                let et = o.scheduleTimeTypes.find(elem => elem.val === v.endTimeType);
+                let ct = $('body').attr('data-controllertype');
                 if (dataBinder.checkRequired(el, true)) {
+                    // Ok so lets calculate the startTime offset.
+                    if (st.name !== 'manual') {
+                        if (ct !== 'nixie' && st.name === 'sunset' && et.name === 'sunrise') {
+                            $('<div></div>')
+                                .appendTo(p.find('div[data-bind$=startTime]'))
+                                .fieldTip({ message: 'The start time must be less than the end time' });
+                            return;
+                        }
+                        v.startTimeOffset = v.startTimeMult * ((v.startTimeOffsetHours * 60) + v.startTimeOffsetMins);
+                        if (Math.abs(v.startTimeOffset) > (6 * 60)) {
+                            $('<div></div>')
+                                .appendTo(p.find('div[data-bind$=startTimeOffsetHours]'))
+                                .fieldTip({ message: 'You may only provide an offset<br/>of 6 hours or less' });
+                            return;
+                        }
+                    }
+                    else {
+                        v.startTimeOffset = 0;
+                        if (ct !== 'nixie' && et.name === 'manual' && v.startTime > v.endTime) {
+                            $('<div></div>')
+                                .appendTo(p.find('div[data-bind$=startTime]'))
+                                .fieldTip({ message: 'The start time must be less than the end time' });
+                            return;
+                        }
+                    }
+                    if (et.name !== 'manual') {
+                        v.endTimeOffset = v.endTimeMult * ((v.endTimeOffsetHours * 60) + v.endTimeOffsetMins);
+                        if (Math.abs(v.endTimeOffset) > (6 * 60)) {
+                            $('<div></div>')
+                                .appendTo(p.find('div[data-bind$=endTimeOffsetHours]'))
+                                .fieldTip({ message: 'You may only provide an offset<br/>of 6 hours or less' });
+                            return;
+                        }
+                    }
+                    else v.endTimeOffset = 0;
+                    delete v.endTimeMult;
+                    delete v.endTimeOffsetHours;
+                    delete v.endTimeOffsetMins;
+                    delete v.startTimeMult;
+                    delete v.startTimeOffsetHours;
+                    delete v.startTimeOffsetMins;
                     console.log(v);
                     $.putApiService('/config/schedule', v, 'Saving Schedule...', function (data, status, xhr) {
                         console.log({ data: data, status: status, xhr: xhr });
@@ -282,6 +355,15 @@
             if (typeof obj.display === 'undefined') obj.display = 0;
             if (!obj.isActive || obj.disabled) cols[0].elGlyph().css({ color: 'silver' });
             else cols[0].elGlyph().css({ color: '' });
+            // Convert our data for the start/end time offsets.
+            var stOffset = Math.abs(obj.startTimeOffset || 0);
+            obj.startTimeMult = (obj.startTimeOffset || 0) >= 0 ? 1 : -1;
+            obj.startTimeOffsetHours = Math.floor(stOffset / 60);
+            obj.startTimeOffsetMins = (stOffset) - (obj.startTimeOffsetHours * 60);
+            var etOffset = Math.abs(obj.endTimeOffset || 0);
+            obj.endTimeMult = (obj.endTimeOffset || 0) >= 0 ? 1 : -1;
+            obj.endTimeOffsetHours = Math.floor(etOffset / 60);
+            obj.endTimeOffsetMins = (etOffset) - (obj.endTimeOffsetHours * 60);
             console.log(obj);
             dataBinder.bind(el, obj);
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);

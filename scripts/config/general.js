@@ -155,7 +155,7 @@
                 var v = dataBinder.fromElement(p);
                 console.log(v);
                 $.putApiService('/config/general', v, 'Saving Locality Information...', function (data, status, xhr) {
-                    self.dataBind(data);
+                    self.dataBind(data.pool);
                     console.log(data);
                     var tempUnits = o.tempUnits.find(elem => elem.val === data.pool.options.units) || { val: 0, name: 'F', desc: 'Fahrenheit' };
                     var tu = '°' + tempUnits.name;
