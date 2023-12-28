@@ -273,6 +273,7 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('pnl-mastertemp-heater');
+            var controller = $('body').attr('data-controllertype');
             var binding = '';
             var line = $('<div></div>').appendTo(el);
             var addresses = [];
