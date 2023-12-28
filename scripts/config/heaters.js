@@ -283,7 +283,14 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
                 items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width: '4rem', marginLeft: '.25rem' } }
             });
-            $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 1, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            if (controller === 'nixie') {
+                $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: 'min', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+                line = $('<div></div>').appendTo(el);
+                $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Stop Temp Delta', binding: binding + 'stopTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+                $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Minimum Cycle Time', binding: binding + 'minCycleTime', min: 0, max: 30, step: 1, fmtMask: '#,##0.#', units: 'min', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            }
+            else
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 1, max: 10, step: 1, units: 'min', inputAttrs: { maxlength: 4 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
