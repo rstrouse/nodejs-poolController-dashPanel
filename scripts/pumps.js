@@ -146,7 +146,7 @@
                     case 'vf':
                         el.find('div.picProgram').hide();
                         el.find('div.picFlow').show();
-                        el.find('div.picSoeed').show();
+                        el.find('div.picSpeed').show();
                         //el.find('div.picSpeed').hide();
                         el.find('div.picEnergy').show();
                         el.find('div.picRelay').hide();
