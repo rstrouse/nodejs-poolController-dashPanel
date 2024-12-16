@@ -21,7 +21,10 @@ RUN addgroup -g 1001 -S nodejs && \
 ENV NODE_ENV production
 
 COPY --from=builder --chown=nodejs:nodejs /app ./
-USER nodejs
+#hacky way to fix permissions
+USER root 
+RUN chown nodejs:nodejs /app
+USER nodejs 
 
 EXPOSE 5150
 
