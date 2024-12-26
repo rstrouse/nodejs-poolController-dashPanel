@@ -452,11 +452,15 @@
                     el.find('div.picValueSpinner[data-bind="orp.maxDailyVolume"]').hide();
                     el.find('div.picValueSpinner[data-bind="orp.startDelay"]').hide();
                     el.find('div.picValueSpinner[data-bind="orp.dosingMethod"]').hide();
-                    el.find('div.pnl-orpDose-time').hide();
+                    
                     //el.find('.pnl-orpDose-mix').hide();
                     el.find('div.pnl-orpDose-mixtime').hide();
+                    el.find('div.pnl-orpDose-time').hide();
                     el.find('.grp-dosingparams hr').hide()
                     el.find('div.picPickList[data-bind="orp.chlorDosingMethod"]').show();
+                    el.find('div.picPickList[data-bind="orp.chlorId"]').show();
+                    /*
+                    2024.12.25 RSG - support for multiple chlors; but let's not overcomplicate things so leave the settings enabled but ignore them later
                     if (data.orp.chlorDosingMethod > 0) {
                         // need to adjust for more than one chlor... but since there is only a single
                         // "useChlorinator" field this would be a lot of changes across the board 
@@ -468,7 +472,7 @@
                         $('div.picValueSpinner[data-bind="poolSetpoint"]').removeClass('disabled');
                         $('div.picValueSpinner[data-bind="spaSetpoint"]').removeClass('disabled');
                         $('div.cfgChlorinator').find('div.picPickList[data-bind="body"]').removeClass('disabled');
-                    }
+                    } */
                 }
                 else {
                     el.find('div.picPickList[data-bind="orp.dosingMethod"]').show();
@@ -481,6 +485,8 @@
                     $('div.picValueSpinner[data-bind="poolSetpoint"]').removeClass('disabled');
                     $('div.picValueSpinner[data-bind="spaSetpoint"]').removeClass('disabled');
                     $('div.cfgChlorinator').find('div.picPickList[data-bind="body"]').removeClass('disabled');
+                    el.find('div.picPickList[data-bind="orp.chlorId"]').hide();
+                    el.find('div.pnl-orpDose-time').show();
                 }
             }
         },
@@ -545,6 +551,19 @@
                     }
                 }).css({ marginRight: '1rem' });
             line = $('<div></div>').appendTo(grpDose);
+            $('<div></div>').appendTo(line).pickList({
+                binding: 'orp.chlorId',
+                bindColumn: 0, displayColumn: 1,
+                labelText: 'Chlorinator',
+                columns: [{ binding: 'id', text: 'id', hidden: true }, { binding: 'name', text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                items: o.chlorinators.filter(chlor => chlor.isActive),
+                inputAttrs: { style: { width: '16rem' } },
+                labelAttrs: { style: { width: '6rem' } }
+            })
+                .on('selchanged', function (evt) {
+                    console.log(`changed chlorinator to ${evt.newItem.name}`);
+                    self._showOptions();
+                }).css({ marginRight: '1rem' });
             $('<div></div>').appendTo(line).pickList({
                 binding: 'orp.chlorDosingMethod',
                 bindColumn: 0, displayColumn: 2,
