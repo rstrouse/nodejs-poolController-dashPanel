@@ -16,7 +16,7 @@ WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 -G nodejs \
-    && apk add git
+    && apk add git tzdata
 
 ENV NODE_ENV production
 
