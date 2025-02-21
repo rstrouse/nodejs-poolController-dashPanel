@@ -3,6 +3,8 @@ name: Build and Push Multi-arch Docker Image
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
 env:
