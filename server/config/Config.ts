@@ -13,7 +13,7 @@ class Config {
             this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8")) : {};
             const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").trim());
             const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").trim());
-            this._cfg = extend(true, {}, def, this._cfg, { appVersion: {installed: packageJson.version }});
+            this._cfg = extend(true, {}, def, this._cfg, { appVersion: { installed: packageJson.version } });
             this._isInitialized = true;
             this.getEnvVariables();
             this.update();
@@ -46,7 +46,7 @@ class Config {
             }
             section = arr[arr.length - 1];
         }
-        if (JSON.stringify(c[section]) === JSON.stringify(val)){
+        if (JSON.stringify(c[section]) === JSON.stringify(val)) {
             logger.silly(`setSection: Config section and val are identical.  Not updating.`)
         }
         else {
@@ -55,7 +55,7 @@ class Config {
         }
     }
 
-    public getSection(section?: string, opts?: any) : any {
+    public getSection(section?: string, opts?: any): any {
         if (typeof (section) === 'undefined') return this._cfg;
         var c: any = this._cfg;
         if (section.indexOf('.') !== -1) {
@@ -79,23 +79,20 @@ class Config {
         this.ensurePath(baseDir + '/data/outQueues/');
     }
     private ensurePath(dir: string) {
-        if (!fs.existsSync(dir)) {
-            fs.mkdir(dir, (err) => {
-                // Logger will not be initialized by the time we reach here so we must
-                // simply log these to the console.
-                if (err) console.log(`Error creating directory: ${dir} - ${err}`);
-            });
-        }
+        fs.mkdir(dir, { recursive: true }, (err) => {
+            if (err) console.log(`Error creating directory: ${dir} - ${err}`);
+        });
     }
-    private getEnvVariables(){
+    
+    private getEnvVariables() {
         // set docker env variables to config.json, if they are set
         let env = process.env;
         if (typeof env.POOL_HTTP_IP !== 'undefined' && env.POOL_HTTP_IP !== this._cfg.web.services.ip) {
             this._cfg.web.services.ip = env.POOL_HTTP_IP;
         }
-        if (typeof env.POOL_HTTP_PORT !== 'undefined' && parseInt(env.POOL_HTTP_PORT,10) !== this._cfg.web.services.port) {
-            this._cfg.web.services.port = parseInt(env.POOL_HTTP_PORT,10);
+        if (typeof env.POOL_HTTP_PORT !== 'undefined' && parseInt(env.POOL_HTTP_PORT, 10) !== this._cfg.web.services.port) {
+            this._cfg.web.services.port = parseInt(env.POOL_HTTP_PORT, 10);
         }
     }
 }
-export var config:Config = new Config();
+export var config: Config = new Config();

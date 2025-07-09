@@ -34,7 +34,7 @@
                     pnl[0].dataBind({
                         id: -1, startTime: 480, endTime: 1020,
                         scheduleType: st.val, startTimeType: tt.val, endTimeType: tt.val, circuit: 0, display: 0,
-                        heatSetpoint: 78, coolSetpoint: 100, heatSource: 0, scheduleDays: 127, startDate: new Date().toISOString()
+                        heatSetpoint: 78, coolSetpoint: 100, heatSource: 0, scheduleDays: 127, startDate: (function() { var today = new Date(); today.setHours(0, 0, 0, 0); return today.toISOString(); })()
                        
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
@@ -239,6 +239,12 @@
                     delete v.startTimeMult;
                     delete v.startTimeOffsetHours;
                     delete v.startTimeOffsetMins;
+                    
+                    // Remove startDate for Nixie controllers
+                    if (ct === 'nixie') {
+                        delete v.startDate;
+                    }
+                    
                     console.log(v);
                     $.putApiService('/config/schedule', v, 'Saving Schedule...', function (data, status, xhr) {
                         console.log({ data: data, status: status, xhr: xhr });
@@ -283,7 +289,12 @@
             var schedType = $.extend(true,
                 { name: 'repeat', desc: 'Repeats', startDate: false, startTime: true, endTime: true, days: 'multi' },
                 o.scheduleTypes.find(elem => scheduleType === elem.val));
-            schedType.startDate ? el.find('div.picPickList[data-bind=startDate]').show()[0].required(true) : el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
+            
+            // Check controller type for start date visibility
+            let ct = $('body').attr('data-controllertype');
+            let shouldShowStartDate = schedType.startDate && ct !== 'nixie';
+            
+            shouldShowStartDate ? el.find('div.picPickList[data-bind=startDate]').show()[0].required(true) : el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
             schedType.startTime ? el.find('div.schedule-time.start-time').show().find('div.picValueSpinner[data-bind=startTime]')[0].required(true) : el.find('div.schedule-time.start-time').hide().find('div.picValueSpinner[data-bind=startTime]')[0].required(false);
             schedType.endTime ? el.find('div.schedule-time.end-time').show().find('div.picValueSpinner[data-bind=endTime]')[0].required(true) : el.find('div.schedule-time.end-time').hide().find('div.picValueSpinner[data-bind=endTime]')[0].required(false);
             el.find('div.pnl-scheduleDays').each(function () {
