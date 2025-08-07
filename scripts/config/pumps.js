@@ -28,7 +28,11 @@
                         type: pt.val, circuits: [],
                         minFlow: 0, maxFlow: 130,
                         minSpeed: 0, maxSpeed: 3450, primingTime: 0,
-                        primingSpeed: 0, address: 96 + groups.length
+                        primingSpeed: 0,
+                        // addresses maintains backward compatibility for now
+                        address: typeof pt.addresses !== 'undefined' ? pt.addresses[0] : 96 + groups.length,
+                        // addresses exists only after Century Modbus pump implementation in nodejs-poolController
+                        addresses: pt.addresses,
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
                 });
@@ -81,12 +85,19 @@
             });
             if (!isNixie) ports.hide();
 
+            
+            // Build the address list maintaining backward compatibility for now
             var addrs = [];
-            for (var k = 0; k < o.maxPumps; k++) addrs.push({ val: k + 96, desc: k + 1 });
+            if (typeof o.pumpTypes[0].addresses !== 'undefined') {
+                addrs = o.pumpTypes[0].addresses;  // default to addresses for the first pump type.  we'll change this later.
+            } else {
+                for (var k = 0; k < o.maxPumps; k++) addrs.push({ val: k + 96, desc: k + 1 });
+            }
+            
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
                 columns: [{ binding: 'val', hidden: true, text: 'val', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Address', style: { whiteSpace: 'nowrap' } }],
-                items: addrs, inputAttrs: { style: { width: '2rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
+                items: addrs, inputAttrs: { style: { width: '6rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
@@ -189,6 +200,13 @@
         },
         _resetPumpPanel: function (type) {
             var self = this, o = self.options, el = self.element;
+            
+            // Add the hex address to the address list if we're dealing with a (newer) pump type that has addresses.
+            if (typeof type.addresses !== 'undefined') {
+                var ddAddr = el.find('div.picPickList[data-bind$=address]');
+                ddAddr[0].items(type.addresses.map(addr => ({ val: addr, desc: `${addr} (0x${addr.toString(16).toUpperCase()})` })));
+            }
+
             var binding = '';
             var pnl = el.find('div.picPumpDetails:first');
             pnl.empty();

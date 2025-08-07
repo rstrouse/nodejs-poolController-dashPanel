@@ -2069,7 +2069,8 @@ mhelper.init();
                     { val: 'chlorinator', desc: 'Chlorinator' },
                     { val: 'pump', desc: 'Pump' },
                     { val: 'intellivalve', desc: 'Intellivalve' },
-                    { val: 'intellichem', desc: 'Intellichem' }],
+                    { val: 'intellichem', desc: 'Intellichem' },
+                    { val: 'regalmodbus', desc: 'Regal Modbus' }],
                 inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '4rem' } }
             });
             proto.on('selchanged', function (evt) {
