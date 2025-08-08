@@ -823,6 +823,17 @@
       "source": false,
       "controller": false,
       "keyFormat": "SL_<dest>_<action>"
+    },
+    {
+      "name": "regalmodbus",
+      "desc": "Regal Modbus",
+      "actions": {
+        "all": []
+      },
+      "source": false,
+      "controller": false,
+      "length": false,
+      "keyFormat": "<address>_<function>_<ack>_<data>_<crclo>_<crchi>"
     }
   ],
   "controllers": [

@@ -130,6 +130,7 @@
                     case 'hwvs':
                     case 'vs':
                     case 'vs+svrs':
+                    case 'regalmodbus':
                         el.find('div.picProgram').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picSpeed').show();
