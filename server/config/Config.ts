@@ -7,10 +7,17 @@ class Config {
     private _cfg: any;
     private _isInitialized: boolean = false;
     constructor() {
-        this.cfgPath = path.posix.join(process.cwd(), "/config.json");
+        this.cfgPath = path.posix.join(process.cwd(), "data/config.json");
         // RKS 05-18-20: This originally had multiple points of failure where it was not in the try/catch.
         try {
-            this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8").replace(/^\uFEFF/, '')) : {};
+            if (fs.existsSync(this.cfgPath)) {
+                this._cfg = JSON.parse(fs.readFileSync(this.cfgPath, "utf8").replace(/^\uFEFF/, ''));
+            } else if (fs.existsSync(path.posix.join(process.cwd(), "/config.json"))) {
+                // If we don't have the latest split config location, check in old location
+                this._cfg = JSON.parse(fs.readFileSync(path.posix.join(process.cwd(), "/config.json"), "utf8").replace(/^\uFEFF/, ''));
+            } else {
+                this._cfg = {};
+            }
             const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").replace(/^\uFEFF/, '').trim());
             const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").replace(/^\uFEFF/, '').trim());
             this._cfg = extend(true, {}, def, this._cfg, { appVersion: { installed: packageJson.version } });
