@@ -1,4 +1,4 @@
-﻿{
+{
   "web": {
     "servers": {
       "http2": { "enabled": false },
