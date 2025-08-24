@@ -1,13 +1,13 @@
-FROM node:18-alpine as build
+FROM node:alpine as build
 RUN apk add --no-cache make gcc g++ python3 linux-headers udev tzdata
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
-RUN npm ci --production
+RUN npm ci --omit=dev
 
-FROM node:18-alpine
+FROM node:alpine
 RUN apk add git
 RUN mkdir /app && chown node:node /app && mkdir /app/data && chown node:node /app/data
 WORKDIR /app
