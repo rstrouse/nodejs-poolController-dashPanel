@@ -29,6 +29,10 @@ services:
     # Map RS-485 USB adapter (example path may differ):
     devices:
       - /dev/ttyACM0:/dev/ttyUSB0
+    # OPTIONAL: If you get permission errors accessing /dev/tty*, prefer adding the container user to the host dialout/uucp group;
+    # only as a last resort temporarily uncomment the two lines below to run privileged/root (less secure).
+    # privileged: true
+    # user: "0:0"
 
   njspc-dash:
     image: ghcr.io/sam2kb/njspc-dash
@@ -41,8 +45,6 @@ services:
       - NODE_ENV=production
       # Default linkage to backend (override if backend differs):
       - POOL_WEB_SERVICES_IP=njspc
-      - POOL_WEB_SERVICES_PORT=4200
-      - POOL_WEB_SERVICES_PROTOCOL=http://
     ports:
       - "5150:5150"
 ```
