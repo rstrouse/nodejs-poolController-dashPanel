@@ -17,51 +17,62 @@ Below is a minimal example running both the backend `nodejs-poolController` (ser
 
 ```yaml
 services:
-  njspc:
-    image: ghcr.io/sam2kb/njspc
-    container_name: njspc
-    restart: unless-stopped
-    environment:
-      - TZ=${TZ:-UTC}
-      - NODE_ENV=production
-    ports:
-      - "4200:4200"
-    # Map RS-485 USB adapter (example path may differ):
-    devices:
-      - /dev/ttyACM0:/dev/ttyUSB0
-    # OPTIONAL: If you get permission errors accessing /dev/tty*, prefer adding the container user to the host dialout/uucp group;
-    # only as a last resort temporarily uncomment the two lines below to run privileged/root (less secure).
-    # privileged: true
-    # user: "0:0"
+   njspc:
+      image: ghcr.io/sam2kb/njspc
+      container_name: njspc
+      restart: unless-stopped
+      environment:
+         - TZ=${TZ:-UTC}
+         - NODE_ENV=production
+         # Serial vs network connection options
+         # - POOL_NET_CONNECT=true
+         # - POOL_NET_HOST=raspberrypi
+         # - POOL_NET_PORT=9801
+         # Provide coordinates so sunrise/sunset (heliotrope) works immediately - change as needed
+         - POOL_LATITUDE=28.5383
+         - POOL_LONGITUDE=-81.3792
+      ports:
+         - "4200:4200"
+      devices:
+         - /dev/ttyACM0:/dev/ttyUSB0
+      # Persistence (create host directories/files first)
+      volumes:
+         - ./config/config.json:/app/config.json   # Persisted config file on host
+         - njspc-data:/app/data                    # State & equipment snapshots
+         - njspc-backups:/app/backups              # Backup archives
+         - njspc-logs:/app/logs                    # Logs
+         - njspc-bindings:/app/web/bindings/custom # Custom bindings
+      # OPTIONAL: If you get permission errors accessing /dev/tty*, prefer adding the container user to the host dialout/uucp group;
+      # only as a last resort temporarily uncomment the two lines below to run privileged/root (less secure).
+      # privileged: true
+      # user: "0:0"
 
-  njspc-dash:
-    image: ghcr.io/sam2kb/njspc-dash
-    container_name: njspc-dash
-    restart: unless-stopped
-    depends_on:
-      - njspc
-    environment:
-      - TZ=${TZ:-UTC}
-      - NODE_ENV=production
-      # Default linkage to backend (override if backend differs):
-      - POOL_WEB_SERVICES_IP=njspc
-      # Optional additional overrides examples:
-      # - POOL_WEB_SERVERS_HTTP_PORT=5150
-      # - POOL_WEB_SERVERS_HTTPS_ENABLED=false
-      # - POOL_WEB_SERVICES_PORT=4200
-    ports:
-      - "5150:5150"
-    volumes:
-      # Host-persisted configuration file (create it first; see Persistence section)
-      - ./config/config.json:/app/config.json
-      # Named volumes for other mutable data (auto-created)
-      - dashpanel-data:/app/data
-      - dashpanel-logs:/app/logs
-      - dashpanel-uploads:/app/uploads
+   njspc-dash:
+     image: ghcr.io/sam2kb/njspc-dash
+     container_name: njspc-dash
+     restart: unless-stopped
+     depends_on:
+       - njspc
+     environment:
+       - TZ=${TZ:-UTC}
+       - NODE_ENV=production
+       - POOL_WEB_SERVICES_IP=njspc      # Link to backend service name
+     ports:
+       - "5150:5150"
+     volumes:
+       - ./dash-config/config.json:/app/config.json
+       - njspc-dash-data:/app/data
+       - njspc-dash-logs:/app/logs
+       - njspc-dash-uploads:/app/uploads
+
 volumes:
-  dashpanel-data:
-  dashpanel-logs:
-  dashpanel-uploads:
+  njspc-data:
+  njspc-backups:
+  njspc-logs:
+  njspc-bindings:
+  njspc-dash-data:
+  njspc-dash-logs:
+  njspc-dash-uploads:
 ```
 
 After starting, browse to: `http://localhost:5150` and configure any remaining settings via the UI. The dashPanel will connect automatically to `njspc:4200` unless overridden.
