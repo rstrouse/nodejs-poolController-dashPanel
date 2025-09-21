@@ -7,19 +7,44 @@ class Config {
     private _cfg: any;
     private _isInitialized: boolean = false;
     constructor() {
-        this.cfgPath = path.posix.join(process.cwd(), "/config.json");
-        // RKS 05-18-20: This originally had multiple points of failure where it was not in the try/catch.
+        // Use relative joins so we stay inside the working directory (e.g., /app inside container)
+        this.cfgPath = path.join(process.cwd(), 'config.json');
+        const legacyRootCfg = path.sep + 'config.json';
+        const defaultPath = path.join(process.cwd(), 'defaultConfig.json');
+        const packagePath = path.join(process.cwd(), 'package.json');
         try {
-            this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8")) : {};
-            const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").trim());
-            const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").trim());
-            this._cfg = extend(true, {}, def, this._cfg, { appVersion: { installed: packageJson.version } });
+            // Read defaults and package first
+            const def = JSON.parse(fs.readFileSync(defaultPath, 'utf8').trim());
+            const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8').trim());
+            let existing: any = {};
+            if (fs.existsSync(this.cfgPath)) {
+                try {
+                    const raw = fs.readFileSync(this.cfgPath, 'utf8');
+                    existing = JSON.parse(raw);
+                } catch (parseErr) {
+                    console.warn(`config.json corrupt or unreadable (${parseErr}). Rebuilding from defaults.`);
+                    // Backup bad file for inspection
+                    try {
+                        fs.writeFileSync(this.cfgPath + '.corrupt', fs.readFileSync(this.cfgPath));
+                    } catch { /* ignore */ }
+                    existing = {};
+                }
+            } else if (fs.existsSync(legacyRootCfg)) {
+                // Legacy location migration (/config.json at filesystem root)
+                try {
+                    const raw = fs.readFileSync(legacyRootCfg, 'utf8');
+                    existing = JSON.parse(raw);
+                    console.log('Migrating legacy /config.json to working directory.');
+                } catch (e) {
+                    console.warn(`Failed to read legacy /config.json (${e}). Ignoring.`);
+                }
+            }
+            this._cfg = extend(true, {}, def, existing, { appVersion: { installed: packageJson.version } });
             this._isInitialized = true;
             this.getEnvVariables();
             this.update();
         } catch (err) {
             console.log(`Error reading configuration information.  Aborting startup: ${err}`);
-            // Rethrow this error so we exit the app with the appropriate pause in the console.
             throw err;
         }
     }
