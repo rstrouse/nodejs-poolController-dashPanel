@@ -9,7 +9,7 @@ services:
     environment:
       - TZ=${TZ:-UTC}
       - NODE_ENV=production
-      - POOL_WEB_SERVICES_IP=njpc
+      - POOL_WEB_SERVICES_IP=njspc
       - POOL_WEB_SERVICES_PORT=4200
       - POOL_WEB_SERVICES_PROTOCOL=http://
       # Example overrides (environment variables mapped by config loader):

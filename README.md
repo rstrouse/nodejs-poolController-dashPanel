@@ -13,48 +13,41 @@ Message manager allows you to inspect your RS485 communication coming from and g
 ![image](https://user-images.githubusercontent.com/47839015/83314254-7a92d700-a1ce-11ea-8891-545db084624e.png)
 
 ## Quick Start (docker-compose)
-Below is a minimal example running both the backend `nodejs-poolController` (service name `njpc`) and this dashPanel UI (service name `njpc-dash`). Adjust volumes and device mappings as needed.
+Below is a minimal example running both the backend `nodejs-poolController` (service name `njspc`) and this dashPanel UI (service name `njspc-dash`). Adjust volumes and device mappings as needed.
 
 ```yaml
 services:
-	njpc:
-		image: ghcr.io/<your-org-or-user>/njspc
-		container_name: njpc
-		restart: unless-stopped
-		environment:
-			- TZ=${TZ:-UTC}
-			- NODE_ENV=production
-		ports:
-			- "4200:4200"
-		#volumes:
-		#  - ./njpc-data:/app/data
-		#  - ./njpc-logs:/app/logs
-		# Map RS-485 USB adapter (example path may differ):
-		#devices:
-		#  - /dev/ttyUSB0:/dev/ttyUSB0
+  njspc:
+    image: ghcr.io/sam2kb/njspc
+    container_name: njspc
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-UTC}
+      - NODE_ENV=production
+    ports:
+      - "4200:4200"
+    # Map RS-485 USB adapter (example path may differ):
+    devices:
+      - /dev/ttyACM0:/dev/ttyUSB0
 
-	njpc-dash:
-		image: ghcr.io/<your-org-or-user>/njpc-dash
-		container_name: njpc-dash
-		restart: unless-stopped
-		depends_on:
-			- njpc
-		environment:
-			- TZ=${TZ:-UTC}
-			- NODE_ENV=production
-			# Default linkage to backend (override if backend differs):
-			- POOL_WEB_SERVICES_IP=njpc
-			- POOL_WEB_SERVICES_PORT=4200
-			- POOL_WEB_SERVICES_PROTOCOL=http://
-		ports:
-			- "5150:5150"
-		#volumes:
-		#  - ./dashpanel-data:/app/data
-		#  - ./dashpanel-logs:/app/logs
-
+  njspc-dash:
+    image: ghcr.io/sam2kb/njspc-dash
+    container_name: njspc-dash
+    restart: unless-stopped
+    depends_on:
+      - njspc
+    environment:
+      - TZ=${TZ:-UTC}
+      - NODE_ENV=production
+      # Default linkage to backend (override if backend differs):
+      - POOL_WEB_SERVICES_IP=njspc
+      - POOL_WEB_SERVICES_PORT=4200
+      - POOL_WEB_SERVICES_PROTOCOL=http://
+    ports:
+      - "5150:5150"
 ```
 
-After starting, browse to: `http://localhost:5150` and configure any remaining settings via the UI. The dashPanel will connect automatically to `njpc:4200` unless overridden.
+After starting, browse to: `http://localhost:5150` and configure any remaining settings via the UI. The dashPanel will connect automatically to `njspc:4200` unless overridden.
 
 For production hardenings consider: enabling HTTPS, adding reverse proxy headers, mounting persistent volumes, and restricting exposed ports.
 
