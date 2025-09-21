@@ -7,7 +7,7 @@ class Config {
     private _cfg: any;
     private _isInitialized: boolean = false;
     constructor() {
-        // Use relative joins so we stay inside the working directory (e.g., /app inside container)
+        // Fixed configuration path relative to working directory.
         this.cfgPath = path.join(process.cwd(), 'config.json');
         const legacyRootCfg = path.sep + 'config.json';
         const defaultPath = path.join(process.cwd(), 'defaultConfig.json');
@@ -20,6 +20,10 @@ class Config {
             if (fs.existsSync(this.cfgPath)) {
                 const attemptRead = () => {
                     const raw = fs.readFileSync(this.cfgPath, 'utf8');
+                    if (raw.trim().length === 0) {
+                        console.warn('config.json is empty; using defaults and will populate file on next write.');
+                        return {};
+                    }
                     return JSON.parse(raw);
                 }
                 try {
@@ -30,17 +34,20 @@ class Config {
                     if (fs.existsSync(tmpPath)) {
                         try {
                             const rawTmp = fs.readFileSync(tmpPath, 'utf8');
-                            existing = JSON.parse(rawTmp);
-                            console.warn('Recovered configuration from temporary file.');
+                            if (rawTmp.trim().length > 0) {
+                                existing = JSON.parse(rawTmp);
+                                console.warn('Recovered configuration from temporary file.');
+                            }
                         } catch {
                             // fall through to rebuild
                         }
                     }
                     if (!existing || Object.keys(existing).length === 0) {
                         console.warn(`config.json corrupt or unreadable (${parseErr}). Rebuilding from defaults.`);
-                        // Backup bad file for inspection
+                        // Backup bad file for inspection (if non-empty)
                         try {
-                            fs.writeFileSync(this.cfgPath + '.corrupt', fs.readFileSync(this.cfgPath));
+                            const orig = fs.readFileSync(this.cfgPath);
+                            if (orig.length > 0) fs.writeFileSync(this.cfgPath + '.corrupt', orig);
                         } catch { /* ignore */ }
                         existing = {};
                     }
@@ -138,7 +145,7 @@ class Config {
             if (err) console.log(`Error creating directory: ${dir} - ${err}`);
         });
     }
-    
+
     private getEnvVariables() {
         // set docker env variables to config.json, if they are set
         let env = process.env;
@@ -181,7 +188,7 @@ class Config {
                                 if (!isNaN(v)) target.servers[proto].port = v;
                             }
                             else if (field === 'enabled') {
-                                target.servers[proto].enabled = ['true','1','yes','on'].includes(raw.toLowerCase());
+                                target.servers[proto].enabled = ['true', '1', 'yes', 'on'].includes(raw.toLowerCase());
                             }
                             else {
                                 target.servers[proto][field] = raw;

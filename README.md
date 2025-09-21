@@ -13,7 +13,7 @@ Message manager allows you to inspect your RS485 communication coming from and g
 ![image](https://user-images.githubusercontent.com/47839015/83314254-7a92d700-a1ce-11ea-8891-545db084624e.png)
 
 ## Quick Start (docker-compose)
-Below is a minimal example running both the backend `nodejs-poolController` (service name `njspc`) and this dashPanel UI (service name `njspc-dash`). Adjust volumes and device mappings as needed.
+Below is a minimal example running both the backend `nodejs-poolController` (service name `njspc`) and this dashPanel UI (service name `njspc-dash`). Adjust volumes and device mappings as needed. The dashPanel writes its configuration to `/app/config.json`, so we bind mount a host file to persist it. Additional runtime state (queues/uploads/logs) uses named volumes.
 
 ```yaml
 services:
@@ -45,12 +45,49 @@ services:
       - NODE_ENV=production
       # Default linkage to backend (override if backend differs):
       - POOL_WEB_SERVICES_IP=njspc
+      # Optional additional overrides examples:
+      # - POOL_WEB_SERVERS_HTTP_PORT=5150
+      # - POOL_WEB_SERVERS_HTTPS_ENABLED=false
+      # - POOL_WEB_SERVICES_PORT=4200
     ports:
       - "5150:5150"
+    volumes:
+      # Host-persisted configuration file (create it first; see Persistence section)
+      - ./config/config.json:/app/config.json
+      # Named volumes for other mutable data (auto-created)
+      - dashpanel-data:/app/data
+      - dashpanel-logs:/app/logs
+      - dashpanel-uploads:/app/uploads
+volumes:
+  dashpanel-data:
+  dashpanel-logs:
+  dashpanel-uploads:
 ```
 
 After starting, browse to: `http://localhost:5150` and configure any remaining settings via the UI. The dashPanel will connect automatically to `njspc:4200` unless overridden.
 
-For production hardenings consider: enabling HTTPS, adding reverse proxy headers, mounting persistent volumes, and restricting exposed ports.
+## Persistence & Configuration
+The application loads configuration from `/app/config.json` at startup and rewrites it atomically after changes (writes to a temporary file then renames). To persist across container recreations:
+
+1. Create a host directory and seed the file (optional – if omitted, an empty file will be populated after first change):
+  ```bash
+  mkdir -p config
+  docker run --rm ghcr.io/sam2kb/njspc-dash cat /app/config.json > config/config.json
+  ```
+2. Use the bind mount shown in the compose example: `./config/config.json:/app/config.json`.
+3. If the mounted file is empty, defaults + environment overrides are applied and the file will be written once you change settings via the UI/API.
+
+If a write is interrupted, the app can recover from a `.tmp` file; if corruption is detected the previous file is backed up as `config.json.corrupt` (when non-empty) and defaults are re-applied.
+
+Environment variable overrides (new hierarchical form) include:
+* `POOL_WEB_SERVICES_IP`
+* `POOL_WEB_SERVICES_PORT`
+* `POOL_WEB_SERVICES_PROTOCOL`
+* `POOL_WEB_SERVERS_HTTP_PORT`, `POOL_WEB_SERVERS_HTTPS_PORT`
+* `POOL_WEB_SERVERS_HTTP_ENABLED`, `POOL_WEB_SERVERS_HTTPS_ENABLED`
+
+Legacy variables `POOL_HTTP_IP` and `POOL_HTTP_PORT` are still honored.
+
+For production hardenings consider: enabling HTTPS, adding reverse proxy headers, mounting persistent volumes, and restricting exposed ports. Ensure ownership of the mounted `config.json` permits writes by the container user (UID 1000 in the official image); otherwise configuration changes will be disabled.
 
 
