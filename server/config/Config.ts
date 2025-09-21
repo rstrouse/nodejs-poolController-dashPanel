@@ -76,6 +76,13 @@ class Config {
                 fs.renameSync(tmpPath, this.cfgPath);
                 console.log(`Updated configuration file`);
             } catch (e) {
+                if (e && (e.code === 'EACCES' || e.code === 'EROFS')) {
+                    console.error(`Configuration file not writable (${e.code}). Further config writes will be skipped. Mount a writable volume or adjust permissions for ${this.cfgPath}.`);
+                    // Prevent future attempts to spam errors
+                    this._isInitialized = false;
+                    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+                    return;
+                }
                 // Clean up temp file if rename failed
                 try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch { /* ignore */ }
                 throw e;
