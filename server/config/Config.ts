@@ -87,12 +87,72 @@ class Config {
     private getEnvVariables() {
         // set docker env variables to config.json, if they are set
         let env = process.env;
+        // Legacy simple overrides (backward compatibility)
         if (typeof env.POOL_HTTP_IP !== 'undefined' && env.POOL_HTTP_IP !== this._cfg.web.services.ip) {
             this._cfg.web.services.ip = env.POOL_HTTP_IP;
         }
-        if (typeof env.POOL_HTTP_PORT !== 'undefined' && parseInt(env.POOL_HTTP_PORT, 10) !== this._cfg.web.services.port) {
-            this._cfg.web.services.port = parseInt(env.POOL_HTTP_PORT, 10);
+        if (typeof env.POOL_HTTP_PORT !== 'undefined') {
+            const port = parseInt(env.POOL_HTTP_PORT, 10);
+            if (!isNaN(port) && port !== this._cfg.web.services.port) this._cfg.web.services.port = port;
         }
+
+        // Expanded hierarchical overrides using POOL_WEB_* naming convention
+        // Examples expected from docker-compose comments:
+        //   POOL_WEB_SERVERS_HTTP_PORT=5150
+        //   POOL_WEB_SERVERS_HTTPS_PORT=5151
+        //   POOL_WEB_SERVICES_IP=127.0.0.1
+        //   POOL_WEB_SERVICES_PORT=4200
+        //   POOL_WEB_SERVICES_PROTOCOL=http://
+        // Mapping strategy: POOL_WEB_ prefix removed, remaining path split by '_' and applied to this._cfg.web.*
+        Object.keys(env)
+            .filter(k => k.startsWith('POOL_WEB_'))
+            .forEach(k => {
+                try {
+                    const raw = env[k];
+                    if (typeof raw === 'undefined') return;
+                    const pathParts = k.replace('POOL_WEB_', '').toLowerCase().split('_');
+                    // Special handling for servers.http.port and servers.https.port
+                    // Recognize patterns: SERVERS_HTTP_PORT / SERVERS_HTTPS_PORT
+                    let target = this._cfg.web;
+                    if (pathParts[0] === 'servers') {
+                        // servers.http.port => this._cfg.web.servers.http.port
+                        if (pathParts.length >= 3) {
+                            const proto = pathParts[1]; // http / https / http2
+                            const field = pathParts[2]; // port or enabled etc.
+                            if (!target.servers) target.servers = {};
+                            if (!target.servers[proto]) target.servers[proto] = {};
+                            if (field === 'port') {
+                                const v = parseInt(raw, 10);
+                                if (!isNaN(v)) target.servers[proto].port = v;
+                            }
+                            else if (field === 'enabled') {
+                                target.servers[proto].enabled = ['true','1','yes','on'].includes(raw.toLowerCase());
+                            }
+                            else {
+                                target.servers[proto][field] = raw;
+                            }
+                        }
+                        return; // handled
+                    }
+                    // services.* mapping: SERVICES_IP, SERVICES_PORT, SERVICES_PROTOCOL
+                    if (pathParts[0] === 'services') {
+                        if (!target.services) target.services = {};
+                        if (pathParts.length >= 2) {
+                            const field = pathParts[1];
+                            if (field === 'port') {
+                                const v = parseInt(raw, 10);
+                                if (!isNaN(v)) target.services.port = v;
+                            }
+                            else {
+                                target.services[field] = raw;
+                            }
+                        }
+                        return;
+                    }
+                } catch (e) {
+                    logger.warn(`Failed to apply env override ${k}: ${e}`);
+                }
+            });
     }
 }
 export var config: Config = new Config();
