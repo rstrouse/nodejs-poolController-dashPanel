@@ -18,16 +18,32 @@ class Config {
             const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8').trim());
             let existing: any = {};
             if (fs.existsSync(this.cfgPath)) {
-                try {
+                const attemptRead = () => {
                     const raw = fs.readFileSync(this.cfgPath, 'utf8');
-                    existing = JSON.parse(raw);
+                    return JSON.parse(raw);
+                }
+                try {
+                    existing = attemptRead();
                 } catch (parseErr) {
-                    console.warn(`config.json corrupt or unreadable (${parseErr}). Rebuilding from defaults.`);
-                    // Backup bad file for inspection
-                    try {
-                        fs.writeFileSync(this.cfgPath + '.corrupt', fs.readFileSync(this.cfgPath));
-                    } catch { /* ignore */ }
-                    existing = {};
+                    // Try stale tmp file if present (previous atomic write crash)
+                    const tmpPath = this.cfgPath + '.tmp';
+                    if (fs.existsSync(tmpPath)) {
+                        try {
+                            const rawTmp = fs.readFileSync(tmpPath, 'utf8');
+                            existing = JSON.parse(rawTmp);
+                            console.warn('Recovered configuration from temporary file.');
+                        } catch {
+                            // fall through to rebuild
+                        }
+                    }
+                    if (!existing || Object.keys(existing).length === 0) {
+                        console.warn(`config.json corrupt or unreadable (${parseErr}). Rebuilding from defaults.`);
+                        // Backup bad file for inspection
+                        try {
+                            fs.writeFileSync(this.cfgPath + '.corrupt', fs.readFileSync(this.cfgPath));
+                        } catch { /* ignore */ }
+                        existing = {};
+                    }
                 }
             } else if (fs.existsSync(legacyRootCfg)) {
                 // Legacy location migration (/config.json at filesystem root)
@@ -52,11 +68,18 @@ class Config {
         // Don't overwrite the configuration if we failed during the initialization.
         try {
             if (!this._isInitialized) return;
-            fs.writeFileSync(
-                this.cfgPath,
-                JSON.stringify(this._cfg, undefined, 2)
-            );
-            console.log(`Updated configuration file`);
+            // Atomic write: write to temp then rename so we don't end up with truncated JSON
+            const tmpPath = this.cfgPath + '.tmp';
+            const data = JSON.stringify(this._cfg, undefined, 2);
+            try {
+                fs.writeFileSync(tmpPath, data, { encoding: 'utf8' });
+                fs.renameSync(tmpPath, this.cfgPath);
+                console.log(`Updated configuration file`);
+            } catch (e) {
+                // Clean up temp file if rename failed
+                try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+                throw e;
+            }
         }
         catch (err) { console.log(`Error writing configuration file ${err}`); }
     }
