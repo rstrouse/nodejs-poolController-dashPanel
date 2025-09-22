@@ -37,7 +37,7 @@ services:
          - /dev/ttyACM0:/dev/ttyUSB0
       # Persistence (create host directories/files first)
       volumes:
-         - ./config/config.json:/app/config.json   # Persisted config file on host
+         - ./server-config.json:/app/config.json   # Persisted config file on host
          - njspc-data:/app/data                    # State & equipment snapshots
          - njspc-backups:/app/backups              # Backup archives
          - njspc-logs:/app/logs                    # Logs
@@ -60,7 +60,7 @@ services:
      ports:
        - "5150:5150"
      volumes:
-       - ./dash-config/config.json:/app/config.json
+       - ./dash-config.json:/app/config.json
        - njspc-dash-data:/app/data
        - njspc-dash-logs:/app/logs
        - njspc-dash-uploads:/app/uploads

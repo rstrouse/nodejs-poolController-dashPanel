@@ -22,7 +22,7 @@ services:
       - "5150:5150"
     volumes:
       # Bind mount host config file to persist settings
-      - ./config/config.json:/app/config.json
+      - ./dash-config.json:/app/config.json
       # Named volumes for other mutable data
       - njspc-dash-data:/app/data
       - njspc-dash-logs:/app/logs
