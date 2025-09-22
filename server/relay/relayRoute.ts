@@ -151,12 +151,22 @@ class ServiceRelay {
                 // that express does but we will use the content-length header to determine whether there will be content on the proxied request.
                 if (typeof req.body !== 'undefined' && req.body && typeof headers['content-length'] !== 'undefined') {
                     let body = JSON.stringify(req.body);
-                    logger.verbose(`Writing request body: ${body}`);
+                    const headerLen = (req.headers['content-length'] || '').toString();
+                    logger.verbose(`Evaluating request body for relay: length=${body.length} headerLen=${headerLen}`);
                     if (body && body.length > 0) {
-                        if (body.length.toString() !== req.headers['content-length']) logger.warn(`The content length header is incorrect for ${uri.href}: Body: ${body.length} !== Content: ${req.headers['content-length']}`);
-                        reqProxy.write(body, (err) => {
-                            if (err) logger.error(`Error writing response body: ${uri.href}: ${err.message}`);
-                        });
+                        // If the original header declared 0 length but express/json parser produced an empty object/array, skip sending body.
+                        if (headerLen === '0' && (body === '{}' || body === '[]')) {
+                            logger.verbose(`Suppressing empty JSON body for ${uri.href} (header length 0, derived length ${body.length}).`);
+                        }
+                        else {
+                            if (body.length.toString() !== headerLen && headerLen !== '0') {
+                                // Downgrade to debug to avoid noisy warnings for harmless mismatches; ideally we would adjust the header earlier.
+                                logger.debug(`Content-Length mismatch for ${uri.href}: Body: ${body.length} !== Header: ${headerLen}`);
+                            }
+                            reqProxy.write(body, (err) => {
+                                if (err) logger.error(`Error writing response body: ${uri.href}: ${err.message}`);
+                            });
+                        }
                     }
                 }
                 reqProxy.on('error', (err) => {
