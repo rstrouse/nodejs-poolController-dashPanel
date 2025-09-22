@@ -75,23 +75,15 @@ class Config {
         // Don't overwrite the configuration if we failed during the initialization.
         try {
             if (!this._isInitialized) return;
-            // Atomic write: write to temp then rename so we don't end up with truncated JSON
-            const tmpPath = this.cfgPath + '.tmp';
-            const data = JSON.stringify(this._cfg, undefined, 2);
             try {
-                fs.writeFileSync(tmpPath, data, { encoding: 'utf8' });
-                fs.renameSync(tmpPath, this.cfgPath);
+                fs.writeFileSync(this.cfgPath, JSON.stringify(this._cfg, undefined, 2), { encoding: 'utf8' });
                 console.log(`Updated configuration file`);
-            } catch (e) {
+            } catch (e:any) {
                 if (e && (e.code === 'EACCES' || e.code === 'EROFS')) {
                     console.error(`Configuration file not writable (${e.code}). Further config writes will be skipped. Mount a writable volume or adjust permissions for ${this.cfgPath}.`);
-                    // Prevent future attempts to spam errors
-                    this._isInitialized = false;
-                    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+                    this._isInitialized = false; // suppress future attempts
                     return;
                 }
-                // Clean up temp file if rename failed
-                try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch { /* ignore */ }
                 throw e;
             }
         }
