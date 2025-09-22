@@ -45,8 +45,9 @@ USER node
 # Expose dashboard port (HTTP). HTTPS optional per config (5151)
 EXPOSE 5150 5151
 
-# Basic healthcheck: consider healthy if HTTP port is listening
-HEALTHCHECK --interval=60s --timeout=5s --start-period=30s --retries=3 \
-	CMD node -e 'require("net").createConnection({host:"127.0.0.1",port:5150},c=>{c.end();process.exit(0)}).on("error",()=>process.exit(1))' || exit 1
+# Healthcheck: perform lightweight HTTP request to ensure app responding
+RUN apk add --no-cache curl
+HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=5 \
+    CMD curl -fsS http://127.0.0.1:5150/config/appVersion?health || exit 1
 
 ENTRYPOINT ["node", "dist/app.js"]
