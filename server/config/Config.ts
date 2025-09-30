@@ -10,9 +10,9 @@ class Config {
         this.cfgPath = path.posix.join(process.cwd(), "/config.json");
         // RKS 05-18-20: This originally had multiple points of failure where it was not in the try/catch.
         try {
-            this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8")) : {};
-            const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").trim());
-            const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").trim());
+            this._cfg = fs.existsSync(this.cfgPath) ? JSON.parse(fs.readFileSync(this.cfgPath, "utf8").replace(/^\uFEFF/, '')) : {};
+            const def = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/defaultConfig.json"), "utf8").replace(/^\uFEFF/, '').trim());
+            const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/package.json"), "utf8").replace(/^\uFEFF/, '').trim());
             this._cfg = extend(true, {}, def, this._cfg, { appVersion: { installed: packageJson.version } });
             this._isInitialized = true;
             this.getEnvVariables();
