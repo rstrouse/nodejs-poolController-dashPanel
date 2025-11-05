@@ -31,10 +31,18 @@ class VersionCheck {
   private gitApiHost: string;
   private gitLatestReleaseJSONPath: string;
   private redirects: number;
+  private gitAvailable: boolean;
   constructor() {
     this.userAgent = 'tagyoureit-nodejs-poolController-dashPanel-app';
     this.gitApiHost = 'api.github.com';
     this.gitLatestReleaseJSONPath = '/repos/rstrouse/nodejs-poolController-dashPanel/releases/latest';
+    this.gitAvailable = this.detectGit();
+  }
+  private detectGit(): boolean {
+    try {
+      execSync('git --version', { stdio: 'ignore' });
+      return true;
+    } catch { return false; }
   }
 
   public checkGitRemote() {
@@ -53,13 +61,15 @@ class VersionCheck {
     let out: string;
     try {
       if (typeof env.SOURCE_BRANCH !== 'undefined') {
-        out = env.SOURCE_BRANCH // check for docker variable
+        out = env.SOURCE_BRANCH; // provided via build/CI
       }
-      else {
+      else if (this.gitAvailable) {
         let res = execSync('git rev-parse --abbrev-ref HEAD');
         out = res.toString().trim();
+      } else {
+        out = '--';
       }
-      logger.info(`The current git local branch output is ${out}`);
+      if (out !== '--') logger.info(`The current git local branch output is ${out}`);
       switch (out) {
         case 'fatal':
         case 'command':
@@ -69,16 +79,21 @@ class VersionCheck {
           c.gitLocalBranch = out;
       }
     }
-    catch (err) { logger.error(`Unable to retrieve local git branch.  ${err}`); }
+    catch (err) {
+      logger.warn(`Git branch unavailable (git missing or error). Suppressing further branch errors.`);
+      c.gitLocalBranch = '--';
+    }
     try {
       if (typeof env.SOURCE_COMMIT !== 'undefined') {
-        out = env.SOURCE_COMMIT; // check for docker variable
+        out = env.SOURCE_COMMIT;
       }
-      else {
+      else if (this.gitAvailable) {
         let res = execSync('git rev-parse HEAD');
         out = res.toString().trim();
+      } else {
+        out = '--';
       }
-      logger.info(`The current git local commit output is ${out}`);
+      if (out !== '--') logger.info(`The current git local commit output is ${out}`);
       switch (out) {
         case 'fatal':
         case 'command':
@@ -89,7 +104,8 @@ class VersionCheck {
       }
     }
     catch (err) {
-      logger.error(`Unable to retrieve local git commit.  ${err}`);
+      logger.warn(`Git commit unavailable (git missing or error). Suppressing further commit errors.`);
+      c.gitLocalCommit = '--';
     }
     config.setSection('appVersion', c);
 

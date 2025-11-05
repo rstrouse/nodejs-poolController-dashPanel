@@ -851,6 +851,12 @@
                 $('<hr></hr>').appendTo(divOuter);
                 line = $('<div></div>').appendTo(divOuter);
                 $('<div></div').appendTo(line).checkbox({ labelText: 'Use Proxy to njsPC Server', binding: binding + 'useProxy' });
+                // Internal-only hostname warning container (hidden by default)
+                var warnLine = $('<div class="picOptionLine internal-host-warning" style="display:none;margin-top:.5rem;"></div>').appendTo(divOuter);
+                $('<div class="picMessage warn internal-host-msg"></div>')
+                    .css({ color: '#c09853', background: '#fcf8e3', padding: '.35rem .5rem', border: '1px solid #fbeed5', borderRadius: '.25rem', fontSize: '.8rem', maxWidth: '32rem' })
+                    .html('<i class="fas fa-exclamation-triangle" style="margin-right:.35rem;"></i> Hostname looks internal-only. Enable "Use Proxy" or change to a resolvable host / IP for direct browser access.')
+                    .appendTo(warnLine);
                 //$('<div class="picOptionLine"><label>Server Address</label><input class="picServerAddress" type="text" value="' + settings.services.ip + '"></input><span>:</span><input class="picServerPort" type="text" value="' + settings.services.port + '"></input></div>').appendTo(contents);
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>');
                 btnPnl.appendTo(contents);
@@ -907,19 +913,40 @@
                 var btnApply = $('<div></div>');
                 btnApply.appendTo(btnPnl);
                 btnApply.actionButton({ text: 'Apply', icon: '<i class="fas fa-save"></i>' });
+                function evaluateInternalHostWarning() {
+                    try {
+                        var cfg = dataBinder.fromElement(divOuter) || {};
+                        var services = cfg.services || {};
+                        var host = (services.ip || '').trim();
+                        var useProxy = !!services.useProxy;
+                        var warn = false;
+                        if (!useProxy && host) {
+                            var isIPv4 = /^\d+\.\d+\.\d+\.\d+$/.test(host);
+                            var isIPv6 = /:/.test(host); // coarse check
+                            var hasDot = host.indexOf('.') !== -1;
+                            if (!isIPv4 && !isIPv6 && !hasDot && host.toLowerCase() !== 'localhost') warn = true;
+                        }
+                        if (warn) warnLine.show(); else warnLine.hide();
+                    } catch (ex) { /* ignore */ }
+                }
+                // Bind events to re-evaluate
+                divOuter.on('keyup change', 'input', evaluateInternalHostWarning);
+                divOuter.on('click', '.picCheckbox', evaluateInternalHostWarning);
+                // Initial eval after binding
+                setTimeout(evaluateInternalHostWarning, 150);
+
                 btnApply.on('click', function (e) {
                     if (dataBinder.checkRequired(divOuter)) {
                         var cfg = dataBinder.fromElement(divOuter);
+                        evaluateInternalHostWarning();
                         $.putLocalService('/config/serviceUri', cfg.services, 'Updating Connection...', function (data, status, xhr) {
-                            $('div.picDashboard, div.picMessageManager').each(function () {
-                                this.reset();
-                            });
-
+                            $('div.picDashboard, div.picMessageManager').each(function () { this.reset(); });
                         });
                     }
-
                 });
                 dataBinder.bind(divOuter, settings);
+                // Re-evaluate after final bind (in case settings loaded asynchronously)
+                setTimeout(evaluateInternalHostWarning, 300);
             });
         },
         _buildBackupTab: function (settings) {
