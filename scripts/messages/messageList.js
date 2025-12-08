@@ -524,49 +524,37 @@ mhelper.init();
             var vlist = $('<div></div>').css({ width: '100%', height: '100%' }).appendTo(td).virtualList({
                 selectionType: 'single',
                 columns: [
-                    { width: '18px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
-                    { width: '18px', header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
-                    { width: '37px', header: { label: 'Id', style: { textAlign: 'center' } }, data: { style: { textAlign: 'right' } } },
-                    { width: '18px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
-                    { width: '18px', header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
-                    { width: '57px', header: { label: 'Proto' } },
-                    { width: '57px', header: { label: 'Source' } },
-                    { width: '57px', header: { label: 'Dest' } },
-                    { width: '47px', header: { label: 'Action' } },
-                    { header: { style: { textAlign: 'center' }, label: 'Payload' } }
+                    { header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                    { header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
+                    { header: { label: 'Id' } },
+                    { header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
+                    { header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
+                    { header: { label: 'Proto' } },
+                    { header: { label: 'Source' } },
+                    { header: { label: 'Dest' } },
+                    { header: { label: 'Action' } },
+                    { header: { label: 'Payload' } }
                 ]
             });
-            vlist.on('bindrow', function (evt) { 
-                self._bindVListRow(evt.row, evt.rowData);
+            vlist.on('bindrow', function (evt) { self._bindVListRow(evt.row, evt.rowData); });
+            
+            // Handle close button clicks on expansion content
+            el.on('click', 'div.expansion-close-btn', function(evt) {
+                evt.stopPropagation();
+                var container = $(evt.currentTarget).closest('div.inline-expansion-content');
+                var row = container.closest('tr.msgRow');
+                var rowId = row.attr('data-rowid');
                 
-                // Check if this row should be expanded (persisting expansion state)
-                var rowId = $(evt.row).attr('data-rowid');
-                if (rowId && o.expandedRows[rowId]) {
-                    // This row was previously expanded, re-expand it
-                    setTimeout(function() {
-                        var $row = $(evt.row);
-                        if ($row.length > 0 && !$row.next().hasClass('expanded-detail-row')) {
-                            var msg = o.messages['m' + rowId];
-                            if (msg) {
-                                var ndx = parseInt(rowId, 10);
-                                var msgKey = $row.attr('data-msgkey');
-                                var docKey = $row.attr('data-dockey');
-                                var prev, forMsg;
-                                for (var i = ndx - 1; i >= 0; i--) {
-                                    if (o.messages['m' + i] && o.messages['m' + i].key === msgKey) {
-                                        prev = o.messages['m' + i];
-                                        break;
-                                    }
-                                }
-                                var context = o.contexts[docKey] || o.contexts[msgKey];
-                                if (context) {
-                                    self._toggleInlineExpansion($row, msg, prev, forMsg, context);
-                                }
-                            }
-                        }
-                    }, 100);
-                }
+                // Close the expansion
+                row.removeClass('row-expanded');
+                container.remove();
+                delete o.expandedRows[rowId];
+                
+                // Update stored HTML
+                var vlistWidget = el.find('div.picVirtualList:first');
+                self._updateStoredRowHtml(vlistWidget, rowId, row);
             });
+            
             vlist.on('selchanged', function (evt) {
                 var pnlDetail = $('div.picMessageDetail');
                 var msg = o.messages['m' + evt.newRow.attr('data-rowid')];
@@ -579,7 +567,6 @@ mhelper.init();
                     var p = $(evt.allRows[i].row);
                     if (p.attr('data-msgkey') === msgKey) {
                         prev = o.messages['m' + p.attr('data-rowid')];
-                        //console.log({ msg: 'Found Prev', prev });
                         break;
                     }
                 }
@@ -592,7 +579,6 @@ mhelper.init();
                 
                 // Get context - try both docKey and msgKey
                 var context = o.contexts[docKey] || o.contexts[msgKey];
-                console.log('Context lookup:', { docKey: docKey, msgKey: msgKey, context: context, allContexts: Object.keys(o.contexts) });
                 
                 // Toggle inline expansion
                 self._toggleInlineExpansion(evt.newRow, msg, prev, forMsg, context);
@@ -1271,7 +1257,10 @@ mhelper.init();
         _bindVListRow(obj, msg, autoSelect) {
             var self = this, o = self.options, el = self.element;
             var row = obj.row;
-            var r = row[0];
+            
+            // BIND: Standard binding logic
+            // Note: Expansion content is now stored as part of the row's HTML in the virtual list,
+            // so it will be automatically restored when the virtual list re-renders from stored HTML.
             if (msg.protocol === 'api') self._bindVListApiRow(obj, msg, autoSelect);
             else if (msg.protocol === 'screenlogic') self._bindVListScreenLogicRow(obj, msg, autoSelect);
             else self._bindVListMessageRow(obj, msg, autoSelect);
@@ -1345,88 +1334,109 @@ mhelper.init();
                 return o.receivingMessages;
             }
         },
-        _toggleInlineExpansion: function (row, msg, prev, forMsg, context) {
+        _toggleInlineExpansion: function (row, msg, prev, forMsg, context, forceOpen) {
             var self = this, o = self.options, el = self.element;
             var rowId = row.attr('data-rowid');
-            var expandedRow = row.next('tr.expanded-detail-row');
             
-            // Check if this row already has an expanded section
-            if (expandedRow.length > 0 && expandedRow.attr('data-parent-rowid') === rowId) {
-                // Toggle collapse/expand
-                if (expandedRow.is(':visible')) {
-                    expandedRow.slideUp(200, function() {
-                        row.removeClass('row-expanded');
-                        expandedRow.remove();
-                        delete o.expandedRows[rowId];
-                    });
-                } else {
-                    // Close any other expanded rows first
-                    self._closeAllExpandedRows();
-                    expandedRow.slideDown(200);
-                    row.addClass('row-expanded');
-                    o.expandedRows[rowId] = true;
-                }
+            // Check if expansion already exists WITHIN the row (new approach)
+            var expansionDiv = row.find('div.inline-expansion-content');
+            var isAlreadyOpen = expansionDiv.length > 0;
+            
+            // Get virtual list reference to update stored HTML
+            var vlist = el.find('div.picVirtualList:first');
+        
+            // CASE 1: Row is already open
+            if (isAlreadyOpen) {
+                if (forceOpen) return; // It's already there, do nothing.
+                
+                // User Clicked -> Close it (Toggle)
+                row.removeClass('row-expanded');
+                expansionDiv.remove();
+                delete o.expandedRows[rowId];
+                
+                // Update stored HTML in virtual list so it persists through re-renders
+                self._updateStoredRowHtml(vlist, rowId, row);
                 return;
             }
+        
+            // CASE 2: Row is closed -> Open it
+            if (!forceOpen) {
+                self._closeAllExpandedRows();
+            }
             
-            // Close any other expanded rows
-            self._closeAllExpandedRows();
+            // Build expanded content as a div INSIDE the row's first cell (Port column)
+            // This way it becomes part of the row's stored HTML and survives virtual list re-renders
+            var firstCell = row.find('td:first');
+            var container = $('<div class="inline-expansion-content"></div>');
             
-            // Create new expanded row
-            var colspan = row.find('td').length;
-            var newRow = $('<tr class="expanded-detail-row"></tr>');
-            newRow.attr('data-parent-rowid', rowId);
+            // Add close button
+            var closeBtn = $('<div class="expansion-close-btn" title="Close"><i class="fas fa-times"></i></div>');
+            container.append(closeBtn);
             
-            var cell = $('<td colspan="' + colspan + '" class="expanded-detail-cell"></td>');
-            var container = $('<div class="inline-message-detail"></div>');
-            
-            // Create compact hex display
+            // Hex Display section
             var hexSection = $('<div class="inline-hex-display"></div>');
-            self._buildCompactHexDisplay(hexSection, msg, prev, context);
             container.append(hexSection);
             
-            // Create payload descriptor table using messageDetail widget's method
+            // Payload Display section
             var payloadSection = $('<div class="inline-payload-section"></div>');
-            var pnlDetail = $('div.picMessageDetail');
-            console.log('Calling bindPayloadDescriptors:', { hasPnlDetail: pnlDetail.length > 0, hasMethod: typeof pnlDetail[0].bindPayloadDescriptors, context: context });
-            if (pnlDetail.length > 0 && typeof pnlDetail[0].bindPayloadDescriptors === 'function') {
-                // Call the messageDetail widget's bindPayloadDescriptors method
-                pnlDetail[0].bindPayloadDescriptors(payloadSection, msg, context);
-            } else {
-                console.error('Cannot find messageDetail widget or bindPayloadDescriptors method');
-            }
             container.append(payloadSection);
             
-            cell.append(container);
-            newRow.append(cell);
+            // Append to first cell
+            firstCell.append(container);
             
-            // Insert after current row first (so we can measure width)
-            newRow.hide().insertAfter(row);
-            
-            // Now rebuild hex display with proper width calculation
-            setTimeout(function() {
-                var hexSection = container.find('.inline-hex-display');
-                hexSection.empty();
-                self._buildCompactHexDisplay(hexSection, msg, prev, context);
-            }, 50);
-            
-            // Animate
-            newRow.slideDown(300);
+            // Build hex display (needs to be after container is in DOM for width calculations)
+            self._buildCompactHexDisplay(hexSection, msg, prev, context);
+        
             row.addClass('row-expanded');
             o.expandedRows[rowId] = true;
+            
+            // Update stored HTML immediately for the hex display
+            self._updateStoredRowHtml(vlist, rowId, row);
+            
+            // Now bind payload descriptors (async) with a callback to update stored HTML again
+            var pnlDetail = $('div.picMessageDetail');
+            if (pnlDetail.length > 0 && typeof pnlDetail[0].bindPayloadDescriptors === 'function') {
+                pnlDetail[0].bindPayloadDescriptors(payloadSection, msg, context, function() {
+                    // Async callback: Update stored HTML again after payload table is built
+                    // Need to re-find the row in case DOM changed during async call
+                    var currentRow = el.find('tr.msgRow[data-rowid="' + rowId + '"]');
+                    if (currentRow.length > 0) {
+                        self._updateStoredRowHtml(vlist, rowId, currentRow);
+                    }
+                });
+            }
         },
         _closeAllExpandedRows: function () {
             var self = this, o = self.options, el = self.element;
-            el.find('tr.expanded-detail-row').each(function() {
-                var $this = $(this);
-                var parentRow = $this.prev('tr.msgRow');
-                var parentRowId = $this.attr('data-parent-rowid');
-                $this.slideUp(200, function() {
-                    $this.remove();
-                    if (parentRowId) delete o.expandedRows[parentRowId];
-                });
-                parentRow.removeClass('row-expanded');
+            var vlist = el.find('div.picVirtualList:first');
+            
+            // Find all expanded rows and close them
+            el.find('tr.msgRow.row-expanded').each(function() {
+                var $row = $(this);
+                var rowId = $row.attr('data-rowid');
+                
+                $row.removeClass('row-expanded');
+                $row.find('div.inline-expansion-content').remove();
+                
+                if (rowId) {
+                    delete o.expandedRows[rowId];
+                    // Update stored HTML so it persists through re-renders
+                    self._updateStoredRowHtml(vlist, rowId, $row);
+                }
             });
+        },
+        _updateStoredRowHtml: function(vlist, rowId, row) {
+            // Update the stored outerHTML in the virtual list's rows array
+            // This is critical - the virtual list stores rows as HTML strings and
+            // completely replaces innerHTML on scroll. We must update the stored
+            // string to include/exclude our expansion content.
+            var ndx = parseInt(rowId, 10);
+            if (vlist.length > 0 && typeof vlist[0].objByIndex === 'function') {
+                var rowObj = vlist[0].objByIndex(ndx);
+                if (rowObj) {
+                    rowObj.row = row[0].outerHTML;
+                }
+            }
         },
         _buildCompactHexDisplay: function (container, msg, prev, context) {
             var self = this, o = self.options, el = self.element;
@@ -1564,7 +1574,7 @@ mhelper.init();
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].bindMessage = function (msg, prev, msgFor, ctx) { self.bindMessage(msg, prev, msgFor, ctx); };
-            el[0].bindPayloadDescriptors = function (container, msg, ctx) { self.bindPayloadDescriptors(container, msg, ctx); };
+            el[0].bindPayloadDescriptors = function (container, msg, ctx, onComplete) { self.bindPayloadDescriptors(container, msg, ctx, onComplete); };
             self._initHeader();
             self._initMessageDetails();
             self._initApiCallDetails();
@@ -1932,24 +1942,20 @@ mhelper.init();
             // Add payload descriptor table if documentation exists
             self.bindPayloadDescriptors(div, msg, o.context);
         },
-        bindPayloadDescriptors: function (container, msg, context) {
+        bindPayloadDescriptors: function (container, msg, context, onComplete) {
             var self = this, o = self.options, el = self.element;
-            
-            console.log('bindPayloadDescriptors called', { context: context, docKey: context.docKey });
             
             // Get the documentation for this message
             $.getLocalService('/messages/docs/' + context.docKey, undefined, function (docs, status, xhr) {
-                console.log('Received docs:', { docs: docs, hasPayload: docs && docs.payload, payloadLength: docs && docs.payload ? docs.payload.length : 0 });
                 
                 if (!docs || !docs.payload || docs.payload.length === 0) {
-                    console.log('No payload documentation found');
+                    // Still call the callback even if no docs, so stored HTML gets updated
+                    if (typeof onComplete === 'function') onComplete();
                     return;
                 }
                 
-                console.log('Creating payload descriptor table with', docs.payload.length, 'entries');
-                
                 var divDesc = $('<div class="payload-descriptors"></div>').appendTo(container);
-                var tblDesc = $('<table class="payload-descriptor-table"><thead><tr><th>Start</th><th>Length</th><th>Name</th><th>Description</th><th>Desc 2</th><th>Current</th><th>Previous</th><th>Decimal</th><th>ASCII</th><th>Hex</th><th>Binary</th><th>Decoded Value</th></tr></thead><tbody></tbody></table>').appendTo(divDesc);
+                var tblDesc = $('<table class="payload-descriptor-table"><thead><tr><th>Start</th><th>Length</th><th>Name</th><th>Current</th><th>Previous</th><th>Decimal</th><th>ASCII</th><th>Binary</th><th>Decoded Value</th><th>Description</th><th>Desc 2</th></tr></thead><tbody></tbody></table>').appendTo(divDesc);
                 var tbody = tblDesc.find('tbody');
                 
                 // Build descriptor rows
@@ -1963,27 +1969,12 @@ mhelper.init();
                     $('<td class="desc-start"></td>').appendTo(row).text(pl.start);
                     $('<td class="desc-length"></td>').appendTo(row).text(pl.length);
                     $('<td class="desc-name"></td>').appendTo(row).text(pl.name || '');
-                    $('<td class="desc-description"></td>').appendTo(row).text(pl.desc || '');
-                    
-                    // Format Desc 2 column (formerly Values)
-                    var valCell = $('<td class="desc-values"></td>').appendTo(row);
-                    if (typeof pl.values === 'object' && !Array.isArray(pl.values)) {
-                        // It's a lookup object
-                        var valStr = [];
-                        for (var key in pl.values) {
-                            valStr.push(key + '=' + pl.values[key]);
-                        }
-                        valCell.text(valStr.join(', '));
-                    } else {
-                        valCell.text(pl.values || '');
-                    }
                     
                     // Extract actual byte values from message payload
                     var currentBytes = [];
                     var previousBytes = [];
                     var decimalValue = '';
                     var asciiValue = '';
-                    var hexValue = '';
                     var binaryValue = '';
                     var decodedValue = '';
                     
@@ -2008,7 +1999,6 @@ mhelper.init();
                             var byteVal = currentBytes[0];
                             decimalValue = byteVal.toString();
                             asciiValue = (byteVal >= 32 && byteVal <= 126) ? String.fromCharCode(byteVal) : '.';
-                            hexValue = '0x' + byteVal.toString(16).toUpperCase().padStart(2, '0');
                             binaryValue = byteVal.toString(2).padStart(8, '0');
                             
                             // Decode value based on descriptor values
@@ -2028,7 +2018,6 @@ mhelper.init();
                             // 2-byte integer (big-endian)
                             var intVal = (currentBytes[0] << 8) | currentBytes[1];
                             decimalValue = intVal.toString();
-                            hexValue = '0x' + intVal.toString(16).toUpperCase().padStart(4, '0');
                             binaryValue = intVal.toString(2).padStart(16, '0');
                             asciiValue = '-';
                             
@@ -2042,14 +2031,12 @@ mhelper.init();
                             // 4-byte integer (big-endian)
                             var intVal = (currentBytes[0] << 24) | (currentBytes[1] << 16) | (currentBytes[2] << 8) | currentBytes[3];
                             decimalValue = intVal.toString();
-                            hexValue = '0x' + intVal.toString(16).toUpperCase().padStart(8, '0');
                             asciiValue = '-';
                             binaryValue = intVal.toString(2);
                             decodedValue = intVal.toString();
                         } else {
                             // Multi-byte (show as string or hex sequence)
                             decimalValue = currentBytes.join(', ');
-                            hexValue = currentBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
                             
                             // Try as ASCII string if dataType is string
                             if (pl.dataType === 'string') {
@@ -2061,13 +2048,13 @@ mhelper.init();
                                 decodedValue = asciiValue.replace(/\./g, '').trim();
                             } else {
                                 asciiValue = '-';
-                                decodedValue = hexValue;
+                                decodedValue = currentBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
                             }
                             binaryValue = '-';
                         }
                     }
                     
-                    // Add data columns
+                    // Add data columns (after Name, before Description)
                     var currentCell = $('<td class="desc-current"></td>').appendTo(row);
                     if (currentBytes.length > 0) {
                         currentCell.text(currentBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' '));
@@ -2092,20 +2079,31 @@ mhelper.init();
                     
                     $('<td class="desc-decimal"></td>').appendTo(row).text(decimalValue);
                     $('<td class="desc-ascii"></td>').appendTo(row).text(asciiValue);
-                    $('<td class="desc-hex"></td>').appendTo(row).text(hexValue);
                     $('<td class="desc-binary"></td>').appendTo(row).text(binaryValue);
                     $('<td class="desc-decoded"></td>').appendTo(row).text(decodedValue);
+                    
+                    // Add description columns at the end
+                    $('<td class="desc-description"></td>').appendTo(row).text(pl.desc || '');
+                    
+                    // Format Desc 2 column (formerly Values)
+                    var valCell = $('<td class="desc-values"></td>').appendTo(row);
+                    if (typeof pl.values === 'object' && !Array.isArray(pl.values)) {
+                        // It's a lookup object
+                        var valStr = [];
+                        for (var key in pl.values) {
+                            valStr.push(key + '=' + pl.values[key]);
+                        }
+                        valCell.text(valStr.join(', '));
+                    } else {
+                        valCell.text(pl.values || '');
+                    }
                 }
-                
-                console.log('Payload descriptor table created');
                 
                 // Add click handler for row selection
                 tbody.on('click', 'tr.payload-descriptor-row', function(e) {
                     var $row = $(this);
                     var start = parseInt($row.attr('data-start'), 10);
                     var length = parseInt($row.attr('data-length'), 10);
-                    
-                    console.log('Descriptor row clicked:', { start: start, length: length });
                     
                     // Clear previous highlights in inline hex display
                     container.closest('.inline-message-detail').find('td.byte-selected').removeClass('byte-selected');
@@ -2126,12 +2124,13 @@ mhelper.init();
                         self.highlightPayloadBytes(start, length);
                     }
                 });
+                
+                // Call the completion callback so caller can update stored HTML
+                if (typeof onComplete === 'function') onComplete();
             });
         },
         highlightPayloadBytes: function (start, length) {
             var self = this, o = self.options, el = self.element;
-            
-            console.log('Highlighting bytes from', start, 'length', length);
             
             // Clear any existing highlights
             self.clearPayloadHighlight();
@@ -2139,13 +2138,11 @@ mhelper.init();
             // Highlight the specified byte range
             for (var i = start; i < start + length; i++) {
                 var cells = el.find('td[data-payload-byte-index="' + i + '"]');
-                console.log('Highlighting byte', i, '- found', cells.length, 'cells');
                 cells.addClass('payload-highlighted');
             }
         },
         clearPayloadHighlight: function () {
             var self = this, o = self.options, el = self.element;
-            console.log('Clearing payload highlights');
             el.find('td.payload-highlighted').removeClass('payload-highlighted');
         }
     });

@@ -276,3 +276,4 @@ uploads/
 # SSL Certificates
 *.pem
 ssl/
+scripts/.DS_Store
