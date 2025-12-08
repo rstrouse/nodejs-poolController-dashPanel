@@ -521,6 +521,13 @@ mhelper.init();
 
             row = $('<tr></tr>').addClass('msgList-body').appendTo(tbody);
             td = $('<td></td>').addClass('msgList-body').appendTo(row);
+            
+            // Add empty state placeholder
+            var emptyPlaceholder = $('<div class="msgList-empty-placeholder"></div>').appendTo(td).show();
+            $('<div class="empty-icon"><i class="fas fa-inbox"></i></div>').appendTo(emptyPlaceholder);
+            $('<div class="empty-message">Start or load a message capture.</div>').appendTo(emptyPlaceholder);
+            $('<div class="empty-message">Click on any row to bring up more details.</div>').appendTo(emptyPlaceholder);
+            
             var vlist = $('<div></div>').css({ width: '100%', height: '100%' }).appendTo(td).virtualList({
                 selectionType: 'single',
                 columns: [
@@ -1049,6 +1056,7 @@ mhelper.init();
             o.messageKeys = {};
             o.rowIds = [];
             o.ports = [];
+            self._toggleEmptyPlaceholder(true);
         },
         clearOutbound: function () {
             var self = this, o = self.options, el = self.element;
@@ -1061,23 +1069,40 @@ mhelper.init();
         },
         addMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
+            self._toggleEmptyPlaceholder(false);
             el.find('div.picVirtualList')[0].addRow(msg);
         },
         addApiCall: function (call) {
             var self = this, o = self.options, el = self.element;
+            self._toggleEmptyPlaceholder(false);
             el.find('div.picVirtualList')[0].addRow(call);
         },
         addBulkMessage: function (msg) {
             var self = this, o = self.options, el = self.element;
+            self._toggleEmptyPlaceholder(false);
             el.find('div.picVirtualList:first')[0].addRows([msg]);
         },
         addBulkApiCall: function (call) {
             var self = this, o = self.options, el = self.element;
+            self._toggleEmptyPlaceholder(false);
             el.find('div.picVirtualList:first')[0].addRows([call]);
         },
         commitBulkMessages: function () {
             var self = this, o = self.options, el = self.element;
             el.find('div.picVirtualList:first')[0].render(true);
+        },
+        _toggleEmptyPlaceholder: function(show) {
+            var self = this, o = self.options, el = self.element;
+            var placeholder = el.find('div.msgList-empty-placeholder');
+            var vlist = el.find('div.picVirtualList');
+            
+            if (show) {
+                placeholder.show();
+                vlist.hide();
+            } else {
+                placeholder.hide();
+                vlist.show();
+            }
         },
         _scrollToRow: function (row) {
             var self = this, o = self.options, el = self.element;

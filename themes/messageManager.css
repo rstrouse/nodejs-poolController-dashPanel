@@ -175,6 +175,32 @@ td.msgList-body {
   width: 100%;
   vertical-align: top;
   overflow: hidden;
+  position: relative;
+}
+
+/* Empty state placeholder */
+div.msgList-empty-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #999;
+  display: block;
+  z-index: 10;
+  pointer-events: none;
+}
+
+div.msgList-empty-placeholder div.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: #ccc;
+}
+
+div.msgList-empty-placeholder div.empty-message {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  color: #666;
 }
 
 /* Message Row Column Widths and Alignment */
