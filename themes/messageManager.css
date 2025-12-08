@@ -85,35 +85,58 @@ div.configContainer {
 }
 
 div.mmgrOuter {
-  width: 100%;
-  display: grid;
-  justify-content: center;
+  width: 98%;
+  max-width: 98%;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  grid-auto-rows: auto;
-  grid-row-gap: 0px;
+  margin: 0 auto;
+  padding: 5px;
+  gap: 0px;
 }
 
 div.messageContainer {
-  display: inline-grid;
-  grid-template-columns: 800px 477px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+}
+
+div.sendQueueTopContainer {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+div.sendQueueTopContainer > div.picSendMessageQueue {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+div.messagesContentContainer {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+}
+
+div.messagesContentContainer > div.picMessages {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 @media screen and (max-width: 1277px) {
   div.messageContainer {
-    display: inline-grid;
-    grid-template-columns: 571px 477px;
+    flex-direction: column;
   }
 }
 @media screen and (max-width: 1048px) {
   div.messageContainer {
-    display: inline-grid;
-    grid-template-columns: 547px 477px;
+    flex-direction: column;
   }
 }
 @media screen and (max-width: 1024px) {
   div.messageContainer {
-    display: inline-grid;
-    grid-template-columns: 700px;
+    flex-direction: column;
   }
 }
 .header {
@@ -893,4 +916,318 @@ div.sysmessage-button > div.dropdown-panel {
 
 #orderOfElements {
   display: none;
+}
+
+/* Payload Descriptor Table Styles */
+div.payload-descriptors {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 2px solid #159FCF;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+table.payload-descriptor-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  font-size: 9pt;
+  margin-top: 5px;
+  table-layout: auto;
+}
+
+table.payload-descriptor-table thead {
+  color: white;
+  font-weight: bold;
+  filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr=#FF159FCF, EndColorStr=#FF13647F);
+  background: -ms-linear-gradient(top, #159FCF, #13647F);
+  background: -moz-linear-gradient(top, #159FCF, #13647F);
+  background: -webkit-linear-gradient(top, #159FCF, #13647F);
+  background: linear-gradient(to bottom, #159FCF, #13647F);
+}
+
+table.payload-descriptor-table th {
+  border: solid 1px white;
+  padding: 4px 6px;
+  text-align: left;
+  font-size: 8pt;
+  white-space: nowrap;
+}
+
+table.payload-descriptor-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+table.payload-descriptor-table tbody tr:hover {
+  background-color: #e8f4f8;
+}
+
+table.payload-descriptor-table tbody tr.selected {
+  background-color: #fde4be;
+  font-weight: bold;
+}
+
+table.payload-descriptor-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table.payload-descriptor-table tbody tr.selected:nth-child(even) {
+  background-color: #fde4be;
+}
+
+table.payload-descriptor-table td {
+  border: solid 1px #ddd;
+  padding: 3px 6px;
+  vertical-align: top;
+  font-size: 8pt;
+}
+
+table.payload-descriptor-table td.desc-start,
+table.payload-descriptor-table td.desc-length {
+  text-align: center;
+  width: 40px;
+}
+
+table.payload-descriptor-table td.desc-name {
+  width: 120px;
+  font-weight: 500;
+}
+
+table.payload-descriptor-table td.desc-description {
+  min-width: 150px;
+  max-width: 200px;
+}
+
+table.payload-descriptor-table td.desc-values {
+  font-family: monospace;
+  font-size: 7pt;
+  max-width: 250px;
+  word-wrap: break-word;
+}
+
+/* New data columns */
+table.payload-descriptor-table td.desc-current,
+table.payload-descriptor-table td.desc-previous,
+table.payload-descriptor-table td.desc-hex {
+  font-family: 'Courier New', monospace;
+  font-size: 8pt;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #f0f8ff;
+}
+
+table.payload-descriptor-table td.desc-decimal,
+table.payload-descriptor-table td.desc-ascii {
+  font-family: 'Courier New', monospace;
+  font-size: 8pt;
+  text-align: center;
+}
+
+table.payload-descriptor-table td.desc-binary {
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+  text-align: center;
+  white-space: nowrap;
+}
+
+table.payload-descriptor-table td.desc-decoded {
+  font-weight: 500;
+  background-color: #fffacd;
+  min-width: 100px;
+}
+
+/* Highlight changed values */
+table.payload-descriptor-table td.value-changed {
+  background-color: #ffebcd !important;
+  font-weight: bold;
+  box-shadow: inset 0 0 3px rgba(255, 140, 0, 0.5);
+}
+
+/* Highlighted payload bytes */
+td.payload-highlighted {
+  background-color: #FFD700 !important;
+  box-shadow: inset 0 0 3px rgba(255, 165, 0, 0.8);
+  font-weight: bold;
+}
+
+tr.msg-payload-header > td.payload-highlighted {
+  background: #ffa500 !important;
+  color: white;
+}
+
+/* Inline Expansion Styles */
+tr.msgRow.row-expanded {
+  background-color: #e8f4f8 !important;
+  border-left: 3px solid #159FCF;
+  font-weight: bold;
+}
+
+tr.expanded-detail-row {
+  background-color: #f0f8ff;
+  border-left: 3px solid #159FCF;
+  position: relative;
+  z-index: 100;
+}
+
+tr.expanded-detail-row td.expanded-detail-cell {
+  padding: 0;
+  border: none;
+  overflow: visible;
+  position: relative;
+}
+
+div.inline-message-detail {
+  padding: 10px;
+  background: white;
+  border: 1px solid #ccc;
+  margin: 2px;
+  width: calc(100% - 4px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Compact Hex Display */
+div.compact-hex-header {
+  padding: 10px;
+  background: linear-gradient(to bottom, #159FCF, #13647F);
+  color: white;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 10px;
+  font-size: 9pt;
+}
+
+div.compact-hex-header span.hex-label {
+  font-weight: bold;
+  margin-right: 5px;
+  margin-left: 15px;
+}
+
+div.compact-hex-header span.hex-label:first-child {
+  margin-left: 0;
+}
+
+div.compact-hex-header span.hex-value {
+  margin-right: 10px;
+}
+
+/* Compact Payload Table (matches original format) */
+table.compact-payload-table {
+  width: auto;
+  max-width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: white;
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+}
+
+table.compact-payload-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+table.compact-payload-table tr.compact-payload-header {
+  background: #e8f4f8;
+  font-weight: bold;
+}
+
+table.compact-payload-table tr.compact-payload-decimal {
+  background: white;
+}
+
+table.compact-payload-table tr.compact-payload-ascii {
+  background: #f9f9f9;
+}
+
+table.compact-payload-table tr.compact-payload-hex {
+  background: white;
+  font-weight: bold;
+}
+
+table.compact-payload-table td {
+  padding: 1px 3px;
+  text-align: center;
+  border: 1px solid #ddd;
+  width: 22px;
+  min-width: 22px;
+  max-width: 22px;
+  font-size: 7pt;
+  transition: all 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+table.compact-payload-table td.compact-byte-header {
+  background: #159FCF;
+  color: white;
+  font-size: 6pt;
+  cursor: pointer;
+  padding: 0px 2px;
+  line-height: 1.2;
+}
+
+table.compact-payload-table td.compact-byte-header:hover {
+  background: #13647F;
+  transform: scale(1.05);
+}
+
+table.compact-payload-table td.byte-changed {
+  background-color: #ffebcd !important;
+  border-color: #ff8c00;
+  font-weight: bold;
+  box-shadow: inset 0 0 3px rgba(255, 140, 0, 0.5);
+}
+
+table.compact-payload-table td.byte-selected {
+  background-color: #FFD700 !important;
+  border-color: #ffa500;
+  box-shadow: inset 0 0 4px rgba(255, 165, 0, 0.8);
+  font-weight: bold;
+}
+
+table.compact-payload-table td.compact-byte-decimal:hover,
+table.compact-payload-table td.compact-byte-ascii:hover,
+table.compact-payload-table td.compact-byte-hex:hover {
+  background-color: #fffacd !important;
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+/* Remove old grid styles */
+div.compact-hex-grid {
+  display: none;
+}
+
+div.compact-hex-row {
+  display: none;
+}
+
+span.compact-hex-byte {
+  display: none;
+}
+
+/* Inline Payload Section */
+div.inline-hex-display {
+  margin-bottom: 8px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+div.inline-payload-section {
+  margin-top: 8px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+div.inline-payload-section .payload-descriptors {
+  margin-top: 0;
+  border-top: none;
+  width: 100%;
+}
+
+div.inline-payload-section table.payload-descriptor-table {
+  font-size: 8pt;
+  width: 100%;
+  max-width: 100%;
 }

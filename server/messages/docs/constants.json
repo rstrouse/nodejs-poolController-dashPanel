@@ -985,6 +985,13 @@
       "key": "CP"
     },
     {
+      "val": 36,
+      "name": "WL",
+      "desc": "IntelliCenter Wireless",
+      "protocol": "!chlorinator,!aqualink,any",
+      "key": "CP"
+    },
+    {
       "val": 80,
       "name": "Chlor[1]",
       "desc": "Chlorinator #1",

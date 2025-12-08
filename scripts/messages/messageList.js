@@ -446,7 +446,7 @@ mhelper.init();
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: []
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: [], expandedRows: {}
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -536,7 +536,37 @@ mhelper.init();
                     { header: { style: { textAlign: 'center' }, label: 'Payload' } }
                 ]
             });
-            vlist.on('bindrow', function (evt) { self._bindVListRow(evt.row, evt.rowData); });
+            vlist.on('bindrow', function (evt) { 
+                self._bindVListRow(evt.row, evt.rowData);
+                
+                // Check if this row should be expanded (persisting expansion state)
+                var rowId = $(evt.row).attr('data-rowid');
+                if (rowId && o.expandedRows[rowId]) {
+                    // This row was previously expanded, re-expand it
+                    setTimeout(function() {
+                        var $row = $(evt.row);
+                        if ($row.length > 0 && !$row.next().hasClass('expanded-detail-row')) {
+                            var msg = o.messages['m' + rowId];
+                            if (msg) {
+                                var ndx = parseInt(rowId, 10);
+                                var msgKey = $row.attr('data-msgkey');
+                                var docKey = $row.attr('data-dockey');
+                                var prev, forMsg;
+                                for (var i = ndx - 1; i >= 0; i--) {
+                                    if (o.messages['m' + i] && o.messages['m' + i].key === msgKey) {
+                                        prev = o.messages['m' + i];
+                                        break;
+                                    }
+                                }
+                                var context = o.contexts[docKey] || o.contexts[msgKey];
+                                if (context) {
+                                    self._toggleInlineExpansion($row, msg, prev, forMsg, context);
+                                }
+                            }
+                        }
+                    }, 100);
+                }
+            });
             vlist.on('selchanged', function (evt) {
                 var pnlDetail = $('div.picMessageDetail');
                 var msg = o.messages['m' + evt.newRow.attr('data-rowid')];
@@ -559,8 +589,16 @@ mhelper.init();
                     if (typeof rid !== 'undefined')
                         forMsg = o.messages['m' + rid.rowId];
                 }
-                //console.log(docKey);
-                pnlDetail[0].bindMessage(msg, prev, forMsg, o.contexts[docKey]);
+                
+                // Get context - try both docKey and msgKey
+                var context = o.contexts[docKey] || o.contexts[msgKey];
+                console.log('Context lookup:', { docKey: docKey, msgKey: msgKey, context: context, allContexts: Object.keys(o.contexts) });
+                
+                // Toggle inline expansion
+                self._toggleInlineExpansion(evt.newRow, msg, prev, forMsg, context);
+                
+                // Hide the bottom detail panel since we're using inline expansion
+                pnlDetail.slideUp(200);
             });
             el.on('click', 'div.picStartLogs', function (evt) {
                 var mm = $('div.picMessageManager')[0];
@@ -1306,6 +1344,219 @@ mhelper.init();
             else {
                 return o.receivingMessages;
             }
+        },
+        _toggleInlineExpansion: function (row, msg, prev, forMsg, context) {
+            var self = this, o = self.options, el = self.element;
+            var rowId = row.attr('data-rowid');
+            var expandedRow = row.next('tr.expanded-detail-row');
+            
+            // Check if this row already has an expanded section
+            if (expandedRow.length > 0 && expandedRow.attr('data-parent-rowid') === rowId) {
+                // Toggle collapse/expand
+                if (expandedRow.is(':visible')) {
+                    expandedRow.slideUp(200, function() {
+                        row.removeClass('row-expanded');
+                        expandedRow.remove();
+                        delete o.expandedRows[rowId];
+                    });
+                } else {
+                    // Close any other expanded rows first
+                    self._closeAllExpandedRows();
+                    expandedRow.slideDown(200);
+                    row.addClass('row-expanded');
+                    o.expandedRows[rowId] = true;
+                }
+                return;
+            }
+            
+            // Close any other expanded rows
+            self._closeAllExpandedRows();
+            
+            // Create new expanded row
+            var colspan = row.find('td').length;
+            var newRow = $('<tr class="expanded-detail-row"></tr>');
+            newRow.attr('data-parent-rowid', rowId);
+            
+            var cell = $('<td colspan="' + colspan + '" class="expanded-detail-cell"></td>');
+            var container = $('<div class="inline-message-detail"></div>');
+            
+            // Create compact hex display
+            var hexSection = $('<div class="inline-hex-display"></div>');
+            self._buildCompactHexDisplay(hexSection, msg, prev, context);
+            container.append(hexSection);
+            
+            // Create payload descriptor table using messageDetail widget's method
+            var payloadSection = $('<div class="inline-payload-section"></div>');
+            var pnlDetail = $('div.picMessageDetail');
+            console.log('Calling bindPayloadDescriptors:', { hasPnlDetail: pnlDetail.length > 0, hasMethod: typeof pnlDetail[0].bindPayloadDescriptors, context: context });
+            if (pnlDetail.length > 0 && typeof pnlDetail[0].bindPayloadDescriptors === 'function') {
+                // Call the messageDetail widget's bindPayloadDescriptors method
+                pnlDetail[0].bindPayloadDescriptors(payloadSection, msg, context);
+            } else {
+                console.error('Cannot find messageDetail widget or bindPayloadDescriptors method');
+            }
+            container.append(payloadSection);
+            
+            cell.append(container);
+            newRow.append(cell);
+            
+            // Insert after current row first (so we can measure width)
+            newRow.hide().insertAfter(row);
+            
+            // Now rebuild hex display with proper width calculation
+            setTimeout(function() {
+                var hexSection = container.find('.inline-hex-display');
+                hexSection.empty();
+                self._buildCompactHexDisplay(hexSection, msg, prev, context);
+            }, 50);
+            
+            // Animate
+            newRow.slideDown(300);
+            row.addClass('row-expanded');
+            o.expandedRows[rowId] = true;
+        },
+        _closeAllExpandedRows: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('tr.expanded-detail-row').each(function() {
+                var $this = $(this);
+                var parentRow = $this.prev('tr.msgRow');
+                var parentRowId = $this.attr('data-parent-rowid');
+                $this.slideUp(200, function() {
+                    $this.remove();
+                    if (parentRowId) delete o.expandedRows[parentRowId];
+                });
+                parentRow.removeClass('row-expanded');
+            });
+        },
+        _buildCompactHexDisplay: function (container, msg, prev, context) {
+            var self = this, o = self.options, el = self.element;
+            
+            // Validate context
+            if (!context) {
+                console.warn('No context provided to _buildCompactHexDisplay');
+                container.append('<div class="compact-hex-header">Message information not available</div>');
+                return;
+            }
+            
+            // Add header with message info
+            var header = $('<div class="compact-hex-header"></div>');
+            header.append('<span class="hex-label">Protocol:</span> <span class="hex-value">' + (context.protocol ? context.protocol.name : 'Unknown') + '</span>');
+            header.append('<span class="hex-label">Source:</span> <span class="hex-value">' + (context.sourceAddr ? context.sourceAddr.name : 'Unknown') + '</span>');
+            header.append('<span class="hex-label">Dest:</span> <span class="hex-value">' + (context.destAddr ? context.destAddr.name : 'Unknown') + '</span>');
+            header.append('<span class="hex-label">Action:</span> <span class="hex-value">' + (context.actionByte || 'Unknown') + ' (' + (context.actionName || 'Unknown') + ')</span>');
+            header.append('<span class="hex-label">Length:</span> <span class="hex-value">' + (msg.payload ? msg.payload.length : 0) + ' bytes</span>');
+            container.append(header);
+            
+            // Add hex bytes in table format (like original)
+            if (msg.payload && msg.payload.length > 0) {
+                // Calculate how many bytes fit per row based on ACTUAL container width
+                var containerWidth = container.width();
+                if (!containerWidth || containerWidth < 100) {
+                    // Container not rendered yet or too small, use parent or default
+                    containerWidth = container.parent().width() || container.closest('.inline-message-detail').width() || 1200;
+                }
+                console.log('Container width for byte calculation:', containerWidth);
+                
+                // Each byte cell is ~26px (22px width + 2px padding + 2px border)
+                var bytesPerRow = Math.floor((containerWidth - 20) / 26); // -20 for margins
+                if (bytesPerRow < 10) bytesPerRow = 10; // Minimum 10 bytes per row
+                if (bytesPerRow > msg.payload.length) bytesPerRow = msg.payload.length; // Don't exceed payload length
+                
+                console.log('Bytes per row:', bytesPerRow, 'for payload length:', msg.payload.length);
+                
+                var tbl = $('<table class="compact-payload-table"></table>');
+                var tbody = $('<tbody></tbody>').appendTo(tbl);
+                
+                // Create rows for: header (index), decimal, ascii, hex
+                var headerRow = $('<tr class="compact-payload-header"></tr>').appendTo(tbody);
+                var decimalRow = $('<tr class="compact-payload-decimal"></tr>').appendTo(tbody);
+                var asciiRow = $('<tr class="compact-payload-ascii"></tr>').appendTo(tbody);
+                var hexRow = $('<tr class="compact-payload-hex"></tr>').appendTo(tbody);
+                
+                var p = (prev && prev.payload) ? prev.payload : [];
+                
+                for (var i = 0; i < msg.payload.length; i++) {
+                    // Add new row set dynamically based on calculated width
+                    if (i > 0 && i % bytesPerRow === 0) {
+                        headerRow = $('<tr class="compact-payload-header"></tr>').appendTo(tbody);
+                        decimalRow = $('<tr class="compact-payload-decimal"></tr>').appendTo(tbody);
+                        asciiRow = $('<tr class="compact-payload-ascii"></tr>').appendTo(tbody);
+                        hexRow = $('<tr class="compact-payload-hex"></tr>').appendTo(tbody);
+                    }
+                    
+                    var byteVal = msg.payload[i];
+                    var prevVal = (p && i < p.length) ? p[i] : undefined;
+                    var isChanged = (prevVal !== undefined && prevVal !== byteVal);
+                    
+                    // Header cell (index)
+                    var hCell = $('<td class="compact-byte-header"></td>').text(i);
+                    hCell.attr('data-byte-index', i);
+                    if (isChanged) hCell.addClass('byte-changed');
+                    headerRow.append(hCell);
+                    
+                    // Decimal cell
+                    var dCell = $('<td class="compact-byte-decimal"></td>').text(byteVal);
+                    if (isChanged) dCell.addClass('byte-changed');
+                    decimalRow.append(dCell);
+                    
+                    // ASCII cell
+                    var asciiChar = (byteVal >= 32 && byteVal <= 126) ? String.fromCharCode(byteVal) : '.';
+                    var aCell = $('<td class="compact-byte-ascii"></td>').text(asciiChar);
+                    if (isChanged) aCell.addClass('byte-changed');
+                    asciiRow.append(aCell);
+                    
+                    // Hex cell
+                    var hexVal = byteVal.toString(16).toUpperCase().padStart(2, '0');
+                    var xCell = $('<td class="compact-byte-hex"></td>').text(hexVal);
+                    if (isChanged) xCell.addClass('byte-changed');
+                    hexRow.append(xCell);
+                }
+                
+                container.append(tbl);
+                
+                // Add click handler for bytes to highlight corresponding row
+                tbl.on('click', 'td[data-byte-index]', function(e) {
+                    e.stopPropagation();
+                    var byteIndex = parseInt($(this).attr('data-byte-index'), 10);
+                    self._highlightRowForByte(container, byteIndex);
+                });
+            }
+        },
+        _highlightRowForByte: function(container, byteIndex) {
+            var self = this;
+            // Find which payload descriptor row contains this byte
+            var descriptorTable = container.closest('.inline-message-detail').find('table.payload-descriptor-table');
+            var targetRow = null;
+            
+            descriptorTable.find('tr.payload-descriptor-row').each(function() {
+                var start = parseInt($(this).attr('data-start'), 10);
+                var length = parseInt($(this).attr('data-length'), 10);
+                var end = start + length - 1;
+                
+                if (byteIndex >= start && byteIndex <= end) {
+                    targetRow = $(this);
+                    return false; // break
+                }
+            });
+            
+            if (targetRow) {
+                // Clear previous selections
+                descriptorTable.find('tr.selected').removeClass('selected');
+                container.find('td.byte-selected').removeClass('byte-selected');
+                
+                // Select the row
+                targetRow.addClass('selected');
+                
+                // Highlight the bytes
+                var start = parseInt(targetRow.attr('data-start'), 10);
+                var length = parseInt(targetRow.attr('data-length'), 10);
+                for (var i = start; i < start + length; i++) {
+                    container.find('td[data-byte-index="' + i + '"]').addClass('byte-selected');
+                }
+                
+                // Scroll row into view
+                targetRow[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
     });
     $.widget("pic.messageDetail", {
@@ -1313,6 +1564,7 @@ mhelper.init();
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].bindMessage = function (msg, prev, msgFor, ctx) { self.bindMessage(msg, prev, msgFor, ctx); };
+            el[0].bindPayloadDescriptors = function (container, msg, ctx) { self.bindPayloadDescriptors(container, msg, ctx); };
             self._initHeader();
             self._initMessageDetails();
             self._initApiCallDetails();
@@ -1676,6 +1928,225 @@ mhelper.init();
                     cascii.addClass('payload-change');//.attr('title', 'prev: ' + msgManager.toAscii(pdec));
                 }
             }
+            
+            // Add payload descriptor table if documentation exists
+            self.bindPayloadDescriptors(div, msg, o.context);
+        },
+        bindPayloadDescriptors: function (container, msg, context) {
+            var self = this, o = self.options, el = self.element;
+            
+            console.log('bindPayloadDescriptors called', { context: context, docKey: context.docKey });
+            
+            // Get the documentation for this message
+            $.getLocalService('/messages/docs/' + context.docKey, undefined, function (docs, status, xhr) {
+                console.log('Received docs:', { docs: docs, hasPayload: docs && docs.payload, payloadLength: docs && docs.payload ? docs.payload.length : 0 });
+                
+                if (!docs || !docs.payload || docs.payload.length === 0) {
+                    console.log('No payload documentation found');
+                    return;
+                }
+                
+                console.log('Creating payload descriptor table with', docs.payload.length, 'entries');
+                
+                var divDesc = $('<div class="payload-descriptors"></div>').appendTo(container);
+                var tblDesc = $('<table class="payload-descriptor-table"><thead><tr><th>Start</th><th>Length</th><th>Name</th><th>Description</th><th>Desc 2</th><th>Current</th><th>Previous</th><th>Decimal</th><th>ASCII</th><th>Hex</th><th>Binary</th><th>Decoded Value</th></tr></thead><tbody></tbody></table>').appendTo(divDesc);
+                var tbody = tblDesc.find('tbody');
+                
+                // Build descriptor rows
+                for (var i = 0; i < docs.payload.length; i++) {
+                    var pl = docs.payload[i];
+                    var row = $('<tr class="payload-descriptor-row"></tr>').appendTo(tbody);
+                    row.attr('data-start', pl.start);
+                    row.attr('data-length', pl.length);
+                    row.attr('data-payload-range', pl.start + '-' + (pl.start + pl.length - 1));
+                    
+                    $('<td class="desc-start"></td>').appendTo(row).text(pl.start);
+                    $('<td class="desc-length"></td>').appendTo(row).text(pl.length);
+                    $('<td class="desc-name"></td>').appendTo(row).text(pl.name || '');
+                    $('<td class="desc-description"></td>').appendTo(row).text(pl.desc || '');
+                    
+                    // Format Desc 2 column (formerly Values)
+                    var valCell = $('<td class="desc-values"></td>').appendTo(row);
+                    if (typeof pl.values === 'object' && !Array.isArray(pl.values)) {
+                        // It's a lookup object
+                        var valStr = [];
+                        for (var key in pl.values) {
+                            valStr.push(key + '=' + pl.values[key]);
+                        }
+                        valCell.text(valStr.join(', '));
+                    } else {
+                        valCell.text(pl.values || '');
+                    }
+                    
+                    // Extract actual byte values from message payload
+                    var currentBytes = [];
+                    var previousBytes = [];
+                    var decimalValue = '';
+                    var asciiValue = '';
+                    var hexValue = '';
+                    var binaryValue = '';
+                    var decodedValue = '';
+                    
+                    if (msg.payload && pl.start < msg.payload.length) {
+                        // Get current bytes
+                        for (var b = 0; b < pl.length && (pl.start + b) < msg.payload.length; b++) {
+                            var byteIdx = pl.start + b;
+                            currentBytes.push(msg.payload[byteIdx]);
+                        }
+                        
+                        // Get previous bytes if diff exists
+                        if (msg.payloadDiff) {
+                            for (var b = 0; b < pl.length && (pl.start + b) < msg.payloadDiff.length; b++) {
+                                var byteIdx = pl.start + b;
+                                previousBytes.push(msg.payloadDiff[byteIdx]);
+                            }
+                        }
+                        
+                        // Calculate values based on length
+                        if (pl.length === 1) {
+                            // Single byte
+                            var byteVal = currentBytes[0];
+                            decimalValue = byteVal.toString();
+                            asciiValue = (byteVal >= 32 && byteVal <= 126) ? String.fromCharCode(byteVal) : '.';
+                            hexValue = '0x' + byteVal.toString(16).toUpperCase().padStart(2, '0');
+                            binaryValue = byteVal.toString(2).padStart(8, '0');
+                            
+                            // Decode value based on descriptor values
+                            if (typeof pl.values === 'object' && !Array.isArray(pl.values)) {
+                                decodedValue = pl.values[byteVal] || pl.values[byteVal.toString()] || 'Unknown (' + byteVal + ')';
+                            } else if (pl.dataType === 'bits') {
+                                // Show bit representation
+                                var bits = [];
+                                for (var bit = 7; bit >= 0; bit--) {
+                                    if (byteVal & (1 << bit)) bits.push('Bit' + bit);
+                                }
+                                decodedValue = bits.length > 0 ? bits.join(', ') : 'None';
+                            } else {
+                                decodedValue = byteVal.toString();
+                            }
+                        } else if (pl.length === 2) {
+                            // 2-byte integer (big-endian)
+                            var intVal = (currentBytes[0] << 8) | currentBytes[1];
+                            decimalValue = intVal.toString();
+                            hexValue = '0x' + intVal.toString(16).toUpperCase().padStart(4, '0');
+                            binaryValue = intVal.toString(2).padStart(16, '0');
+                            asciiValue = '-';
+                            
+                            // Decode value
+                            if (typeof pl.values === 'object' && !Array.isArray(pl.values)) {
+                                decodedValue = pl.values[intVal] || pl.values[intVal.toString()] || intVal.toString();
+                            } else {
+                                decodedValue = intVal.toString();
+                            }
+                        } else if (pl.length === 4) {
+                            // 4-byte integer (big-endian)
+                            var intVal = (currentBytes[0] << 24) | (currentBytes[1] << 16) | (currentBytes[2] << 8) | currentBytes[3];
+                            decimalValue = intVal.toString();
+                            hexValue = '0x' + intVal.toString(16).toUpperCase().padStart(8, '0');
+                            asciiValue = '-';
+                            binaryValue = intVal.toString(2);
+                            decodedValue = intVal.toString();
+                        } else {
+                            // Multi-byte (show as string or hex sequence)
+                            decimalValue = currentBytes.join(', ');
+                            hexValue = currentBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
+                            
+                            // Try as ASCII string if dataType is string
+                            if (pl.dataType === 'string') {
+                                asciiValue = '';
+                                for (var b = 0; b < currentBytes.length; b++) {
+                                    var ch = currentBytes[b];
+                                    asciiValue += (ch >= 32 && ch <= 126) ? String.fromCharCode(ch) : '.';
+                                }
+                                decodedValue = asciiValue.replace(/\./g, '').trim();
+                            } else {
+                                asciiValue = '-';
+                                decodedValue = hexValue;
+                            }
+                            binaryValue = '-';
+                        }
+                    }
+                    
+                    // Add data columns
+                    var currentCell = $('<td class="desc-current"></td>').appendTo(row);
+                    if (currentBytes.length > 0) {
+                        currentCell.text(currentBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' '));
+                    }
+                    
+                    var previousCell = $('<td class="desc-previous"></td>').appendTo(row);
+                    if (previousBytes.length > 0) {
+                        previousCell.text(previousBytes.map(function(b) { return '0x' + b.toString(16).toUpperCase().padStart(2, '0'); }).join(' '));
+                        // Highlight if different
+                        var isDifferent = false;
+                        for (var b = 0; b < Math.min(currentBytes.length, previousBytes.length); b++) {
+                            if (currentBytes[b] !== previousBytes[b]) {
+                                isDifferent = true;
+                                break;
+                            }
+                        }
+                        if (isDifferent) {
+                            currentCell.addClass('value-changed');
+                            previousCell.addClass('value-changed');
+                        }
+                    }
+                    
+                    $('<td class="desc-decimal"></td>').appendTo(row).text(decimalValue);
+                    $('<td class="desc-ascii"></td>').appendTo(row).text(asciiValue);
+                    $('<td class="desc-hex"></td>').appendTo(row).text(hexValue);
+                    $('<td class="desc-binary"></td>').appendTo(row).text(binaryValue);
+                    $('<td class="desc-decoded"></td>').appendTo(row).text(decodedValue);
+                }
+                
+                console.log('Payload descriptor table created');
+                
+                // Add click handler for row selection
+                tbody.on('click', 'tr.payload-descriptor-row', function(e) {
+                    var $row = $(this);
+                    var start = parseInt($row.attr('data-start'), 10);
+                    var length = parseInt($row.attr('data-length'), 10);
+                    
+                    console.log('Descriptor row clicked:', { start: start, length: length });
+                    
+                    // Clear previous highlights in inline hex display
+                    container.closest('.inline-message-detail').find('td.byte-selected').removeClass('byte-selected');
+                    
+                    // Toggle selection
+                    if ($row.hasClass('selected')) {
+                        $row.removeClass('selected');
+                        self.clearPayloadHighlight();
+                    } else {
+                        tbody.find('tr.selected').removeClass('selected');
+                        $row.addClass('selected');
+                        
+                        // Highlight bytes in inline compact hex display
+                        for (var i = start; i < start + length; i++) {
+                            container.closest('.inline-message-detail').find('td[data-byte-index="' + i + '"]').addClass('byte-selected');
+                        }
+                        
+                        self.highlightPayloadBytes(start, length);
+                    }
+                });
+            });
+        },
+        highlightPayloadBytes: function (start, length) {
+            var self = this, o = self.options, el = self.element;
+            
+            console.log('Highlighting bytes from', start, 'length', length);
+            
+            // Clear any existing highlights
+            self.clearPayloadHighlight();
+            
+            // Highlight the specified byte range
+            for (var i = start; i < start + length; i++) {
+                var cells = el.find('td[data-payload-byte-index="' + i + '"]');
+                console.log('Highlighting byte', i, '- found', cells.length, 'cells');
+                cells.addClass('payload-highlighted');
+            }
+        },
+        clearPayloadHighlight: function () {
+            var self = this, o = self.options, el = self.element;
+            console.log('Clearing payload highlights');
+            el.find('td.payload-highlighted').removeClass('payload-highlighted');
         }
     });
     $.widget("pic.sendMessageQueue", {

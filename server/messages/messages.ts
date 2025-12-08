@@ -136,7 +136,13 @@ export class MessageDocs {
     }
     public static findMessageByKey(key: string) {
         let messages = MessageDocs.loadMessages();
-        return messages[key];
+        // Search through all protocols to find the key
+        for (let proto in messages) {
+            if (messages[proto][key]) {
+                return messages[proto][key];
+            }
+        }
+        return undefined;
     }
     public static getKeyBytes() {
         let messages = MessageDocs.loadMessages();
