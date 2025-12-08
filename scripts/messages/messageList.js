@@ -1369,9 +1369,22 @@ mhelper.init();
             var firstCell = row.find('td:first');
             var container = $('<div class="inline-expansion-content"></div>');
             
-            // Add close button
+            // Add action buttons in top-right corner
+            var btnContainer = $('<div class="expansion-buttons"></div>');
+            
+            // Add to queue button
+            var addToQueueBtn = $('<div class="expansion-addqueue-btn" title="Add to Send Queue"><i class="far fa-hand-point-up"></i></div>');
+            addToQueueBtn.on('click', function(evt) {
+                evt.stopPropagation();
+                $('div.picSendMessageQueue')[0].addMessage(msg);
+            });
+            btnContainer.append(addToQueueBtn);
+            
+            // Close button
             var closeBtn = $('<div class="expansion-close-btn" title="Close"><i class="fas fa-times"></i></div>');
-            container.append(closeBtn);
+            btnContainer.append(closeBtn);
+            
+            container.append(btnContainer);
             
             // Hex Display section
             var hexSection = $('<div class="inline-hex-display"></div>');
@@ -1448,13 +1461,61 @@ mhelper.init();
                 return;
             }
             
-            // Add header with message info
+            // Add header with message info - Row 1
             var header = $('<div class="compact-hex-header"></div>');
-            header.append('<span class="hex-label">Protocol:</span> <span class="hex-value">' + (context.protocol ? context.protocol.name : 'Unknown') + '</span>');
-            header.append('<span class="hex-label">Source:</span> <span class="hex-value">' + (context.sourceAddr ? context.sourceAddr.name : 'Unknown') + '</span>');
-            header.append('<span class="hex-label">Dest:</span> <span class="hex-value">' + (context.destAddr ? context.destAddr.name : 'Unknown') + '</span>');
-            header.append('<span class="hex-label">Action:</span> <span class="hex-value">' + (context.actionByte || 'Unknown') + ' (' + (context.actionName || 'Unknown') + ')</span>');
-            header.append('<span class="hex-label">Length:</span> <span class="hex-value">' + (msg.payload ? msg.payload.length : 0) + ' bytes</span>');
+            var row1 = $('<div class="hex-info-row"></div>').appendTo(header);
+            
+            // Protocol
+            row1.append('<span class="hex-label">Protocol:</span> <span class="hex-value">' + (context.protocol ? context.protocol.name : 'Unknown') + '</span>');
+            
+            // Source with byte address
+            row1.append('<span class="hex-label">Source:</span> ');
+            if (context.sourceByte !== undefined) {
+                row1.append('[<span class="hex-byte">' + context.sourceByte + '</span>] ');
+            }
+            row1.append('<span class="hex-value">' + (context.sourceAddr ? context.sourceAddr.name : 'Unknown') + '</span>');
+            
+            // Arrow
+            row1.append(' <i class="fas fa-arrow-right hex-arrow"></i> ');
+            
+            // Dest with byte address
+            row1.append('<span class="hex-label">Dest:</span> ');
+            if (context.destByte !== undefined) {
+                row1.append('[<span class="hex-byte">' + context.destByte + '</span>] ');
+            }
+            row1.append('<span class="hex-value">' + (context.destAddr ? context.destAddr.name : 'Unknown') + '</span>');
+            
+            // Action
+            row1.append('<span class="hex-label">Action:</span> ');
+            if (context.actionByte !== undefined) {
+                row1.append('[<span class="hex-byte">' + context.actionByte + '</span>] ');
+            }
+            row1.append('<span class="hex-value">' + (context.actionName || 'Unknown') + '</span>');
+            
+            // Row 2 - Additional details
+            var row2 = $('<div class="hex-info-row"></div>').appendTo(header);
+            
+            // Timestamp
+            row2.append('<span class="hex-label">Timestamp:</span> <span class="hex-value">' + (msg.timestamp || '') + '</span>');
+            
+            // Data Length
+            row2.append('<span class="hex-label">Length:</span> <span class="hex-value">' + (msg.payload ? msg.payload.length : 0) + ' bytes</span>');
+            
+            // Padding
+            if (msg.padding && msg.padding.length > 0) {
+                row2.append('<span class="hex-label">Padding:</span> <span class="hex-value">[' + msg.padding.join(',') + ']</span>');
+            }
+            
+            // Header
+            if (msg.header && msg.header.length > 0) {
+                row2.append('<span class="hex-label">Header:</span> <span class="hex-value">[' + msg.header.join(',') + ']</span>');
+            }
+            
+            // Term
+            if (msg.term && msg.term.length > 0) {
+                row2.append('<span class="hex-label">Term:</span> <span class="hex-value">[' + msg.term.join(',') + ']</span>');
+            }
+            
             container.append(header);
             
             // Add hex bytes in table format (like original)

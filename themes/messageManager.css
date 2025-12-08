@@ -1206,10 +1206,17 @@ div.inline-expansion-content {
 }
 
 /* Close button for expansion */
-div.expansion-close-btn {
+div.expansion-buttons {
   position: absolute;
   top: 5px;
   right: 5px;
+  display: flex;
+  gap: 5px;
+  z-index: 20;
+}
+
+div.expansion-close-btn,
+div.expansion-addqueue-btn {
   width: 24px;
   height: 24px;
   display: flex;
@@ -1222,13 +1229,18 @@ div.expansion-close-btn {
   border-radius: 4px;
   font-size: 14px;
   transition: all 0.2s;
-  z-index: 20;
 }
 
 div.expansion-close-btn:hover {
   color: white;
   background: #d9534f;
   border-color: #d43f3a;
+}
+
+div.expansion-addqueue-btn:hover {
+  color: white;
+  background: #5cb85c;
+  border-color: #4cae4c;
 }
 
 /* Ensure expansion content is visible even when row is hovered */
@@ -1278,6 +1290,14 @@ div.compact-hex-header {
   font-size: 9pt;
 }
 
+div.hex-info-row {
+  margin-bottom: 5px;
+}
+
+div.hex-info-row:last-child {
+  margin-bottom: 0;
+}
+
 div.compact-hex-header span.hex-label {
   font-weight: bold;
   margin-right: 5px;
@@ -1290,6 +1310,16 @@ div.compact-hex-header span.hex-label:first-child {
 
 div.compact-hex-header span.hex-value {
   margin-right: 10px;
+}
+
+div.compact-hex-header span.hex-byte {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+div.compact-hex-header i.hex-arrow {
+  margin: 0 5px;
+  color: #ffd700;
 }
 
 /* Compact Payload Table (matches original format) */
