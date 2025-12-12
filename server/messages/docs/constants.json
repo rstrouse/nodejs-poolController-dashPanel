@@ -965,7 +965,7 @@
     },
     {
       "val": 33,
-      "name": "Plugin",
+      "name": "njsPC",
       "desc": "Default plugin address",
       "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"

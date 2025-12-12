@@ -485,8 +485,48 @@ div.edit-message-protocol input[type=text],
 div.edit-message-payload input[type=text] {
     font-size: 10pt;
 }
+
+// Filter dialog styling
+div.pnl-protofilter {
+    // Grid layout is applied inline
+}
+
+// Strikethrough for EXCLUDED items (checked = excluded)
+// (These are the items that will be filtered OUT of the message list.)
+div.picCheckbox.cb-filter:has(> input[type=checkbox]:checked) label,
+div.picCheckbox.cb-action:has(> input[type=checkbox]:checked) label,
+div.picCheckbox.cb-protocol:has(> input[type=checkbox]:checked) label,
+div.picCheckbox.cb-port:has(> input[type=checkbox]:checked) label {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+// Fallback for browsers that don't support :has()
+div.picCheckbox.cb-filter input[type=checkbox]:checked + label,
+div.picCheckbox.cb-action input[type=checkbox]:checked + label,
+div.picCheckbox.cb-protocol input[type=checkbox]:checked + label,
+div.picCheckbox.cb-port input[type=checkbox]:checked + label {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+div.pnl-protocol {
+    // Styling applied inline for better control
+}
+
+// Broadcast protocol spans 2 columns and has internal 2-column layout
+div.pnl-protocol.protocol-broadcast {
+    grid-column: span 2;
+    
+    .pnl-action-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+}
+
 @import 'controller.scss';
 
 #orderOfElements {
     display: none;
-  }
+}

@@ -1053,6 +1053,15 @@ div.sysmessage-button > div.dropdown-panel {
   display: none;
 }
 
+/* Filter dialog: checked = excluded (strike through excluded items for clarity) */
+div.picCheckbox.cb-filter input[type=checkbox]:checked + label,
+div.picCheckbox.cb-action input[type=checkbox]:checked + label,
+div.picCheckbox.cb-protocol input[type=checkbox]:checked + label,
+div.picCheckbox.cb-port input[type=checkbox]:checked + label {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
 /* Payload Descriptor Table Styles */
 div.payload-descriptors {
   margin-top: 20px;
