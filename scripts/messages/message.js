@@ -3,9 +3,11 @@
 var msgManager = {
     constants: {},
     keyBytes: {},
+    configCategoryMap: null,
     init: function () {
         this.loadConstants();
         this.loadKeyBytes();
+        this.loadConfigCategoryMap();
         console.log('Messages loaded');
         console.log(this);
     },
@@ -22,6 +24,32 @@ var msgManager = {
             console.log(data);
             self.keyBytes = data;
             if (typeof cb === 'function') cb(data);
+        });
+    },
+    loadConfigCategoryMap: function (cb) {
+        var self = this;
+        if (self.configCategoryMap && typeof self.configCategoryMap === 'object') {
+            if (typeof cb === 'function') cb(self.configCategoryMap);
+            return;
+        }
+        // This doc contains payload[0].values mapping config category byte -> label
+        $.getLocalService('/messages/docs/165_P_BC_CP_222', undefined, function (docs, status, xhr) {
+            try {
+                let map = {};
+                if (docs && Array.isArray(docs.payload) && docs.payload.length > 0) {
+                    // Prefer "Config Category" entry, otherwise assume first payload descriptor
+                    let cat = docs.payload.find(p => (p && (p.name === 'Config Category' || p.start === 0))) || docs.payload[0];
+                    if (cat && typeof cat.values === 'object' && !Array.isArray(cat.values)) {
+                        map = cat.values;
+                    }
+                }
+                self.configCategoryMap = map;
+                if (typeof cb === 'function') cb(map);
+            } catch (err) {
+                console.log(err);
+                self.configCategoryMap = {};
+                if (typeof cb === 'function') cb(self.configCategoryMap);
+            }
         });
     },
     createKeyContext: function(msg) {

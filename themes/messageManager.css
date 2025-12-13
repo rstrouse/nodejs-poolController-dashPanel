@@ -1053,13 +1053,54 @@ div.sysmessage-button > div.dropdown-panel {
   display: none;
 }
 
-/* Filter dialog: checked = excluded (strike through excluded items for clarity) */
-div.picCheckbox.cb-filter input[type=checkbox]:checked + label,
-div.picCheckbox.cb-action input[type=checkbox]:checked + label,
-div.picCheckbox.cb-protocol input[type=checkbox]:checked + label,
-div.picCheckbox.cb-port input[type=checkbox]:checked + label {
+/* Filter dialog: unchecked = excluded (checked = include; don't strike indeterminate/partial selection) */
+div.picCheckbox.cb-filter input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-action input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-protocol input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-port input[type=checkbox]:not(:checked):not(:indeterminate) ~ label {
   text-decoration: line-through;
   opacity: 0.6;
+}
+
+/* Collapsible action expander affordances (Filter Out Messages dialog) */
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible {
+  display: flex;
+  align-items: center;
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible label {
+  cursor: pointer;
+  user-select: none;
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 0.4rem;
+  margin: 0 0.35rem 0 0.35rem;
+  border-radius: 4px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit > i {
+  font-size: 1rem;
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit > span.expander-count {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit.expanded > span.expander-count {
+  display: none;
 }
 
 /* Payload Descriptor Table Styles */
@@ -1231,10 +1272,10 @@ div.inline-expansion-content {
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   z-index: 10;
-  /* Make it break out of the cell to span full width */
-  width: calc(100vw - 60px);
-  max-width: 1400px;
-  margin-left: -10px;
+  /* Full-justify the expansion panel under the entire row/table (not just the Payload cell). */
+  margin-left: calc(-1 * var(--mmgr-expansion-offset, 0px));
+  width: calc(100% + var(--mmgr-expansion-offset, 0px));
+  max-width: calc(100% + var(--mmgr-expansion-offset, 0px));
   box-sizing: border-box;
   /* IMPORTANT: Override inherited color from row hover state */
   color: black !important;

@@ -60,7 +60,10 @@ div.vlist-body-outer {
 }
 div.vlist-body {
     position:absolute;
-    overflow:auto;
+    // Keep vertical scrollbar space reserved so header/body widths don't shift
+    // when content crosses the scroll threshold.
+    overflow-x: auto;
+    overflow-y: scroll;
     vertical-align:top;
     width:100%;
     height:100%;

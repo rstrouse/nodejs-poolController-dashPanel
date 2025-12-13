@@ -491,21 +491,22 @@ div.pnl-protofilter {
     // Grid layout is applied inline
 }
 
-// Strikethrough for EXCLUDED items (checked = excluded)
-// (These are the items that will be filtered OUT of the message list.)
-div.picCheckbox.cb-filter:has(> input[type=checkbox]:checked) label,
-div.picCheckbox.cb-action:has(> input[type=checkbox]:checked) label,
-div.picCheckbox.cb-protocol:has(> input[type=checkbox]:checked) label,
-div.picCheckbox.cb-port:has(> input[type=checkbox]:checked) label {
+// Strikethrough for EXCLUDED items (unchecked = excluded)
+// (Checked = include; unchecked = exclude. Indeterminate means partial selection, so don't strike it.)
+div.picCheckbox.cb-filter:has(> input[type=checkbox]:not(:checked):not(:indeterminate)) label,
+div.picCheckbox.cb-action:has(> input[type=checkbox]:not(:checked):not(:indeterminate)) label,
+div.picCheckbox.cb-protocol:has(> input[type=checkbox]:not(:checked):not(:indeterminate)) label,
+div.picCheckbox.cb-port:has(> input[type=checkbox]:not(:checked):not(:indeterminate)) label {
     text-decoration: line-through;
     opacity: 0.6;
 }
 
 // Fallback for browsers that don't support :has()
-div.picCheckbox.cb-filter input[type=checkbox]:checked + label,
-div.picCheckbox.cb-action input[type=checkbox]:checked + label,
-div.picCheckbox.cb-protocol input[type=checkbox]:checked + label,
-div.picCheckbox.cb-port input[type=checkbox]:checked + label {
+// Use "~ label" instead of "+ label" because we sometimes insert a chevron icon between input and label.
+div.picCheckbox.cb-filter input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-action input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-protocol input[type=checkbox]:not(:checked):not(:indeterminate) ~ label,
+div.picCheckbox.cb-port input[type=checkbox]:not(:checked):not(:indeterminate) ~ label {
     text-decoration: line-through;
     opacity: 0.6;
 }
@@ -523,6 +524,41 @@ div.pnl-protocol.protocol-broadcast {
         grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
     }
+}
+
+// Collapsible action expander affordances (Filter Out Messages dialog)
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible {
+    display: flex;
+    align-items: center;
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible label {
+    cursor: pointer;
+    user-select: none;
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 28px;
+    min-width: 28px;
+    padding: 0 0.4rem;
+    margin: 0 0.35rem 0 0.35rem;
+    border-radius: 4px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.04);
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit > i {
+    font-size: 1.0rem;
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit > span.expander-count {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+div.pnl-protofilter div.picCheckbox.cb-action.cb-collapsible span.expander-hit.expanded > span.expander-count {
+    display: none;
 }
 
 @import 'controller.scss';

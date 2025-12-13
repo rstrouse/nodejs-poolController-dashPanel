@@ -83,20 +83,35 @@
             $('<div class="empty-message">Start or load a message capture.</div>').appendTo(emptyPlaceholder);
             $('<div class="empty-message">Click on any row to bring up more details.</div>').appendTo(emptyPlaceholder);
             
+            // IMPORTANT: Set explicit widths for all non-payload columns so header + body
+            // stay aligned even when the virtual list re-renders different row clusters on scroll.
+            // Keep Payload column flexible (no width) so it absorbs remaining space.
+            const columns = [
+                { width: '20px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                { width: '45px', header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
+                { width: '90px', header: { label: 'Id' } },
+                { width: '45px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
+                { width: '45px', header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
+                { width: '120px', header: { label: 'Proto' } },
+                { width: '120px', header: { label: 'Source' } },
+                { width: '120px', header: { label: 'Dest' } },
+                { width: '70px', header: { label: 'Action' } },
+                { header: { label: 'Payload' } }
+            ];
+
+            // Cache the total width of all columns *before* Payload so the inline expansion panel
+            // can be shifted left to start at column 1 (full-justified under the table).
+            // This uses CSS variables so it stays in sync with any future width tweaks.
+            const parsePx = (v) => {
+                if (typeof v !== 'string') return 0;
+                const m = v.match(/(-?\d+(?:\.\d+)?)px/);
+                return m ? parseFloat(m[1]) : 0;
+            };
+            o.expansionOffsetPx = columns.slice(0, 9).reduce((sum, c) => sum + parsePx(c.width), 0);
+
             var vlist = $('<div></div>').css({ width: '100%', height: '100%' }).appendTo(td).virtualList({
                 selectionType: 'single',
-                columns: [
-                    { header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
-                    { header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
-                    { header: { label: 'Id' } },
-                    { header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
-                    { header: { label: 'Chg', attrs: { title: 'Indicates whether the message is\r\n1. A new message\r\n2. A change from previous\r\n3. A duplicate of the previous instance' } } },
-                    { header: { label: 'Proto' } },
-                    { header: { label: 'Source' } },
-                    { header: { label: 'Dest' } },
-                    { header: { label: 'Action' } },
-                    { header: { label: 'Payload' } }
-                ]
+                columns
             });
             vlist.on('bindrow', function (evt) { self._bindVListRow(evt.row, evt.rowData); });
             
@@ -476,16 +491,22 @@
         _createFilterDialog: function (filt) {
             var self = this, o = self.options, el = self.element;
             var dlg = $.pic.modalDialog.createDialog('dlgFilterMessages', {
-                message: 'Filter Messages',
+                message: 'Filter Out Messages',
                 width: '90vw',
                 maxWidth: '1400px',
                 height: 'auto',
-                title: 'Filter Messages',
+                title: 'Filter Out Messages',
                 buttons: [
                     {
-                        text: 'Clear', icon: '<i class="fas fa-broom"></i>',
+                        text: 'Exclude All', icon: '<i class="fas fa-broom"></i>',
                         click: function () {
-                            dlg.find('div.picCheckbox').each(function () { this.val(false); });
+                            // Exclude all message filters (do NOT change ports)
+                            try {
+                                dlg.attr('data-processing', true);
+                                dlg.find('div.picCheckbox.cb-filter').each(function () { this.val(false); });
+                                if (typeof fnUpdateParentChecks === 'function') fnUpdateParentChecks();
+                            } catch (err) { console.log(err); }
+                            finally { dlg.attr('data-processing', false); }
                         }
                     },
                     {
@@ -493,13 +514,15 @@
                         click: function () {
                             let keys = [];
                             dlg.find('div.picCheckbox.cb-filter').each(function () {
-                                if (this.val()) keys.push($(this).attr('data-messageKey'));
+                                // CHECKED = INCLUDE, unchecked = EXCLUDE
+                                if (!this.val()) keys.push($(this).attr('data-messageKey'));
                             });
                             //console.log(keys);
                             o.filters = keys;
                             let ports = [];
                             dlg.find('div.picCheckbox.cb-port').each(function () {
-                                if (this.val()) ports.push(parseInt($(this).attr('data-port'), 10));
+                                // CHECKED = INCLUDE, unchecked = EXCLUDE
+                                if (!this.val()) ports.push(parseInt($(this).attr('data-port'), 10));
                             });
                             o.portFilters = ports;
                             self._filterMessages();
@@ -579,6 +602,19 @@
                     $(evt.currentTarget).attr('data-selected', 'true');
                     evt.stopPropagation();
                 });
+
+                // Include/Exclude all shortcuts
+                let allBtns = $('<div></div>').appendTo(modePanel).addClass('btnarray').css({ marginLeft: '0.75rem' });
+                let includeAllBtn = $('<div></div>').appendTo(allBtns)
+                    .addClass('btn-toggle fld-btn-left')
+                    .attr('data-filter-all', 'include')
+                    .css({ padding: '0.25rem 0.5rem', fontSize: '0.85rem' });
+                $('<span></span>').appendTo(includeAllBtn).text('Include All');
+                let excludeAllBtn = $('<div></div>').appendTo(allBtns)
+                    .addClass('btn-toggle fld-btn-right')
+                    .attr('data-filter-all', 'exclude')
+                    .css({ padding: '0.25rem 0.5rem', fontSize: '0.85rem' });
+                $('<span></span>').appendTo(excludeAllBtn).text('Exclude All');
                 // Add "From" shortcuts
                 if (sourceAddrs.size > 0) {
                     let fromLabel = $('<div></div>').appendTo(shortcutsPanel).css({
@@ -591,7 +627,7 @@
                         marginBottom: '0.5rem',
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '0.25rem'
+                        gap: '0'
                     });
                     
                     let sortedSources = Array.from(sourceAddrs.entries()).sort((a, b) => a[0] - b[0]);
@@ -618,7 +654,7 @@
                     let toBtns = $('<div></div>').appendTo(shortcutsPanel).addClass('btnarray').css({
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '0.25rem'
+                        gap: '0'
                     });
                     
                     let sortedDests = Array.from(destAddrs.entries()).sort((a, b) => a[0] - b[0]);
@@ -654,7 +690,8 @@
                     let p = filt.ports[i];
                     $('<div></div>').appendTo(portBtns).checkbox({ 
                         labelHtml: `<span>RS485 Port #${p.port}</span>`, 
-                        value: p.filtered 
+                        // CHECKED = INCLUDE; p.filtered is "excluded" (in o.portFilters)
+                        value: !p.filtered 
                     }).addClass('cb-port').attr('data-port', p.port);
                 }
             }
@@ -675,6 +712,50 @@
                     unchecked: div.find('div.picCheckbox.cb-filter > input[type=checkbox]:not(:checked)')
                 };
             };
+
+            let fnUpdateParentChecks = () => {
+                // Update action checkboxes
+                outer.find('div.pnl-action').each(function () {
+                    let divA = $(this);
+                    let checks = fnCalcChecks(divA);
+                    if (checks.checked.length === 0) {
+                        divA.find('div.picCheckbox.cb-action').each(function () {
+                            this.indeterminate(false);
+                            this.val(false);
+                        });
+                    }
+                    else if (checks.checked.length > 0 && checks.unchecked.length === 0) {
+                        divA.find('div.picCheckbox.cb-action').each(function () {
+                            this.indeterminate(false);
+                            this.val(true);
+                        });
+                    }
+                    else {
+                        divA.find('div.picCheckbox.cb-action').each(function () { this.indeterminate(true); });
+                    }
+                });
+
+                // Update protocol checkboxes
+                outer.find('div.pnl-protocol').each(function () {
+                    let divP = $(this);
+                    let checks = fnCalcChecks(divP);
+                    if (checks.checked.length === 0) {
+                        divP.find('div.picCheckbox.cb-protocol').each(function () {
+                            this.indeterminate(false);
+                            this.val(false);
+                        });
+                    }
+                    else if (checks.checked.length > 0 && checks.unchecked.length === 0) {
+                        divP.find('div.picCheckbox.cb-protocol').each(function () {
+                            this.indeterminate(false);
+                            this.val(true);
+                        });
+                    }
+                    else {
+                        divP.find('div.picCheckbox.cb-protocol').each(function () { this.indeterminate(true); });
+                    }
+                });
+            };
             
             // Helper function to get first payload byte for display
             let getFirstPayloadByte = (filter) => {
@@ -682,6 +763,62 @@
                     return filter.context.payloadByte;
                 }
                 return null;
+            };
+
+            // Format the "actionExt" part of the label consistently for config-item messages.
+            // For actions 30/168/222, payloadKey is like "13_0" where the first byte is the config category.
+            let fmtConfigActionExt = (act, filter) => {
+                try {
+                    if (!act || !filter) return filter.actionExt || '';
+                    if (![30, 168, 222].includes(act.val)) return filter.actionExt || '';
+                    if (typeof filter.payloadKey !== 'string' || filter.payloadKey.length === 0) return filter.actionExt || '';
+                    let parts = filter.payloadKey.split('_');
+                    let subByte = parseInt(parts[0], 10);
+                    if (isNaN(subByte)) return filter.actionExt || '';
+
+                    // Category name comes from the Request Config Item doc (222) payload[0].values
+                    let map = (typeof msgManager !== 'undefined' && msgManager.configCategoryMap) ? msgManager.configCategoryMap : {};
+                    let catName = map[subByte] || map[subByte.toString()] || filter.category || '';
+                    // UI-only typo fix seen in docs
+                    if (catName === 'Intalled Equipment') catName = 'Installed Equipment';
+
+                    let shortDesc = filter.actionExt || '';
+                    // Option A: append "[subByte] <categoryName> <shortDesc>"
+                    // (If category name is missing, just show [subByte] <shortDesc>.)
+                    let label = `[${subByte}]`;
+                    if (catName) label += ` ${catName}`;
+                    if (shortDesc) label += ` ${shortDesc}`;
+                    return label;
+                } catch (e) {
+                    return filter.actionExt || '';
+                }
+            };
+
+            let parsePayloadKeyBytes = (payloadKey) => {
+                if (typeof payloadKey !== 'string' || payloadKey.length === 0) return { a: Number.MAX_SAFE_INTEGER, b: Number.MAX_SAFE_INTEGER };
+                let parts = payloadKey.split('_');
+                let a = parseInt(parts[0], 10);
+                let b = parts.length > 1 ? parseInt(parts[1], 10) : Number.MAX_SAFE_INTEGER;
+                return {
+                    a: isNaN(a) ? Number.MAX_SAFE_INTEGER : a,
+                    b: isNaN(b) ? Number.MAX_SAFE_INTEGER : b
+                };
+            };
+
+            let sortFiltersForAction = (act, filters) => {
+                if (!act || !Array.isArray(filters)) return filters || [];
+                if (![30, 168, 222].includes(act.val)) return filters;
+                // Sort by sub-byte (payloadKey first segment), then secondary byte (second segment) for stable ordering.
+                return filters.slice().sort((x, y) => {
+                    let xb = parsePayloadKeyBytes(x && x.payloadKey);
+                    let yb = parsePayloadKeyBytes(y && y.payloadKey);
+                    if (xb.a !== yb.a) return xb.a - yb.a;
+                    if (xb.b !== yb.b) return xb.b - yb.b;
+                    // Finally, stable-ish by actionExt/name
+                    let xs = (x && (x.actionExt || x.key || '')) + '';
+                    let ys = (y && (y.actionExt || y.key || '')) + '';
+                    return xs.localeCompare(ys);
+                });
             };
             
             // Separate broadcast from other protocols
@@ -709,54 +846,76 @@
                     let act = f.actions[a];
                     let divA = $('<div></div>').appendTo(actionsContainer).addClass('pnl-action');
                     
-                    // Special handling for action 222 - add expand/collapse functionality
+                    // Special handling for action 222 - add payload byte display enhancements
                     let is222 = act.val === 222;
+                    // Collapse any action with many entries to keep the dialog manageable
+                    let isCollapsible = act.filters && act.filters.length >= 5;
                     let actionCheckbox = $('<div></div>').appendTo(divA).checkbox({ labelHtml: `<span>[<span class="msg-detail-byte">${act.val}</span>]<span> ${act.name}</span>` })
                         .css({ marginLeft: '1rem', fontWeight: 'bold' }).addClass('cb-action');
                     
                     let filtersContainer = $('<div></div>').appendTo(divA).addClass('pnl-filters-container');
                     
-                    if (is222) {
-                        // Add expander icon OUTSIDE the checkbox label so clicking it never toggles selection.
-                        // (Checked = excluded; expand/collapse should be view-only.)
-                        let expandIcon = $('<i></i>').addClass('fas fa-chevron-right')
-                            .css({ marginLeft: '0.5rem', cursor: 'pointer', fontSize: '0.8rem' })
-                            .attr('title', 'Expand/Collapse details')
+                    if (isCollapsible) {
+                        // Add an expander "hit target" between the checkbox input and label.
+                        // Clicking anywhere on the row (except the checkbox square) toggles expand/collapse.
+                        actionCheckbox.addClass('cb-collapsible');
+                        let itemCount = act.filters.length;
+                        let expanderHit = $('<span></span>').addClass('expander-hit')
+                            .attr('title', 'Expand/Collapse')
                             .insertAfter(actionCheckbox.find('input.picCheckbox-value:first'));
-                        filtersContainer.hide(); // Start collapsed
-                        filtersContainer.attr('data-expanded', 'false');
-                        
-                        expandIcon.on('click', function (evt) {
+                        let expIcon = $('<i></i>').addClass('fas fa-caret-right').appendTo(expanderHit);
+                        let expCount = $('<span></span>').addClass('expander-count').text(`(${itemCount})`).appendTo(expanderHit);
+
+                        let toggleExpanded = () => {
                             let isExpanded = filtersContainer.attr('data-expanded') === 'true';
                             if (isExpanded) {
                                 filtersContainer.hide();
                                 filtersContainer.attr('data-expanded', 'false');
-                                expandIcon.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+                                expIcon.removeClass('fa-caret-down').addClass('fa-caret-right');
+                                expanderHit.removeClass('expanded');
                             } else {
                                 filtersContainer.show();
                                 filtersContainer.attr('data-expanded', 'true');
-                                expandIcon.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+                                expIcon.removeClass('fa-caret-right').addClass('fa-caret-down');
+                                expanderHit.addClass('expanded');
                             }
+                        };
+
+                        // Start collapsed
+                        filtersContainer.hide();
+                        filtersContainer.attr('data-expanded', 'false');
+                        expanderHit.removeClass('expanded');
+
+                        // Clicking expander hit target toggles only expansion (never checkbox)
+                        expanderHit.on('click', function (evt) {
+                            toggleExpanded();
                             evt.preventDefault();
+                            evt.stopPropagation();
+                        });
+
+                        // Clicking the action row toggles expansion; clicking checkbox square toggles include/exclude.
+                        actionCheckbox.on('click', function (evt) {
+                            if ($(evt.target).is('input.picCheckbox-value')) return;
+                            toggleExpanded();
+                            evt.preventDefault(); // prevent label -> checkbox toggle
                             evt.stopPropagation();
                         });
                     }
                     
-                    for (let j = 0; j < act.filters.length; j++) {
-                        let filter = act.filters[j];
+                    let sortedFilters = sortFiltersForAction(act, act.filters);
+                    for (let j = 0; j < sortedFilters.length; j++) {
+                        let filter = sortedFilters[j];
                         let divFilter = $('<div></div>').css({ marginLeft: '2rem', fontSize: '.8rem' }).appendTo(filtersContainer);
                         
-                        // For action 222, extract first byte and add to label
-                        let actionExtLabel = filter.actionExt;
-                        if (is222 && filter.context && filter.context.payloadByte !== undefined) {
-                            actionExtLabel = `[${filter.context.payloadByte}] ${filter.actionExt}`;
-                        }
+                        // Show consistent sub-byte/category info for config item actions (30/168/222)
+                        let actionExtLabel = fmtConfigActionExt(act, filter) || filter.actionExt;
                         
                         if (typeof filter.dest !== 'undefined') {
                             let cb = $('<div></div>').checkbox({
                                 labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${actionExtLabel}</span></span>`,
                                 labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${actionExtLabel}</span></span>`,
-                                value: filter.filtered
+                                // CHECKED = INCLUDE; filter.filtered is "excluded" (in o.filters)
+                                value: !filter.filtered
                             }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
                             if (typeof filter.source !== 'undefined' && filter.source.val !== null) {
                                 cb.attr('data-source', filter.source.val);
@@ -768,7 +927,8 @@
                         else if (typeof filter.source !== 'undefined') {
                             let cb = $('<div></div>').checkbox({
                                 labelHtml: `<span><span class="msg-detail-byte">${filter.source.name}</span></span></span>`,
-                                value: filter.filtered
+                                // CHECKED = INCLUDE; filter.filtered is "excluded" (in o.filters)
+                                value: !filter.filtered
                             }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
                             if (filter.source.val !== null) {
                                 cb.attr('data-source', filter.source.val);
@@ -811,54 +971,76 @@
                     let act = f.actions[a];
                     let divA = $('<div></div>').appendTo(divP).addClass('pnl-action');
                     
-                    // Special handling for action 222 - add expand/collapse functionality
+                    // Special handling for action 222 - add payload byte display enhancements
                     let is222 = act.val === 222;
+                    // Collapse any action with many entries to keep the dialog manageable
+                    let isCollapsible = act.filters && act.filters.length >= 5;
                     let actionCheckbox = $('<div></div>').appendTo(divA).checkbox({ labelHtml: `<span>[<span class="msg-detail-byte">${act.val}</span>]<span> ${act.name}</span>` })
                         .css({ marginLeft: '1rem', fontWeight: 'bold' }).addClass('cb-action');
                     
                     let filtersContainer = $('<div></div>').appendTo(divA).addClass('pnl-filters-container');
                     
-                    if (is222) {
-                        // Add expander icon OUTSIDE the checkbox label so clicking it never toggles selection.
-                        // (Checked = excluded; expand/collapse should be view-only.)
-                        let expandIcon = $('<i></i>').addClass('fas fa-chevron-right')
-                            .css({ marginLeft: '0.5rem', cursor: 'pointer', fontSize: '0.8rem' })
-                            .attr('title', 'Expand/Collapse details')
+                    if (isCollapsible) {
+                        // Add an expander "hit target" between the checkbox input and label.
+                        // Clicking anywhere on the row (except the checkbox square) toggles expand/collapse.
+                        actionCheckbox.addClass('cb-collapsible');
+                        let itemCount = act.filters.length;
+                        let expanderHit = $('<span></span>').addClass('expander-hit')
+                            .attr('title', 'Expand/Collapse')
                             .insertAfter(actionCheckbox.find('input.picCheckbox-value:first'));
-                        filtersContainer.hide(); // Start collapsed
-                        filtersContainer.attr('data-expanded', 'false');
-                        
-                        expandIcon.on('click', function (evt) {
+                        let expIcon = $('<i></i>').addClass('fas fa-caret-right').appendTo(expanderHit);
+                        let expCount = $('<span></span>').addClass('expander-count').text(`(${itemCount})`).appendTo(expanderHit);
+
+                        let toggleExpanded = () => {
                             let isExpanded = filtersContainer.attr('data-expanded') === 'true';
                             if (isExpanded) {
                                 filtersContainer.hide();
                                 filtersContainer.attr('data-expanded', 'false');
-                                expandIcon.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+                                expIcon.removeClass('fa-caret-down').addClass('fa-caret-right');
+                                expanderHit.removeClass('expanded');
                             } else {
                                 filtersContainer.show();
                                 filtersContainer.attr('data-expanded', 'true');
-                                expandIcon.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+                                expIcon.removeClass('fa-caret-right').addClass('fa-caret-down');
+                                expanderHit.addClass('expanded');
                             }
+                        };
+
+                        // Start collapsed
+                        filtersContainer.hide();
+                        filtersContainer.attr('data-expanded', 'false');
+                        expanderHit.removeClass('expanded');
+
+                        // Clicking expander hit target toggles only expansion (never checkbox)
+                        expanderHit.on('click', function (evt) {
+                            toggleExpanded();
                             evt.preventDefault();
+                            evt.stopPropagation();
+                        });
+
+                        // Clicking the action row toggles expansion; clicking checkbox square toggles include/exclude.
+                        actionCheckbox.on('click', function (evt) {
+                            if ($(evt.target).is('input.picCheckbox-value')) return;
+                            toggleExpanded();
+                            evt.preventDefault(); // prevent label -> checkbox toggle
                             evt.stopPropagation();
                         });
                     }
                     
-                    for (let j = 0; j < act.filters.length; j++) {
-                        let filter = act.filters[j];
+                    let sortedFilters = sortFiltersForAction(act, act.filters);
+                    for (let j = 0; j < sortedFilters.length; j++) {
+                        let filter = sortedFilters[j];
                         let divFilter = $('<div></div>').css({ marginLeft: '2rem', fontSize: '.8rem' }).appendTo(filtersContainer);
                         
-                        // For action 222, extract first byte and add to label
-                        let actionExtLabel = filter.actionExt;
-                        if (is222 && filter.context && filter.context.payloadByte !== undefined) {
-                            actionExtLabel = `[${filter.context.payloadByte}] ${filter.actionExt}`;
-                        }
+                        // Show consistent sub-byte/category info for config item actions (30/168/222)
+                        let actionExtLabel = fmtConfigActionExt(act, filter) || filter.actionExt;
                         
                         if (typeof filter.dest !== 'undefined') {
                             let cb = $('<div></div>').checkbox({
                                 labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${actionExtLabel}</span></span>`,
                                 labelHtml: `<span>[<span class="msg-detail-byte">${filter.source.val}</span>] ${filter.source.name} <i class="fas fa-arrow-right msg-detail-fromto"></i> [<span class="msg-detail-byte">${filter.dest.val}</span>] ${filter.dest.name} <span class="msg-detail-byte" title="${filter.category}:${filter.payloadKey}">${actionExtLabel}</span></span>`,
-                                value: filter.filtered
+                                // CHECKED = INCLUDE; filter.filtered is "excluded" (in o.filters)
+                                value: !filter.filtered
                             }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
                             // Store source and dest for shortcut filtering
                             if (typeof filter.source !== 'undefined' && filter.source.val !== null) {
@@ -871,7 +1053,8 @@
                         else if (typeof filter.source !== 'undefined') {
                             let cb = $('<div></div>').checkbox({
                                 labelHtml: `<span><span class="msg-detail-byte">${filter.source.name}</span></span></span>`,
-                                value: filter.filtered
+                                // CHECKED = INCLUDE; filter.filtered is "excluded" (in o.filters)
+                                value: !filter.filtered
                             }).appendTo(divFilter).attr('data-messageKey', filter.key).addClass('cb-filter');
                             // Store source for shortcut filtering
                             if (filter.source.val !== null) {
@@ -989,54 +1172,25 @@
                         });
                     }
                     
-                    // Update action checkboxes
-                    outer.find('div.pnl-action').each(function () {
-                        let divA = $(this);
-                        let checks = fnCalcChecks(divA);
-                        if (checks.checked.length === 0) {
-                            divA.find('div.picCheckbox.cb-action').each(function () { 
-                                this.indeterminate(false); 
-                                this.val(false); 
-                            });
-                        }
-                        else if (checks.checked.length > 0 && checks.unchecked.length === 0) {
-                            divA.find('div.picCheckbox.cb-action').each(function () { 
-                                this.indeterminate(false); 
-                                this.val(true); 
-                            });
-                        }
-                        else {
-                            divA.find('div.picCheckbox.cb-action').each(function () { 
-                                this.indeterminate(true); 
-                            });
-                        }
-                    });
-                    
-                    // Update protocol checkboxes
-                    outer.find('div.pnl-protocol').each(function () {
-                        let divP = $(this);
-                        let checks = fnCalcChecks(divP);
-                        if (checks.checked.length === 0) {
-                            divP.find('div.picCheckbox.cb-protocol').each(function () { 
-                                this.indeterminate(false); 
-                                this.val(false); 
-                            });
-                        }
-                        else if (checks.checked.length > 0 && checks.unchecked.length === 0) {
-                            divP.find('div.picCheckbox.cb-protocol').each(function () { 
-                                this.indeterminate(false); 
-                                this.val(true); 
-                            });
-                        }
-                        else {
-                            divP.find('div.picCheckbox.cb-protocol').each(function () { 
-                                this.indeterminate(true); 
-                            });
-                        }
-                    });
+                    fnUpdateParentChecks();
                     
                 } catch (err) { 
                     console.log(err); 
+                } finally {
+                    dlg.attr('data-processing', false);
+                }
+            });
+
+            // Include/Exclude all handler (checked = include)
+            dlg.on('click', 'div.pnl-filter-shortcuts div.btn-toggle[data-filter-all]', function (evt) {
+                let op = $(evt.currentTarget).attr('data-filter-all'); // include|exclude
+                let newVal = op === 'include';
+                try {
+                    dlg.attr('data-processing', true);
+                    outer.find('div.picCheckbox.cb-filter').each(function () { this.val(newVal); });
+                    fnUpdateParentChecks();
+                } catch (err) {
+                    console.log(err);
                 } finally {
                     dlg.attr('data-processing', false);
                 }
@@ -1399,9 +1553,11 @@
                 self._closeAllExpandedRows();
             }
             
-            // Build expanded content as a div INSIDE the row's first cell (Port column)
+            // Build expanded content as a div INSIDE the row's last cell (Payload column)
             // This way it becomes part of the row's stored HTML and survives virtual list re-renders
-            var firstCell = row.find('td:first');
+            // NOTE: Keeping this in the last cell prevents the expansion from forcing column-width
+            // recalculation that can desync header/body widths in table-layout:auto.
+            var hostCell = row.find('td:last');
             var container = $('<div class="inline-expansion-content"></div>');
             
             // Add action buttons in top-right corner
@@ -1429,8 +1585,14 @@
             var payloadSection = $('<div class="inline-payload-section"></div>');
             container.append(payloadSection);
             
-            // Append to first cell
-            firstCell.append(container);
+            // Configure expansion to be full-width under the row (across all columns),
+            // without affecting column widths (we use negative margin + wider width).
+            container.css({
+                '--mmgr-expansion-offset': (o.expansionOffsetPx || 0) + 'px'
+            });
+
+            // Append to the host cell
+            hostCell.append(container);
             
             // Build hex display (needs to be after container is in DOM for width calculations)
             self._buildCompactHexDisplay(hexSection, msg, prev, context);
