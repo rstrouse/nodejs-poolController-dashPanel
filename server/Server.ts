@@ -15,6 +15,7 @@ import { UploadRoute, BackgroundUpload } from "./upload/upload";
 import { setTimeout } from "timers";
 import { ConfigRoute } from "./api/Config";
 import { MessagesRoute } from "./api/Messages";
+import { SecurityRoute } from "./api/Security";
 import { Timestamp, utils } from "./Constants";
 import { RelayRoute, njsPCRelay } from "./relay/relayRoute";
 import { Namespace, RemoteSocket, Server as SocketIoServer, Socket } from "socket.io";
@@ -155,10 +156,16 @@ export class HttpServer extends ProtoServer {
             this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
             this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
-            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
+            // Do not aggressively cache app scripts; we ship updates by replacing files in-place.
+            this.app.use('/scripts', (req, res, next) => {
+                res.setHeader('Cache-Control', 'no-store');
+                next();
+            });
+            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: 0 }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
             this.app.use('/icons', express.static(path.join(process.cwd(), '/themes/icons'), { maxAge: '1d' }));
             RelayRoute.initRoutes(this.app);
+            SecurityRoute.initRoutes(this.app);
             ConfigRoute.initRoutes(this.app);
             MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);
@@ -304,6 +311,7 @@ export class HttpsServer extends HttpServer {
                 return value;
             });
 
+	    SecurityRoute.initRoutes(this.app);
 	    ConfigRoute.initRoutes(this.app);
 	    // StateRoute.initRoutes(this.app);
 	    // UtilitiesRoute.initRoutes(this.app);
@@ -317,10 +325,16 @@ export class HttpsServer extends HttpServer {
             this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
             this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
-            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: '1d' }));
+            // Do not aggressively cache app scripts; we ship updates by replacing files in-place.
+            this.app.use('/scripts', (req, res, next) => {
+                res.setHeader('Cache-Control', 'no-store');
+                next();
+            });
+            this.app.use('/scripts', express.static(path.join(process.cwd(), '/scripts/'), { maxAge: 0 }));
             this.app.use('/themes', express.static(path.join(process.cwd(), '/themes/'), { maxAge: '1d' }));
             this.app.use('/icons', express.static(path.join(process.cwd(), '/themes/icons'), { maxAge: '1d' }));
             RelayRoute.initRoutes(this.app);
+            SecurityRoute.initRoutes(this.app);
             ConfigRoute.initRoutes(this.app);
             MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);

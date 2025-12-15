@@ -14,8 +14,9 @@
             $('<hr></hr>').appendTo(line);
             line = $('<div></div>').appendTo(div);
             var fset = $('<fieldset></fieldset>').appendTo(line);
-            $('<legend></legend>').appendTo(fset).text('Options');
+            $('<legend></legend>').appendTo(fset).text('Description');
             line = $('<div></div>').appendTo(fset);
+            $('<div></div>').appendTo(line).inputField({ binding: 'description', labelText: '', inputAttrs: { style: { width: '100%' } } });
             //$('<div></div>').appendTo(line).pickList({
             //    displayColumn:0,
             //    labelText: 'Playback To', binding: 'playbackTo',
@@ -61,10 +62,11 @@
                         }
                         else {
                             msgList.clear();
-                            // Store the filename and update the title
+                            // Store the filename, description and update the title
                             var msgListWidget = $('div.picMessages:first').data('pic-messageList');
                             if (msgListWidget && filename) {
                                 msgListWidget.options.loadedFilename = filename;
+                                msgListWidget.options.loadedDescription = opts.description || '';
                                 msgListWidget._updateTitle();
                             }
                             self._processNextMessage(msgList, progress[0], data);

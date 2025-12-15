@@ -277,3 +277,5 @@ uploads/
 *.pem
 ssl/
 scripts/.DS_Store
+
+.plan/

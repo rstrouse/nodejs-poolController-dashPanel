@@ -20,8 +20,7 @@
         "sslCertFile": "/ssl/cert.pem"
       },
       "mdns": { "enabled": false },
-      "sspd": { "enabled": false },
-      "services": {}
+      "sspd": { "enabled": false }
     },
     "services": {
       "protocol": "http://",
@@ -41,6 +40,12 @@
     "socket": {
       "sendLogMessages":  false
     }
+  },
+  "security": {
+    "enabled": false,
+    "lockUiStyle": "LOCKED_VISIBLE",
+    "adminPasswordSalt": "",
+    "adminPasswordHash": ""
   },
   "dashboard": { "startPage": "index.html" },
   "log": {

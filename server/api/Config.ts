@@ -8,6 +8,7 @@ import { config } from "../config/Config";
 import { logger } from "../logger/Logger";
 import { versionCheck } from '../config/VersionCheck';
 import { njsPCRelay } from "../relay/relayRoute";
+import { securityService } from "../security/SecurityService";
 export class ConfigRoute {
     public static initRoutes(app: express.Application) {
         app.get('/config/serviceUri', (req, res, next) => {
@@ -22,6 +23,7 @@ export class ConfigRoute {
         });
         app.put('/config/serviceUri', async (req, res, next) => {
             try {
+                securityService.requireUnlocked();
                 let srv = extend(true, {}, config.getSection('web.services'), req.body);
                 config.setSection('web.services', srv);
                 njsPCRelay.init();
@@ -97,11 +99,24 @@ export class ConfigRoute {
             catch (err) { console.log(err); return res.status(500).send(err); }
         });
         app.get('/config/:section', (req, res) => { return res.status(200).send(config.getSection(req.params.section)); });
-        app.put('/config/:section', (req, res) => {
+        app.put('/config/:section', (req, res, next) => {
             try {
-                config.setSection(req.params.section, req.body);
+                securityService.requireUnlocked();
+                // Protect critical nested config sections from accidental clobbering.
+                // Example: /config/web.services should not allow deleting protocol/ip/port by sending a partial object.
+                if (req.params.section === 'web.services') {
+                    const merged = extend(true, {}, config.getSection('web.services'), req.body);
+                    config.setSection('web.services', merged);
+                }
+                else if (req.params.section === 'security') {
+                    const merged = extend(true, {}, config.getSection('security'), req.body);
+                    config.setSection('security', merged);
+                }
+                else {
+                    config.setSection(req.params.section, req.body);
+                }
             }
-            catch (err) { return res.status(400).send(new Error(err)); }
+            catch (err) { return next(err); }
             return res.status(200).send(config.getSection(req.params.section));
         });
         app.get('/options', (req, res) => {

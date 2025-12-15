@@ -1,7 +1,7 @@
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: [], expandedRows: {}, loadedFilename: null
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: [], expandedRows: {}, loadedFilename: null, loadedDescription: null
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -1496,7 +1496,11 @@
             var self = this, o = self.options, el = self.element;
             var titleSpan = el.find('div.picMessageListTitle:first > span');
             if (o.loadedFilename) {
-                titleSpan.text('Messages - Loaded from ' + o.loadedFilename);
+                var title = 'Messages - Loaded from ' + o.loadedFilename;
+                if (o.loadedDescription) {
+                    title += ' - ' + o.loadedDescription;
+                }
+                titleSpan.text(title);
             }
             else {
                 titleSpan.text('Messages');
@@ -1509,8 +1513,9 @@
                 if (o.receivingMessages) {
                     el.find('div.picStartLogs > i').removeClass('far').addClass('fas');
                     el.find('div.picStartLogs').addClass('selected');
-                    // Clear the loaded filename when starting live logging
+                    // Clear the loaded filename and description when starting live logging
                     o.loadedFilename = null;
+                    o.loadedDescription = null;
                     self._updateTitle();
                 }
                 else {

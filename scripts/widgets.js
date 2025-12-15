@@ -264,6 +264,21 @@ function makeBool(val) {
     }
     return false;
 }
+function _redactForLog(url, data) {
+    try {
+        var u = (url || '').toString().toLowerCase();
+        // Redact any security-related payloads (passwords, pins, etc.)
+        if (u.indexOf('/security/') !== -1) {
+            return { redacted: true };
+        }
+        // Redact common sensitive keys if present
+        var s = (typeof data === 'string') ? data : JSON.stringify(data);
+        if (typeof s === 'string' && s.match(/password|pin|secret|token/i)) {
+            return { redacted: true };
+        }
+    } catch (e) { }
+    return data;
+}
 // PUT and Delete for ReST calls.
 jQuery.each(["put", "delete"], function (i, method) {
     jQuery[method] = function (url, data, callback, type) {
@@ -343,13 +358,15 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
         errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
         completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
-        console.log({ method: method, url: url, data: typeof data === 'string' ? data : JSON.stringify(data) });
+        console.log({ method: method, url: url, data: _redactForLog(url, (typeof data === 'string' ? data : JSON.stringify(data))) });
+        // Treat null like undefined (prevents "?null" from being appended on GET requests)
+        if (data === null) data = undefined;
         return jQuery.ajax({
             url: serviceUrl,
             type: method,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
-            data: typeof data === 'string' ? data : JSON.stringify(data),
+            data: typeof data === 'undefined' ? undefined : (typeof data === 'string' ? data : JSON.stringify(data)),
             error: errorCallback,
             success: successCallback,
             complete: completeCallback
@@ -421,13 +438,15 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
         errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
         completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
-        console.log({ method: method, url: url, data: typeof data === 'string' ? data : JSON.stringify(data) });
+        console.log({ method: method, url: url, data: _redactForLog(url, (typeof data === 'string' ? data : JSON.stringify(data))) });
+        // Treat null like undefined (prevents "?null" from being appended on GET requests)
+        if (data === null) data = undefined;
         return jQuery.ajax({
             url: serviceUrl,
             type: method,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
-            data: typeof data === 'string' ? data : JSON.stringify(data),
+            data: typeof data === 'undefined' ? undefined : (typeof data === 'string' ? data : JSON.stringify(data)),
             error: errorCallback,
             success: successCallback,
             complete: completeCallback
@@ -482,14 +501,16 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
         successCallback = $.mergeCallbacks(successCallback, cbShowSuccess);
         errorCallback = $.mergeCallbacks(errorCallback, cbShowError);
         completeCallback = $.mergeCallbacks(completeCallback, cbComplete);
-        console.log({ method: method, url: url, data: typeof data === 'string' ? data : JSON.stringify(data) });
+        console.log({ method: method, url: url, data: _redactForLog(url, (typeof data === 'string' ? data : JSON.stringify(data))) });
+        // Treat null like undefined (prevents "?null" from being appended on GET requests)
+        if (data === null) data = undefined;
         return jQuery.ajax({
             url: serviceUrl,
             type: method,
             dataType: 'binary',
             processData: false,
             contentType: 'application/json; charset=utf-8',
-            data: typeof data === 'string' ? data : JSON.stringify(data),
+            data: typeof data === 'undefined' ? undefined : (typeof data === 'string' ? data : JSON.stringify(data)),
             cache: false,
             xhrFields: { responseType: 'blob' },
             error: errorCallback,
@@ -4333,6 +4354,24 @@ $.pic.modalDialog.closeDialog = function (el) {
     return dlg;
 };
 $.pic.modalDialog.createApiError = function (err, options) {
+    try {
+        // For guest-facing security flows, don't show stack traces.
+        // Example: /security/unlock invalid password should show a simple message.
+        if (err && err.httpCode === 401 && err.error && typeof err.error.message === 'string' &&
+            err.error.message.toLowerCase().indexOf('invalid admin password') !== -1) {
+            return $.pic.modalDialog.createConfirm('dlgIncorrectPassword', {
+                autoOpen: false,
+                height: 'auto',
+                width: '22rem',
+                modal: true,
+                title: 'Incorrect Password',
+                message: '<div class="info-message">Incorrect password.</div>',
+                buttons: [
+                    { text: 'Close', icon: '<i class="far fa-window-close"></i>', click: function () { $.pic.modalDialog.closeDialog(this); } }
+                ]
+            });
+        }
+    } catch (e) { }
     var opt = typeof options !== 'undefined' && options !== null ? options : {
         autoOpen: false,
         height: 'auto',

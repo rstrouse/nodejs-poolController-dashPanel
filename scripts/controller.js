@@ -9,6 +9,152 @@
             el[0].setConnectionError = function (data) { self.setConnectionError(data); };
             el[0].setPanelMode = function (data) { self.setPanelMode(data); };
             el[0].enablePanels = function (bEnable) { self.enablePanels(bEnable); };
+            // allow other widgets (e.g. Settings) to trigger a re-evaluation of locked UI
+            el[0].refreshSecurity = function () { self._refreshSecurityStatus(function () { self._applySecurityUi(); }); };
+        },
+        _refreshSecurityStatus: function (cb) {
+            var self = this, o = self.options, el = self.element;
+            $.getLocalService('/security/status', null, function (data) {
+                o.security = data || {};
+                if (typeof cb === 'function') cb(o.security);
+            }, function () {
+                // If the security route doesn't exist or errors, fail open.
+                o.security = { enabled: false, hasPassword: false, unlocked: true, lockUiStyle: 'LOCKED_VISIBLE' };
+                if (typeof cb === 'function') cb(o.security);
+            });
+        },
+        _isSecurityActive: function () {
+            var self = this, o = self.options, el = self.element;
+            return !!(o.security && o.security.enabled === true && o.security.hasPassword === true);
+        },
+        _applySecurityUi: function () {
+            var self = this, o = self.options, el = self.element;
+            var active = self._isSecurityActive();
+            var unlocked = !!(o.security && o.security.unlocked === true);
+            var style = (o.security && o.security.lockUiStyle) ? o.security.lockUiStyle : 'LOCKED_VISIBLE';
+            // In hide mode, only hide the hamburger/gear while locked. Once unlocked, show them.
+            var hideIcons = active && style === 'HIDE_SHOW_LOCK_ICON' && !unlocked;
+            // Hamburger/gear should be gray only when locked.
+            var dimIcons = active && !unlocked;
+
+            // Visual treatment when locked (subtle gray).
+            el.find('div.picModel > i').toggleClass('picAdminLocked', dimIcons);
+            el.find('div.picConfigIcon').toggleClass('picAdminLocked', dimIcons);
+            // Ensure the icon itself is gray even if styles target the <i> element.
+            el.find('div.picConfigIcon > i').toggleClass('picAdminLocked', dimIcons);
+
+            // Hide/show hamburger + gear and lock icon depending on style.
+            el.find('div.picModel > i').css({ display: hideIcons ? 'none' : '' });
+            el.find('div.picConfigIcon').css({ display: hideIcons ? 'none' : '' });
+            // Lock icon should always be visible when security is active, and flip between lock/unlock glyph.
+            el.find('div.picLockIcon').css({ display: active ? 'inline-block' : 'none' });
+            // Flip icon based on current state (subtle cue)
+            el.find('div.picLockIcon > i').attr('class', (active && unlocked) ? 'fas fa-unlock' : 'fas fa-lock');
+        },
+        _showSecurityDialog: function (mode, onSuccess) {
+            // mode: 'setup' | 'unlock'
+            var self = this, o = self.options, el = self.element;
+            var isSetup = mode === 'setup';
+            var pwInput, confirmInput;
+            var doPrimaryAction;
+            var dlg = $.pic.modalDialog.createDialog(isSetup ? 'dlgAdminSetup' : 'dlgAdminUnlock', {
+                width: '380px',
+                height: 'auto',
+                title: isSetup ? 'Set Admin Password' : 'Admin Unlock',
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [{
+                    text: isSetup ? 'Set Password' : 'Unlock', icon: '<i class="fas fa-lock"></i>',
+                    click: function () {
+                        return doPrimaryAction && doPrimaryAction();
+                    }
+                }, {
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+
+            doPrimaryAction = function () {
+                        try {
+                            $.pic.fieldTip.clearTips(dlg);
+                        } catch (e) { }
+                        var pw = pwInput && pwInput.length ? (pwInput.val() || '').toString() : '';
+                        var confirm = confirmInput && confirmInput.length ? (confirmInput.val() || '').toString() : '';
+                        if (typeof pw !== 'string' || pw.length < 4 || pw.length > 20) {
+                            $.pic.fieldTip.showTip(pwInput, { message: 'Password must be 4–20 characters.' });
+                            return;
+                        }
+                        if (isSetup) {
+                            if (pw !== confirm) {
+                                $.pic.fieldTip.showTip(confirmInput, { message: 'Passwords do not match.' });
+                                return;
+                            }
+                            $.postLocalService('/security/setup', { password: pw }, 'Setting admin password...', function () {
+                                $.pic.modalDialog.closeDialog(dlg);
+                                self._refreshSecurityStatus(function () {
+                                    self._applySecurityUi();
+                                    if (typeof onSuccess === 'function') onSuccess();
+                                });
+                            });
+                        }
+                        else {
+                            $.postLocalService('/security/unlock', { password: pw }, 'Unlocking...', function () {
+                                $.pic.modalDialog.closeDialog(dlg);
+                                self._refreshSecurityStatus(function () {
+                                    self._applySecurityUi();
+                                    if (typeof onSuccess === 'function') onSuccess();
+                                });
+                            });
+                        }
+            };
+            var line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).addClass('info-message').text(isSetup
+                ? 'Set an admin password to lock the Settings and Configuration areas. Password is required after restart.'
+                : 'Enter the admin password to unlock Settings and Configuration.');
+            $('<hr></hr>').appendTo(dlg);
+            line = $('<div class="picOptionLine"></div>').appendTo(dlg);
+            $('<label></label>').appendTo(line).css({ width: '9rem', display: 'inline-block' }).addClass('field-label').text(isSetup ? 'New Password' : 'Password');
+            pwInput = $('<input/>').appendTo(line)
+                .attr('type', 'password')
+                .attr('maxlength', '20')
+                .css({ width: '14rem' });
+            pwInput.on('keydown', function (evt) {
+                if (evt.key === 'Enter') {
+                    evt.preventDefault();
+                    evt.stopImmediatePropagation();
+                    if (doPrimaryAction) doPrimaryAction();
+                }
+            });
+            if (isSetup) {
+                line = $('<div class="picOptionLine"></div>').appendTo(dlg);
+                $('<label></label>').appendTo(line).css({ width: '9rem', display: 'inline-block' }).addClass('field-label').text('Confirm');
+                confirmInput = $('<input/>').appendTo(line)
+                    .attr('type', 'password')
+                    .attr('maxlength', '20')
+                    .css({ width: '14rem' });
+                confirmInput.on('keydown', function (evt) {
+                    if (evt.key === 'Enter') {
+                        evt.preventDefault();
+                        evt.stopImmediatePropagation();
+                        if (doPrimaryAction) doPrimaryAction();
+                    }
+                });
+            }
+            dlg.css({ overflow: 'visible' });
+        },
+        _ensureAdminAccess: function (onAllowed) {
+            var self = this, o = self.options, el = self.element;
+            self._refreshSecurityStatus(function () {
+                // Not active => allow access (prevents lockout before password configured)
+                if (!self._isSecurityActive()) {
+                    if (o.security && o.security.hasPassword !== true) {
+                        // If user has enabled security but no password, allow setup when they try.
+                        if (o.security && o.security.enabled === true) return self._showSecurityDialog('setup', onAllowed);
+                    }
+                    return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                }
+                if (o.security.unlocked === true) return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                return self._showSecurityDialog('unlock', onAllowed);
+            });
         },
         _showPanelMode: function () {
             var self = this, o = self.options, el = self.element;
@@ -47,6 +193,7 @@
                 $('<span></span>').addClass('picStatusData').appendTo(cstatus);
                 $('<span></span>').addClass('picPercentData').appendTo(cstatus);
                 $('<div></div>').addClass('picIndicator').attr('data-status', 'error').appendTo(cstatus);
+                $('<i></i>').addClass('fas fa-lock').appendTo($('<div></div>').addClass('picLockIcon').appendTo(divStatus));
                 $('<i></i>').addClass('fas fa-cogs').appendTo($('<div></div>').addClass('picConfigIcon').appendTo(divStatus));
                 //$('<div class="picControllerStatus"><span class="picStatusData"></span><span class="picPercentData"></span><div class="picIndicator" data-status="error"></div><div class="picConfigIcon"><i class="fas fa-cogs"></i></div></div>').appendTo(row);
             }
@@ -62,39 +209,65 @@
             row.appendTo(el);
             $('<div class="picSpaDrain" data-status="off"><i class="fas fa-skull-crossbones burst-animated"></i><label>SPA DRAIN ACTIVE</label><i class="fas fa-skull-crossbones burst-animated"></i></div>').appendTo(el);
             el.find('div.picModel > i').on('click', function (evt) {
-                // Open up the settings window.
-                var divPopover = $('<div class="picAppSettings"></div>');
                 var btn = evt.currentTarget;
-                divPopover.appendTo(el.parent());
-                divPopover.on('initPopover', function (e) {
-                    let divSettings = $('<div class="picAppSettings"></div>');
-                    divSettings.appendTo(e.contents());
-                    divSettings.settingsPanel();
-                    divSettings.on('loaded', function (e) { divPopover[0].show(btn); });
-                    e.stopImmediatePropagation();
+                self._ensureAdminAccess(function () {
+                    // Open up the settings window.
+                    var divPopover = $('<div class="picAppSettings"></div>');
+                    divPopover.appendTo(el.parent());
+                    divPopover.on('initPopover', function (e) {
+                        let divSettings = $('<div class="picAppSettings"></div>');
+                        divSettings.appendTo(e.contents());
+                        divSettings.settingsPanel();
+                        divSettings.on('loaded', function (e) { divPopover[0].show(btn); });
+                        e.stopImmediatePropagation();
+                    });
+                    divPopover.popover({ title: 'Settings', popoverStyle: 'modal', placement: { target: btn } });
+                    divPopover[0].show(btn);
                 });
-                divPopover.popover({ title: 'Settings', popoverStyle: 'modal', placement: { target: btn } });
-                divPopover[0].show(btn);
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             });
 
             el.find('div.picConfigIcon').on('click', function (evt) {
                 let btn = $(this);
-                let container = $('div.dashOuter');
-                switch (container.attr('data-panel')) {
-                    case 'dashboard':
-                        btn.find('i').attr('class', 'fas fa-home');
-                        container.attr('data-panel', 'configuration');
-                        self._buildConfigPage();
-                        break;
-                    case 'configuration':
-                        btn.find('i').attr('class', 'fas fa-cogs');
-                        container.attr('data-panel', 'dashboard');
-                        self._closeConfigPage();
-                        break;
-                }
+                self._ensureAdminAccess(function () {
+                    let container = $('div.dashOuter');
+                    switch (container.attr('data-panel')) {
+                        case 'dashboard':
+                            btn.find('i').attr('class', 'fas fa-home');
+                            container.attr('data-panel', 'configuration');
+                            self._buildConfigPage();
+                            break;
+                        case 'configuration':
+                            btn.find('i').attr('class', 'fas fa-cogs');
+                            container.attr('data-panel', 'dashboard');
+                            self._closeConfigPage();
+                            break;
+                    }
+                });
             });
+
+            el.find('div.picLockIcon').on('click', function (evt) {
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+                self._refreshSecurityStatus(function () {
+                    if (self._isSecurityActive() && o.security.unlocked === true) {
+                        $.postLocalService('/security/lock', {}, 'Locking...', function () {
+                            self._refreshSecurityStatus(function () { self._applySecurityUi(); });
+                        });
+                    }
+                    else {
+                        // If not configured but enabled, allow setup.
+                        if (o.security && o.security.enabled === true && o.security.hasPassword !== true) {
+                            return self._showSecurityDialog('setup', function () { });
+                        }
+                        return self._showSecurityDialog('unlock', function () { });
+                    }
+                });
+            });
+
+            // Initialize lock UI (fails open if route is missing).
+            self._refreshSecurityStatus(function () { self._applySecurityUi(); });
             self.setControllerState(data);
             self.setEquipmentState(typeof data !== 'undefined' ? data.equipment : undefined);
         },
@@ -361,6 +534,165 @@
             el[0].setState = function (data) { self.setState(data); };
             self._buildControls();
             o = { processing: false };
+        },
+        _buildSecurityTab: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picTabPanel:first').each(function () {
+                var tabObj = { id: 'tabSecurity', text: 'Security' };
+                var contents = this.addTab(tabObj);
+                var divOuter = $('<div class="picSecurity"></div>').appendTo(contents);
+
+                var optsLine = $('<div class="picOptionLine"></div>').appendTo(divOuter);
+                $('<label></label>').appendTo(optsLine).css({ width: '9rem', display: 'inline-block' }).addClass('field-label').text('Lock UI Style');
+                var selStyle = $('<div></div>').appendTo(optsLine).pickList({
+                    id: 'lockUiStyle',
+                    bindColumn: 0, displayColumn: 1,
+                    labelText: '',
+                    binding: 'lockUiStyle',
+                    columns: [{ binding: 'val', hidden: true, text: 'Val' }, { binding: 'name', text: 'Style' }, { binding: 'desc', text: 'Description' }],
+                    items: [
+                        { val: 'LOCKED_VISIBLE', name: 'Locked Visible', desc: 'Show hamburger/gear but require password.' },
+                        { val: 'HIDE_SHOW_LOCK_ICON', name: 'Hide + Lock Icon', desc: 'Hide hamburger/gear and show gray lock icon.' }
+                    ],
+                    inputAttrs: { style: { width: '14rem' } },
+                    labelAttrs: { style: { display: 'none' } }
+                });
+
+                $('<hr></hr>').appendTo(divOuter);
+
+                var pwLine = $('<div class="picOptionLine"></div>').appendTo(divOuter);
+                $('<label></label>').appendTo(pwLine).css({ width: '9rem', display: 'inline-block' }).addClass('field-label').text('Password');
+                var pwWrap = $('<div class="picSecurityPasswordWrap"></div>').appendTo(pwLine).css({ display: 'inline-block' });
+                var pwInput = $('<input/>').appendTo(pwWrap)
+                    .attr('type', 'password')
+                    .attr('maxlength', '20')
+                    .addClass('picSecurityPassword')
+                    .css({ width: '14rem' });
+                // Save button next to password field
+                var btnSaveInline = $('<div></div>').appendTo(pwWrap).actionButton({ text: 'Save', icon: '<i class="fas fa-save"></i>' })
+                    .css({ display: 'inline-block', marginLeft: '.35rem' });
+
+                var btnLine2 = $('<div class="picBtnPanel btn-panel"></div>').appendTo(divOuter).css({ marginTop: '.6rem' });
+                var btnToggle = $('<div></div>').appendTo(btnLine2).actionButton({ text: 'Enable Security', icon: '<i class="fas fa-toggle-on"></i>' });
+                var btnCloseAndLock = $('<div></div>').appendTo(btnLine2).actionButton({ text: 'Close and Lock', icon: '<i class="fas fa-lock"></i>' });
+                var btnClose = $('<div></div>').appendTo(btnLine2).actionButton({ text: 'Close', icon: '<i class="far fa-window-close"></i>' });
+
+                function refresh() {
+                    $.getLocalService('/security/status', null, function (s) {
+                        o.security = s || {};
+                        // Track baseline for cancel.
+                        o._securityInitial = { enabled: !!o.security.enabled, lockUiStyle: o.security.lockUiStyle, hasPassword: !!o.security.hasPassword };
+                        o._securityPending = { lockUiStyle: o.security.lockUiStyle };
+                        // bind current style into UI
+                        try { dataBinder.bind(divOuter, { lockUiStyle: o.security.lockUiStyle }); } catch (e) { }
+                        // show a fixed number of bullets if password exists, otherwise blank placeholder
+                        pwInput.val('');
+                        pwInput.attr('placeholder', o.security.hasPassword ? '••••••••' : '');
+                        pwInput.attr('type', 'password');
+                        // Update toggle button based on current enabled state
+                        if (o.security.enabled === true) {
+                            btnToggle.find('span.picButtonText').text('Disable Security');
+                            btnToggle.find('i').attr('class', 'fas fa-toggle-off');
+                            btnCloseAndLock.show();
+                        }
+                        else {
+                            btnToggle.find('span.picButtonText').text('Enable Security');
+                            btnToggle.find('i').attr('class', 'fas fa-toggle-on');
+                            btnCloseAndLock.hide();
+                        }
+                    }, function () {
+                        // If security status unavailable, hide close+lock (safe default)
+                        btnCloseAndLock.hide();
+                    });
+                }
+
+                function applyPendingLockUiStyle(cb) {
+                    var pending = (dataBinder.fromElement(divOuter) || {}).lockUiStyle;
+                    if (!pending) pending = (o._securityInitial || {}).lockUiStyle;
+                    if (o._securityInitial && pending !== o._securityInitial.lockUiStyle) {
+                        $.putLocalService('/config/security', { lockUiStyle: pending }, 'Saving...', function () {
+                            if (typeof cb === 'function') cb();
+                        });
+                    }
+                    else {
+                        if (typeof cb === 'function') cb();
+                    }
+                }
+
+                // Apply lock UI style immediately when changed (preferred UX).
+                selStyle.on('selchanged', function (evt) {
+                    if (!evt || !evt.newItem || !evt.newItem.val) return;
+                    $.putLocalService('/config/security', { lockUiStyle: evt.newItem.val }, 'Saving...', function () {
+                        // Refresh state and re-apply header UI immediately
+                        refresh();
+                        $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                    });
+                });
+
+                // No "eye" toggle: password cannot be revealed because only hashes are stored.
+
+                btnSaveInline.on('click', function () {
+                    applyPendingLockUiStyle(function () {
+                        var pw = (pwInput.val() || '').toString();
+                        // Blank password => disable security
+                        $.postLocalService('/security/setPassword', { password: pw }, 'Saving...', function () {
+                            refresh();
+                            $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                        });
+                    });
+                });
+
+                btnToggle.on('click', function () {
+                    applyPendingLockUiStyle(function () {
+                        // Toggle based on current enabled state
+                        if (o.security && o.security.enabled === true) {
+                            return $.postLocalService('/security/disable', {}, 'Disabling...', function () {
+                                refresh();
+                                $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                            });
+                        }
+                        // enabling
+                        var pw = (pwInput.val() || '').toString();
+                        if (pw.length > 0) {
+                            return $.postLocalService('/security/setPassword', { password: pw }, 'Enabling...', function () {
+                                refresh();
+                                $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                            });
+                        }
+                        // If no new password entered, only enable if password exists already.
+                        if (o.security && o.security.hasPassword === true) {
+                            return $.putLocalService('/config/security', { enabled: true }, 'Enabling...', function () {
+                                refresh();
+                                $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                            });
+                        }
+                        $.pic.modalDialog.createApiError({ httpCode: 400, message: 'Set a password before enabling security.' });
+                    });
+                });
+
+                btnCloseAndLock.on('click', function () {
+                    // Save style (if needed), lock immediately, refresh header UI, then close settings.
+                    applyPendingLockUiStyle(function () {
+                        $.postLocalService('/security/lock', {}, 'Locking...', function () {
+                            $('div.picController').each(function () { if (this.refreshSecurity) this.refreshSecurity(); });
+                            try {
+                                var pop = divOuter.closest('div.picPopover');
+                                if (pop.length && pop[0].close) return pop[0].close();
+                            } catch (e) { }
+                        });
+                    });
+                });
+
+                btnClose.on('click', function () {
+                    // Close the Settings popover dialog
+                    try {
+                        var pop = divOuter.closest('div.picPopover');
+                        if (pop.length && pop[0].close) return pop[0].close();
+                    } catch (e) { }
+                });
+
+                refresh();
+            });
         },
         _buildLoggingTab: function () {
             var self = this, o = self.options, el = self.element;
@@ -1139,6 +1471,7 @@
                 o.initializing = true;
                 self._buildAppearanceTab(configData);
                 self._buildConnectionsTab(configData.web);
+                self._buildSecurityTab();
                 self._buildLoggingTab();
                 self._buildFirmwareTab(configData.web);
                 self._buildBackupTab(configData);

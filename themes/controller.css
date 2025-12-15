@@ -170,6 +170,24 @@ div.picConfigIcon:hover, div.picStartLogs:hover {
   text-shadow: 3px 3px 16px #272634;
 }
 
+div.picLockIcon {
+  display: none;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  vertical-align: text-top;
+  color: inherit;
+}
+
+div.picLockIcon:hover {
+  color: inherit;
+  text-shadow: none;
+}
+
+.picAdminLocked {
+  color: #9a9a9a !important;
+  text-shadow: none !important;
+}
+
 div.picOptionField > label {
   display: inline-block;
   text-overflow: ellipsis;
