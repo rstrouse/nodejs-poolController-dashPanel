@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "actions": {
+    "1": "ACK - Acknowledgment",
+    "2": "Status Broadcast - Equipment state (circuits, temps)",
+    "30": "Config Response - Configuration data from OCP",
+    "30/0": "Config Response - Body temp settings (setpoints, heat modes)",
+    "30/15": "Config Response - Circuit/Feature/Schedule states (AUTHORITATIVE)",
+    "164": "Version/Status Response - Version info / extended data",
+    "168": "External Message - Set/change equipment state",
+    "168/0": "External Message - Body temp settings (Wireless, v3 has +1 offset!)",
+    "168/1": "External Message - Single circuit toggle",
+    "168/2": "External Message - Single feature toggle",
+    "168/15": "External Message - Set all circuit/feature/group/schedule states",
+    "184": "Circuit Control - Direct circuit control (v3.004+)",
+    "204": "Extended Status - Feature/temp/module status (IntelliCenter v3: feature bits are stale)",
+    "217": "Device Discovery - Equipment identification",
+    "222": "Config Request - Request configuration from OCP",
+    "228": "Version Request - Get firmware versions"
+  },
+  "controllers": {
+    "intellicenter": {
+      "entityTypes": {
+        "none": {
+          "label": "None",
+          "matches": [],
+          "warnings": []
+        },
+        "features": {
+          "label": "Features",
+          "matches": [
+            { "protocol": "broadcast", "action": 1 },
+            { "protocol": "broadcast", "action": 2 },
+            { "protocol": "broadcast", "action": 204 },
+            { "protocol": "broadcast", "action": 30, "payload0": 15 },
+            { "protocol": "broadcast", "action": 168, "payload0": 15 },
+            { "protocol": "broadcast", "action": 168, "payload0": 2 },
+            { "protocol": "broadcast", "action": 184 }
+          ],
+          "warnings": [
+            {
+              "label": "⚠️ v3-stale",
+              "type": "warning",
+              "when": { "action": 204, "minSoftwareVersion": 3.0 }
+            }
+          ]
+        },
+        "circuits": {
+          "label": "Circuits",
+          "matches": [
+            { "protocol": "broadcast", "action": 1 },
+            { "protocol": "broadcast", "action": 2 },
+            { "protocol": "broadcast", "action": 30, "payload0": 15 },
+            { "protocol": "broadcast", "action": 168, "payload0": 15 },
+            { "protocol": "broadcast", "action": 168, "payload0": 1 },
+            { "protocol": "broadcast", "action": 184 }
+          ],
+          "warnings": []
+        },
+        "temps": {
+          "label": "Temps",
+          "matches": [
+            { "protocol": "broadcast", "action": 2 },
+            { "protocol": "broadcast", "action": 204 }
+          ],
+          "warnings": []
+        },
+        "bodySettings": {
+          "label": "Body Settings",
+          "matches": [
+            { "protocol": "broadcast", "action": 1 },
+            { "protocol": "broadcast", "action": 30, "payload0": 0 },
+            { "protocol": "broadcast", "action": 168, "payload0": 0 }
+          ],
+          "warnings": [
+            {
+              "label": "⚠️ v3-offset",
+              "type": "info",
+              "when": { "action": 168, "payload0": 0, "minSoftwareVersion": 3.0 }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+
+

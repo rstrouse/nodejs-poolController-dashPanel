@@ -1,0 +1,208 @@
+@import url("../bootstrap/theme.css");
+
+/* iOS/Cupertino theme overrides.
+   This theme layers on top of the existing Bootstrap theme to avoid requiring a Sass toolchain. */
+
+:root {
+  --cupertino-blue: #007aff;
+  --cupertino-green: #34c759;
+  --cupertino-red: #ff3b30;
+  --cupertino-orange: #ff9500;
+  --cupertino-bg: #f2f2f7;
+  --cupertino-label: #1c1c1e;
+  --cupertino-secondary-label: rgba(60, 60, 67, 0.6);
+  --cupertino-separator: rgba(60, 60, 67, 0.29);
+}
+
+body {
+  background-image: none !important;
+  background-color: var(--cupertino-bg) !important;
+  color: var(--cupertino-label);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+}
+
+.popover,
+.control-panel {
+  background: #ffffff !important;
+  border: 1px solid var(--cupertino-separator) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.control-panel-title {
+  background: transparent !important;
+  color: var(--cupertino-label) !important;
+  border-bottom: 1px solid var(--cupertino-separator) !important;
+  box-shadow: none !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Top banner: remove the "divider line" artifact under the header row */
+div.picControllerTitle.control-panel-title {
+  border-bottom: none !important;
+}
+
+/* Air/Solar temp header: make labels visible (they were white-on-light) */
+div.picAmbientTemp label.picInline-label {
+  color: var(--cupertino-secondary-label) !important;
+  font-weight: 600;
+}
+
+div.picAmbientTemp span.picAirTemp,
+div.picAmbientTemp span.picSolarTemp,
+div.picAmbientTemp label.picUnitSymbol,
+div.picAmbientTemp span.picTempUnits {
+  color: var(--cupertino-label) !important;
+}
+
+span.picUnits {
+  color: var(--cupertino-secondary-label) !important;
+}
+
+.btn,
+.btn-border {
+  /* ensure badges/absolute children measure against the tile and clip to rounded corners */
+  position: relative;
+  overflow: hidden;
+}
+
+.btn {
+  background: var(--cupertino-blue) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+/* Disable the ripple overlay used by some themes */
+.btn:after {
+  display: none !important;
+}
+
+.btn-border {
+  background: #ffffff !important;
+  color: var(--cupertino-blue) !important;
+  border: 1px solid var(--cupertino-separator) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.btn-border:not([disabled]):not(.disabled):hover,
+.btn-border:not([disabled]):not(.disabled).hover {
+  background: rgba(0, 122, 255, 0.08) !important;
+}
+
+.btn:not([disabled]):not(.disabled):hover,
+.btn:not([disabled]):not(.disabled).hover {
+  background: #0a84ff !important;
+}
+
+.btn:not([disabled]):not(.disabled):active,
+.btn:not([disabled]):not(.disabled).active {
+  background: #0060df !important;
+  opacity: 1 !important;
+}
+
+.dropdown-panel,
+.tab-contents,
+.tab-item {
+  border-radius: 18px !important;
+  border-color: var(--cupertino-separator) !important;
+}
+
+/* Settings modal: fix square edges + content overlapping rounded container */
+div.picTabs {
+  border-radius: 18px 18px 0 0 !important;
+  overflow: hidden !important;
+  border-left: 1px solid var(--cupertino-separator) !important;
+  border-right: 1px solid var(--cupertino-separator) !important;
+  border-top: 1px solid var(--cupertino-separator) !important;
+  border-bottom: 1px solid var(--cupertino-separator) !important;
+}
+
+div.tab-contents {
+  border-radius: 0 0 18px 18px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+
+fieldset {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+#orderOfElements {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+div.picTab.picTabSelected > span.picTabText {
+  border-bottom: solid 2px var(--cupertino-blue) !important;
+}
+
+div.picTab:not(.picTabSelected) {
+  color: var(--cupertino-secondary-label) !important;
+}
+
+/* Feature/Circuit tiles: keep toggle aligned right even when time remaining is shown */
+div.picFeature,
+div.picCircuit,
+div.picVirtualCircuit {
+  align-items: center;
+}
+
+div.picFeature > label,
+div.picCircuit > label,
+div.picVirtualCircuit > label {
+  margin-right: 0.35rem !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ffffff !important; /* fixes gray-on-blue (Virtual Circuits) */
+}
+
+span.picCircuitEndTime,
+span.picLightEndTime {
+  flex: 0 0 auto;
+  margin-right: 0.35rem;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+div.picToggleButton {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+div.picIndicator {
+  border-radius: 10px !important;
+  border: 1px solid var(--cupertino-separator) !important;
+  box-shadow: none !important;
+  background-color: #e5e5ea !important;
+  color: var(--cupertino-label) !important;
+}
+
+div.picIndicator[data-status="on"],
+div.picIndicator[data-status="ready"],
+div.picIndicator[data-status="selected"],
+div.picIndicator[data-status="true"] {
+  background-color: var(--cupertino-green) !important;
+  border-color: var(--cupertino-green) !important;
+  color: #ffffff !important;
+}
+
+div.picIndicator[data-status="error"] {
+  background-color: var(--cupertino-red) !important;
+  border-color: var(--cupertino-red) !important;
+  color: #ffffff !important;
+}
+
+div.picIndicator[data-status="loading"] {
+  background-color: var(--cupertino-orange) !important;
+  border-color: var(--cupertino-orange) !important;
+  color: #ffffff !important;
+}
+
+

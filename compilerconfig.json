@@ -32,6 +32,10 @@
     "inputFile": "themes/materia/theme.scss"
   },
   {
+    "outputFile": "themes/android-material/theme.css",
+    "inputFile": "themes/android-material/theme.scss"
+  },
+  {
     "outputFile": "themes/purple/theme.css",
     "inputFile": "themes/purple/theme.scss"
   },
@@ -42,6 +46,10 @@
   {
     "outputFile": "themes/bootstrap/theme.css",
     "inputFile": "themes/bootstrap/theme.scss"
+  },
+  {
+    "outputFile": "themes/ios-cupertino/theme.css",
+    "inputFile": "themes/ios-cupertino/theme.scss"
   },
   {
     "outputFile": "themes/bootstrap/intellibrite.css",

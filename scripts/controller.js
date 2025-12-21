@@ -926,9 +926,11 @@
                         { code: 'default', name: 'Default', desc: 'The default theme for the dashPanel.' },
                         { code: 'sketchy', name: 'Sketchy', desc: 'A whimsical display that looks like it is hand drawn.' },
                         { code: 'materia', name: 'Materia', desc: 'Material metaphor using bold colors and highlights.' },
+                        { code: 'android-material', name: 'Android/Material', desc: 'Material 3 inspired theme.' },
                         { code: 'purple', name: 'Purple', desc: 'A mix of purple and teal.' },
                         { code: 'nurple', name: 'Nurple', desc: 'A mix of purple and black.' },
-                        { code: 'bootstrap', name: 'Bootstrap', desc: 'Original Bootstrap inspired theme.' }
+                        { code: 'bootstrap', name: 'Bootstrap', desc: 'Original Bootstrap inspired theme.' },
+                        { code: 'ios-cupertino', name: 'iOS/Cupertino', desc: 'Cupertino inspired theme.' }
                     ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '7rem' } }
                 }).on('selchanged', function (evt) {
                     if (evt.newItem) {

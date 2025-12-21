@@ -38,7 +38,136 @@
                 }
                 return o.receivingMessages;
             };
+            el[0].getMessages = function () { return self.getMessages(); };
+            el[0].scrollToMessage = function (index) { return self.scrollToMessage(index); };
+            el[0].openFilterDialog = function () { return self.openFilterDialog(); };
+            el[0].applyPacketMatchers = function (matchers) { return self.applyPacketMatchers(matchers); };
+            el[0].getFilters = function () { return { filters: o.filters.slice(), portFilters: o.portFilters.slice() }; };
+            el[0].isMessageFiltered = function (msg) { return self.isMessageFiltered(msg); };
+            el[0].setTimelineRange = function (start, end, messages) { return self.setTimelineRange(start, end, messages); };
+            el[0].scrollToMessageById = function (msgId) { return self.scrollToMessageById(msgId); };
             self._initList();
+        },
+        openFilterDialog: function () {
+            var self = this, o = self.options, el = self.element;
+            let filt = { ports: [], protocols: [] };
+            for (let i = 0; i < o.ports.length; i++) {
+                filt.ports.push({ port: o.ports[i], filtered: o.portFilters.includes(o.ports[i]) });
+            }
+            for (var s in o.contexts) {
+                let c = o.contexts[s];
+                let p = filt.protocols.find(elem => elem.name === c.protocol.name);
+                if (typeof p === 'undefined') {
+                    p = { name: c.protocol.name, desc: c.protocol.desc, actions: [] };
+                    filt.protocols.push(p);
+                }
+                if (typeof c.actionByte !== 'undefined') {
+                    let act = p.actions.find(elem => elem.val === c.actionByte);
+                    if (typeof act === 'undefined') {
+                        act = { val: c.actionByte, name: c.actionName, filters: [], sources: [], dests: [] };
+                        p.actions.push(act);
+                    }
+                    if (typeof act.filters.find(elem => elem.key === c.messageKey) === 'undefined') {
+                        act.filters.push({
+                            key: c.messageKey,
+                            filtered: o.filters.includes(c.messageKey),
+                            actionExt: c.actionExt,
+                            payloadKey: c.payloadKey,
+                            category: c.category,
+                            context: c,
+                            source: { val: c.sourceAddr.val, name: c.sourceAddr.name },
+                            dest: { val: c.destAddr.val, name: c.destAddr.name }
+                        });
+                    }
+                } else if (typeof c.requestor !== 'undefined') {
+                    let act = p.actions.find(elem => elem.name === o.endpoint);
+                    if (typeof act === 'undefined') {
+                        act = { val: 1, name: c.endpoint, filters: [], sources: [], dests: [] };
+                        p.actions.push(act);
+                    }
+                    if (typeof act.filters.find(elem => elem.key === s) === 'undefined') {
+                        act.filters.push({
+                            key: s,
+                            filtered: o.filters.includes(s),
+                            category: 'API Call',
+                            actionExt: '',
+                            context: c,
+                            source: { val: null, name: c.requestor }
+                        });
+                    }
+                }
+            }
+            filt.protocols.sort((a, b) => a.name.localeCompare(b.name));
+            for (let i = 0; i < filt.protocols.length; i++) {
+                filt.protocols[i].actions.sort((a, b) => a.val - b.val);
+            }
+            self._createFilterDialog(filt);
+        },
+        applyPacketMatchers: function(matchers) {
+            var self = this, o = self.options;
+            // matchers: [{ protocol, action, payload0 }]
+            
+            if (!Array.isArray(matchers) || matchers.length === 0) {
+                o.filters = [];
+                self._filterMessages();
+                return;
+            }
+            
+            // IMPORTANT: In this UI, CHECKED = INCLUDE, and o.filters is the list of EXCLUDED messageKeys.
+            // We need to look at actual messages because payloadKey may not be set in contexts.
+            
+            // Build a map of messageKey -> sample payload for inspection
+            let msgKeyToPayload = {};
+            for (var mk in o.messages) {
+                if (!mk.startsWith('m')) continue;
+                var msg = o.messages[mk];
+                if (msg && msg.messageKey && msg.payload && msg.payload.length > 0) {
+                    if (!msgKeyToPayload[msg.messageKey]) {
+                        msgKeyToPayload[msg.messageKey] = msg.payload;
+                    }
+                }
+            }
+            
+            let includeKeys = new Set();
+            let allKeys = new Set();
+            for (var msgKey in o.contexts) {
+                let c = o.contexts[msgKey];
+                allKeys.add(msgKey);
+                for (let i = 0; i < matchers.length; i++) {
+                    let m = matchers[i];
+                    // Protocol check (case-insensitive)
+                    if (m.protocol && c.protocol && c.protocol.name) {
+                        if (c.protocol.name.toLowerCase() !== m.protocol.toLowerCase()) continue;
+                    }
+                    // Action check
+                    if (typeof m.action !== 'undefined' && c.actionByte !== m.action) continue;
+                    // payload0 check - the first payload byte defining sub-action
+                    if (typeof m.payload0 !== 'undefined') {
+                        const p0 = m.payload0;
+                        // First try payloadKey if available
+                        if (typeof c.payloadKey !== 'undefined' && c.payloadKey !== null) {
+                            const pk = c.payloadKey.toString();
+                            const firstSeg = parseInt(pk.split('_')[0], 10);
+                            if (firstSeg !== p0) continue;
+                        } else {
+                            // Fallback: look at actual message payload
+                            let samplePayload = msgKeyToPayload[msgKey];
+                            if (samplePayload && samplePayload.length > 0) {
+                                if (samplePayload[0] !== p0) continue;
+                            }
+                            // No payload available - be permissive if action matches
+                        }
+                    }
+                    // Matched!
+                    includeKeys.add(msgKey);
+                    break;
+                }
+            }
+            // Exclude everything not included
+            let exclude = [];
+            allKeys.forEach((k) => { if (!includeKeys.has(k)) exclude.push(k); });
+            o.filters = exclude;
+            self._filterMessages();
         },
         _resetHeight: function () {
             var self = this, o = self.options, el = self.element;
@@ -67,9 +196,6 @@
             $('<span>Messages</span><div class="picStartLogs mmgrButton picIconRight" title="Start/Stop Log"><i class="far fa-list-alt"></i></div>').appendTo(div);
             $('<div class="picScrolling mmgrButton picIconRight" title="Pin Selection"><i class="fas fa-thumbtack"></i></div>').appendTo(div);
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
-            $('<div class="picClearMessages mmgrButton picIconRight" title="Clear Messages"><i class="fas fa-broom"></i></div>').appendTo(div);
-            $('<div class="picFilter mmgrButton picIconRight" title="Filter Display"><i class="fas fa-filter"></i></div>').appendTo(div);
-            $('<div class="picUploadLog mmgrButton picIconRight" title="Upload a Log File"><i class="fas fa-upload"></i></div>').appendTo(div);
             $('<div class="picReplayLog mmgrButton picIconRight" title="Replay List To njsPC"><i class="fas fa-paper-plane"></i></div>').appendTo(div)
                 .on('click', (evt) => { self._promptReplayList(); });
 
@@ -132,6 +258,45 @@
                 self._updateStoredRowHtml(vlistWidget, rowId, row);
             });
             
+            // Handle Entity Flow button clicks (delegated for virtual list re-renders)
+            el.on('click', 'div.expansion-entity-btn', function(evt) {
+                evt.stopPropagation();
+                var row = $(evt.currentTarget).closest('tr.msgRow');
+                var rowId = row.attr('data-rowid');
+                var msg = o.messages['m' + rowId]; // Messages stored with 'm' prefix
+                
+                if (!msg) {
+                    console.log('Message not found for rowId:', rowId, 'key: m' + rowId);
+                    return;
+                }
+                
+                console.log('Entity Flow button clicked. msg._id:', msg._id);
+                
+                // Switch to Entity Flow tab
+                var entityFlowTab = $('button.view-tab[data-view="entityFlow"]');
+                if (entityFlowTab.length) entityFlowTab.click();
+                
+                // Use setTimeout to allow tab switch to complete before scrolling
+                setTimeout(function() {
+                    var entityFlow = $('div.picEntityFlow:first')[0];
+                    if (entityFlow && entityFlow.scrollToPacketById) {
+                        entityFlow.scrollToPacketById(msg._id);
+                    }
+                }, 100);
+            });
+            
+            // Handle Add to Queue button clicks (delegated for virtual list re-renders)
+            el.on('click', 'div.expansion-addqueue-btn', function(evt) {
+                evt.stopPropagation();
+                var row = $(evt.currentTarget).closest('tr.msgRow');
+                var rowId = row.attr('data-rowid');
+                var msg = o.messages['m' + rowId]; // Messages stored with 'm' prefix
+                
+                if (msg) {
+                    $('div.picSendMessageQueue')[0].addMessage(msg);
+                }
+            });
+            
             vlist.on('selchanged', function (evt) {
                 var pnlDetail = $('div.picMessageDetail');
                 var msg = o.messages['m' + evt.newRow.attr('data-rowid')];
@@ -185,92 +350,12 @@
                 }
                 self._filterMessages();
             });
-            el.on('click', 'div.picFilter', function (evt) {
-                let filt = { ports: [], protocols: [] };
-                //console.log(o.contexts);
-                console.log(o.portFilters);
-                console.log(o.ports);
-                for (let i = 0; i < o.ports.length; i++) {
-                    filt.ports.push({ port: o.ports[i], filtered: o.portFilters.includes(o.ports[i]) });
-                }
-                for (var s in o.contexts) {
-                    let c = o.contexts[s];
-                    let p = filt.protocols.find(elem => elem.name === c.protocol.name);
-                    if (typeof p === 'undefined') {
-                        p = { name: c.protocol.name, desc: c.protocol.desc, actions: [] };
-                        filt.protocols.push(p);
-                    }
-                    if (typeof c.actionByte !== 'undefined') {
-                        let act = p.actions.find(elem => elem.val === c.actionByte);
-                        if (typeof act === 'undefined') {
-                            act = { val: c.actionByte, name: c.actionName, filters: [], sources: [], dests: [] };
-                            p.actions.push(act);
-                        }
-                        // Check to see if we have a filter defined.
-                        if (typeof act.filters.find(elem => elem.key === c.messageKey) === 'undefined') {
-                            act.filters.push({
-                                key: c.messageKey,
-                                filtered: o.filters.includes(c.messageKey),
-                                actionExt: c.actionExt,
-                                payloadKey: c.payloadKey,
-                                category: c.category,
-                                context: c,
-                                source: { val: c.sourceAddr.val, name: c.sourceAddr.name },
-                                dest: { val: c.destAddr.val, name: c.destAddr.name }
-                            });
-                        }
-                    }
-                    else if (typeof c.requestor !== 'undefined') {
-                        let act = p.actions.find(elem => elem.name === o.endpoint);
-                        if (typeof act === 'undefined') {
-                            act = { val: 1, name: c.endpoint, filters: [], sources: [], dests: [] };
-                            p.actions.push(act);
-                        }
-                        if (typeof act.filters.find(elem => elem.key === s) === 'undefined') {
-                            act.filters.push({
-                                key: s,
-                                filtered: o.filters.includes(s),
-                                category: 'API Call',
-                                actionExt: '',
-                                context: c,
-                                source: { val: null, name: c.requestor }
-                            });
-                        }
-
-                    }
-                }
-                
-                // Sort protocols by name and actions by val (action byte)
-                filt.protocols.sort((a, b) => a.name.localeCompare(b.name));
-                for (let i = 0; i < filt.protocols.length; i++) {
-                    filt.protocols[i].actions.sort((a, b) => a.val - b.val);
-                }
-                
-                // We should have a complete list of what is contained in this so lets show a filter dialog.
-                // Protocol --> Action --> Source / Dest
-                //console.log(filt);
-                self._createFilterDialog(filt);
-            });
-
-            el.on('click', 'div.picClearMessages', function (evt) { self.clear(); });
+            // Filter/Clear controls moved to the top bar (messageManager.html)
             el.on('click', 'i.fa-clipboard', function (evt) {
                 var row = $(evt.currentTarget).parents('tr.msgRow:first');
                 msgManager.copyToClipboard(o.messages['m' + row.attr('data-rowid')]);
             });
-            el.on('click', 'div.picUploadLog', function (evt) {
-                var pnl = $(evt.currentTarget).parents('div.picSendMessageQueue');
-                var divPopover = $('<div></div>');
-                divPopover.appendTo(el.parent().parent());
-                divPopover.on('initPopover', function (e) {
-                    $('<div></div>').appendTo(e.contents()).uploadLog();
-                    e.stopImmediatePropagation();
-                });
-                divPopover.popover({ autoClose: false, title: 'Upload Log File', popoverStyle: 'modal', placement: { target: $('div.picMessageListTitle:first') } });
-                divPopover[0].show($('div.picMessageListTitle:first'));
-                evt.preventDefault();
-                evt.stopImmediatePropagation();
-
-            });
+            // Upload Log File icon removed (universal replay loader in the top bar is preferred)
             //el.on('click', 'tr.msgRow', function (evt) {
             //    self._selectRow($(evt.currentTarget));
             //});
@@ -487,6 +572,11 @@
                 //if (obj.isApiCall === true) obj.hidden = false;
                 //else obj.hidden = self._calcMessageFilter(obj);
             });
+            // Emit event so Entity Flow can respond to filter changes
+            var evt = $.Event('messageFiltersChanged');
+            evt.filters = o.filters.slice(); // copy
+            evt.portFilters = o.portFilters.slice();
+            el.trigger(evt);
         },
         _createFilterDialog: function (filt) {
             var self = this, o = self.options, el = self.element;
@@ -1568,12 +1658,12 @@
             // Add action buttons in top-right corner
             var btnContainer = $('<div class="expansion-buttons"></div>');
             
-            // Add to queue button
+            // Go to Entity Flow button (click handled via delegation in _initList)
+            var goToEntityBtn = $('<div class="expansion-entity-btn" title="View in Entity Flow"><i class="fas fa-project-diagram"></i></div>');
+            btnContainer.append(goToEntityBtn);
+            
+            // Add to queue button (click handled via delegation in _initList)
             var addToQueueBtn = $('<div class="expansion-addqueue-btn" title="Add to Send Queue"><i class="far fa-hand-point-up"></i></div>');
-            addToQueueBtn.on('click', function(evt) {
-                evt.stopPropagation();
-                $('div.picSendMessageQueue')[0].addMessage(msg);
-            });
             btnContainer.append(addToQueueBtn);
             
             // Close button
@@ -1793,6 +1883,133 @@
                     var byteIndex = parseInt($(this).attr('data-byte-index'), 10);
                     self._highlightRowForByte(container, byteIndex);
                 });
+            }
+        },
+        getMessages: function() {
+            var self = this, o = self.options;
+            // Return array of all messages in VirtualList order.
+            // Note: o.rowIds is an array of objects: { rowId, msgId }, and o.messages keys are 'm' + rowId.
+            var msgs = [];
+            var vlist = self.element.find('div.picVirtualList:first');
+            if (!vlist.length || !vlist[0].totalRows) return msgs;
+            var total = vlist[0].totalRows();
+            for (var i = 0; i < total; i++) {
+                var obj = vlist[0].objByIndex(i);
+                if (!obj) continue;
+                var msg = o.messages['m' + obj.rowId];
+                if (msg) msgs.push(msg);
+            }
+            return msgs;
+        },
+        isMessageFiltered: function(msg) {
+            // Returns true if the message is currently HIDDEN by filters
+            var self = this, o = self.options;
+            if (!msg) return true;
+            if (o.portFilters.includes(msg.portId)) return true;
+            if (o.filters.includes(msg.messageKey)) return true;
+            // Check timeline range filter if active
+            if (o.timelineRangeActive && o.timelineRangeIndices) {
+                var msgIdx = o.rowIds.indexOf(msg.messageKey);
+                if (msgIdx >= 0) {
+                    if (msgIdx < o.timelineRangeIndices.start || msgIdx >= o.timelineRangeIndices.end) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+        setTimelineRange: function(start, end, entityFlowMessages) {
+            // Apply range filter from Entity Flow timeline
+            var self = this, o = self.options;
+            
+            // If full range, disable timeline filtering
+            if (start === 0 && end === 1) {
+                o.timelineRangeActive = false;
+                o.timelineRangeIndices = null;
+            } else {
+                // Calculate indices based on the current visible (unfiltered) messages count
+                var visibleCount = 0;
+                for (var i = 0; i < o.rowIds.length; i++) {
+                    var key = o.rowIds[i];
+                    if (!o.filters.includes(key) && !o.portFilters.includes(o.messages[key] && o.messages[key].portId)) {
+                        visibleCount++;
+                    }
+                }
+                o.timelineRangeActive = true;
+                o.timelineRangeIndices = {
+                    start: Math.floor(start * visibleCount),
+                    end: Math.ceil(end * visibleCount)
+                };
+            }
+            
+            // Re-filter messages
+            self._filterMessages();
+        },
+        scrollToMessage: function(index) {
+            var self = this, o = self.options, el = self.element;
+            // Scroll to a message by index using the VirtualList (supports virtualization)
+            var vlist = el.find('div.picVirtualList:first');
+            if (!vlist.length || !vlist[0].totalRows) return;
+            if (index < 0 || index >= vlist[0].totalRows()) return;
+            vlist[0].selectedIndex(index, true);
+            // Flash highlight the selected visible row
+            setTimeout(function() {
+                var row = vlist.find('tr.vlist-data.selected');
+                if (row.length > 0) {
+                    row.addClass('flash-highlight');
+                    setTimeout(function() { row.removeClass('flash-highlight'); }, 1500);
+                }
+            }, 50);
+        },
+        scrollToMessageById: function(msgId) {
+            var self = this, o = self.options, el = self.element;
+            
+            console.log('scrollToMessageById called with msgId:', msgId);
+            
+            // Find the row by data-msgid attribute in the virtual list
+            var vlist = el.find('div.picVirtualList:first');
+            if (!vlist.length || !vlist[0].totalRows || !vlist[0].objByIndex) {
+                console.log('Virtual list not available');
+                return;
+            }
+            
+            var totalRows = vlist[0].totalRows();
+            
+            // Find the row index with matching msgId, counting only visible rows
+            var rawIndex = -1;
+            var visibleIndex = 0;
+            for (var i = 0; i < totalRows; i++) {
+                var rowObj = vlist[0].objByIndex(i);
+                if (!rowObj) continue;
+                
+                // Skip hidden rows when counting visible position
+                if (rowObj.hidden) continue;
+                
+                if (rowObj.row) {
+                    var rowMsgId = $(rowObj.row).attr('data-msgid');
+                    if (rowMsgId && String(rowMsgId) === String(msgId)) {
+                        rawIndex = i;
+                        console.log('Found message at visible index:', visibleIndex, '(raw index:', i, ') msgId:', msgId);
+                        break;
+                    }
+                }
+                visibleIndex++;
+            }
+            
+            if (rawIndex >= 0) {
+                // scrollTo expects visible row index for proper positioning
+                vlist[0].scrollTo(visibleIndex);
+                // selectedIndex expects raw index to find the row in o.rows
+                vlist[0].selectedIndex(rawIndex, false); // false = don't scroll again
+                setTimeout(function() {
+                    var row = vlist.find('tr.vlist-data.selected');
+                    if (row.length > 0) {
+                        row.addClass('flash-highlight');
+                        setTimeout(function() { row.removeClass('flash-highlight'); }, 1500);
+                    }
+                }, 100);
+            } else {
+                console.log('Message not found for _id:', msgId);
             }
         },
         _highlightRowForByte: function(container, byteIndex) {

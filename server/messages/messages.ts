@@ -169,6 +169,15 @@ export class MessageDocs {
         }
         return keys;
     }
+    public static getEntityFlow() {
+        try {
+            let data = fs.readFileSync(MessageDocs.docPath + 'entityFlow.json', 'utf8').trim();
+            return JSON.parse(data);
+        } catch (err) {
+            // Optional file; return empty config if missing
+            return { version: 1, controllers: {}, actions: {} };
+        }
+    }
 }
 export class Message {
     constructor() { }

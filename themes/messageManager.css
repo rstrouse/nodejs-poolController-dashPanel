@@ -102,16 +102,7 @@ div.messageContainer {
   max-width: 100%;
 }
 
-div.sendQueueTopContainer {
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 10px;
-}
-
-div.sendQueueTopContainer > div.picSendMessageQueue {
-  width: 100% !important;
-  max-width: 100% !important;
-}
+/* Send Queue is now its own view page (not a top container) */
 
 div.messagesContentContainer {
   width: 100%;
@@ -1292,7 +1283,8 @@ div.expansion-buttons {
 }
 
 div.expansion-close-btn,
-div.expansion-addqueue-btn {
+div.expansion-addqueue-btn,
+div.expansion-entity-btn {
   width: 24px;
   height: 24px;
   display: flex;
@@ -1317,6 +1309,12 @@ div.expansion-addqueue-btn:hover {
   color: white;
   background: #5cb85c;
   border-color: #4cae4c;
+}
+
+div.expansion-entity-btn:hover {
+  color: white;
+  background: #337ab7;
+  border-color: #2e6da4;
 }
 
 /* Ensure expansion content is visible even when row is hovered */
@@ -1517,4 +1515,144 @@ div.inline-payload-section table.payload-descriptor-table {
   font-size: 8pt;
   width: 100%;
   max-width: 100%;
+}
+
+/* Flash highlight for scrollToMessage */
+@keyframes flash-highlight-anim {
+  0% { background-color: rgba(0, 217, 255, 0.4); }
+  50% { background-color: rgba(0, 217, 255, 0.2); }
+  100% { background-color: transparent; }
+}
+
+tr.message-row.flash-highlight {
+  animation: flash-highlight-anim 1.5s ease-out;
+}
+
+/* MessageManager header uses Settings-style tabBar() (picTabs/picTab). */
+.mmgrTabHeader {
+  flex-shrink: 0;
+}
+
+/* Put tabs + actions on one row, like the main header/settings. */
+.picMessageManager div.mmgrTabBar > div.picTabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  background: #ffffff;
+  /* Match control-panel border + shadow so it visually aligns with panels above/below */
+  border: solid 1px gray;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(27, 27, 27, 0.4);
+}
+
+.picMessageManager div.mmgrTabBar > div.picTabContents {
+  display: none;
+}
+
+.picMessageManager div.mmgrTabBar {
+  width: 100%;
+}
+
+/* MessageManager doesn't render tabBar contents directly under tabs, so remove the
+   negative margins that normally overlap the contents panel (they create a small gap here). */
+.picMessageManager div.mmgrTabBar div.picTab,
+.picMessageManager div.mmgrTabBar div.picTabSelected {
+  margin-bottom: 0;
+}
+
+.picMessageManager .mmgrTabSpacer {
+  flex: 1 1 auto;
+}
+
+.picMessageManager div.mmgrTabBar span.picTabText > i {
+  margin-right: 8px;
+}
+
+/* Right-side actions: align with header icon style (simple, hover orange). */
+.picMessageManager .view-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.picMessageManager .view-bar-status {
+  font-size: 0.8rem;
+  color: slategray;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picMessageManager .view-bar-icon-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.picMessageManager .view-bar-icon-btn:hover {
+  color: orange;
+  text-shadow: 3px 3px 16px #272634;
+}
+
+.picMessageManager .view-bar-icon-btn i {
+  font-size: 1rem;
+}
+
+/* Choose Files button: match unselected tab styling and invert on hover. */
+.picMessageManager .upload-btn.view-bar-upload {
+  background: transparent;
+  border: solid 1px transparent;
+  border-radius: 5px;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--cupertino-secondary-label, slategray);
+  font-weight: 500;
+  text-shadow: 1px 1px 2px gainsboro;
+}
+
+.picMessageManager .upload-btn.view-bar-upload:hover {
+  background: var(--cupertino-label, #64748b);
+  border-color: var(--cupertino-label, #64748b);
+  color: #ffffff;
+  text-shadow: none;
+}
+
+/* View containers */
+.view-container {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0; /* Critical for flex scrolling */
+}
+
+.view-container.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-container[data-view="entityFlow"] .picEntityFlow {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Adjust message container for flex layout */
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+}
+
+.messagesContentContainer {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
 }

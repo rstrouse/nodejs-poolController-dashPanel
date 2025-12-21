@@ -59,6 +59,14 @@ export class MessagesRoute {
                 next(err);
             }
         });
+        app.get('/messages/docs/entityFlow', (req, res, next) => {
+            try {
+                return res.status(200).send(MessageDocs.getEntityFlow());
+            }
+            catch (err) {
+                next(err);
+            }
+        });
         app.get('/messages/docs/:key', (req, res, next) => {
             try {
                 return res.status(200).send(MessageDocs.findMessageByKey(req.params.key) || { docKey: req.params.key });

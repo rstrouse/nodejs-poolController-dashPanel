@@ -1,0 +1,83 @@
+@import url("../materia/theme.css");
+
+/* Android/Material (Material 3) theme overrides.
+   This theme intentionally layers on top of the existing Materia theme so it can evolve without a Sass toolchain. */
+
+:root {
+  --m3-primary: #6750a4;
+  --m3-on-primary: #ffffff;
+  --m3-surface: #fffbfe;
+  --m3-on-surface: #1c1b1f;
+  --m3-outline: rgba(0, 0, 0, 0.12);
+  --m3-surface-variant: #e7e0ec;
+  --m3-on-surface-variant: #49454f;
+}
+
+body {
+  background-image: url("background.jpg");
+  background-color: var(--m3-surface);
+  color: var(--m3-on-surface);
+  font-family: Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.popover,
+.control-panel {
+  border: 1px solid var(--m3-outline) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+.control-panel-title {
+  border-bottom: none !important;
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+
+.btn,
+.btn-border {
+  border-radius: 999px !important;
+}
+
+.btn {
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.btn:not([disabled]):not(.disabled):hover,
+.btn:not([disabled]):not(.disabled).hover {
+  background: #5b46a1 !important;
+}
+
+.btn:not([disabled]):not(.disabled):active,
+.btn:not([disabled]):not(.disabled).active {
+  background: #4f378b !important;
+  opacity: 1 !important;
+}
+
+.dropdown-panel,
+.tab-contents,
+.tab-item {
+  border-radius: 16px !important;
+  border-color: var(--m3-outline) !important;
+}
+
+div.picTab.picTabSelected > span.picTabText {
+  border-bottom: solid 2px var(--m3-primary) !important;
+}
+
+div.picTab:not(.picTabSelected) {
+  color: var(--m3-on-surface-variant) !important;
+}
+
+div.picIndicator {
+  border-radius: 10px !important;
+  border: 1px solid var(--m3-outline) !important;
+  box-shadow: none !important;
+}
+
+
+

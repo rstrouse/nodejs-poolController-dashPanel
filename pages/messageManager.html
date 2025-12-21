@@ -23,6 +23,9 @@
     <script type="text/javascript" src="scripts/messages/messageList/uploadLog.widget.js"></script>
     <script type="text/javascript" src="scripts/messages/messageList/messageList.widget.js"></script>
     <script type="text/javascript" src="scripts/messages/doc/messageDoc.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="text/javascript" src="scripts/messages/entityFlow/intellicenterMappings.js"></script>
+    <script type="text/javascript" src="scripts/messages/entityFlow/entityFlow.widget.js"></script>
     <link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.theme.css" />
     <link rel="stylesheet" type="text/css" href="font-awesome/css/all.css" />
@@ -30,6 +33,7 @@
     <link rel="stylesheet" type="text/css" href="themes/controller.css" />
     <link rel="stylesheet" type="text/css" href="themes/vlist.css" />
     <link rel="stylesheet" type="text/css" href="themes/messageManager.css" />
+    <link rel="stylesheet" type="text/css" href="scripts/messages/entityFlow/entityFlow.css" />
     <!-- Blank stylesheet for message responses -->
     <style id="responseStyles" type="text/css">
     </style>
@@ -46,12 +50,37 @@
             <div class="picController picControlPanel control-panel" style="display:block;"></div>
         </header>
         <div class="messageContainer">
-            <div class="sendQueueTopContainer">
+            <!-- Tab Navigation (Settings-style tabBar widget) -->
+            <div class="mmgrTabHeader">
+                <div class="mmgrTabBar"></div>
+                <div class="view-bar-actions">
+                    <span class="view-bar-status" title="Replay load status"></span>
+                    <button type="button" class="view-bar-icon-btn view-bar-clear" title="Clear Messages">
+                        <i class="fas fa-broom"></i>
+                    </button>
+                    <button type="button" class="view-bar-icon-btn view-bar-filter" title="Filter Display">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <button type="button" class="upload-btn view-bar-upload" title="Choose Files">
+                        <i class="fas fa-folder-open"></i> Choose Files
+                    </button>
+                    <input id="universalReplayFileInput" type="file" accept=".json,.zip,.log" multiple style="display:none;" />
+                </div>
+            </div>
+            <!-- Message List View -->
+            <div class="view-container active" data-view="messages">
+                <div class="messagesContentContainer">
+                    <div class="picMessages picControlPanel control-panel" style="display:block;"></div>
+                    <div class="picMessageDetail picControlPanel control-panel" style="display:none;"></div>
+                </div>
+            </div>
+            <!-- Send Queue View -->
+            <div class="view-container" data-view="sendQueue">
                 <div class="picSendMessageQueue picControlPanel control-panel" style="display:block;"></div>
             </div>
-            <div class="messagesContentContainer">
-                <div class="picMessages picControlPanel control-panel" style="display:block;"></div>
-                <div class="picMessageDetail picControlPanel control-panel" style="display:none;"></div>
+            <!-- Entity Flow View -->
+            <div class="view-container" data-view="entityFlow">
+                <div class="picEntityFlow picControlPanel control-panel" style="display:block;width:100%;"></div>
             </div>
         </div>
     </div>
@@ -69,6 +98,125 @@
             $('div.picMessages').messageList();
             $('div.picSendMessageQueue').sendMessageQueue();
             $('div.picMessageDetail').messageDetail();
+            $('div.picEntityFlow').entityFlow();
+
+            // Settings-style tab bar for view switching (matches config/settings tabs)
+            var $mmTabBar = $('div.mmgrTabBar');
+            $mmTabBar.tabBar();
+            // Hide built-in tab contents panel; we drive our existing view containers below.
+            $mmTabBar.find('div.picTabContents:first').hide();
+
+            // Add tabs
+            $mmTabBar[0].addTab({ id: 'tabMessages', text: 'Message List' });
+            $mmTabBar[0].addTab({ id: 'tabSendQueue', text: 'Send Queue' });
+            $mmTabBar[0].addTab({ id: 'tabEntityFlow', text: 'Entity Flow' });
+
+            // Inject icons into tab labels
+            $mmTabBar.find('div.picTab[data-tabid="tabMessages"] span.picTabText:first')
+                .html('<i class="fas fa-list"></i>Message List');
+            $mmTabBar.find('div.picTab[data-tabid="tabSendQueue"] span.picTabText:first')
+                .html('<i class="fas fa-paper-plane"></i>Send Queue');
+            $mmTabBar.find('div.picTab[data-tabid="tabEntityFlow"] span.picTabText:first')
+                .html('<i class="fas fa-project-diagram"></i>Entity Flow');
+
+            // Move actions into the tab row (right aligned)
+            var $tabsRow = $mmTabBar.find('div.picTabs:first');
+            $('<div class="mmgrTabSpacer"></div>').appendTo($tabsRow);
+            $('.view-bar-actions').appendTo($tabsRow);
+
+            // View switching on tab change
+            $mmTabBar.on('tabchange', function (evt) {
+                var viewName = 'messages';
+                switch (evt.newTab.id) {
+                    case 'tabSendQueue':
+                        viewName = 'sendQueue';
+                        break;
+                    case 'tabEntityFlow':
+                        viewName = 'entityFlow';
+                        break;
+                    case 'tabMessages':
+                    default:
+                        viewName = 'messages';
+                        break;
+                }
+                $('.view-container').removeClass('active');
+                $('.view-container[data-view="' + viewName + '"]').addClass('active');
+            });
+
+            // Select initial tab (align with initial view-container.active)
+            $mmTabBar[0].selectTabById('tabMessages');
+            
+            // Universal fast replay loader (ZIP / .log / JSON)
+            var $replayInput = $('#universalReplayFileInput');
+            var $replayBtn = $('.view-bar-upload');
+            var $replayStatus = $('.view-bar-status');
+            var $clearBtn = $('.view-bar-clear');
+            var $filterBtn = $('.view-bar-filter');
+
+            $replayBtn.on('click', function(e) {
+                e.preventDefault();
+                $replayInput[0].click();
+            });
+
+            // Show status updates emitted from Entity Flow widget
+            $('div.picEntityFlow').on('replayLoadStatus', function(e) {
+                $replayStatus.text(e.text || '');
+            });
+
+            $replayInput.on('change', function(e) {
+                var files = e.target.files;
+                if (!files || files.length === 0) return;
+                // Always clear & import via Entity Flow (it also populates Message List for shared navigation)
+                var ef = $('div.picEntityFlow')[0];
+                if (ef && ef.importFiles) {
+                    ef.importFiles(files);
+                }
+                // Reset input so selecting same files again triggers change
+                $replayInput.val('');
+            });
+
+            // Universal Clear (clears messages + entity flow state)
+            $clearBtn.on('click', function(e) {
+                e.preventDefault();
+                var ef = $('div.picEntityFlow')[0];
+                if (ef && ef.clearAll) ef.clearAll();
+                var ml = $('div.picMessages:first')[0];
+                if (ml && ml.clear) ml.clear();
+                $replayStatus.text('');
+                // Reset upload button text
+                $replayBtn.html('<i class="fas fa-folder-open"></i> Choose Files');
+                $replayBtn.attr('title', 'Choose Files');
+            });
+
+            // Universal Filter dialog (operates on Message List)
+            $filterBtn.on('click', function(e) {
+                e.preventDefault();
+                var ml = $('div.picMessages:first')[0];
+                if (ml && ml.openFilterDialog) ml.openFilterDialog();
+            });
+
+            // When entity type changes, apply corresponding packet matchers as filters in Message List
+            $('div.picEntityFlow').on('entityTypeChanged', function(e) {
+                var ml = $('div.picMessages:first')[0];
+                if (ml && ml.applyPacketMatchers) {
+                    ml.applyPacketMatchers(e.matchers || []);
+                }
+            });
+
+            // Listen for navigation from entity flow to message list
+            $('div.picEntityFlow').on('navigateToPacket', function(e) {
+                // Switch to message list tab
+                var tb = $('div.mmgrTabBar')[0];
+                if (tb && tb.selectTabById) tb.selectTabById('tabMessages');
+                
+                // Scroll to the packet
+                var messageList = $('div.picMessages')[0];
+                if (messageList && messageList.scrollToMessage) {
+                    setTimeout(function() {
+                        messageList.scrollToMessage(e.packetIndex);
+                    }, 100);
+                }
+            });
         });
     </script>
 </body>
