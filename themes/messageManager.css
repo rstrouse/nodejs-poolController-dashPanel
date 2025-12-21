@@ -1531,6 +1531,9 @@ tr.message-row.flash-highlight {
 /* MessageManager header uses Settings-style tabBar() (picTabs/picTab). */
 .mmgrTabHeader {
   flex-shrink: 0;
+  /* Keep tab header below popups/modals (which use z-index 100+) */
+  position: relative;
+  z-index: 1;
 }
 
 /* Put tabs + actions on one row, like the main header/settings. */
