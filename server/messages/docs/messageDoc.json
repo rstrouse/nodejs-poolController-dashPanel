@@ -2684,6 +2684,142 @@
         }
       }
     },
+    "165_P_BC_CP_184": {
+      "proto": "broadcast",
+      "ocpSpecific": true,
+      "messageType": "request",
+      "shortName": "Ctrl[circuit]",
+      "name": "Circuit Control (IntelliCenter v3.004+ Wireless)",
+      "desc": "Native circuit control message used by the Wireless remote (addr 36) on IntelliCenter v3.004+. This is the preferred method for controlling circuits on v3.004+ as it doesn't suffer from state reversion issues like Action 168. The OCP responds with an ACK (Action 1 payload [184]). For body circuits (Spa/Pool), multiple 184 messages are sent in sequence with different target IDs.",
+      "payload": [
+        {
+          "start": 0,
+          "length": 1,
+          "name": "Channel ID High",
+          "desc": "Channel identifier high byte. Default channel is 104,143 (0x688F). Body context uses 128,142.",
+          "dataType": "byte",
+          "values": { "104": "Default channel (circuit control)", "128": "Body context/select channel" }
+        },
+        {
+          "start": 1,
+          "length": 1,
+          "name": "Channel ID Low",
+          "desc": "Channel identifier low byte.",
+          "dataType": "byte",
+          "values": { "143": "Default channel low (with 104)", "142": "Body context low (with 128)" }
+        },
+        {
+          "start": 2,
+          "length": 1,
+          "name": "Sequence",
+          "desc": "Sequence number. Commonly 0, but Pool body control uses 5.",
+          "dataType": "byte"
+        },
+        {
+          "start": 3,
+          "length": 1,
+          "name": "Format",
+          "desc": "Message format. 255 = command mode, 0 = body select mode.",
+          "dataType": "byte",
+          "values": { "255": "Command mode", "0": "Body select mode" }
+        },
+        {
+          "start": 4,
+          "length": 1,
+          "name": "Target ID High",
+          "desc": "Target identifier high byte. Combined with low byte to form the circuit's unique targetId (hi*256 + lo).",
+          "dataType": "byte"
+        },
+        {
+          "start": 5,
+          "length": 1,
+          "name": "Target ID Low",
+          "desc": "Target identifier low byte.",
+          "dataType": "byte"
+        },
+        {
+          "start": 6,
+          "length": 1,
+          "name": "State / Select",
+          "desc": "State value: 0=OFF, 1=ON. For body select (target 114,145): 0=Spa, 1=Pool.",
+          "dataType": "byte",
+          "values": { "0": "OFF / Spa select", "1": "ON / Pool select" }
+        },
+        {
+          "start": 7,
+          "length": 3,
+          "name": "Context Data",
+          "desc": "Context-specific data. Usually 0,0,0 for circuit control. For body context (target 212,182): Spa ON=[101,4,0], Pool ON=[151,6,0], OFF=[255,255,255].",
+          "dataType": "byte[]"
+        }
+      ],
+      "targetIds": {
+        "168_237": {
+          "name": "Body Toggle",
+          "targetId": 43245,
+          "desc": "Body toggle primitive. Byte 6 is state (0=OFF, 1=ON). Used as final step in body control sequence.",
+          "example": "[104,143,0,255,168,237,1,0,0,0]"
+        },
+        "212_182": {
+          "name": "Body Context",
+          "targetId": 54454,
+          "desc": "Body context/status message. Bytes 6-9 contain body-specific context: Spa ON=[0,101,4,0], Pool ON=[128,151,6,0], OFF=[255,255,255,255].",
+          "example": "[104,143,5,255,212,182,128,151,6,0]"
+        },
+        "114_145": {
+          "name": "Body Select",
+          "targetId": 29329,
+          "desc": "Body selection/context. Byte 6 selects body: 0=Spa, 1=Pool. Uses channel 128,142 and format 0.",
+          "example": "[128,142,0,0,114,145,1,0,0,0]"
+        },
+        "94_131": {
+          "name": "Body Mode",
+          "targetId": 24195,
+          "desc": "Body/mode control. Byte 6: 128=OFF, 129=ON. Uses channel 128,142 and format 0.",
+          "example": "[128,142,0,0,94,131,129,0,0,0]"
+        },
+        "108_225": {
+          "name": "Pool Circuit",
+          "targetId": 27873,
+          "desc": "Pool circuit (circuit 6) direct control. Note: Wireless remote does NOT use this for body control - see Body Toggle instead.",
+          "example": "[104,143,0,255,108,225,1,0,0,0]"
+        },
+        "circuit_specific": {
+          "name": "Circuit Control",
+          "desc": "Each circuit has a unique targetId learned from OCP broadcasts (poolConfig.json). Use the circuit's targetId with state 0/1 in byte 6.",
+          "example": "[104,143,0,255,<hi>,<lo>,<state>,0,0,0]"
+        }
+      },
+      "sequences": {
+        "circuit_on_off": {
+          "name": "Circuit ON/OFF",
+          "desc": "Simple circuit control using learned targetId",
+          "steps": [
+            "1. Send Action 184 with circuit's targetId and state (0/1) in byte 6",
+            "2. Wait for ACK (Action 1, payload [184])",
+            "3. OCP broadcasts Action 2 with updated circuit states"
+          ]
+        },
+        "body_control_v3": {
+          "name": "Body Control (v3.004+)",
+          "desc": "Multi-step sequence for reliable Pool/Spa body control on v3.004+",
+          "steps": [
+            "1. Body Select (114,145): Choose Pool (byte6=1) or Spa (byte6=0)",
+            "2. Body Context (212,182): Send body-specific context bytes 6-9",
+            "3. Body Toggle (168,237): Send final state (byte6: 0=OFF, 1=ON)",
+            "4. Wait for each ACK before proceeding"
+          ],
+          "note": "Required because sending Pool targetId directly often incorrectly activates Spa instead"
+        }
+      },
+      "notes": [
+        "Wireless remote address is 36, OCP address is 16",
+        "Header: [165,1,16,36,184,10] for Wireless→OCP",
+        "ACK: [165,1,36,16,1,1] payload [184] for OCP→Wireless",
+        "TargetIds are learned from OCP broadcasts and stored in poolConfig.json",
+        "For v1.x systems without targetIds, use Action 168 instead"
+      ]
+    },
     "165_P_CP_CP_222": {
       "proto": "broadcast",
       "ocpSpecific": true,

@@ -209,6 +209,7 @@
                 '<span class="legend-item legend-config-sweep" data-flowkey="configSweep"><span class="legend-swatch swatch-config-sweep"></span>Config sweep</span>' +
                 '<span class="legend-item legend-config-item" data-flowkey="configItem"><span class="legend-swatch swatch-config-item"></span>Config item</span>' +
                 '<span class="legend-item legend-set-circuit" data-flowkey="setCircuit"><span class="legend-swatch swatch-set-circuit"></span>Set circuit</span>' +
+                '<span class="legend-item legend-body-control" data-flowkey="bodyControl"><span class="legend-swatch swatch-body-control"></span>Body ctrl</span>' +
                 '<span class="legend-item legend-bcast-2" data-flowkey="broadcast2"><span class="legend-swatch swatch-bcast-2"></span>Broadcast 2</span>' +
                 '<span class="legend-item legend-bcast-204" data-flowkey="broadcast204"><span class="legend-swatch swatch-bcast-204"></span>Broadcast 204</span>' +
                 '<span class="legend-hint">Click a bar to filter the same range in the message list</span>'
@@ -472,6 +473,7 @@
                 { key: 'registration', label: 'Registration + Config (228/164/222/30/ACK)' },
                 { key: 'config', label: 'Config only (222/30)' },
                 { key: 'set', label: 'Set circuit/feature (168/184 + ACK + 222[15,0] + 30[15,0])' },
+                { key: 'body', label: 'Body state changes (184 + ACK + 2)' },
                 { key: 'broadcasts', label: 'Broadcasts (2 + 204)' },
                 { key: 'all', label: 'All packets (no filter)' }
             ];
@@ -568,6 +570,15 @@
             function matchersFor(key) {
                 if (key === 'broadcasts') return [{ protocol: 'broadcast', action: 2 }, { protocol: 'broadcast', action: 204 }];
                 if (key === 'config') return [{ protocol: 'broadcast', action: 222 }, { protocol: 'broadcast', action: 30 }];
+                if (key === 'body') {
+                    // Body state changes (v3.004+ Wireless-style):
+                    // Action 184 (body select/context/toggle), ACK(184) and resulting Action 2 state broadcast.
+                    return [
+                        { protocol: 'broadcast', action: 184 },
+                        { protocol: 'broadcast', action: 1, payload0: 184 },
+                        { protocol: 'broadcast', action: 2 }
+                    ];
+                }
                 if (key === 'set') {
                     return [
                         { protocol: 'broadcast', action: 168 },
@@ -1063,6 +1074,23 @@
                         ];
                     }
                     break;
+                case 'bodyState':
+                    // Body ON/OFF state tracks Pool vs Spa. Use IDs: 1=Pool, 2=Spa.
+                    // Prefer names from config/state bodies if present.
+                    if (source.bodies && Array.isArray(source.bodies)) {
+                        entities = source.bodies.filter(function(b) {
+                            return b.id === 1 || b.id === 2;
+                        }).map(function(b) {
+                            return { id: b.id, name: (b.name || (b.id === 1 ? 'Pool' : 'Spa')) };
+                        });
+                    }
+                    if (entities.length === 0) {
+                        entities = [
+                            { id: 1, name: 'Pool' },
+                            { id: 2, name: 'Spa' }
+                        ];
+                    }
+                    break;
             }
             
             return entities;
@@ -1241,12 +1269,14 @@
             var hasSweep = model.spans && model.spans.configSweep && model.spans.configSweep.length > 0;
             var hasItem = model.spans && model.spans.configItem && model.spans.configItem.length > 0;
             var hasSet = model.spans && model.spans.setCircuit && model.spans.setCircuit.length > 0;
+            var hasBody = model.spans && model.spans.bodyControl && model.spans.bodyControl.length > 0;
             var hasB2 = model.ticks && model.ticks.broadcast2 && model.ticks.broadcast2.length > 0;
             var hasB204 = model.ticks && model.ticks.broadcast204 && model.ticks.broadcast204.length > 0;
 
             o.flowTimelineLegend.find('.legend-config-sweep').toggle(!!hasSweep);
             o.flowTimelineLegend.find('.legend-config-item').toggle(!!hasItem);
             o.flowTimelineLegend.find('.legend-set-circuit').toggle(!!hasSet);
+            o.flowTimelineLegend.find('.legend-body-control').toggle(!!hasBody);
             o.flowTimelineLegend.find('.legend-bcast-2').toggle(!!hasB2);
             o.flowTimelineLegend.find('.legend-bcast-204').toggle(!!hasB204);
         },
@@ -1260,6 +1290,8 @@
             var SWEEP_IDLE_MS = 400;
             var SET_FLOW_WINDOW_MS = 2500;
             var MAX_INCOMPLETE_SPAN_MS = 10000;
+            var BODY_FLOW_WINDOW_MS = 2500;
+            var BODY_IDLE_MS = 450;
 
             function toMs(ts) {
                 if (!ts) return null;
@@ -1298,6 +1330,7 @@
             var configItemSpans = [];
             var configSweepSpans = [];
             var setCircuitSpans = [];
+            var bodyControlSpans = [];
             var broadcast2Ticks = [];
             var broadcast204Ticks = [];
 
@@ -1437,6 +1470,71 @@
                 setCircuitSpans.push(span);
             }
 
+            // Body-control tracking (v3.004+ Wireless-style Action 184 bursts)
+            // Detect bursts of Action 184 where target bytes match known body targets, even when
+            // direction is "in" (WL→OCP in logs). Close when we see Action 2 shortly after.
+            var activeBody = null; // { kind,start,end,startTs,lastIdx,lastTs,count184,countAck,notes,failed,initialA2Idx }
+            function isBody184Payload(pl) {
+                if (!pl || pl.length < 6) return false;
+                var hi = pl[4], lo = pl[5];
+                return (hi === 168 && lo === 237) || // body toggle
+                       (hi === 212 && lo === 182) || // body context
+                       (hi === 114 && lo === 145) || // body select
+                       (hi === 94 && lo === 131)  || // body/mode-ish
+                       (hi === 108 && lo === 225);   // pool circuit target (include)
+            }
+            // Find the most recent Action 2 packet before index i (for initial state)
+            function findPrecedingAction2(i) {
+                var MAX_LOOKBACK_MS = 5000; // Don't look back more than 5 seconds
+                var cmdTs = tsAt(i);
+                for (var j = i - 1; j >= 0; j--) {
+                    var a = actionAt(j);
+                    var d = dirAt(j);
+                    if (a === 2 && d === 'in') {
+                        // Check time window
+                        var a2Ts = tsAt(j);
+                        if (cmdTs !== null && a2Ts !== null && (cmdTs - a2Ts) > MAX_LOOKBACK_MS) {
+                            break; // Too far back in time
+                        }
+                        return j;
+                    }
+                }
+                return null;
+            }
+            function openBodySpan(i) {
+                // Look backward for the initial Action 2 that shows state before the change
+                var initialA2 = findPrecedingAction2(i);
+                var spanStart = (initialA2 !== null) ? initialA2 : i;
+                activeBody = {
+                    kind: 'bodyControl',
+                    start: spanStart,
+                    end: null,
+                    startTs: tsAt(spanStart),
+                    lastIdx: i,
+                    lastTs: tsAt(i),
+                    count184: 0,
+                    countAck: 0,
+                    notes: [],
+                    failed: false,
+                    initialA2Idx: initialA2,
+                    first184Idx: i
+                };
+            }
+            function touchBody(i, isAck) {
+                if (!activeBody) return;
+                activeBody.lastIdx = i;
+                activeBody.lastTs = tsAt(i);
+                if (isAck) activeBody.countAck++;
+                else activeBody.count184++;
+            }
+            function closeBodySpan(endExclusive, note) {
+                if (!activeBody) return;
+                activeBody.end = endExclusive;
+                if (note) activeBody.notes.push(note);
+                bodyControlSpans.push(activeBody);
+                activeBody = null;
+            }
+
             for (var i = 0; i < total; i++) {
                 var a = actionAt(i);
                 var dir = dirAt(i);
@@ -1524,6 +1622,28 @@
                     }
                 }
 
+                // Body control burst spans
+                if (a === 184 && isBody184Payload(pl)) {
+                    if (!activeBody) openBodySpan(i);
+                    touchBody(i, false);
+                } else if (a === 1 && pl && pl.length > 0 && pl[0] === 184) {
+                    if (activeBody) {
+                        if (activeBody.lastTs === null || ts === null || (ts - activeBody.lastTs) <= BODY_FLOW_WINDOW_MS) {
+                            touchBody(i, true);
+                        }
+                    }
+                } else if (a === 2 && dir === 'in') {
+                    if (activeBody) {
+                        if (activeBody.lastTs === null || ts === null || (ts - activeBody.lastTs) <= BODY_FLOW_WINDOW_MS) {
+                            closeBodySpan(i + 1, null);
+                        }
+                    }
+                } else {
+                    if (activeBody && activeBody.lastTs !== null && ts !== null && (ts - activeBody.lastTs) > BODY_IDLE_MS) {
+                        closeBodySpan(activeBody.lastIdx + 1, 'Closed on idle gap');
+                    }
+                }
+
                 // Close sweep if appropriate
                 if (activeSweep) maybeCloseSweep(i);
             }
@@ -1560,11 +1680,23 @@
                 }
             }
 
+            // Finalize body span if still open
+            if (activeBody && activeBody.end === null) {
+                activeBody.failed = true;
+                var baseTsB = (activeBody.startTs !== null) ? activeBody.startTs : activeBody.lastTs;
+                var capB = endIndexByTimeout(activeBody.start, baseTsB, MAX_INCOMPLETE_SPAN_MS);
+                activeBody.end = (capB !== null) ? Math.max(activeBody.start + 1, capB) : total;
+                activeBody.notes.push('Did not observe Action 2 state broadcast (timeout ≤ 10s)');
+                bodyControlSpans.push(activeBody);
+                activeBody = null;
+            }
+
             return {
                 spans: {
                     configSweep: configSweepSpans,
                     configItem: configItemSpans,
-                    setCircuit: setCircuitSpans
+                    setCircuit: setCircuitSpans,
+                    bodyControl: bodyControlSpans
                 },
                 ticks: {
                     broadcast2: broadcast2Ticks,
@@ -1659,6 +1791,7 @@
             var sweep = model.spans.configSweep || [];
             var items = model.spans.configItem || [];
             var sets = model.spans.setCircuit || [];
+            var bodies = model.spans.bodyControl || [];
             var b2 = model.ticks.broadcast2 || [];
             var b204 = model.ticks.broadcast204 || [];
 
@@ -1666,12 +1799,14 @@
             // - bottom: sweep (usually 1 lane)
             // - above: config items (multiple lanes if overlapping)
             // - above: set circuit flows (multiple lanes if overlapping)
+            // - above: body control bursts (multiple lanes if overlapping)
             // - top: broadcast ticks
             var itemLanes = buildLanes(items);
             var setLanes = buildLanes(sets);
+            var bodyLanes = buildLanes(bodies);
 
-            // Total row count = 1 sweep + itemLanes + setLanes + 1 ticks
-            var rows = 1 + itemLanes.length + setLanes.length + 1;
+            // Total row count = 1 sweep + itemLanes + setLanes + bodyLanes + 1 ticks
+            var rows = 1 + itemLanes.length + setLanes.length + bodyLanes.length + 1;
             var trackH = (rows * ROW_H) + ((rows - 1) * ROW_GAP) + PAD_Y;
             if (o.flowTimelineTrack) o.flowTimelineTrack.css('height', trackH + 'px');
             if (o.flowTimelineTrack && o.flowTimelineTrack.parent()) o.flowTimelineTrack.parent().css('height', trackH + 'px');
@@ -1698,6 +1833,16 @@
                     var label2 = 'Set circuit: ' + sp.cmdAction + ' → ACK(1) → 222[15,0] → 30[15,0]';
                     if (sp.notes && sp.notes.length) label2 += ' • ' + sp.notes.join(' • ');
                     return label2;
+                }));
+            }
+            // Body lanes
+            for (var bl = 0; bl < bodyLanes.length; bl++) {
+                o.flowTimelineLayers.append(renderLane(bodyLanes[bl], 'flow-span-body-control', function(sp) {
+                    var label3 = 'Body ctrl: 184 burst → ACK(184) → 2';
+                    if (typeof sp.count184 === 'number') label3 += ' • 184×' + sp.count184;
+                    if (typeof sp.countAck === 'number') label3 += ' • ack×' + sp.countAck;
+                    if (sp.notes && sp.notes.length) label3 += ' • ' + sp.notes.join(' • ');
+                    return label3;
                 }));
             }
             // Broadcast ticks lane (top)
@@ -1801,6 +1946,7 @@
                     message: msg,
                     extractedState: extraction ? extraction.state : null,
                     stateType: extraction ? extraction.stateType : 'boolean',
+                    isCommand: extraction ? extraction.isCommand : false,  // true = request/desired state
                     heatModeName: extraction ? extraction.heatModeName : null,
                     setpoint: extraction ? extraction.setpoint : null,
                     coolSetpoint: extraction ? extraction.coolSetpoint : null,
@@ -2165,22 +2311,35 @@
             var direction = self._getPacketDirection(msg);
             $('<td class="col-direction"></td>').text(direction).appendTo(row);
             
+            // De-emphasize ACK packets (Action 1) and OCP→Broadcast/OCP→WL 184 echoes
+            // These are context packets, not the primary commands or state changes
+            var isAckPacket = (actionByte === 1);
+            var is184FromOcp = (actionByte === 184 && direction.indexOf('OCP→') === 0);
+            if (isAckPacket || is184FromOcp) {
+                row.addClass('row-muted');
+            }
+            
             // State - handle different state types
+            // Commands (requests) use arrow prefix: →ON / →OFF
+            // Actual state uses plain: ON / OFF
             var stateText = '-';
             var stateType = pkt.stateType || 'boolean';  // default to boolean for features/circuits
+            var isCommand = pkt.isCommand || false;
             
             if (pkt.extractedState !== null) {
+                var prefix = isCommand ? '→' : '';
                 if (stateType === 'temperature') {
-                    stateText = pkt.extractedState + '°';
+                    stateText = prefix + pkt.extractedState + '°';
                 } else if (stateType === 'bodySettings') {
                     // Show setpoint and heat mode
-                    stateText = pkt.extractedState + '° ' + (pkt.heatModeName || '');
+                    stateText = prefix + pkt.extractedState + '° ' + (pkt.heatModeName || '');
                 } else {
                     // Boolean state (ON/OFF)
-                    stateText = pkt.extractedState ? 'ON' : 'OFF';
+                    stateText = prefix + (pkt.extractedState ? 'ON' : 'OFF');
                 }
             }
             var stateCell = $('<td class="col-state"></td>').text(stateText).appendTo(row);
+            if (isCommand) stateCell.addClass('state-command');
             
             // Highlight state changes
             if (lastState !== null && pkt.extractedState !== lastState) {

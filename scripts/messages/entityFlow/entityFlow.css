@@ -505,6 +505,9 @@
 .flow-span-set-circuit {
     background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%);
 }
+.flow-span-body-control {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
 
 /* Tick marks */
 .flow-tick {
@@ -532,6 +535,7 @@
 .swatch-config-sweep { background: #10b981; }
 .swatch-config-item { background: #3b82f6; }
 .swatch-set-circuit { background: #8b5cf6; }
+.swatch-body-control { background: #16a34a; }
 .swatch-bcast-2 { background: #f59e0b; }
 .swatch-bcast-204 { background: #ef4444; }
 
@@ -889,6 +893,19 @@
     color: #64748b; /* Muted text */
 }
 
+/* Muted rows: ACK packets and OCP→Broadcast 184 echoes (less important context) */
+.entity-timeline-table tbody tr.row-muted {
+    opacity: 0.55;
+}
+
+.entity-timeline-table tbody tr.row-muted:hover {
+    opacity: 0.85;
+}
+
+.entity-timeline-table tbody tr.row-muted td {
+    color: #94a3b8; /* Lighter gray text */
+}
+
 /* Column widths and colors */
 .col-time { 
     width: 90px; 
@@ -932,6 +949,11 @@
 
 .state-off {
     color: var(--error-color, #ef4444);
+}
+
+.state-command {
+    font-style: italic;
+    color: var(--warning-color, #f59e0b);
 }
 
 /* Byte display */

@@ -79,8 +79,10 @@
          */
         CIRCUIT_OFFSETS: {
             // Action 2 (Status Broadcast - circuits only)
+            // Payload layout: [hours, minutes, circuits1-8, circuits9-16, ...]
+            // Circuit byte offset is 2 (0=hours, 1=minutes, 2=circuits1-8)
             '2': {
-                circuitStart: 3,
+                circuitStart: 2,    // Byte 2 = circuits 1-8 (bit0=C1/Spa, bit5=C6/Pool)
                 circuitLength: 5,   // 5 bytes = 40 circuits
                 isAuthoritative: false,
                 note: 'Broadcast every ~2 sec, circuits 1-40 only'
@@ -218,9 +220,202 @@
                 return this.extractTempState(msg, entityId);
             } else if (entityType === 'bodySettings') {
                 return this.extractBodySettingsState(msg, entityId, options);
+            } else if (entityType === 'bodyState') {
+                return this.extractBodyState(msg, entityId);
             }
             // Other entity types not yet supported
             return null;
+        },
+
+        /**
+         * Known Action 184 target IDs for body control
+         */
+        ACTION_184_TARGETS: {
+            '168,237': { name: 'Body Toggle', stateByteIdx: 6, stateLabel: function(v) { return v === 1 ? 'ON' : 'OFF'; } },
+            '212,182': { name: 'Body Context', stateByteIdx: 6, stateLabel: function(v) { return v === 255 ? 'OFF ctx' : 'ON ctx'; } },
+            // Body Select: byte6=0 sent during Pool→Spa, byte6=1 sent during Spa→Pool
+            '114,145': { name: 'Body Select', stateByteIdx: 6, stateLabel: function(v) { return v === 0 ? '→Spa' : '→Pool'; } },
+            '94,131':  { name: 'Body Mode', stateByteIdx: 6, stateLabel: function(v) { return 'mode=' + v; } },
+            '108,225': { name: 'Pool Circuit', stateByteIdx: 6, stateLabel: function(v) { return v === 1 ? 'ON' : 'OFF'; } }
+        },
+        
+        /**
+         * Extract body ON/OFF state (Pool/Spa) from packets.
+         *
+         * Entity IDs:
+         *   - 1 = Pool body (typically circuit 6)
+         *   - 2 = Spa body (typically circuit 1)
+         *
+         * Primary authoritative signal is Action 2 circuit bitfield (payload bytes 2-6).
+         * We also accept Action 30/15 (authoritative) and Action 168/15 (outbound) via circuit offsets.
+         * Action 184 packets show body control commands with target IDs.
+         *
+         * @param {Object} msg - The message object
+         * @param {number} bodyId - 1=Pool, 2=Spa
+         * @returns {Object|null}
+         */
+        extractBodyState: function(msg, bodyId) {
+            // Only Pool/Spa supported
+            if (bodyId !== 1 && bodyId !== 2) return null;
+            
+            var action = (typeof msg.action !== 'undefined' && msg.action !== null)
+                ? msg.action
+                : (typeof msgManager !== 'undefined' && msgManager.extractActionByte ? msgManager.extractActionByte(msg) : (msg.header && msg.header.length > 4 ? msg.header[4] : null));
+            var payload = msg.payload;
+            
+            // Handle Action 184 (body control commands)
+            if (action === 184 && payload && payload.length >= 7) {
+                return this._extractAction184BodyState(msg, bodyId);
+            }
+            
+            // Handle Action 1 (ACK for 184)
+            if (action === 1 && payload && payload.length > 0 && payload[0] === 184) {
+                return this._extractAction1AckState(msg, bodyId);
+            }
+
+            // Map body -> circuit id used for ON/OFF in Action 2
+            // Spa is circuit 1, Pool is circuit 6 (common IntelliCenter mapping)
+            var circuitId = (bodyId === 2) ? 1 : 6;
+
+            // Reuse circuit extraction so offsets and bit formatting stay consistent
+            var circ = this.extractCircuitState(msg, circuitId);
+            if (!circ) return null;
+
+            // Re-label output for body context
+            var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+            var flags = (circ.flags || []).slice();
+            flags.push({ type: 'info', text: 'Body' });
+
+            // Ensure bitDetails reads as body state, while still including circuit id in legend
+            var stateLabel = bodyName + ' = ' + (circ.state ? 'ON' : 'OFF');
+            var bitDetails = stateLabel + (circ.bitDetails ? ('<br/>' + circ.bitDetails) : '');
+
+            return {
+                state: circ.state,
+                stateType: 'bodyState',
+                bytes: circ.bytes,
+                bitDetails: bitDetails,
+                isAuthoritative: circ.isAuthoritative,
+                flags: flags,
+                byteOffset: circ.byteOffset,
+                bitOffset: circ.bitOffset,
+                rawByte: circ.rawByte
+            };
+        },
+        
+        /**
+         * Extract body state from Action 184 packet
+         * Payload: [channelId, seq, format, reserved, targetHi, targetLo, state, ...]
+         */
+        _extractAction184BodyState: function(msg, bodyId) {
+            var payload = msg.payload;
+            if (!payload || payload.length < 7) return null;
+            
+            var targetHi = payload[4];
+            var targetLo = payload[5];
+            var targetKey = targetHi + ',' + targetLo;
+            var stateValue = payload[6];
+            
+            var targetInfo = this.ACTION_184_TARGETS[targetKey];
+            var targetName = targetInfo ? targetInfo.name : 'Unknown';
+            var stateLabel = targetInfo ? targetInfo.stateLabel(stateValue) : String(stateValue);
+            
+            // Determine if this is a command (request) vs actual state based on direction
+            // Command: source is NOT OCP (16) and dest IS OCP (16) - e.g., WL→OCP, njsPC→OCP
+            // Actual: source IS OCP (16) - e.g., OCP→Broadcast, OCP→WL
+            var isCommand = this._isCommandPacket(msg);
+            
+            // Build relevant bytes - show target ID and state byte
+            var relevantBytes = [
+                { offset: 4, value: targetHi, isRelevant: true, label: 'tgtHi' },
+                { offset: 5, value: targetLo, isRelevant: true, label: 'tgtLo' },
+                { offset: 6, value: stateValue, isRelevant: true, label: 'state' }
+            ];
+            
+            // Add bytes 7-9 if present (additional context data)
+            if (payload.length > 7) {
+                relevantBytes.push({ offset: 7, value: payload[7], isRelevant: false });
+            }
+            if (payload.length > 8) {
+                relevantBytes.push({ offset: 8, value: payload[8], isRelevant: false });
+            }
+            if (payload.length > 9) {
+                relevantBytes.push({ offset: 9, value: payload[9], isRelevant: false });
+            }
+            
+            // Build bit details showing target and state
+            var bitDetails = '<b>' + targetName + '</b> [' + targetHi + ',' + targetLo + ']<br/>' +
+                             'State: <span class="bit-highlight">' + stateLabel + '</span> (byte6=' + stateValue + ')';
+            
+            // Determine ON/OFF state based on target type
+            var isOn = null;
+            if (targetKey === '168,237' || targetKey === '108,225') {
+                // Toggle/circuit: byte6=1 means ON
+                isOn = stateValue === 1;
+            } else if (targetKey === '212,182') {
+                // Context: 255 means OFF context
+                isOn = stateValue !== 255;
+            } else if (targetKey === '114,145') {
+                // Body select: 0=switching TO Spa (Pool OFF), 1=switching TO Pool (Spa OFF)
+                // For Pool (bodyId=1): ON when switching TO Pool (stateValue=1)
+                // For Spa (bodyId=2): ON when switching TO Spa (stateValue=0)
+                isOn = (bodyId === 1) ? (stateValue === 1) : (stateValue === 0);
+            }
+            
+            return {
+                state: isOn,
+                stateType: 'bodyCommand',
+                isCommand: isCommand,  // true = request/desired, false = actual/echo
+                bytes: relevantBytes,
+                bitDetails: bitDetails,
+                isAuthoritative: false,
+                flags: [{ type: 'info', text: '184 cmd' }],
+                byteOffset: 4,
+                bitOffset: null,
+                rawByte: stateValue
+            };
+        },
+        
+        /**
+         * Extract ACK info for Action 184
+         */
+        _extractAction1AckState: function(msg, bodyId) {
+            var payload = msg.payload;
+            var ackedAction = payload[0];
+            
+            return {
+                state: null,
+                stateType: 'ack',
+                bytes: [{ offset: 0, value: ackedAction, isRelevant: true, label: 'acked' }],
+                bitDetails: 'ACK for Action ' + ackedAction,
+                isAuthoritative: false,
+                flags: [{ type: 'success', text: 'ACK' }],
+                byteOffset: 0,
+                bitOffset: null,
+                rawByte: ackedAction
+            };
+        },
+        
+        /**
+         * Determine if a packet is a command (request) vs actual state broadcast
+         * Command: source is NOT OCP (16) and dest IS OCP (16) - e.g., WL→OCP, njsPC→OCP
+         * Actual: source IS OCP (16) - e.g., OCP→Broadcast, OCP→WL (ACK)
+         */
+        _isCommandPacket: function(msg) {
+            // Extract source and dest from header
+            // Header format: [165, proto, dest, src, action, ...]
+            var header = msg.header;
+            if (!header || header.length < 4) return false;
+            
+            var dest = header[2];
+            var src = header[3];
+            
+            // OCP addresses: 0 (AquaLink) or 16 (IntelliCenter OCP)
+            var isOcpDest = (dest === 0 || dest === 16);
+            var isOcpSrc = (src === 0 || src === 16);
+            
+            // Command = going TO OCP from something else (WL, njsPC, SL, etc.)
+            return isOcpDest && !isOcpSrc;
         },
         
         /**
