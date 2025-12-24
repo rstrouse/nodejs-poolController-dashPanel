@@ -1,0 +1,10 @@
+{
+  "165_P_CP_V_82": {
+    "proto": "intellivalve",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Req[address]",
+    "name": "Ping OCP for an address",
+    "desc": "The valve will ping the OCP for an address when it is on the bus."
+  }
+}

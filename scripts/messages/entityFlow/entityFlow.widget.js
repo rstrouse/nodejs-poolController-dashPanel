@@ -19,7 +19,8 @@
             lastEntityId: null,
             selectedEntityType: 'features',
             selectedEntityId: null,
-            entityTypeExplicitlySelected: false
+            entityTypeExplicitlySelected: false,
+            showAllPackets: false  // When true, show all packets in table regardless of entity type
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -77,6 +78,19 @@
             $('<label class="entity-only">Entity:</label>').appendTo(collapsedControls);
             o.entitySelectCollapsed = $('<select class="entity-select-sm entity-only"></select>').appendTo(collapsedControls);
             
+            // Show All Packets checkbox (works in both modes)
+            var allPktsLabel = $('<label style="display:flex;align-items:center;gap:4px;margin-left:12px;cursor:pointer;"></label>').appendTo(collapsedControls);
+            o.showAllPacketsCheckbox = $('<input type="checkbox" />').appendTo(allPktsLabel);
+            $('<span style="font-size:12px;white-space:nowrap;">All Packets</span>').appendTo(allPktsLabel);
+            o.showAllPacketsCheckbox.prop('checked', o.showAllPackets);
+            o.showAllPacketsCheckbox.on('change', function() {
+                o.showAllPackets = $(this).is(':checked');
+                // Sync expanded panel checkbox if exists
+                if (o.showAllPacketsCheckboxExpanded) o.showAllPacketsCheckboxExpanded.prop('checked', o.showAllPackets);
+                self._emitEntityTypeChanged();
+                self.refresh();
+            });
+            
             var collapsedRight = $('<div class="collapsed-header-right"></div>').appendTo(o.collapsedHeader);
             var expandBtn = $('<button class="expand-setup-btn" title="Show setup panel"><i class="fas fa-chevron-down"></i></button>').appendTo(collapsedRight);
             expandBtn.on('click', function() { self._toggleSetupPanel(true); });
@@ -128,6 +142,21 @@
             o.flowMultiMenu = $('<div class="flow-multi-menu"></div>').appendTo(document.body).hide();
             self._buildFlowPresetMenu();
             
+            // Show All Packets checkbox (in expanded panel)
+            var allPktsRow = $('<div class="entity-flow-row"></div>').appendTo(step2Content);
+            $('<label>Display:</label>').appendTo(allPktsRow);
+            var allPktsLabelExpanded = $('<label style="display:flex;align-items:center;gap:6px;cursor:pointer;"></label>').appendTo(allPktsRow);
+            o.showAllPacketsCheckboxExpanded = $('<input type="checkbox" />').appendTo(allPktsLabelExpanded);
+            $('<span>Show all packets (ignore entity/flow filters)</span>').appendTo(allPktsLabelExpanded);
+            o.showAllPacketsCheckboxExpanded.prop('checked', o.showAllPackets);
+            o.showAllPacketsCheckboxExpanded.on('change', function() {
+                o.showAllPackets = $(this).is(':checked');
+                // Sync collapsed header checkbox
+                if (o.showAllPacketsCheckbox) o.showAllPacketsCheckbox.prop('checked', o.showAllPackets);
+                self._emitEntityTypeChanged();
+                self.refresh();
+            });
+
             // Entity type selector
             var typeRow = $('<div class="entity-flow-row entity-only"></div>').appendTo(step2Content);
             $('<label>Entity Type:</label>').appendTo(typeRow);
@@ -950,7 +979,13 @@
             var self = this, o = self.options, el = self.element;
             var evt = $.Event('entityTypeChanged');
             evt.mode = o.analysisMode || 'entity';
-            if (evt.mode === 'flow') {
+            evt.showAllPackets = o.showAllPackets;
+            
+            // When showAllPackets is enabled, send empty matchers so Message List shows all
+            if (o.showAllPackets) {
+                evt.entityType = o.selectedEntityType || 'all';
+                evt.matchers = [];
+            } else if (evt.mode === 'flow') {
                 evt.entityType = 'flow';
                 evt.flowPresets = Array.isArray(o.selectedFlowPresets) ? o.selectedFlowPresets : [];
                 evt.matchers = self._getFlowPresetMatchers();
@@ -1088,6 +1123,23 @@
                         entities = [
                             { id: 1, name: 'Pool' },
                             { id: 2, name: 'Spa' }
+                        ];
+                    }
+                    break;
+                case 'heatModes':
+                    // Heat mode tracking per body (Pool/Spa)
+                    // Uses same entity IDs as bodySettings: 1=Pool, 2=Spa
+                    if (source.bodies && Array.isArray(source.bodies)) {
+                        entities = source.bodies.filter(function(b) {
+                            return b.id === 1 || b.id === 2;
+                        }).map(function(b) {
+                            return { id: b.id, name: (b.name || (b.id === 1 ? 'Pool' : 'Spa')) + ' Heat Mode' };
+                        });
+                    }
+                    if (entities.length === 0) {
+                        entities = [
+                            { id: 1, name: 'Pool Heat Mode' },
+                            { id: 2, name: 'Spa Heat Mode' }
                         ];
                     }
                     break;
@@ -1934,11 +1986,12 @@
                 var isConfiguredFlowPacket = self._matchesEntityTypePacket(msg, typeCfg);
                 var isInvalid = msg && msg.isValid === false;
 
-                // To keep the table and timelines usable, only include:
+                // When showAllPackets is enabled, include all packets regardless of entity type
+                // Otherwise, only include:
                 // - packets with entity extraction
                 // - packets matched by the selected entity-type "matches" config (plus base flow matchers)
                 // - invalid/collision packets (useful to explain retries)
-                if (!extraction && !isConfiguredFlowPacket && !isInvalid) continue;
+                if (!o.showAllPackets && !extraction && !isConfiguredFlowPacket && !isInvalid) continue;
                 
                 relevant.push({
                     index: idx,
@@ -2326,10 +2379,20 @@
             var stateType = pkt.stateType || 'boolean';  // default to boolean for features/circuits
             var isCommand = pkt.isCommand || false;
             
-            if (pkt.extractedState !== null) {
+            if (stateType === 'request') {
+                // Config request packet (222) - no state data
+                stateText = '📤 request';
+            } else if (stateType === 'ack') {
+                // ACK packet - no state data
+                stateText = '✓ ACK';
+            } else if (pkt.extractedState !== null) {
                 var prefix = isCommand ? '→' : '';
                 if (stateType === 'temperature') {
                     stateText = prefix + pkt.extractedState + '°';
+                } else if (stateType === 'heatMode') {
+                    // Show heat mode name (e.g., "solar", "ultratemp", "off")
+                    stateText = prefix + (pkt.heatModeName || 'mode ' + pkt.extractedState);
+                    if (pkt.setpoint) stateText += ' @ ' + pkt.setpoint + '°';
                 } else if (stateType === 'bodySettings') {
                     // Show setpoint and heat mode
                     stateText = prefix + pkt.extractedState + '° ' + (pkt.heatModeName || '');

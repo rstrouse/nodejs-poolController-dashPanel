@@ -8,7 +8,7 @@
     background: var(--panel-background, #1a1a2e);
     color: var(--text-color, #e0e0e0);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden;
+    overflow-y: auto; /* Allow vertical scrolling so bottom table is accessible */
 }
 
 /* === Collapsed Header (shown when ready) === */

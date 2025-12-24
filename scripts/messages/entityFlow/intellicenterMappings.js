@@ -30,16 +30,15 @@
          * Feature state byte offsets for different packet types
          */
         FEATURE_OFFSETS: {
-            // Action 2 (Status Broadcast) - v3.004+ ONLY
-            // Byte 7 upper nibble (bits 4-7) contains features 129-132
+            // Action 2 (Status Broadcast)
+            // Byte 7 = Features 1-8 (IDs 129-136), all 8 bits
+            // Byte 8 = Features 9-16 (IDs 137-144), all 8 bits (v3.004+ reliable for 9-10)
             '2': {
-                featureByte: 7,
-                featureBitShift: 4,  // Upper nibble
-                featureLength: 1,    // Only 4 bits = 4 features (129-132)
-                maxFeatures: 4,      // Only features 129-132
+                featureStart: 7,     // Byte 7 = features 129-136
+                featureLength: 2,    // 2 bytes = 16 features (129-144)
+                maxFeatures: 16,     // Features 129-144
                 isAuthoritative: false,
-                isV3Only: true,
-                note: 'v3.004+ byte 7 upper nibble = features 129-132'
+                note: 'Action 2: byte 7=features 129-136, byte 8=features 137-144'
             },
             // Action 204 (Extended Status Broadcast)
             '204': {
@@ -222,6 +221,8 @@
                 return this.extractBodySettingsState(msg, entityId, options);
             } else if (entityType === 'bodyState') {
                 return this.extractBodyState(msg, entityId);
+            } else if (entityType === 'heatModes') {
+                return this.extractHeatModeState(msg, entityId, options);
             }
             // Other entity types not yet supported
             return null;
@@ -737,6 +738,37 @@
             } else if (action === 168 && payload[0] === 0) {
                 offsets = this.BODY_SETTINGS_OFFSETS['168_0'];
                 isWireless = true;
+            } else if (action === 222 && payload[0] === 0) {
+                // Config request - no settings data, just a request packet
+                var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+                return {
+                    state: null,
+                    stateType: 'request',
+                    bytes: [{ offset: 0, value: payload[0], isRelevant: true, label: 'type' }],
+                    bitDetails: 'Request ' + bodyName + ' temp settings (222/0)',
+                    isAuthoritative: false,
+                    isCommand: true,
+                    flags: [{ type: 'info', text: 'REQ' }],
+                    byteOffset: 0,
+                    bitOffset: null,
+                    rawByte: payload[0]
+                };
+            } else if (action === 1) {
+                // ACK packet
+                var ackedAction = payload[0];
+                if (ackedAction !== 168) return null;
+                var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+                return {
+                    state: null,
+                    stateType: 'ack',
+                    bytes: [{ offset: 0, value: ackedAction, isRelevant: true, label: 'acked' }],
+                    bitDetails: 'ACK for ' + bodyName + ' settings change',
+                    isAuthoritative: false,
+                    flags: [{ type: 'success', text: 'ACK' }],
+                    byteOffset: 0,
+                    bitOffset: null,
+                    rawByte: ackedAction
+                };
             } else {
                 return null;
             }
@@ -809,58 +841,225 @@
         },
         
         /**
+         * Extract heat mode from a packet (focused view for tracking mode changes)
+         * 
+         * @param {Object} msg - The message object
+         * @param {number} bodyId - Body ID (1=Pool, 2=Spa)
+         * @param {Object} options - { isV3: boolean } for version-specific offset handling
+         * @returns {Object|null} - { state (heatMode value), heatModeName, bytes, bitDetails }
+         */
+        extractHeatModeState: function(msg, bodyId, options) {
+            var action = (typeof msg.action !== 'undefined' && msg.action !== null)
+                ? msg.action
+                : (typeof msgManager !== 'undefined' && msgManager.extractActionByte ? msgManager.extractActionByte(msg) : (msg.header && msg.header.length > 4 ? msg.header[4] : null));
+            var payload = msg.payload;
+            
+            if (!payload || payload.length === 0) return null;
+            
+            // Only bodies 1 (Pool) and 2 (Spa) supported
+            if (bodyId !== 1 && bodyId !== 2) return null;
+            
+            var offsets = null;
+            var isWireless = false;
+            
+            if (action === 30 && payload[0] === 0) {
+                offsets = this.BODY_SETTINGS_OFFSETS['30_0'];
+            } else if (action === 168 && payload[0] === 0) {
+                offsets = this.BODY_SETTINGS_OFFSETS['168_0'];
+                isWireless = true;
+            } else if (action === 222 && payload[0] === 0) {
+                // Config request - no heat mode data, just a request packet
+                return this._extractHeatModeRequest(msg, bodyId);
+            } else if (action === 1) {
+                // ACK packet - show it's acknowledging a heat mode change
+                return this._extractHeatModeAck(msg, bodyId);
+            } else {
+                return null;
+            }
+            
+            if (!offsets) return null;
+            
+            // Get body-specific offsets, accounting for v3 offset difference
+            var isV3 = options && options.isV3;
+            var bodyKey = bodyId === 1 ? 'pool' : 'spa';
+            var bodyOffsets;
+            
+            if (isWireless && isV3) {
+                // v3.004+ Wireless has +1 offset
+                bodyOffsets = bodyId === 1 ? offsets.v3Pool : offsets.v3Spa;
+            } else {
+                bodyOffsets = offsets[bodyKey];
+            }
+            
+            if (!bodyOffsets) return null;
+            
+            // Check payload length - only need heatMode byte
+            if (bodyOffsets.heatMode >= payload.length) {
+                return null;
+            }
+            
+            var heatModeValue = payload[bodyOffsets.heatMode];
+            var heatModeName = this.HEAT_MODES[heatModeValue] || ('unknown(' + heatModeValue + ')');
+            
+            // Also grab setpoint for context display
+            var setpoint = bodyOffsets.setpoint < payload.length ? payload[bodyOffsets.setpoint] : null;
+            
+            // Build relevant bytes - focus on heatMode, include setpoint for context
+            var relevantBytes = [
+                { offset: bodyOffsets.heatMode, value: heatModeValue, isRelevant: true, label: 'mode' }
+            ];
+            if (setpoint !== null) {
+                relevantBytes.unshift({ offset: bodyOffsets.setpoint, value: setpoint, isRelevant: false, label: 'setpt' });
+            }
+            
+            // Build bit details - focused on heat mode
+            var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+            var bitDetails = '<b>' + bodyName + ' Heat Mode</b>: <span class="state-value">' + heatModeName + '</span> (' + heatModeValue + ')';
+            if (setpoint !== null) {
+                bitDetails += '<br/>Setpoint: ' + setpoint + '°';
+            }
+            
+            // Determine if this is a command vs config response
+            var isCommand = this._isCommandPacket(msg);
+            
+            // Build flags
+            var flags = [];
+            if (isWireless) {
+                flags.push({ type: 'info', text: 'Wireless' });
+                if (isV3) {
+                    flags.push({ type: 'warning', text: 'v3 offset' });
+                }
+            }
+            if (offsets.isAuthoritative) {
+                flags.push({ type: 'success', text: '✓ OCP' });
+            }
+            if (isCommand) {
+                flags.push({ type: 'info', text: 'cmd' });
+            }
+            
+            return {
+                state: heatModeValue,  // Primary state is heat mode value
+                stateType: 'heatMode',
+                heatMode: heatModeValue,
+                heatModeName: heatModeName,
+                setpoint: setpoint,
+                isCommand: isCommand,
+                bytes: relevantBytes,
+                bitDetails: bitDetails,
+                isAuthoritative: offsets.isAuthoritative,
+                flags: flags,
+                byteOffset: bodyOffsets.heatMode,
+                bitOffset: null,
+                rawByte: heatModeValue
+            };
+        },
+        
+        /**
+         * Extract ACK info for heat mode change (Action 1 acknowledging 168/0)
+         */
+        _extractHeatModeAck: function(msg, bodyId) {
+            var payload = msg.payload;
+            if (!payload || payload.length === 0) return null;
+            
+            var ackedAction = payload[0];
+            
+            // Only relevant if ACKing action 168 (temp settings)
+            if (ackedAction !== 168) return null;
+            
+            var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+            
+            return {
+                state: null,
+                stateType: 'ack',
+                bytes: [{ offset: 0, value: ackedAction, isRelevant: true, label: 'acked' }],
+                bitDetails: 'ACK for ' + bodyName + ' settings change',
+                isAuthoritative: false,
+                flags: [{ type: 'success', text: 'ACK' }],
+                byteOffset: 0,
+                bitOffset: null,
+                rawByte: ackedAction
+            };
+        },
+        
+        /**
+         * Extract info for heat mode config request (Action 222/0)
+         */
+        _extractHeatModeRequest: function(msg, bodyId) {
+            var payload = msg.payload;
+            var bodyName = bodyId === 1 ? 'Pool' : 'Spa';
+            
+            return {
+                state: null,
+                stateType: 'request',
+                bytes: [{ offset: 0, value: payload[0], isRelevant: true, label: 'type' }],
+                bitDetails: 'Request ' + bodyName + ' temp settings (222/0)',
+                isAuthoritative: false,
+                isCommand: true,
+                flags: [{ type: 'info', text: 'REQ' }],
+                byteOffset: 0,
+                bitOffset: null,
+                rawByte: payload[0]
+            };
+        },
+        
+        /**
          * Extract feature state from Action 2 (Status Broadcast)
-         * v3.004+: Byte 7 upper nibble (bits 4-7) contains features 129-132
+         * Byte 7 = Features 1-8 (IDs 129-136), all 8 bits
+         * Byte 8 = Features 9-16 (IDs 137-144), all 8 bits
          */
         _extractAction2FeatureState: function(msg, featureId) {
             var payload = msg.payload;
+            var offsets = this.FEATURE_OFFSETS['2'];
             
-            // Only features 129-132 are in Action 2
-            if (featureId < 129 || featureId > 132) {
+            // Features 129-144 are in Action 2 (bytes 7-8)
+            if (featureId < 129 || featureId > 144) {
                 return null;
             }
             
-            // Check payload length (need at least byte 7)
-            if (payload.length < 8) {
+            // Calculate byte and bit position
+            // Feature 129 = byte 7, bit 0
+            // Feature 136 = byte 7, bit 7
+            // Feature 137 = byte 8, bit 0
+            // Feature 144 = byte 8, bit 7
+            var featureOffset = featureId - 129;  // 0-based feature index (0-15)
+            var byteIndex = Math.floor(featureOffset / 8);  // 0 or 1
+            var bitIndex = featureOffset % 8;  // 0-7
+            
+            var payloadByteIndex = offsets.featureStart + byteIndex;  // 7 or 8
+            
+            // Check payload length
+            if (payloadByteIndex >= payload.length) {
                 return null;
             }
             
-            var byte7 = payload[7];
-            // Extract upper nibble (bits 4-7) and shift to bits 0-3
-            var featureStateByte = (byte7 >> 4) & 0x0F;
+            var featureByte = payload[payloadByteIndex];
+            var isOn = (featureByte & (1 << bitIndex)) !== 0;
             
-            // Feature 129 = bit 0, Feature 130 = bit 1, etc.
-            var bitIndex = featureId - 129;  // 0-3
-            var isOn = (featureStateByte & (1 << bitIndex)) !== 0;
-            
-            // Build relevant bytes display (show byte 7)
-            var relevantBytes = [{
-                offset: 7,
-                value: byte7,
-                isRelevant: true
-            }];
-            
-            // Format bit details - show the upper nibble only
-            var bits = [];
-            for (var i = 3; i >= 0; i--) {
-                var isSet = (featureStateByte & (1 << i)) !== 0;
-                var bitStr = isSet ? '1' : '0';
-                if (i === bitIndex) {
-                    bitStr = '<span class="bit-highlight">' + bitStr + '</span>';
-                }
-                bits.push(bitStr);
+            // Build relevant bytes display (show both bytes 7 and 8 for context)
+            var relevantBytes = [];
+            for (var i = 0; i < offsets.featureLength && (offsets.featureStart + i) < payload.length; i++) {
+                relevantBytes.push({
+                    offset: offsets.featureStart + i,
+                    value: payload[offsets.featureStart + i],
+                    isRelevant: (i === byteIndex)
+                });
             }
-            var bitDetails = bits.join('') + ' <span class="bit-legend">(byte7[7:4] bit' + bitIndex + '=F' + featureId + ')</span>';
+            
+            // Format bit details
+            var bitDetails = this._formatBitDetails(featureByte, bitIndex, featureId);
+            
+            // Determine flag based on feature range
+            var flagText = featureId <= 136 ? 'byte7' : 'byte8';
             
             return {
                 state: isOn,
                 bytes: relevantBytes,
                 bitDetails: bitDetails,
                 isAuthoritative: false,
-                flags: [{ type: 'info', text: 'v3 byte7' }],
-                byteOffset: 7,
-                bitOffset: bitIndex + 4,  // Actual bit position in byte 7
-                rawByte: byte7
+                flags: [{ type: 'info', text: flagText }],
+                byteOffset: payloadByteIndex,
+                bitOffset: bitIndex,
+                rawByte: featureByte
             };
         },
         

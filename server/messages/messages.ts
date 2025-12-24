@@ -129,9 +129,41 @@ export class MessageDocs {
         return consts;
     }
     public static loadMessages() {
-        let messages = {};
-        let data = fs.readFileSync(MessageDocs.docPath + 'messageDoc.json', 'utf8').trim();
-        messages = JSON.parse(data);
+        let messages: any = {
+            broadcast: {},
+            heater: {},
+            intellichem: {},
+            screenlogic: {},
+            valve: {}
+        };
+        
+        // Load broadcast messages (excluding large action-specific files)
+        let broadcastData = fs.readFileSync(MessageDocs.docPath + 'messageDoc.broadcast.json', 'utf8').trim();
+        messages.broadcast = JSON.parse(broadcastData);
+        
+        // Load large broadcast actions from separate files
+        let action30Data = fs.readFileSync(MessageDocs.docPath + 'messageDoc.broadcast.action30.json', 'utf8').trim();
+        messages.broadcast['165_P_BC_CP_30'] = JSON.parse(action30Data);
+        
+        let action222Data = fs.readFileSync(MessageDocs.docPath + 'messageDoc.broadcast.action222.json', 'utf8').trim();
+        messages.broadcast['165_P_BC_CP_222'] = JSON.parse(action222Data);
+        
+        let action168Data = fs.readFileSync(MessageDocs.docPath + 'messageDoc.broadcast.action168.json', 'utf8').trim();
+        messages.broadcast['165_P_BC_CP_168'] = JSON.parse(action168Data);
+        
+        // Load other protocol messages
+        let heaterData = fs.readFileSync(MessageDocs.docPath + 'messageDoc.heater.json', 'utf8').trim();
+        messages.heater = JSON.parse(heaterData);
+        
+        let intellichemData = fs.readFileSync(MessageDocs.docPath + 'messageDoc.intellichem.json', 'utf8').trim();
+        messages.intellichem = JSON.parse(intellichemData);
+        
+        let screenlogicData = fs.readFileSync(MessageDocs.docPath + 'messageDoc.screenlogic.json', 'utf8').trim();
+        messages.screenlogic = JSON.parse(screenlogicData);
+        
+        let valveData = fs.readFileSync(MessageDocs.docPath + 'messageDoc.valve.json', 'utf8').trim();
+        messages.valve = JSON.parse(valveData);
+        
         return messages;
     }
     public static findMessageByKey(key: string) {
@@ -140,6 +172,19 @@ export class MessageDocs {
         for (let proto in messages) {
             if (messages[proto][key]) {
                 return messages[proto][key];
+            }
+        }
+        // Fallback: If specific key not found, try BC (Broadcast) version.
+        // This handles v3.004+ IntelliCenter messages that are addressed to specific devices
+        // (njsPC=33, WL=36, etc.) rather than broadcast (15). The packet format/payloadKeys
+        // are identical - only the destination address differs.
+        // Example: 165_P_CP_CP_184 (njsPC→OCP) falls back to 165_P_BC_CP_184 (OCP→Broadcast)
+        if (key.indexOf('_CP_CP_') !== -1) {
+            let fallbackKey = key.replace('_CP_CP_', '_BC_CP_');
+            for (let proto in messages) {
+                if (messages[proto][fallbackKey]) {
+                    return messages[proto][fallbackKey];
+                }
             }
         }
         return undefined;

@@ -376,9 +376,33 @@
             var self = this, o = self.options, el = self.element;
             
             // Get the documentation for this message
+            console.log('bindPayloadDescriptors: fetching docs for', context.docKey, 'action:', context.actionByte);
             $.getLocalService('/messages/docs/' + context.docKey, undefined, function (docs, status, xhr) {
+                console.log('bindPayloadDescriptors: got response for ' + context.docKey, { docs: docs, hasPayload: !!(docs && docs.payload), payloadLength: docs && docs.payload ? docs.payload.length : 0, status: status, shortName: docs ? docs.shortName : 'none' });
                 
-                if (!docs || !docs.payload || docs.payload.length === 0) {
+                // Get the payload definition - could be at top level or inside payloadKeys for subcategorized actions
+                var docsPayload = docs ? docs.payload : undefined;
+                var subKeyInfo = null; // For decoding category/item names from payloadKeys
+                
+                // For actions with subcategories (like Action 30, 168, 222), get the subcategory info
+                if (docs && docs.payloadKeys && context.payloadKey) {
+                    var subKey = docs.payloadKeys[context.payloadKey];
+                    if (subKey) {
+                        // Save subcategory info for decoding category/item values
+                        subKeyInfo = {
+                            category: subKey.category || subKey.shortName || context.payloadKey.split('_')[0],
+                            shortName: subKey.shortName || '',
+                            name: subKey.name || ''
+                        };
+                        // Prefer subcategory payload over generic top-level payload
+                        // Subcategory payloads have more specific/detailed field definitions
+                        if (subKey.payload && subKey.payload.length > 0) {
+                            docsPayload = subKey.payload;
+                        }
+                    }
+                }
+                
+                if (!docsPayload || docsPayload.length === 0) {
                     // Still call the callback even if no docs, so stored HTML gets updated
                     if (typeof onComplete === 'function') onComplete();
                     return;
@@ -389,8 +413,8 @@
                 var tbody = tblDesc.find('tbody');
                 
                 // Build descriptor rows
-                for (var i = 0; i < docs.payload.length; i++) {
-                    var pl = docs.payload[i];
+                for (var i = 0; i < docsPayload.length; i++) {
+                    var pl = docsPayload[i];
                     var row = $('<tr class="payload-descriptor-row"></tr>').appendTo(tbody);
                     row.attr('data-start', pl.start);
                     row.attr('data-length', pl.length);
@@ -441,6 +465,12 @@
                                     if (byteVal & (1 << bit)) bits.push('Bit' + bit);
                                 }
                                 decodedValue = bits.length > 0 ? bits.join(', ') : 'None';
+                            } else if (subKeyInfo && pl.start === 0 && pl.name && pl.name.toLowerCase().indexOf('category') >= 0) {
+                                // For Category byte in subcategorized actions (30, 222), show the category name
+                                decodedValue = subKeyInfo.category;
+                            } else if (subKeyInfo && pl.start === 1 && pl.name && pl.name.toLowerCase().indexOf('item') >= 0) {
+                                // For Item byte in subcategorized actions, show the shortName
+                                decodedValue = subKeyInfo.shortName;
                             } else {
                                 decodedValue = byteVal.toString();
                             }

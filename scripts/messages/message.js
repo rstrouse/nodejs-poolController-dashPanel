@@ -120,6 +120,17 @@ var msgManager = {
         msgKey = msgKey.replace(/\<action\>/g, context.actionByte);
         msgKey = msgKey.replace(/\<length\>/g, context.payloadLength);
         var key = this.keyBytes[docKey];
+        
+        // Fallback: If specific key not found, try BC (Broadcast) version.
+        // This handles v3.004+ IntelliCenter messages that are addressed to specific devices
+        // (njsPC=33, WL=36, etc.) rather than broadcast (15). The packet format/payloadKeys
+        // are identical - only the destination address differs between v1 (broadcast) and v3 (unicast).
+        // See .plan/MESSAGE_KEY_FALLBACK.md for details.
+        if (typeof key === 'undefined' && docKey.indexOf('_CP_CP_') !== -1) {
+            var fallbackKey = docKey.replace('_CP_CP_', '_BC_CP_');
+            key = this.keyBytes[fallbackKey];
+        }
+        
         if (typeof key !== 'undefined' && typeof key.minLength !== 'undefined') {
             if (context.payloadLength < key.minLength) {
                 docKey += `_${context.payloadLength}`;
@@ -177,8 +188,26 @@ var msgManager = {
         ctx = ctx || this.getListContext(msg);
         var len = Math.max(msg.payload.length, sig.payloadLength || 0);
         var payload = [];
+        
+        // Get the payload definition - could be at top level or inside payloadKeys for subcategorized actions
+        var sigPayload = sig.payload;
+        var sigName = sig.name;
+        var sigDesc = sig.desc;
+        var sigShortName = sig.shortName;
+        
+        // For actions with subcategories (like Action 30), the payload is inside payloadKeys
+        if (!sigPayload && sig.payloadKeys && ctx.payloadKey) {
+            var subKey = sig.payloadKeys[ctx.payloadKey];
+            if (subKey) {
+                sigPayload = subKey.payload;
+                sigName = subKey.name || sigName;
+                sigDesc = subKey.desc || sigDesc;
+                sigShortName = subKey.shortName || sigShortName;
+            }
+        }
+        
         for (var i = 0; i < len; i++) {
-            var pl = sig.payload ? sig.payload.find(elem => elem.start === i) : undefined;
+            var pl = sigPayload ? sigPayload.find(elem => elem.start === i) : undefined;
             if (typeof pl !== 'undefined') {
                 payload.push(pl);
                 if (pl.length > 1) i += pl.length - 1;
@@ -200,9 +229,9 @@ var msgManager = {
             messageType: sig.messageType,
             docKey: ctx.docKey,
             payloadLength: len,
-            shortName: sig.shortName,
-            name: sig.name,
-            desc:sig.desc,
+            shortName: sigShortName,
+            name: sigName,
+            desc: sigDesc,
             keyBytes: sig.keyBytes,
             payload: payload,
             minLength: sig.minLength

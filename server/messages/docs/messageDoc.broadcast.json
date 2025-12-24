@@ -1,0 +1,3338 @@
+{
+  "165_P_CP_CP_1": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "ACK",
+    "desc": "Message Received"
+  },
+  "165_P_BC_CP_2": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Status",
+    "name": "Equipment Status",
+    "desc": "Reflects the current state of circuits, features, bodies, and equipment attached to the OCP.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Hours",
+        "desc": "Current time hours (24-hour format)",
+        "dataType": "byte",
+        "values": "0-23"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Minutes",
+        "desc": "Current time minutes",
+        "dataType": "byte",
+        "values": "0-59"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Circuit States 1-8",
+        "dataType": "bits",
+        "desc": "Bit flags for circuits 1-8",
+        "values": "Bit 0=Circuit 1 (Spa), Bit 5=Circuit 6 (Pool)"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Circuit States 9-16",
+        "dataType": "bits",
+        "desc": "Bit flags for circuits 9-16",
+        "values": "Bit 3=Circuit 12 (Body 3)"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Circuit States 17-24",
+        "dataType": "bits",
+        "desc": "Bit flags for circuits 17-24"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Circuit States 25-32",
+        "dataType": "bits",
+        "desc": "Bit flags for circuits 25-32",
+        "values": "Bit 5=Circuit 22 (Body 4)"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Circuit States 33-40",
+        "dataType": "bits",
+        "desc": "Bit flags for circuits 33-40"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "Feature States 1-8",
+        "dataType": "bits",
+        "desc": "Bit flags for features 1-8 (IDs 129-136). v3.004+: All 8 bits are reliable. v1.x: Upper nibble unreliable after v1.047.",
+        "values": "Bit 0=Feature 1 (ID 129), Bit 1=Feature 2 (ID 130), ..., Bit 7=Feature 8 (ID 136)"
+      },
+      {
+        "start": 8,
+        "length": 1,
+        "name": "Feature States 9-16",
+        "dataType": "bits",
+        "desc": "Bit flags for features 9-16 (IDs 137-144). v3.004+: Bits 0-1 confirmed for features 9-10. v1.x: Unreliable after v1.047.",
+        "values": "Bit 0=Feature 9 (ID 137), Bit 1=Feature 10 (ID 138), ..."
+      },
+      {
+        "start": 9,
+        "length": 1,
+        "name": "Panel Mode",
+        "dataType": "bits",
+        "desc": "Panel mode and settings bit flags",
+        "values": "Bit 0=Service mode, Bit 2=Temp units (0=F, 1=C), Bit 3=Freeze protection, Bit 7=Timeout (*Touch only)"
+      },
+      {
+        "start": 10,
+        "length": 1,
+        "name": "Valve State",
+        "desc": "Current valve position/state"
+      },
+      {
+        "start": 11,
+        "length": 1,
+        "name": "Heat Status",
+        "dataType": "bits",
+        "desc": "Lower nibble=Body 1, Upper nibble=Body 2",
+        "values": {
+          "0": "Off",
+          "1": "Heater",
+          "2": "Cooling",
+          "3": "Solar/HeatPump"
+        }
+      },
+      {
+        "start": 12,
+        "length": 1,
+        "name": "Delay",
+        "dataType": "byte",
+        "desc": "Delay countdown value",
+        "values": "0-63 (lower 6 bits)"
+      },
+      {
+        "start": 13,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 14,
+        "length": 1,
+        "name": "Water Sensor 1",
+        "desc": "Water temperature sensor 1 (Body 1/Pool or shared body)",
+        "dataType": "byte"
+      },
+      {
+        "start": 15,
+        "length": 1,
+        "name": "Water Sensor 2",
+        "desc": "Water temperature sensor 2 (Body 2/Spa, only on dual/multi-body systems)",
+        "dataType": "byte"
+      },
+      {
+        "start": 16,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 17,
+        "length": 1,
+        "name": "Solar Sensor 2",
+        "desc": "Solar temperature sensor 2 (dual/multi-body systems)",
+        "dataType": "byte"
+      },
+      {
+        "start": 18,
+        "length": 1,
+        "name": "Air Temperature",
+        "desc": "Air temperature sensor",
+        "dataType": "byte"
+      },
+      {
+        "start": 19,
+        "length": 1,
+        "name": "Solar Sensor 1",
+        "desc": "Solar temperature sensor 1",
+        "dataType": "byte"
+      },
+      {
+        "start": 20,
+        "length": 1,
+        "name": "Water Sensor 3",
+        "desc": "Water temperature sensor 3 (Body 3, multi-body IntelliCenter only)",
+        "dataType": "byte"
+      },
+      {
+        "start": 21,
+        "length": 1,
+        "name": "Water Sensor 4",
+        "desc": "Water temperature sensor 4 (Body 4, multi-body IntelliCenter only)",
+        "dataType": "byte"
+      },
+      {
+        "start": 22,
+        "length": 1,
+        "name": "Heat Mode Body 1&2",
+        "dataType": "bits",
+        "desc": "Lower 4 bits=Body 1, Upper 4 bits=Body 2",
+        "values": {
+          "0": "Off",
+          "1": "Heater",
+          "2": "Solar Preferred",
+          "3": "Solar Only",
+          "16": "Dual (hybrid: bits 0,4,5)"
+        }
+      },
+      {
+        "start": 23,
+        "length": 1,
+        "name": "Heat Mode Body 3&4 / DST",
+        "dataType": "bits",
+        "desc": "Controller-specific multi-purpose byte",
+        "values": "*Touch: Lower 4 bits=Body 3, Upper 4 bits=Body 4. IntelliCenter: Bit 0=Auto DST (inverted)"
+      },
+      {
+        "start": 24,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 25,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 26,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 27,
+        "length": 1,
+        "name": "Model Byte 1",
+        "desc": "Controller model identifier byte 1. Used for controller detection.",
+        "dataType": "byte"
+      },
+      {
+        "start": 28,
+        "length": 1,
+        "name": "Model Byte 2",
+        "desc": "Controller model identifier byte 2 - determines controller type",
+        "dataType": "byte",
+        "values": "0-5=IntelliTouch, 11=SunTouch, 13-14=EasyTouch, 0/2=IntelliCenter"
+      }
+    ]
+  },
+  "165_P_BC_CP_96": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "State[IntelliBrite]",
+    "name": "IntelliBrite Light Mode Status",
+    "desc": "Status broadcast for IntelliBrite light systems containing theme and mode information. Used for light synchronization and theme changes.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Theme/Command",
+        "desc": "Light theme or command code",
+        "dataType": "byte",
+        "values": {
+          "0": "Off",
+          "1": "On",
+          "128": "Sync",
+          "144": "Swim",
+          "160": "Set",
+          "190": "Save",
+          "191": "Recall",
+          "193": "SAM (Color Swim)",
+          "194": "Party (Color Sync)",
+          "195": "Romance (Color Set)",
+          "196": "Caribbean (Color Swim)",
+          "197": "American (Color Sync)",
+          "198": "Sunset (Color Set)",
+          "199": "Royal (Color Swim)"
+        }
+      }
+    ]
+  },
+  "165_P_BC_CP_164": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "response",
+    "shortName": "State[version]",
+    "name": "Configuration Version Response",
+    "desc": "Response from the IntelliCenter panel containing the current configuration version numbers for all configuration categories.",
+    "payload": [
+      {
+        "start": 6,
+        "length": 2,
+        "name": "Options Version",
+        "desc": "Version number for options configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 8,
+        "length": 2,
+        "name": "Circuits Version",
+        "desc": "Version number for circuits configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 10,
+        "length": 2,
+        "name": "Features Version",
+        "desc": "Version number for features configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 12,
+        "length": 2,
+        "name": "Schedules Version",
+        "desc": "Version number for schedules configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 14,
+        "length": 2,
+        "name": "Pumps Version",
+        "desc": "Version number for pumps configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 16,
+        "length": 2,
+        "name": "Remotes Version",
+        "desc": "Version number for remotes configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 18,
+        "length": 2,
+        "name": "Circuit Groups Version",
+        "desc": "Version number for circuit/light groups configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 20,
+        "length": 2,
+        "name": "Chlorinators Version",
+        "desc": "Version number for chlorinators configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 22,
+        "length": 2,
+        "name": "IntelliChem Version",
+        "desc": "Version number for IntelliChem configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 24,
+        "length": 2,
+        "name": "Valves Version",
+        "desc": "Version number for valves configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 26,
+        "length": 2,
+        "name": "Heaters Version",
+        "desc": "Version number for heaters configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 28,
+        "length": 2,
+        "name": "Security Version",
+        "desc": "Version number for security configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 30,
+        "length": 2,
+        "name": "General Version",
+        "desc": "Version number for general settings configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 32,
+        "length": 2,
+        "name": "Equipment Version",
+        "desc": "Version number for equipment configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 34,
+        "length": 2,
+        "name": "Covers Version",
+        "desc": "Version number for covers configuration",
+        "dataType": "int"
+      },
+      {
+        "start": 36,
+        "length": 2,
+        "name": "System State Version",
+        "desc": "Version number for system state configuration",
+        "dataType": "int"
+      }
+    ]
+  },
+  "165_P_BC_CP_179": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "shortName": "Heartbeat[req]",
+    "name": "Remote Status Request",
+    "desc": "Heartbeat request from OCP to a specific device (njsPC, wireless remote, etc.). Device must respond with Action 180. Added in IntelliCenter firmware v3.004+.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Sequence",
+        "desc": "Sequence/counter byte for the heartbeat request",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte, typically 0",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_180": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "response",
+    "shortName": "Heartbeat[resp]",
+    "name": "Remote Status Response",
+    "desc": "Heartbeat response from device back to OCP. Sent in reply to Action 179 request. Payload is typically 10-16 bytes of zeros. Added in IntelliCenter firmware v3.004+.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 16,
+        "name": "Status Bytes",
+        "desc": "Device status bytes. Typically all zeros for simple devices like njsPC. May contain device-specific status information for other devices.",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_BC_CP_204": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "broadcast",
+    "shortName": "Ext Status",
+    "name": "Extended Status",
+    "desc": "Reflects the current state of IntelliCenter features, bodies, and equipment attached to the OCP. Contains expansion module info, firmware version, date/time, and equipment states. IntelliCenter ONLY - not used by *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Unknown 0",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Unknown 1",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Battery Voltage",
+        "desc": "Battery voltage in volts. Divide byte value by 50 to get voltage.",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Unknown 3",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 2,
+        "name": "Keep Alives",
+        "desc": "Count of communication keepalive messages. 16-bit little-endian integer (byte 4 = low, byte 5 = high).",
+        "dataType": "int16_le"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Date (Day)",
+        "desc": "Current day of month",
+        "dataType": "byte",
+        "values": "1-31"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "Month",
+        "desc": "Current month",
+        "dataType": "byte",
+        "values": "1-12"
+      },
+      {
+        "start": 8,
+        "length": 1,
+        "name": "Year",
+        "desc": "Current year (2-digit)",
+        "dataType": "byte"
+      },
+      {
+        "start": 9,
+        "length": 4,
+        "name": "Feature States (v1.x only)",
+        "desc": "Bit flags for feature states starting at feature ID 129. Each bit represents one feature (up to 32 features). NOT PROCESSED in v3.004+ - authoritative source is Action 30 case 15. Actual length is variable based on configured features.",
+        "dataType": "bits",
+        "notes": "v3.004+ ignores this field due to stale data issue"
+      },
+      {
+        "start": 13,
+        "length": 1,
+        "name": "Master Module Byte 1",
+        "desc": "Master expansion module identifier byte 1. For v1.x: low nibble is module type. For v3.004+: high nibble is module type.",
+        "dataType": "byte"
+      },
+      {
+        "start": 14,
+        "length": 1,
+        "name": "Master Module Byte 2",
+        "desc": "Master expansion module identifier byte 2. Used for determining installed equipment capabilities.",
+        "dataType": "byte"
+      },
+      {
+        "start": 15,
+        "length": 1,
+        "name": "EXP1 Module Byte 1",
+        "desc": "Expansion 1 module identifier byte 1",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 0 is set"
+      },
+      {
+        "start": 16,
+        "length": 1,
+        "name": "EXP1 Module Byte 2",
+        "desc": "Expansion 1 module identifier byte 2",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 0 is set"
+      },
+      {
+        "start": 17,
+        "length": 1,
+        "name": "EXP2 Module Byte 1",
+        "desc": "Expansion 2 module identifier byte 1",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 1 is set"
+      },
+      {
+        "start": 18,
+        "length": 1,
+        "name": "EXP2 Module Byte 2",
+        "desc": "Expansion 2 module identifier byte 2",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 1 is set"
+      },
+      {
+        "start": 19,
+        "length": 1,
+        "name": "EXP3 Module Byte 1",
+        "desc": "Expansion 3 module identifier byte 1",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 2 is set"
+      },
+      {
+        "start": 20,
+        "length": 1,
+        "name": "EXP3 Module Byte 2",
+        "desc": "Expansion 3 module identifier byte 2",
+        "dataType": "byte",
+        "condition": "Only valid if byte 40 bit 2 is set"
+      },
+      {
+        "start": 21,
+        "length": 1,
+        "name": "Unknown 21",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 22,
+        "length": 1,
+        "name": "Unknown 22",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 23,
+        "length": 1,
+        "name": "Unknown 23",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 24,
+        "length": 1,
+        "name": "Unknown 24",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 25,
+        "length": 1,
+        "name": "Unknown 25",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 26,
+        "length": 1,
+        "name": "Body State (i10D)",
+        "desc": "For IntelliCenter i10D: Body state flags. Currently commented out in code.",
+        "dataType": "bits",
+        "values": "Bit 4 (0x10)=Pool circuit 6 state"
+      },
+      {
+        "start": 27,
+        "length": 1,
+        "name": "Model Byte 1",
+        "desc": "Controller model identifier byte 1. Used during controller detection. Values: 0=v1.232, 3=v3.004, 23/40+=v1.0xx",
+        "dataType": "byte"
+      },
+      {
+        "start": 28,
+        "length": 1,
+        "name": "Model Byte 2",
+        "desc": "Controller model identifier byte 2. Used during controller detection. Values: 0=v1.0xx, 2=v1.232/v3.004",
+        "dataType": "byte"
+      },
+      {
+        "start": 29,
+        "length": 1,
+        "name": "Unknown 29",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 30,
+        "length": 1,
+        "name": "Cover States",
+        "desc": "Cover position states",
+        "dataType": "bits",
+        "values": "Bit 0 (0x01)=Cover 1 closed, Bit 1 (0x02)=Cover 2 closed"
+      },
+      {
+        "start": 31,
+        "length": 1,
+        "name": "Unknown 31",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 32,
+        "length": 1,
+        "name": "Unknown 32",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 33,
+        "length": 1,
+        "name": "Unknown 33",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 34,
+        "length": 1,
+        "name": "Unknown 34",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 35,
+        "length": 1,
+        "name": "Unknown 35",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 36,
+        "length": 1,
+        "name": "Unknown 36",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 37,
+        "length": 1,
+        "name": "SuperChlor Hours",
+        "desc": "SuperChlor remaining time in hours",
+        "dataType": "byte",
+        "values": "255=SuperChlor off, 0-254=hours remaining"
+      },
+      {
+        "start": 38,
+        "length": 1,
+        "name": "SuperChlor Minutes",
+        "desc": "SuperChlor remaining time in minutes",
+        "dataType": "byte",
+        "values": "0-59 (only valid if byte 37 ≠ 255)"
+      },
+      {
+        "start": 39,
+        "length": 1,
+        "name": "Unknown 39",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 40,
+        "length": 1,
+        "name": "Expansion Present",
+        "desc": "Bit flags indicating which expansion modules are installed",
+        "dataType": "bits",
+        "values": "Bit 0=EXP1 present, Bit 1=EXP2 present, Bit 2=EXP3 present"
+      },
+      {
+        "start": 41,
+        "length": 1,
+        "name": "Unknown 41",
+        "desc": "Unknown purpose. Not processed in Action 204 handler.",
+        "dataType": "byte"
+      },
+      {
+        "start": 42,
+        "length": 1,
+        "name": "Firmware Version (Major)",
+        "desc": "Controller firmware version major number",
+        "dataType": "byte",
+        "values": "e.g., 1 for v1.064, 3 for v3.004"
+      },
+      {
+        "start": 43,
+        "length": 1,
+        "name": "Firmware Version (Minor)",
+        "desc": "Controller firmware version minor number. Divide by 1000 and add to major for full version.",
+        "dataType": "byte",
+        "values": "e.g., 64 for v1.064, 4 for v3.004"
+      },
+      {
+        "start": 44,
+        "length": 1,
+        "name": "Time Hour (v3.004+)",
+        "desc": "Current hour in 24-hour format. Only present in v3.004+ (48-byte payload).",
+        "dataType": "byte",
+        "values": "0-23"
+      },
+      {
+        "start": 45,
+        "length": 1,
+        "name": "Time Minute (v3.004+)",
+        "desc": "Current minute. Only present in v3.004+ (48-byte payload).",
+        "dataType": "byte",
+        "values": "0-59"
+      },
+      {
+        "start": 46,
+        "length": 1,
+        "name": "Time Second (v3.004+)",
+        "desc": "Current second. Only present in v3.004+ (48-byte payload).",
+        "dataType": "byte",
+        "values": "0-59"
+      },
+      {
+        "start": 47,
+        "length": 1,
+        "name": "Status Flags (v3.004+)",
+        "desc": "Status flags. Possibly DST indicator or other status information. Only present in v3.004+ (48-byte payload).",
+        "dataType": "byte"
+      }
+    ],
+    "payloadLength": {
+      "v1.x": 44,
+      "v3.004+": 48
+    }
+  },
+  "165_P_BC_CP_217": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "broadcast",
+    "shortName": "State[DeviceList]",
+    "name": "Device List Broadcast",
+    "desc": "OCP broadcasts registered devices after Action 251→253 handshake. Added in IntelliCenter firmware v3.004+. Each packet contains info for ONE device.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Device Address",
+        "desc": "Address of the registered device (e.g., 33=njsPC, 36=wireless remote)",
+        "dataType": "byte",
+        "values": {
+          "33": "njsPC",
+          "36": "Wireless Remote"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Device Type",
+        "desc": "Type identifier for the device",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Registration Status",
+        "desc": "Current registration status of the device with the OCP",
+        "dataType": "byte",
+        "values": {
+          "0": "Unknown",
+          "1": "Registered",
+          "4": "Failed/Rejected"
+        }
+      }
+    ]
+  },
+  "165_P_BC_CP_251": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "announcement",
+    "shortName": "Announce[Device]",
+    "name": "Device Announcement",
+    "desc": "Devices send this to announce presence to OCP and request registration. Added in IntelliCenter firmware v3.004+.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Device Address",
+        "desc": "The address of the device announcing itself",
+        "dataType": "byte",
+        "values": {
+          "33": "njsPC",
+          "36": "Wireless Remote"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Device Type",
+        "desc": "Type code identifying the device category",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_253": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "response",
+    "shortName": "Confirm[Registration]",
+    "name": "Device Registration Confirmation",
+    "desc": "OCP sends this in response to Action 251 to confirm device registration. Added in IntelliCenter firmware v3.004+.",
+    "payload": [
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Registration Status",
+        "desc": "Whether the device was successfully registered",
+        "dataType": "byte",
+        "values": {
+          "0": "Not Registered",
+          "1": "Registered"
+        }
+      }
+    ]
+  },
+  "165_P_BC_CP_5": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "state[DateTime]",
+    "name": "Date and Time broadcast",
+    "desc": "Reflects the current date and time for IntelliTouch controllers. Action 2 contains time for all controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Hours",
+        "desc": "Current hour (24-hour format)",
+        "dataType": "byte",
+        "values": "0-23"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Minutes",
+        "desc": "Current minutes",
+        "dataType": "byte",
+        "values": "0-59"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Day of Week",
+        "desc": "Day of week (1=Sunday, 7=Saturday)",
+        "dataType": "byte",
+        "values": "1-7"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Day",
+        "desc": "Day of month",
+        "dataType": "byte",
+        "values": "1-31"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Month",
+        "desc": "Month of year",
+        "dataType": "byte",
+        "values": "1-12"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Year",
+        "desc": "Year (offset from 2000, e.g., 25 = 2025)",
+        "dataType": "byte"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "Auto Adjust DST",
+        "desc": "Daylight Saving Time adjustment enabled",
+        "dataType": "byte",
+        "values": {
+          "0": "Disabled",
+          "1": "Enabled"
+        }
+      }
+    ]
+  },
+  "165_P_BC_CP_133": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "set[DateTime]",
+    "name": "Sets the date and time on the OCP",
+    "desc": "Sets the date and time for all *Touch controllers. Payload mirrors Action 5 structure.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Hours",
+        "desc": "Hour to set (24-hour format)",
+        "dataType": "byte",
+        "values": "0-23"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Minutes",
+        "desc": "Minutes to set",
+        "dataType": "byte",
+        "values": "0-59"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Day of Week",
+        "desc": "Day of week (1=Sunday, 7=Saturday)",
+        "dataType": "byte",
+        "values": "1-7"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Day",
+        "desc": "Day of month to set",
+        "dataType": "byte",
+        "values": "1-31"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Month",
+        "desc": "Month to set",
+        "dataType": "byte",
+        "values": "1-12"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Year",
+        "desc": "Year to set (offset from 2000, e.g., 25 = 2025)",
+        "dataType": "byte"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Clock Mode",
+        "desc": "Clock mode setting",
+        "dataType": "byte"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "DST",
+        "desc": "Daylight saving time mode",
+        "dataType": "byte",
+        "values": {
+          "0": "Manual/No DST",
+          "1": "Auto DST"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_197": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[DateTime]",
+    "name": "Gets the date and time on the OCP",
+    "desc": "Gets the date and time for all *Touch controllers. Response is Action 5.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_8": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "State[heat/temp]",
+    "name": "Heat/Temperature state",
+    "desc": "Reflects the current heating state and temperature setpoints for IntelliTouch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Water Sensor 1",
+        "desc": "Water temperature sensor 1 (Pool/Body 1)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Water Sensor 2",
+        "desc": "Water temperature sensor 2 (Spa/Body 2, dual systems only)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Air Temperature",
+        "desc": "Air temperature sensor",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Body 1 Setpoint",
+        "desc": "Heating setpoint for Body 1 (Pool)",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Body 2 Setpoint",
+        "desc": "Heating setpoint for Body 2 (Spa)",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Heat Mode Body 1&2",
+        "dataType": "bits",
+        "desc": "Lower 4 bits=Body 1, Upper 4 bits=Body 2 (bits 0,4,5 for hybrid support)",
+        "values": {
+          "0": "Off",
+          "1": "Heater",
+          "2": "Solar Preferred",
+          "3": "Solar Only"
+        }
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Water Sensor 3",
+        "desc": "Water temperature sensor 3 (Body 3, multi-body systems)",
+        "dataType": "byte"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "Water Sensor 4",
+        "desc": "Water temperature sensor 4 (Body 4, multi-body systems)",
+        "dataType": "byte"
+      },
+      {
+        "start": 8,
+        "length": 1,
+        "name": "Reserved Air",
+        "desc": "Reserved for additional air sensor",
+        "dataType": "byte"
+      },
+      {
+        "start": 9,
+        "length": 1,
+        "name": "Body 1 Cool Setpoint",
+        "desc": "Cooling setpoint for Body 1 (for UltraTemp ETi heatpumps)",
+        "dataType": "byte"
+      },
+      {
+        "start": 10,
+        "length": 1,
+        "name": "Body 2 Cool Setpoint",
+        "desc": "Cooling setpoint for Body 2 (for UltraTemp ETi heatpumps)",
+        "dataType": "byte"
+      },
+      {
+        "start": 11,
+        "length": 1,
+        "name": "Heat Mode Body 3&4",
+        "dataType": "bits",
+        "desc": "Lower 4 bits=Body 3 heat mode, Upper 4 bits=Body 4 heat mode. 0=Off, 2=Solar Preferred"
+      },
+      {
+        "start": 12,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved/Unknown"
+      }
+    ]
+  },
+  "165_P_CP_CP_136": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[heat/temp]",
+    "name": "Set the Heat/Temperature settings",
+    "desc": "Sets the current heating state for all *Touch controllers. Used when external controller sets heat mode.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Water Sensor 1",
+        "desc": "Water temperature sensor 1 reading",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Water Sensor 2",
+        "desc": "Water temperature sensor 2 reading (dual systems)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Air Temperature",
+        "desc": "Air temperature sensor reading",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Body 1 Setpoint",
+        "desc": "Heating setpoint for Body 1 (Pool)",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Body 2 Setpoint",
+        "desc": "Heating setpoint for Body 2 (Spa)",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Heat Mode Body 1&2",
+        "dataType": "bits",
+        "desc": "Lower 4 bits=Body 1 heat mode, Upper 4 bits=Body 2 heat mode",
+        "values": {
+          "0": "Off",
+          "1": "Heater",
+          "2": "Solar Preferred",
+          "3": "Solar Only"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_200": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[heat/temp]",
+    "name": "Get the Heat/Temperature settings",
+    "desc": "Gets the current heating state for all *Touch controllers. Response is Action 8.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_10": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[custom name]",
+    "name": "A Custom Name",
+    "desc": "Reflects a custom name for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Custom Name ID",
+        "desc": "ID of the custom name entry (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 11,
+        "name": "Custom Name",
+        "desc": "The custom name string (up to 11 characters)",
+        "dataType": "string"
+      }
+    ]
+  },
+  "165_P_CP_CP_138": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[custom name]",
+    "name": "Sets a custom name",
+    "desc": "Sets a custom name for all *Touch controllers. Same payload structure as Action 10.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Custom Name ID",
+        "desc": "ID of the custom name entry to set (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 11,
+        "name": "Custom Name",
+        "desc": "The custom name string (up to 11 characters)",
+        "dataType": "string"
+      }
+    ]
+  },
+  "165_P_CP_CP_202": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[custom name]",
+    "name": "Gets a Custom Name",
+    "desc": "Gets a custom name for all *Touch controllers. Response is Action 10.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Custom Name ID",
+        "desc": "ID of the custom name to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_11": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[circuit]",
+    "name": "A circuit/feature configuration",
+    "desc": "Reflects a configuration for a circuit/feature for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "The circuit identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Function ID",
+        "desc": "Circuit type (bits 0-5) + freeze protection (bit 6). See circuitFunctions valuemap.",
+        "dataType": "byte",
+        "values": {
+          "0": "Generic",
+          "1": "Spa",
+          "2": "Pool",
+          "5": "Master Cleaner",
+          "7": "Light",
+          "9": "SAM Light",
+          "10": "SAL Light",
+          "11": "Photon Gen",
+          "12": "Color Wheel",
+          "13": "Valve",
+          "14": "Spillway",
+          "15": "Floor Cleaner",
+          "16": "IntelliBrite",
+          "17": "MagicStream",
+          "19": "Not Used"
+        }
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Name ID",
+        "desc": "Index into the custom names table (0 for default, or custom name ID)",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte (typically 0)",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_139": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[circuit]",
+    "name": "Sets a circuit/feature configuration",
+    "desc": "Sets a configuration for a circuit/feature for all *Touch controllers. Same payload as Action 11.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "The circuit identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Function ID",
+        "desc": "Circuit type (bits 0-5) + freeze protection (bit 6)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Name ID",
+        "desc": "Index into the custom names table",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_203": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[circuit]",
+    "name": "Gets a circuit/feature configuration",
+    "desc": "Gets a configuration for a circuit/feature for all *Touch controllers. Response is Action 11.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "ID of the circuit to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_16": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[heat pump]",
+    "name": "Heat pump configuration",
+    "desc": "Reflects the heat pump configuration for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Heat Pump Type",
+        "desc": "Type of heat pump installed",
+        "dataType": "byte",
+        "values": {
+          "0": "None",
+          "1": "UltraTemp",
+          "2": "UltraTemp ETi",
+          "3": "MasterTemp",
+          "4": "Max-E-Therm"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "Heat pump RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Cooling Enabled",
+        "desc": "Whether cooling mode is enabled (for ETi)",
+        "dataType": "byte",
+        "values": {
+          "0": "Disabled",
+          "1": "Enabled"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_144": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[heat pump]",
+    "name": "Sets a heat pump configuration",
+    "desc": "Sets a configuration for a heat pump for all *Touch controllers. Same payload as Action 16.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Heat Pump Type",
+        "desc": "Type of heat pump",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "Heat pump RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Cooling Enabled",
+        "desc": "Whether cooling mode is enabled",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_208": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[heat pump]",
+    "name": "Gets a heat pump configuration",
+    "desc": "Gets a configuration for a heat pump for all *Touch controllers. Response is Action 16.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_17": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[schedule]",
+    "name": "A defined schedule",
+    "desc": "Reflects a schedule for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Schedule ID",
+        "desc": "The schedule identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "Circuit ID (bits 0-6), Smart Start flag (bit 7)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Start Hour",
+        "desc": "Start time hours (0-23). Value 25 indicates egg timer mode.",
+        "dataType": "byte",
+        "values": {
+          "25": "Egg Timer mode"
+        }
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Start Minute",
+        "desc": "Start time minutes (0-59)",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "End Hour",
+        "desc": "End time hours (0-23). Value 26 indicates run-once mode with egg timer.",
+        "dataType": "byte",
+        "values": {
+          "26": "Run Once mode"
+        }
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "End Minute",
+        "desc": "End time minutes (0-59)",
+        "dataType": "byte"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Schedule Days",
+        "desc": "Bit flags for days of week (bits 0-6 = Sun-Sat)",
+        "dataType": "bits",
+        "values": {
+          "1": "Sunday",
+          "2": "Monday",
+          "4": "Tuesday",
+          "8": "Wednesday",
+          "16": "Thursday",
+          "32": "Friday",
+          "64": "Saturday",
+          "127": "Every Day"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_145": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[schedule]",
+    "name": "Sets a schedule configuration",
+    "desc": "Sets a configuration for a schedule for all *Touch controllers. Same payload as Action 17.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Schedule ID",
+        "desc": "The schedule identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "Circuit ID (bits 0-6), Smart Start flag (bit 7)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Start Hour",
+        "desc": "Start time hours (0-23)",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Start Minute",
+        "desc": "Start time minutes (0-59)",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "End Hour",
+        "desc": "End time hours (0-23)",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "End Minute",
+        "desc": "End time minutes (0-59)",
+        "dataType": "byte"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "Schedule Days",
+        "desc": "Bit flags for days of week (bits 0-6 = Sun-Sat)",
+        "dataType": "bits"
+      }
+    ]
+  },
+  "165_P_CP_CP_209": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[schedule]",
+    "name": "Gets a schedule configuration",
+    "desc": "Gets a configuration for a schedule for all *Touch controllers. Response is Action 17.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Schedule ID",
+        "desc": "ID of the schedule to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_19": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[intellichem]",
+    "name": "IntelliChem configuration",
+    "desc": "Reflects an IntelliChem config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "IntelliChem ID",
+        "desc": "IntelliChem controller identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address of IntelliChem",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 2,
+        "name": "pH Setpoint",
+        "desc": "Target pH (value / 100)",
+        "dataType": "int"
+      },
+      {
+        "start": 4,
+        "length": 2,
+        "name": "ORP Setpoint",
+        "desc": "Target ORP in mV",
+        "dataType": "int"
+      }
+    ]
+  },
+  "165_P_BC_CP_147": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[intellichem]",
+    "name": "Sets the IntelliChem configuration",
+    "desc": "Sets the IntelliChem configuration for all *Touch controllers. Same payload as Action 19.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "IntelliChem ID",
+        "desc": "IntelliChem controller identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 2,
+        "name": "pH Setpoint",
+        "desc": "Target pH (value / 100)",
+        "dataType": "int"
+      },
+      {
+        "start": 4,
+        "length": 2,
+        "name": "ORP Setpoint",
+        "desc": "Target ORP in mV",
+        "dataType": "int"
+      }
+    ]
+  },
+  "165_P_CP_CP_211": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[intellichem]",
+    "name": "Gets the IntelliChem configuration",
+    "desc": "Gets the IntelliChem configuration for all *Touch controllers. Response is Action 19.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_24": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[pump]",
+    "name": "A configuration for a pump",
+    "desc": "Reflects a pump config for all *Touch controllers. Contains pump type and speed/flow settings.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump ID",
+        "desc": "Pump identifier (1-based). Address = 95 + pumpId.",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Pump Type",
+        "desc": "Pump type code",
+        "dataType": "byte",
+        "values": {
+          "0": "None/Not installed",
+          "1": "VF (Variable Flow)",
+          "64": "VSF (Variable Speed/Flow)",
+          "128": "VS (Variable Speed)",
+          "134": "VS Ultra Efficiency",
+          "169": "VS+SVRS",
+          "255": "VS 3050 (old panels)"
+        }
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Background Circuit",
+        "desc": "Background circuit for VF pumps (pump type is actually this value for VF)",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 8,
+        "name": "Speed/Flow Programs",
+        "desc": "Up to 8 speed/flow program values (2 bytes each for VSF, 1 byte indexes for VS)",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_152": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[pump]",
+    "name": "Sets a pump configuration",
+    "desc": "Sets a pump configuration for all *Touch controllers. Same payload as Action 24.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump ID",
+        "desc": "Pump identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Pump Type",
+        "desc": "Pump type code (0=None, 64=VSF, 128=VS, 169=VS+SVRS)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Background Circuit",
+        "desc": "Background circuit for VF pumps",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_216": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[pump]",
+    "name": "Gets a pump configuration",
+    "desc": "Gets a pump configuration for all *Touch controllers. Response is Action 24.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump ID",
+        "desc": "Pump identifier to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_23": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[pump status]",
+    "name": "A configuration for a pump status",
+    "desc": "Reflects a pump status config for all *Touch controllers. Similar to Action 24 but focuses on pump runtime/status.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump ID",
+        "desc": "Pump identifier (1-based)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Status",
+        "desc": "Pump operational status",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 2,
+        "name": "RPM/GPM",
+        "desc": "Current speed in RPM or flow in GPM (2 bytes, big-endian)",
+        "dataType": "int"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Watts High",
+        "desc": "Power consumption high byte",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Watts Low",
+        "desc": "Power consumption low byte",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_215": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[pump status]",
+    "name": "Gets a pump status",
+    "desc": "Gets a pump status for all *Touch controllers. Response is Action 23.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump ID",
+        "desc": "Pump identifier to retrieve status for",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_22": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[spa side]",
+    "name": "A configuration for a spa side controller",
+    "desc": "Reflects a spa side controller config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Controller ID",
+        "desc": "Spa side controller identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address of the spa side controller",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 4,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for the 4 buttons on the spa side remote",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_150": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[spa side]",
+    "name": "Sets a spa side controller configuration",
+    "desc": "Sets a spa side controller configuration for all *Touch controllers. Same payload as Action 22.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Controller ID",
+        "desc": "Spa side controller identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 4,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for 4 buttons",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_214": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[spa side]",
+    "name": "Gets a spa side controller configuration",
+    "desc": "Gets a spa side controller configuration for all *Touch controllers. Response is Action 22.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Controller ID",
+        "desc": "Spa side controller identifier",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_25": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[chlor]",
+    "name": "A configuration for a chlorinator",
+    "desc": "Reflects a chlorinator config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Active + Spa Setpoint",
+        "desc": "Bit 0 = chlorinator active flag, Bits 1-7 = spa setpoint percentage",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Pool Setpoint",
+        "desc": "Pool chlorination setpoint percentage (0-100)",
+        "dataType": "byte",
+        "values": "0-100"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Super Chlor Hours",
+        "desc": "Super chlorinate hours remaining. Value - 128 if > 128.",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 3,
+        "name": "Reserved",
+        "desc": "Reserved bytes",
+        "dataType": "bytes"
+      },
+      {
+        "start": 6,
+        "length": 16,
+        "name": "Chlorinator Name",
+        "desc": "Name of the chlorinator (e.g., 'Intellichlor--60')",
+        "dataType": "string"
+      }
+    ]
+  },
+  "165_P_CP_CP_153": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[chlor]",
+    "name": "Sets a chlorinator configuration",
+    "desc": "Sets a chlorinator configuration for all *Touch controllers. Same payload as Action 25.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Active + Spa Setpoint",
+        "desc": "Bit 0 = active flag, Bits 1-7 = spa setpoint percentage",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Pool Setpoint",
+        "desc": "Pool chlorination setpoint percentage (0-100)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Super Chlor Hours",
+        "desc": "Super chlorinate hours",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_217": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[chlor]",
+    "name": "Gets a chlorinator configuration",
+    "desc": "Gets a chlorinator configuration for all *Touch controllers. Response is Action 25.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_29": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[valve]",
+    "name": "Valve configuration",
+    "desc": "Reflects the valve config for all *Touch controllers. Contains valve-to-circuit assignments.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Valve A Circuit",
+        "desc": "Circuit assigned to Valve A (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Valve B Circuit",
+        "desc": "Circuit assigned to Valve B (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Valve C Circuit",
+        "desc": "Circuit assigned to Valve C (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Valve D Circuit",
+        "desc": "Circuit assigned to Valve D (255 = not assigned)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_157": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[valve]",
+    "name": "Sets the valve configuration",
+    "desc": "Sets the valve configuration for all *Touch controllers. Same payload as Action 29.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Valve A Circuit",
+        "desc": "Circuit assigned to Valve A (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Valve B Circuit",
+        "desc": "Circuit assigned to Valve B (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Reserved",
+        "desc": "Reserved byte",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Valve C Circuit",
+        "desc": "Circuit assigned to Valve C (255 = not assigned)",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Valve D Circuit",
+        "desc": "Circuit assigned to Valve D (255 = not assigned)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_221": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[valve]",
+    "name": "Gets the valve configuration",
+    "desc": "Gets the valve configuration for all *Touch controllers. Response is Action 29.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_34": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[solar/heatpump]",
+    "name": "A configuration for a solar/heatpump",
+    "desc": "Reflects the solar/heatpump config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Solar Type",
+        "desc": "Type of solar heater",
+        "dataType": "byte",
+        "values": {
+          "0": "None",
+          "1": "Solar only",
+          "2": "Solar with hybrid"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Start Temp Delta",
+        "desc": "Temperature difference to start solar heating",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Stop Temp Delta",
+        "desc": "Temperature difference to stop solar heating",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Freeze Protection",
+        "desc": "Freeze protection temperature threshold",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_162": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[solar/heatpump]",
+    "name": "Sets the solar/heatpump configuration",
+    "desc": "Sets the solar/heatpump configuration for all *Touch controllers. Same payload as Action 34.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Solar Type",
+        "desc": "Type of solar heater",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Start Temp Delta",
+        "desc": "Temperature difference to start solar",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Stop Temp Delta",
+        "desc": "Temperature difference to stop solar",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Freeze Protection",
+        "desc": "Freeze protection temperature",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_226": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[solar/heatpump]",
+    "name": "Gets the solar/heatpump configuration",
+    "desc": "Gets the solar/heatpump configuration for all *Touch controllers. Response is Action 34.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_35": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[delays]",
+    "name": "A configuration for delays",
+    "desc": "Reflects the delay config for all *Touch controllers. Contains pump and valve delay settings.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump Delay",
+        "desc": "Pump off during valve operation flag (bit 7)",
+        "dataType": "byte",
+        "values": {
+          "0": "No delay",
+          "128": "Pump delay enabled"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Cooldown Delay",
+        "desc": "Heater cooldown delay setting",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_163": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[delays]",
+    "name": "Sets the delay configuration",
+    "desc": "Sets the delay configuration for all *Touch controllers. Same payload as Action 35.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Pump Delay",
+        "desc": "Pump off during valve operation flag (bit 7)",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Cooldown Delay",
+        "desc": "Heater cooldown delay setting",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_131": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Cmd[cancel delay]",
+    "name": "Cancels all delays",
+    "desc": "Cancels delays for all *Touch controllers. Sent to stop any pending delays.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Cancel Type",
+        "desc": "Type of delay to cancel (typically 0 for all)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_227": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[delays]",
+    "name": "Gets the delay configuration",
+    "desc": "Gets the delay configuration for all *Touch controllers. Response is Action 35.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_228": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "shortName": "Get[version]",
+    "name": "Request Configuration Version",
+    "desc": "Broadcast request to get the current configuration version from the IntelliCenter panel. Expects a response with action 164 containing version numbers for all configuration categories.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_39": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[intellibrite]",
+    "name": "The configuration for IntelliBrite",
+    "desc": "Reflects the IntelliBrite light group config for all *Touch controllers. Contains circuit assignments for synchronized lighting.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Group Circuit 1",
+        "desc": "First circuit in the light group",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Group Circuit 1 Position",
+        "desc": "Position/priority of circuit 1 in sequence",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Group Circuit 2",
+        "desc": "Second circuit in the light group",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Group Circuit 2 Position",
+        "desc": "Position/priority of circuit 2 in sequence",
+        "dataType": "byte"
+      },
+      {
+        "start": 4,
+        "length": 24,
+        "name": "Additional Circuits",
+        "desc": "Remaining circuit/position pairs (up to 8 circuits total)",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_167": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[intellibrite]",
+    "name": "Sets the IntelliBrite configuration",
+    "desc": "Sets the IntelliBrite configuration for all *Touch controllers. Same payload as Action 39.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Group Circuit 1",
+        "desc": "First circuit in the light group",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Group Circuit 1 Position",
+        "desc": "Position/priority of circuit 1",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Group Circuit 2",
+        "desc": "Second circuit in the light group",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Group Circuit 2 Position",
+        "desc": "Position/priority of circuit 2",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_17_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp1]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+  "165_P_18_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp2]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+  "165_P_19_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Probe[exp3]",
+    "name": "Probes for EXP",
+    "desc": "Probes for expansion panels on IntelliTouch controllers."
+  },
+  "165_P_CP_CP_231": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[intellibrite]",
+    "name": "Gets the IntelliBrite configuration",
+    "desc": "Gets the IntelliBrite configuration for all *Touch controllers. Response is Action 39.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_40": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[settings]",
+    "name": "The settings configuration",
+    "desc": "Reflects the settings config for all *Touch controllers. Contains general system options.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Units",
+        "desc": "Temperature units setting",
+        "dataType": "byte",
+        "values": {
+          "0": "Fahrenheit",
+          "1": "Celsius"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Clock Mode",
+        "desc": "Clock display format",
+        "dataType": "byte",
+        "values": {
+          "0": "12 Hour",
+          "1": "24 Hour"
+        }
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Service Mode",
+        "desc": "Service/maintenance mode enabled",
+        "dataType": "byte",
+        "values": {
+          "0": "Normal",
+          "1": "Service Mode"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_232": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[settings]",
+    "name": "Gets a settings configuration",
+    "desc": "Gets a settings configuration for all *Touch controllers. Response is Action 40.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_32": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[is4/is10]",
+    "name": "A configuration for is4/is10 remotes",
+    "desc": "Reflects a is4/is10 remote config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "IS4/IS10 remote identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address of the remote",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 4,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for the 4 buttons",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_160": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[is4/is10]",
+    "name": "Sets a remote is4/is10 configuration",
+    "desc": "Sets a remote is4/is10 configuration for all *Touch controllers. Same payload as Action 32.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "IS4/IS10 remote identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 4,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for 4 buttons",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_224": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[is4/is10]",
+    "name": "Gets a remote is4/is10 configuration",
+    "desc": "Gets a remote is4/is10 configuration for all *Touch controllers. Response is Action 32.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "Remote identifier to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_33": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "Cfg[remote]",
+    "name": "A configuration for remotes",
+    "desc": "Reflects a remote config for all *Touch controllers.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "Remote identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address of the remote",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 10,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for up to 10 buttons",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_161": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "command",
+    "shortName": "Set[remote]",
+    "name": "Sets a remote configuration",
+    "desc": "Sets a remote configuration for all *Touch controllers. Same payload as Action 33.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "Remote identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Address",
+        "desc": "RS-485 address",
+        "dataType": "byte"
+      },
+      {
+        "start": 2,
+        "length": 10,
+        "name": "Button Assignments",
+        "desc": "Circuit assignments for up to 10 buttons",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_225": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Get[remote]",
+    "name": "Gets a remote configuration",
+    "desc": "Gets a remote configuration for all *Touch controllers. Response is Action 33.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Remote ID",
+        "desc": "Remote identifier to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_184": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "shortName": "Ctrl[circuit]",
+    "name": "Circuit Control (IntelliCenter v3.004+ Wireless)",
+    "desc": "Native circuit control message used by the Wireless remote (addr 36) on IntelliCenter v3.004+. This is the preferred method for controlling circuits on v3.004+ as it doesn't suffer from state reversion issues like Action 168. The OCP responds with an ACK (Action 1 payload [184]). For body circuits (Spa/Pool), multiple 184 messages are sent in sequence with different target IDs.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Channel ID High",
+        "desc": "Channel identifier high byte. Default channel is 104,143 (0x688F). Body context uses 128,142.",
+        "dataType": "byte",
+        "values": {
+          "104": "Default channel (circuit control)",
+          "128": "Body context/select channel"
+        }
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Channel ID Low",
+        "desc": "Channel identifier low byte.",
+        "dataType": "byte",
+        "values": {
+          "143": "Default channel low (with 104)",
+          "142": "Body context low (with 128)"
+        }
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Sequence",
+        "desc": "Sequence number. Commonly 0, but Pool body control uses 5.",
+        "dataType": "byte"
+      },
+      {
+        "start": 3,
+        "length": 1,
+        "name": "Format",
+        "desc": "Message format. 255 = command mode, 0 = body select mode.",
+        "dataType": "byte",
+        "values": {
+          "255": "Command mode",
+          "0": "Body select mode"
+        }
+      },
+      {
+        "start": 4,
+        "length": 1,
+        "name": "Target ID High",
+        "desc": "Target identifier high byte. Combined with low byte to form the circuit's unique targetId (hi*256 + lo).",
+        "dataType": "byte"
+      },
+      {
+        "start": 5,
+        "length": 1,
+        "name": "Target ID Low",
+        "desc": "Target identifier low byte.",
+        "dataType": "byte"
+      },
+      {
+        "start": 6,
+        "length": 1,
+        "name": "State / Select",
+        "desc": "State value: 0=OFF, 1=ON. For body select (target 114,145): 0=Spa, 1=Pool.",
+        "dataType": "byte",
+        "values": {
+          "0": "OFF / Spa select",
+          "1": "ON / Pool select"
+        }
+      },
+      {
+        "start": 7,
+        "length": 3,
+        "name": "Context Data",
+        "desc": "Context-specific data. Usually 0,0,0 for circuit control. For body context (target 212,182): Spa ON=[101,4,0], Pool ON=[151,6,0], OFF=[255,255,255].",
+        "dataType": "byte[]"
+      }
+    ],
+    "targetIds": {
+      "168_237": {
+        "name": "Body Toggle",
+        "targetId": 43245,
+        "desc": "Body toggle primitive. Byte 6 is state (0=OFF, 1=ON). Used as final step in body control sequence.",
+        "example": "[104,143,0,255,168,237,1,0,0,0]"
+      },
+      "212_182": {
+        "name": "Body Context",
+        "targetId": 54454,
+        "desc": "Body context/status message. Bytes 6-9 contain body-specific context: Spa ON=[0,101,4,0], Pool ON=[128,151,6,0], OFF=[255,255,255,255].",
+        "example": "[104,143,5,255,212,182,128,151,6,0]"
+      },
+      "114_145": {
+        "name": "Body Select",
+        "targetId": 29329,
+        "desc": "Body selection/context. Byte 6 selects body: 0=Spa, 1=Pool. Uses channel 128,142 and format 0.",
+        "example": "[128,142,0,0,114,145,1,0,0,0]"
+      },
+      "94_131": {
+        "name": "Body Mode",
+        "targetId": 24195,
+        "desc": "Body/mode control. Byte 6: 128=OFF, 129=ON. Uses channel 128,142 and format 0.",
+        "example": "[128,142,0,0,94,131,129,0,0,0]"
+      },
+      "108_225": {
+        "name": "Pool Circuit",
+        "targetId": 27873,
+        "desc": "Pool circuit (circuit 6) direct control. Note: Wireless remote does NOT use this for body control - see Body Toggle instead.",
+        "example": "[104,143,0,255,108,225,1,0,0,0]"
+      },
+      "circuit_specific": {
+        "name": "Circuit Control",
+        "desc": "Each circuit has a unique targetId learned from OCP broadcasts (poolConfig.json). Use the circuit's targetId with state 0/1 in byte 6.",
+        "example": "[104,143,0,255,<hi>,<lo>,<state>,0,0,0]"
+      }
+    },
+    "sequences": {
+      "circuit_on_off": {
+        "name": "Circuit ON/OFF",
+        "desc": "Simple circuit control using learned targetId",
+        "steps": [
+          "1. Send Action 184 with circuit's targetId and state (0/1) in byte 6",
+          "2. Wait for ACK (Action 1, payload [184])",
+          "3. OCP broadcasts Action 2 with updated circuit states"
+        ]
+      },
+      "body_control_v3": {
+        "name": "Body Control (v3.004+)",
+        "desc": "Multi-step sequence for reliable Pool/Spa body control on v3.004+",
+        "steps": [
+          "1. Body Select (114,145): Choose Pool (byte6=1) or Spa (byte6=0)",
+          "2. Body Context (212,182): Send body-specific context bytes 6-9",
+          "3. Body Toggle (168,237): Send final state (byte6: 0=OFF, 1=ON)",
+          "4. Wait for each ACK before proceeding"
+        ],
+        "note": "Required because sending Pool targetId directly often incorrectly activates Spa instead"
+      }
+    },
+    "notes": [
+      "Wireless remote address is 36, OCP address is 16",
+      "Header: [165,1,16,36,184,10] for Wireless→OCP",
+      "ACK: [165,1,36,16,1,1] payload [184] for OCP→Wireless",
+      "TargetIds are learned from OCP broadcasts and stored in poolConfig.json",
+      "For v1.x systems without targetIds, use Action 168 instead"
+    ]
+  },
+  "165_P_BC_CP_252": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "name": "Request high speed circuits",
+    "shortName": "Get[high speed circ]",
+    "desc": "Requests the high speed circuit configuration.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_253": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "name": "Request software version",
+    "shortName": "State[soft ver]",
+    "desc": "Requests the software/firmware version from the controller.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Request Type",
+        "desc": "Request type (typically 0)",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_BC_CP_41": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "broadcast",
+    "name": "Circuit group/macro config",
+    "shortName": "Cfg[circ group]",
+    "desc": "Reflects a circuit group or macro configuration.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Group ID",
+        "desc": "Circuit group or macro identifier",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Type",
+        "desc": "Group type (circuit group vs macro)",
+        "dataType": "byte",
+        "values": {
+          "0": "Circuit Group",
+          "1": "Macro"
+        }
+      },
+      {
+        "start": 2,
+        "length": 8,
+        "name": "Circuit Assignments",
+        "desc": "Circuits included in the group",
+        "dataType": "bytes"
+      }
+    ]
+  },
+  "165_P_CP_CP_233": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "name": "Request circuit group/macro",
+    "shortName": "Get[circ group]",
+    "desc": "Requests a circuit group or macro configuration. Response is Action 41.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Group ID",
+        "desc": "Circuit group or macro identifier to retrieve",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_CP_134": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "command",
+    "name": "Set circuit state",
+    "shortName": "Set[circ state]",
+    "desc": "Command to turn a circuit on or off. Response is ACK (Action 1).",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Circuit ID",
+        "desc": "ID of the circuit to control",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "State",
+        "desc": "Desired state of the circuit",
+        "dataType": "byte",
+        "values": {
+          "0": "Off",
+          "1": "On"
+        }
+      }
+    ]
+  },
+  "165_P_CP_CP_110": {
+    "proto": "broadcast",
+    "ocpSpecific": true,
+    "messageType": "request",
+    "name": "Request expansion",
+    "shortName": "Get[expansion]",
+    "desc": "Requests expansion module configuration.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Expansion ID",
+        "desc": "Expansion module identifier",
+        "dataType": "byte"
+      }
+    ]
+  },
+  "165_P_CP_V_82": {
+    "proto": "intellivalve",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Req[address]",
+    "name": "Ping OCP for an address",
+    "desc": "The valve will ping the OCP for an address when it is on the bus."
+  },
+  "16_2_64_4": {
+    "proto": "aqualink",
+    "keyBytes": [
+      0
+    ],
+    "ocpSpecific": true,
+    "messageType": "Response",
+    "shortName": "Resp[display]",
+    "hasCategories": true,
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Line",
+        "desc": "The line that is displayed on the controller",
+        "values": {
+          "0": "Line #1",
+          "1": "Line #2",
+          "2": "Line #3",
+          "3": "Line #4",
+          "4": "Line #5",
+          "5": "Line #6",
+          "6": "Line #7",
+          "7": "Line #8"
+        }
+      }
+    ]
+  },
+  "16_3_0": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[control]",
+    "name": "Set Chlorinator Control",
+    "desc": "Sets the chlorinator control to the OCP.  This message is required to maintain the control of the chlorinator."
+  },
+  "16_3_1": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Ack[control]",
+    "name": "Control Acknowlegement",
+    "desc": "Indicates that the chlorinator is now being controlled by the OCP."
+  },
+  "16_3_3": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Resp[model]",
+    "name": "Control Acknowlegement",
+    "desc": "Indicates that the chlorinator is now being controlled by the OCP."
+  },
+  "16_3_17": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[output]",
+    "name": "Set the output on the chlorinator",
+    "desc": "Sets the chlorinator's output based upon the values in the payload"
+  },
+  "16_3_18": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Status",
+    "name": "Status Response",
+    "desc": "Response from the chloriator indicating the current status an salt level."
+  },
+  "16_3_20": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[model]",
+    "name": "Get chlorinator model",
+    "desc": "Request from the OCP to get the model of the chlorinator."
+  },
+  "165_P_PMP_CP_1": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[speed/flow]",
+    "name": "Set pump drive speed and flow",
+    "desc": "Sets the rpm and/or flow of the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_CP_PMP_1": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Command",
+    "shortName": "Pump[speed/flow]",
+    "name": "Set Pump Speed/Flow",
+    "desc": "Command to set pump speed (RPM) or flow (GPM). Response is ACK from pump.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Control Byte",
+        "desc": "Control/circuit assignment",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Program/Mode",
+        "desc": "Program number or mode",
+        "dataType": "byte",
+        "values": "196=Standard program"
+      },
+      {
+        "start": 2,
+        "length": 2,
+        "name": "Speed/Flow Value",
+        "desc": "Target speed in RPM (2 bytes) or flow in GPM (high byte only). Bit 5 of byte 2 indicates RPM (0) or GPM (1)",
+        "dataType": "int"
+      }
+    ]
+  },
+  "165_P_PMP_CP_4": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[runstate]",
+    "name": "Set pump run state",
+    "desc": "Sets the run state pf the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_CP_PMP_4": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[runstate]",
+    "name": "Response to setting the run state.",
+    "desc": "This message is in response to the pump run state being set.  A return of 255 indicates that the local control panel on the drive has been disabled."
+  },
+  "165_P_PMP_CP_5": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[feature]",
+    "name": "Set pump drive feature",
+    "desc": "Sets the feature state of the pump.  This message is sent to set the ."
+  },
+  "165_P_CP_PMP_5": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[feature]",
+    "name": "Response to setting the drive feature.",
+    "desc": "This message is in response to the pump drive feature being set."
+  },
+  "165_P_PMP_CP_6": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[drivestate]",
+    "name": "Set pump drive state",
+    "desc": "Sets the run state pf the pump.  This message is sent to take control of the pump and disable the local control panel on the drive."
+  },
+  "165_P_CP_PMP_6": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[drivestate]",
+    "name": "Response to setting the drive state.",
+    "desc": "This message is in response to the pump drive state being set."
+  },
+  "165_P_PMP_CP_7": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[status]",
+    "name": "Get pump status",
+    "desc": "Broadcast request to get the current running status of the pump."
+  },
+  "165_P_CP_PMP_7": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Response",
+    "shortName": "Pump[status]",
+    "name": "Pump Status Response",
+    "desc": "Response from pump containing current operational status including speed, watts, flow, and error codes.",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Command",
+        "desc": "Current pump command/circuit assignment",
+        "dataType": "byte"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Mode",
+        "desc": "Current pump operating mode",
+        "dataType": "byte",
+        "values": {
+          "0": "Off/Filter",
+          "1": "Manual",
+          "2": "Speed 1",
+          "3": "Speed 2",
+          "4": "Speed 3",
+          "5": "Speed 4",
+          "6": "Feature 1",
+          "10": "External Program"
+        }
+      },
+      {
+        "start": 2,
+        "length": 1,
+        "name": "Drive State",
+        "desc": "Drive operational state",
+        "dataType": "byte",
+        "values": {
+          "1": "Running",
+          "2": "Stopped"
+        }
+      },
+      {
+        "start": 3,
+        "length": 2,
+        "name": "Watts",
+        "desc": "Current power consumption in watts",
+        "dataType": "int"
+      },
+      {
+        "start": 5,
+        "length": 2,
+        "name": "RPM",
+        "desc": "Current pump speed in RPM (VS/VSF pumps only, 0 for VF)",
+        "dataType": "int"
+      },
+      {
+        "start": 7,
+        "length": 1,
+        "name": "Flow (GPM)",
+        "desc": "Current flow rate in GPM (VSF pumps only, 0 for VS/VF)",
+        "dataType": "byte"
+      },
+      {
+        "start": 8,
+        "length": 1,
+        "name": "PPC",
+        "desc": "Priming/Pump Configuration status",
+        "dataType": "byte"
+      },
+      {
+        "start": 11,
+        "length": 2,
+        "name": "Status/Error",
+        "desc": "16-bit error/warning code flags",
+        "dataType": "int",
+        "values": "Bit flags for pump errors and warnings"
+      },
+      {
+        "start": 13,
+        "length": 1,
+        "name": "Time (Hours)",
+        "desc": "Runtime hours counter (increments every 59 minutes)",
+        "dataType": "byte"
+      },
+      {
+        "start": 14,
+        "length": 1,
+        "name": "Time (Minutes)",
+        "desc": "Runtime minutes counter (0-59, ticks every minute)",
+        "dataType": "byte",
+        "values": "0-59"
+      }
+    ]
+  },
+  "165_P_PMP_CP_10": {
+    "proto": "pump",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[speed]",
+    "name": "Sets the speed or flow on the pump",
+    "desc": "Pump request to set the pump speed or flow."
+  },
+  "165_P_CHM_CP_210": {
+    "proto": "intellichem",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[status]",
+    "name": "Get IntelliChem status",
+    "dest": "Request to get the status from IntelliChem"
+  },
+  "165_P_CHM_CP_146": {
+    "proto": "intellichem",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[options]",
+    "name": "Set IntelliChem options",
+    "dest": "Set options on the IntelliChem controller"
+  },
+  "165_P_CP_CHM_1": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "ACK",
+    "desc": "Message Received"
+  },
+  "165_P_CP_CHM_18": {
+    "proto": "chlorinator",
+    "ocpSpecific": false,
+    "messageType": "response",
+    "shortName": "State[Salt Output]",
+    "name": "Chlorinator Status Response",
+    "desc": "Response from IntelliChlor containing current salt level and chlorinator status",
+    "payload": [
+      {
+        "start": 0,
+        "length": 1,
+        "name": "Salt Level",
+        "desc": "Current salt level in PPM",
+        "dataType": "byte",
+        "values": "Multiply by 50 to get PPM (e.g., 64 = 3200 PPM)"
+      },
+      {
+        "start": 1,
+        "length": 1,
+        "name": "Status",
+        "desc": "Chlorinator status/error flags (lower 7 bits)",
+        "dataType": "byte",
+        "values": {
+          "0": "OK",
+          "1": "Low Flow",
+          "2": "Low Salt",
+          "4": "Very Low Salt",
+          "8": "High Current",
+          "16": "Clean Cell",
+          "32": "Low Voltage",
+          "64": "Water Temp Low",
+          "128": "No Comm"
+        }
+      }
+    ]
+  }
+}

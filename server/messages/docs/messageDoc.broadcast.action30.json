@@ -1,0 +1,1934 @@
+{
+  "proto": "broadcast",
+  "minLength": 17,
+  "keyBytes": [
+    0,
+    1
+  ],
+  "ocpSpecific": true,
+  "messageType": "Response",
+  "shortName": "Cfg[item]",
+  "name": "Config Item Response",
+  "desc": "Response to a configuration request.",
+  "payloadKeys": {
+    "0_0": {
+      "shortName": "options 0",
+      "category": "Options",
+      "name": "Config Options",
+      "desc": "Response to the configuration options",
+      "payload": [
+        {
+          "start": 0,
+          "length": 1,
+          "name": "Response Key",
+          "desc": "Identifies the mesaage as containing the advanced options data.",
+          "values": "0"
+        },
+        {
+          "start": 1,
+          "length": 1,
+          "name": "Water Sensor #2 Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 2,
+          "length": 1,
+          "name": "Water Sensor #1 Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 3,
+          "length": 1,
+          "name": "Solar Sensor #1 Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 4,
+          "length": 1,
+          "name": "Solar Sensor #1 Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 5,
+          "length": 1,
+          "name": "Air Sensor Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 6,
+          "length": 1,
+          "name": "Solar Sensor #2 Adjustment",
+          "desc": "When bit 8 is set then this is a negative value.",
+          "values": "+= 127 degrees of offset"
+        },
+        {
+          "start": 7,
+          "length": 6,
+          "name": "Unknown",
+          "values": "0,0,0,0,0,0"
+        },
+        {
+          "start": 13,
+          "length": 1,
+          "name": "Time Settings",
+          "desc": "The time settings on the OCP.",
+          "dataType": "bits",
+          "values": {
+            "1": "Unknown",
+            "2": "Unknown",
+            "3": "Unknown",
+            "4": "Unknown",
+            "5": "Units 0=Metric 1=Standard",
+            "6": "Clock Source 0=Manual 1=Internet",
+            "7": "Clock Mode 0=12Hour 1=24Hour",
+            "8": "Adjust DST 0=Off 1=On"
+          }
+        },
+        {
+          "start": 14,
+          "length": 1,
+          "name": "Unknown",
+          "values": "235"
+        },
+        {
+          "start": 15,
+          "length": 1,
+          "name": "Unknown",
+          "values": "27"
+        },
+        {
+          "start": 16,
+          "length": 1,
+          "name": "Unknown",
+          "values": "167"
+        },
+        {
+          "start": 17,
+          "length": 1,
+          "name": "Unknown",
+          "values": "1"
+        },
+        {
+          "start": 18,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 19,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 20,
+          "length": 1,
+          "name": "Body #1 Setpoint",
+          "desc": "The heat setpoint for the first body."
+        },
+        {
+          "start": 21,
+          "length": 1,
+          "name": "Body #3 Setpoint",
+          "desc": "The heat setpoint for the third body."
+        },
+        {
+          "start": 22,
+          "length": 1,
+          "name": "Body #2 Setpoint",
+          "desc": "The heat setpoint for the first body."
+        },
+        {
+          "start": 23,
+          "length": 1,
+          "name": "Body #4 Setpoint",
+          "desc": "The heat setpoint for the fourth body."
+        },
+        {
+          "start": 24,
+          "length": 1,
+          "name": "Body #1 Heat Mode",
+          "desc": "The heat mode for the first body.",
+          "values": {
+            "0": "Off",
+            "3": "Heater",
+            "5": "Solar Only",
+            "21": "Solar Preferred"
+          }
+        },
+        {
+          "start": 25,
+          "length": 1,
+          "name": "Body #2 Heat Mode",
+          "desc": "The heat mode for the second body.",
+          "values": {
+            "0": "Off",
+            "3": "Heater",
+            "5": "Solar Only",
+            "21": "Solar Preferred"
+          }
+        },
+        {
+          "start": 26,
+          "length": 1,
+          "name": "Body #3 Heat Mode",
+          "desc": "The heat mode for the third body.",
+          "values": {
+            "0": "Off",
+            "3": "Heater",
+            "5": "Solar Only",
+            "21": "Solar Preferred"
+          }
+        },
+        {
+          "start": 27,
+          "length": 1,
+          "name": "Body #4 Heat Mode",
+          "desc": "The heat mode for the fourth body.",
+          "values": {
+            "0": "Off",
+            "3": "Heater",
+            "5": "Solar Only",
+            "21": "Solar Preferred"
+          }
+        },
+        {
+          "start": 28,
+          "length": 1,
+          "name": "Unknown"
+        },
+        {
+          "start": 29,
+          "length": 1,
+          "name": "Pump Delay",
+          "desc": "Indicates what option will be chosen when valve",
+          "values": {
+            "0": "Off - No delay",
+            "1": "On - Pump off during valve action"
+          }
+        },
+        {
+          "start": 30,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 31,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 32,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 33,
+          "length": 1,
+          "name": "Unknown",
+          "values": "100"
+        },
+        {
+          "start": 34,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 35,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 36,
+          "length": 1,
+          "name": "Unknown",
+          "values": "0"
+        },
+        {
+          "start": 37,
+          "length": 1,
+          "name": "Heater Cooldown",
+          "desc": "Heater cooldown delay that controls what action the pump should perform during a cooldown cycle.",
+          "values": {
+            "0": "Pump off during heater cooldown",
+            "1": "Pump on during heater cooldown"
+          }
+        },
+        {
+          "start": 38,
+          "length": 1,
+          "name": "Manual Op Priority",
+          "desc": "Manual operations override scheduled operation.",
+          "values": {
+            "0": "Scheduled operation priority",
+            "1": "Manual operation priority"
+          }
+        },
+        {
+          "start": 39,
+          "length": 1,
+          "name": "Manual Heat",
+          "desc": "Manual heat for spa operation",
+          "values": {
+            "0": "Manual heat off",
+            "1": "Manual heat on"
+          }
+        }
+      ]
+    },
+    "0_1": {
+      "shortName": "options 1",
+      "category": "Options",
+      "name": "Config Options",
+      "desc": "Response to the configuration options request",
+      "payload": []
+    },
+    "1_0": {
+      "shortName": "circuit function",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Current configuration circuit functions",
+      "response": "165_63_16_15_30:1_0"
+    },
+    "1_1": {
+      "shortName": "circ freeze prot",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Current configuration freeze protection",
+      "response": "165_63_16_15_30:1_1"
+    },
+    "1_2": {
+      "shortName": "circ show feature",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Current configuration show as feature",
+      "response": "165_63_16_15_30:1_2"
+    },
+    "1_3": {
+      "shortName": "circ #1&2 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_3"
+    },
+    "1_4": {
+      "shortName": "circ #3&4 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_4"
+    },
+    "1_5": {
+      "shortName": "circ #5&6 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_5"
+    },
+    "1_6": {
+      "shortName": "circ #7&8 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_6"
+    },
+    "1_7": {
+      "shortName": "circ #9&10 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_7"
+    },
+    "1_8": {
+      "shortName": "circ #11&12 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_8"
+    },
+    "1_9": {
+      "shortName": "circ #13&14 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_9"
+    },
+    "1_10": {
+      "shortName": "circ #15&16 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_10"
+    },
+    "1_11": {
+      "shortName": "circ #17&18 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_11"
+    },
+    "1_12": {
+      "shortName": "circ #19&20 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_12"
+    },
+    "1_13": {
+      "shortName": "circ #21&22 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_1"
+    },
+    "1_14": {
+      "shortName": "circ #23&24 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_14"
+    },
+    "1_15": {
+      "shortName": "circ #25&26 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_15"
+    },
+    "1_16": {
+      "shortName": "circ #27&28 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_16"
+    },
+    "1_17": {
+      "shortName": "circ #29&30 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_17"
+    },
+    "1_18": {
+      "shortName": "circ #31&32 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_18"
+    },
+    "1_19": {
+      "shortName": "circ #33&34 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_19"
+    },
+    "1_20": {
+      "shortName": "circ #35&36 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_20"
+    },
+    "1_21": {
+      "shortName": "circ #37&38 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_21"
+    },
+    "1_22": {
+      "shortName": "circ #39&40 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_22"
+    },
+    "1_23": {
+      "shortName": "circ #41&42 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_23"
+    },
+    "1_24": {
+      "shortName": "circ #43&44 name",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:1_24"
+    },
+    "1_25": {
+      "shortName": "Unk circuit",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Unknown",
+      "response": "165_63_16_15_30:1_25"
+    },
+    "1_26": {
+      "shortName": "circ light theme",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Lighting theme for the circuit",
+      "response": "165_63_16_15_30:1_25"
+    },
+    "1_27": {
+      "shortName": "circ egg hours",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Egg timer hours for the circuit",
+      "response": "165_63_16_15_30:1_27"
+    },
+    "1_28": {
+      "shortName": "circ egg min",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Egg timer minutes for the circuit",
+      "response": "165_63_16_15_30:1_28"
+    },
+    "1_29": {
+      "shortName": "circ egg don't stop",
+      "category": "Circuits",
+      "name": "Current configuration",
+      "desc": "Egg timer don't stop for circuits",
+      "response": "165_63_16_15_30:1_29"
+    },
+    "2_0": {
+      "shortName": "feature function",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Current configuration feature functions",
+      "response": "165_63_16_15_30:2_0"
+    },
+    "2_1": {
+      "shortName": "feat freeze prot",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Current configuration freeze protection",
+      "response": "165_63_16_15_30:2_1"
+    },
+    "2_2": {
+      "shortName": "feat show feature",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Current configuration show as feature",
+      "response": "165_63_16_15_30:2_2"
+    },
+    "2_3": {
+      "shortName": "feat egg hours",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Egg timer hours for the feature",
+      "response": "165_63_16_15_30:2_3"
+    },
+    "2_4": {
+      "shortName": "feat egg min",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Egg timer minutes for the feature",
+      "response": "165_63_16_15_30:2_4"
+    },
+    "2_5": {
+      "shortName": "feat egg don't stop",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Egg timer don't stop for features",
+      "response": "165_63_16_15_30:2_5"
+    },
+    "2_6": {
+      "shortName": "feat #1&2 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_6"
+    },
+    "2_7": {
+      "shortName": "feat #3&4 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_7"
+    },
+    "2_8": {
+      "shortName": "feat #5&6 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a cicuit",
+      "response": "165_63_16_15_30:2_8"
+    },
+    "2_9": {
+      "shortName": "feat #7&8 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_9"
+    },
+    "2_10": {
+      "shortName": "feat #9&10 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_10"
+    },
+    "2_11": {
+      "shortName": "feat #11&12 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_11"
+    },
+    "2_12": {
+      "shortName": "feat #13&14 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_12"
+    },
+    "2_13": {
+      "shortName": "feat #15&16 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_13"
+    },
+    "2_14": {
+      "shortName": "feat #17&18 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_14"
+    },
+    "2_15": {
+      "shortName": "feat #19&20 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_14"
+    },
+    "2_16": {
+      "shortName": "feat #21&22 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_16"
+    },
+    "2_17": {
+      "shortName": "feat #23&24 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_17"
+    },
+    "2_18": {
+      "shortName": "feat #25&26 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_18"
+    },
+    "2_19": {
+      "shortName": "feat #27&28 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_19"
+    },
+    "2_20": {
+      "shortName": "feat #29&30 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_20"
+    },
+    "2_21": {
+      "shortName": "feat #31&32 name",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Requests the name of a feature",
+      "response": "165_63_16_15_30:2_21"
+    },
+    "2_22": {
+      "shortName": "feat unknown",
+      "category": "Features",
+      "name": "Current configuration",
+      "desc": "Unknown feature request",
+      "response": "165_63_16_15_30:2_22"
+    },
+    "3_0": {
+      "shortName": "sched 1-20 start",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_0"
+    },
+    "3_1": {
+      "shortName": "sched 21-40 start",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_1"
+    },
+    "3_2": {
+      "shortName": "sched 41-60 start",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_2"
+    },
+    "3_3": {
+      "shortName": "sched 61-80 start",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_3"
+    },
+    "3_4": {
+      "shortName": "sched 81-100 start",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_4"
+    },
+    "3_5": {
+      "shortName": "sched 1-40 circ",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule circuit",
+      "response": "165_63_16_15_30:3_5"
+    },
+    "3_6": {
+      "shortName": "sched 41-80 circ",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule circuit",
+      "response": "165_63_16_15_30:3_6"
+    },
+    "3_7": {
+      "shortName": "sched 81-100 circ",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule circuit",
+      "response": "165_63_16_15_30:3_7"
+    },
+    "3_8": {
+      "shortName": "sched 1-40 time type",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule time type",
+      "response": "165_63_16_15_30:3_8"
+    },
+    "3_9": {
+      "shortName": "sched 41-80 time type",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule time type",
+      "response": "165_63_16_15_30:3_9"
+    },
+    "3_10": {
+      "shortName": "sched 81-100 time type",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule time type",
+      "response": "165_63_16_15_30:3_10"
+    },
+    "3_11": {
+      "shortName": "sched 1-40 days",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule days",
+      "response": "165_63_16_15_30:3_11"
+    },
+    "3_12": {
+      "shortName": "sched 41-80 days",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule days",
+      "response": "165_63_16_15_30:3_12"
+    },
+    "3_13": {
+      "shortName": "sched 81-100 days",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule days",
+      "response": "165_63_16_15_30:3_13"
+    },
+    "3_14": {
+      "shortName": "sched 1-40 month",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_14"
+    },
+    "3_15": {
+      "shortName": "sched 41-80 month",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_15"
+    },
+    "3_16": {
+      "shortName": "sched 81-100 month",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_16"
+    },
+    "3_17": {
+      "shortName": "sched 1-40 day",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_17"
+    },
+    "3_18": {
+      "shortName": "sched 41-80 day",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_17"
+    },
+    "3_19": {
+      "shortName": "sched 81-100 day",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_19"
+    },
+    "3_20": {
+      "shortName": "sched 1-40 year",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_20"
+    },
+    "3_21": {
+      "shortName": "sched 41-80 year",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_21"
+    },
+    "3_22": {
+      "shortName": "sched 81-100 year",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start date",
+      "response": "165_63_16_15_30:3_22"
+    },
+    "3_23": {
+      "shortName": "sched 1-20 end",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule end time",
+      "response": "165_63_16_15_30:3_23"
+    },
+    "3_24": {
+      "shortName": "sched 21-40 end",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule end time",
+      "response": "165_63_16_15_30:3_24"
+    },
+    "3_25": {
+      "shortName": "sched 41-60 end",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule end time",
+      "response": "165_63_16_15_30:3_25"
+    },
+    "3_26": {
+      "shortName": "sched 61-80 end",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule start time",
+      "response": "165_63_16_15_30:3_26"
+    },
+    "3_27": {
+      "shortName": "sched 81-100 end",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule end time",
+      "response": "165_63_16_15_30:3_27"
+    },
+    "3_28": {
+      "shortName": "sched 1-40 heat src",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat source",
+      "response": "165_63_16_15_30:3_28"
+    },
+    "3_29": {
+      "shortName": "sched 41-80 heat src",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat source",
+      "response": "165_63_16_15_30:3_29"
+    },
+    "3_30": {
+      "shortName": "sched 81-100 heat src",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat source",
+      "response": "165_63_16_15_30:3_30"
+    },
+    "3_31": {
+      "shortName": "sched 1-40 heat pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat setpoint",
+      "response": "165_63_16_15_30:3_31"
+    },
+    "3_32": {
+      "shortName": "sched 41-80 heat pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat setpoint",
+      "response": "165_63_16_15_30:3_32"
+    },
+    "3_33": {
+      "shortName": "sched 81-100 heat pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule heat setpoint",
+      "response": "165_63_16_15_30:3_33"
+    },
+    "3_34": {
+      "shortName": "sched 1-40 cool pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule cool setpoint",
+      "response": "165_63_16_15_30:3_34"
+    },
+    "3_35": {
+      "shortName": "sched 41-80 cool pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule cool setpoint",
+      "response": "165_63_16_15_30:3_35"
+    },
+    "3_36": {
+      "shortName": "sched 81-100 cool pt",
+      "category": "Schedules",
+      "name": "Current configuration",
+      "desc": "schedule cool setpoint",
+      "response": "165_63_16_15_30:3_36"
+    },
+    "4_0": {
+      "shortName": "pump #1 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_0"
+    },
+    "4_1": {
+      "shortName": "pump #2 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_1"
+    },
+    "4_2": {
+      "shortName": "pump #3 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_2"
+    },
+    "4_3": {
+      "shortName": "pump #4 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_3"
+    },
+    "4_4": {
+      "shortName": "pump #5 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_5"
+    },
+    "4_5": {
+      "shortName": "pump #6 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_6"
+    },
+    "4_6": {
+      "shortName": "pump #7 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_6"
+    },
+    "4_7": {
+      "shortName": "pump #8 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_7"
+    },
+    "4_8": {
+      "shortName": "pump #9 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_9"
+    },
+    "4_9": {
+      "shortName": "pump #10 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_9"
+    },
+    "4_10": {
+      "shortName": "pump #11 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_10"
+    },
+    "4_11": {
+      "shortName": "pump #12 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_11"
+    },
+    "4_12": {
+      "shortName": "pump #13 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_12"
+    },
+    "4_13": {
+      "shortName": "pump #14 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_13"
+    },
+    "4_14": {
+      "shortName": "pump #15 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_14"
+    },
+    "4_15": {
+      "shortName": "pump #16 circuits",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump circuit assignments",
+      "response": "165_63_16_15_30:4_0"
+    },
+    "4_16": {
+      "shortName": "pump #1-8 min/max",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump min/max",
+      "response": "165_63_16_15_30:4_16"
+    },
+    "4_17": {
+      "shortName": "pump #9-16 min/max",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump min/max",
+      "response": "165_63_16_15_30:4_17"
+    },
+    "4_18": {
+      "shortName": "pump #1-16 prime sp",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump priming speed",
+      "response": "165_63_16_15_30:4_18"
+    },
+    "4_19": {
+      "shortName": "pump #1&2 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_19"
+    },
+    "4_20": {
+      "shortName": "pump #3&4 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_20"
+    },
+    "4_21": {
+      "shortName": "pump #5&6 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_21"
+    },
+    "4_22": {
+      "shortName": "pump #7&8 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_22"
+    },
+    "4_23": {
+      "shortName": "pump #9&10 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_23"
+    },
+    "4_24": {
+      "shortName": "pump #11&12 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_24"
+    },
+    "4_25": {
+      "shortName": "pump #13&14 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_25"
+    },
+    "4_26": {
+      "shortName": "pump #15&16 name",
+      "category": "Pumps",
+      "name": "Current configuration",
+      "desc": "pump name",
+      "response": "165_63_16_15_30:4_26"
+    },
+    "5_0": {
+      "shortName": "remote #1",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_0"
+    },
+    "5_1": {
+      "shortName": "remote #2",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_1"
+    },
+    "5_2": {
+      "shortName": "remote #3",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_2"
+    },
+    "5_3": {
+      "shortName": "remote #4",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_4"
+    },
+    "5_4": {
+      "shortName": "remote #5",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_5"
+    },
+    "5_5": {
+      "shortName": "remote #6",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_6"
+    },
+    "5_6": {
+      "shortName": "remote #7",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_6"
+    },
+    "5_7": {
+      "shortName": "remote #8",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_7"
+    },
+    "5_8": {
+      "shortName": "remote #9",
+      "category": "Remotes",
+      "name": "Current configuration",
+      "desc": "remote config",
+      "response": "165_63_16_15_30:5_8"
+    },
+    "6_0": {
+      "shortName": "group #1 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_0"
+    },
+    "6_1": {
+      "shortName": "group #2 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_1"
+    },
+    "6_2": {
+      "shortName": "group #3 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_2"
+    },
+    "6_3": {
+      "shortName": "group #4 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_3"
+    },
+    "6_4": {
+      "shortName": "group #5 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_5"
+    },
+    "6_5": {
+      "shortName": "group #6 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_5"
+    },
+    "6_6": {
+      "shortName": "group #7 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_6"
+    },
+    "6_7": {
+      "shortName": "group #8 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_7"
+    },
+    "6_8": {
+      "shortName": "group #8 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_8"
+    },
+    "6_9": {
+      "shortName": "group #10 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_9"
+    },
+    "6_10": {
+      "shortName": "group #11 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_10"
+    },
+    "6_11": {
+      "shortName": "group #12 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_11"
+    },
+    "6_12": {
+      "shortName": "group #13 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_12"
+    },
+    "6_13": {
+      "shortName": "group #14 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_13"
+    },
+    "6_14": {
+      "shortName": "group #15 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_14"
+    },
+    "6_15": {
+      "shortName": "group #16 circuits",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_15"
+    },
+    "6_16": {
+      "shortName": "group #1 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_16"
+    },
+    "6_17": {
+      "shortName": "group #2 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_17"
+    },
+    "6_18": {
+      "shortName": "group #3 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_18"
+    },
+    "6_19": {
+      "shortName": "group #4 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_19"
+    },
+    "6_20": {
+      "shortName": "group #5 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_20"
+    },
+    "6_21": {
+      "shortName": "group #6 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_21"
+    },
+    "6_22": {
+      "shortName": "group #7 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_22"
+    },
+    "6_23": {
+      "shortName": "group #8 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_23"
+    },
+    "6_24": {
+      "shortName": "group #9 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_24"
+    },
+    "6_25": {
+      "shortName": "group #10 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_25"
+    },
+    "6_26": {
+      "shortName": "group #11 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_26"
+    },
+    "6_27": {
+      "shortName": "group #12 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_27"
+    },
+    "6_28": {
+      "shortName": "group #13 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_28"
+    },
+    "6_29": {
+      "shortName": "group #14 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_29"
+    },
+    "6_30": {
+      "shortName": "group #15 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_30"
+    },
+    "6_31": {
+      "shortName": "group #16 name",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_31"
+    },
+    "6_32": {
+      "shortName": "group types",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group type config",
+      "response": "165_63_16_15_30:6_32"
+    },
+    "6_33": {
+      "shortName": "group light theme",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_33"
+    },
+    "6_34": {
+      "shortName": "group egg timer",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_14"
+    },
+    "6_35": {
+      "shortName": "group #1 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_35"
+    },
+    "6_36": {
+      "shortName": "group #2 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_36"
+    },
+    "6_37": {
+      "shortName": "group #3 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_37"
+    },
+    "6_38": {
+      "shortName": "group #4 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_38"
+    },
+    "6_39": {
+      "shortName": "group #5 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_39"
+    },
+    "6_40": {
+      "shortName": "group #6 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_40"
+    },
+    "6_41": {
+      "shortName": "group #7 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_41"
+    },
+    "6_42": {
+      "shortName": "group #8 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_42"
+    },
+    "6_43": {
+      "shortName": "group #9 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_43"
+    },
+    "6_44": {
+      "shortName": "group #10 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_44"
+    },
+    "6_45": {
+      "shortName": "group #11 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_45"
+    },
+    "6_46": {
+      "shortName": "group #12 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_46"
+    },
+    "6_47": {
+      "shortName": "group #13 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_47"
+    },
+    "6_48": {
+      "shortName": "group #14 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_48"
+    },
+    "6_49": {
+      "shortName": "group #15 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_49"
+    },
+    "6_50": {
+      "shortName": "group #1 colors/state",
+      "category": "Light/Circuit Groups",
+      "name": "Current configuration",
+      "desc": "group config",
+      "response": "165_63_16_15_30:6_50"
+    },
+    "7_0": {
+      "shortName": "chlorinator",
+      "category": "Chlorinators",
+      "name": "Current configuration",
+      "desc": "chlorinator config",
+      "response": "165_63_16_15_30:7_0"
+    },
+    "8_0": {
+      "shortName": "chem settings",
+      "category": "IntelliChem",
+      "name": "Current configuration",
+      "desc": "intellichem config",
+      "response": "165_63_16_15_30:8_0"
+    },
+    "8_1": {
+      "shortName": "chem setpoints",
+      "category": "IntelliChem",
+      "name": "Current configuration",
+      "desc": "intellichem config",
+      "response": "165_63_16_15_30:8_1"
+    },
+    "9_0": {
+      "shortName": "valve circuits",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_0"
+    },
+    "9_1": {
+      "shortName": "valve 1&2 name",
+      "category": "Valves",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_1"
+    },
+    "9_2": {
+      "shortName": "valve 3&4 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_2"
+    },
+    "9_3": {
+      "shortName": "valve 5&6 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_3"
+    },
+    "9_4": {
+      "shortName": "valve 7&8 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_4"
+    },
+    "9_5": {
+      "shortName": "valve 9&10 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_5"
+    },
+    "9_6": {
+      "shortName": "valve 11&12 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_6"
+    },
+    "9_7": {
+      "shortName": "valve 13&14 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_7"
+    },
+    "9_8": {
+      "shortName": "valve 15&16 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_8"
+    },
+    "9_9": {
+      "shortName": "valve 17&18 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_9"
+    },
+    "9_10": {
+      "shortName": "valve 19&20 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_10"
+    },
+    "9_11": {
+      "shortName": "valve 21&22 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_11"
+    },
+    "9_12": {
+      "shortName": "valve 23&24 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_12"
+    },
+    "9_13": {
+      "shortName": "valve 25&26 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_13"
+    },
+    "9_14": {
+      "shortName": "valve 27&28 name",
+      "category": "Valves",
+      "name": "Current configuration",
+      "desc": "valve config",
+      "response": "165_63_16_15_30:9_14"
+    },
+    "10_0": {
+      "shortName": "heater types",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_0"
+    },
+    "10_1": {
+      "shortName": "heater cooldown",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_1"
+    },
+    "10_2": {
+      "shortName": "heater deltas",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_2"
+    },
+    "10_3": {
+      "shortName": "heater diff temp",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_3"
+    },
+    "10_4": {
+      "shortName": "heater addr",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_4"
+    },
+    "10_5": {
+      "shortName": "heater #1&2 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_5"
+    },
+    "10_6": {
+      "shortName": "heater #3&4 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_6"
+    },
+    "10_7": {
+      "shortName": "heater #5&6 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_7"
+    },
+    "10_8": {
+      "shortName": "heater #7&8 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_8"
+    },
+    "10_9": {
+      "shortName": "heater #9&10 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_9"
+    },
+    "10_10": {
+      "shortName": "heater #11&12 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_10"
+    },
+    "10_11": {
+      "shortName": "heater #13&14 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_11"
+    },
+    "10_12": {
+      "shortName": "heater #15&16 name",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_12"
+    },
+    "10_13": {
+      "shortName": "heater eff mode",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_13"
+    },
+    "10_14": {
+      "shortName": "heater boost",
+      "category": "Heaters",
+      "name": "Current configuration",
+      "desc": "heater config",
+      "response": "165_63_16_15_30:10_14"
+    },
+    "11_0": {
+      "shortName": "security role #1",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_0"
+    },
+    "11_1": {
+      "shortName": "security role #2",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_1"
+    },
+    "11_2": {
+      "shortName": "security role #3",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_2"
+    },
+    "11_3": {
+      "shortName": "security role #4",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_3"
+    },
+    "11_4": {
+      "shortName": "security role #5",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_4"
+    },
+    "11_5": {
+      "shortName": "security role #6",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_6"
+    },
+    "11_6": {
+      "shortName": "security role #7",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_6"
+    },
+    "11_7": {
+      "shortName": "security role #8",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_7"
+    },
+    "11_8": {
+      "shortName": "security role #9",
+      "category": "Security",
+      "name": "Current configuration",
+      "desc": "security config",
+      "response": "165_63_16_15_30:11_8"
+    },
+    "12_0": {
+      "shortName": "gen owner/zip",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_0"
+    },
+    "12_1": {
+      "shortName": "gen phone/coord",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_1"
+    },
+    "12_2": {
+      "shortName": "gen address",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_2"
+    },
+    "12_3": {
+      "shortName": "gen email/tz",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_3"
+    },
+    "12_4": {
+      "shortName": "gen email2",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_4"
+    },
+    "12_5": {
+      "shortName": "gen country",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_5"
+    },
+    "12_6": {
+      "shortName": "gen city",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_6"
+    },
+    "12_7": {
+      "shortName": "gen state",
+      "category": "General",
+      "name": "Current configuration",
+      "desc": "general settings",
+      "response": "165_63_16_15_30:12_0"
+    },
+    "13_0": {
+      "shortName": "master/exp1",
+      "category": "Equipment",
+      "name": "Current configuration",
+      "desc": "Current configuration master and expansion1",
+      "response": "165_63_16_15_30:13_0"
+    },
+    "13_1": {
+      "shortName": "exp2/exp3",
+      "category": "Equipment",
+      "name": "Current configuration",
+      "desc": "Current configuration expansion2 and expansion3",
+      "response": "165_63_16_15_30:13_1"
+    },
+    "13_2": {
+      "shortName": "body1/body3",
+      "category": "Equipment",
+      "name": "Request body configuration",
+      "desc": "Current configuration bodies 1 and 3",
+      "response": "165_63_16_15_30:13_2"
+    },
+    "13_3": {
+      "shortName": "body2/body4",
+      "category": "Equipment",
+      "name": "Request body configuration",
+      "desc": "Current configuration bodies 2 and 4",
+      "response": "165_63_16_15_30:13_3"
+    },
+    "14_0": {
+      "shortName": "cover #1",
+      "category": "Covers",
+      "name": "Current configuration",
+      "desc": "cover settings",
+      "response": "165_63_16_15_30:14_0"
+    },
+    "14_1": {
+      "shortName": "cover #2",
+      "category": "Covers",
+      "name": "Current configuration",
+      "desc": "cover settings",
+      "response": "165_63_16_15_30:14_1"
+    },
+    "15_0": {
+      "shortName": "relay states",
+      "category": "Relays",
+      "name": "Current configuration",
+      "desc": "circuit states",
+      "response": "165_63_16_15_30:15_0"
+    }
+  }
+}

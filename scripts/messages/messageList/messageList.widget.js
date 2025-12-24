@@ -213,7 +213,7 @@
             // stay aligned even when the virtual list re-renders different row clusters on scroll.
             // Keep Payload column flexible (no width) so it absorbs remaining space.
             const columns = [
-                { width: '20px', header: { label: '' }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
+                { width: '20px', header: { label: '', attrs: { title: 'Click to copy packet to clipboard' } }, data: { elem: $('<i></i>').addClass('far fa-clipboard').appendTo($('<span></span>')) } },
                 { width: '45px', header: { label: 'Port', attrs: { title: 'Port\r\nID 0, 1, etc' } } },
                 { width: '90px', header: { label: 'Id' } },
                 { width: '45px', header: { label: 'Dir', attrs: { title: 'The direction of the message\r\nEither in or out' } } },
@@ -221,7 +221,8 @@
                 { width: '120px', header: { label: 'Proto' } },
                 { width: '120px', header: { label: 'Source' } },
                 { width: '120px', header: { label: 'Dest' } },
-                { width: '70px', header: { label: 'Action' } },
+                { width: '55px', header: { label: 'Action' } },
+                { width: '40px', header: { label: 'Desc', attrs: { title: 'Action description from messageDoc\r\nHover for more details' } } },
                 { header: { label: 'Payload' } }
             ];
 
@@ -233,7 +234,7 @@
                 const m = v.match(/(-?\d+(?:\.\d+)?)px/);
                 return m ? parseFloat(m[1]) : 0;
             };
-            o.expansionOffsetPx = columns.slice(0, 9).reduce((sum, c) => sum + parsePx(c.width), 0);
+            o.expansionOffsetPx = columns.slice(0, 10).reduce((sum, c) => sum + parsePx(c.width), 0);
 
             var vlist = $('<div></div>').css({ width: '100%', height: '100%' }).appendTo(td).virtualList({
                 selectionType: 'single',
@@ -1374,8 +1375,27 @@
             $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[6]);
             $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[7]);
             $('<span></span>').text(ctx.actionByte).appendTo(r.cells[8]);
-            $(r.cells[8]).attr('title', ctx.actionName).addClass('msg-action');
-            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[9]);
+            $(r.cells[8]).addClass('msg-action');
+            
+            // Description column (cell 9) - shows actionName and actionExt
+            var descText = ctx.actionName || ctx.actionByte.toString();
+            if (ctx.actionExt && ctx.actionExt !== ctx.actionByte.toString()) {
+                descText += ' [' + ctx.actionExt + ']';
+            }
+            $('<span></span>').text(descText).appendTo(r.cells[9]);
+            // Build detailed tooltip for hover
+            var tooltipLines = [];
+            tooltipLines.push('Action: ' + ctx.actionByte);
+            if (ctx.actionName && ctx.actionName !== ctx.actionByte.toString()) {
+                tooltipLines.push('Name: ' + ctx.actionName);
+            }
+            if (ctx.actionExt) tooltipLines.push('Sub: ' + ctx.actionExt);
+            if (ctx.category) tooltipLines.push('Category: ' + ctx.category);
+            if (ctx.payloadKey) tooltipLines.push('Key: ' + ctx.payloadKey);
+            tooltipLines.push('DocKey: ' + ctx.docKey);
+            $(r.cells[9]).attr('title', tooltipLines.join('\n')).addClass('msg-desc');
+            
+            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[10]);
             else console.log(msg);
             var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;
@@ -1473,8 +1493,27 @@
             $('<span></span>').text(ctx.sourceAddr.name).appendTo(r.cells[6]);
             $('<span></span>').text(ctx.destAddr.name).appendTo(r.cells[7]);
             $('<span></span>').text(ctx.actionByte).appendTo(r.cells[8]);
-            $(r.cells[8]).attr('title', ctx.actionName).addClass('msg-action');
-            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[9]);
+            $(r.cells[8]).addClass('msg-action');
+            
+            // Description column (cell 9) - shows actionName and actionExt
+            var descText = ctx.actionName || ctx.actionByte.toString();
+            if (ctx.actionExt && ctx.actionExt !== ctx.actionByte.toString()) {
+                descText += ' [' + ctx.actionExt + ']';
+            }
+            $('<span></span>').text(descText).appendTo(r.cells[9]);
+            // Build detailed tooltip for hover
+            var tooltipLines = [];
+            tooltipLines.push('Action: ' + ctx.actionByte);
+            if (ctx.actionName && ctx.actionName !== ctx.actionByte.toString()) {
+                tooltipLines.push('Name: ' + ctx.actionName);
+            }
+            if (ctx.actionExt) tooltipLines.push('Sub: ' + ctx.actionExt);
+            if (ctx.category) tooltipLines.push('Category: ' + ctx.category);
+            if (ctx.payloadKey) tooltipLines.push('Key: ' + ctx.payloadKey);
+            tooltipLines.push('DocKey: ' + ctx.docKey);
+            $(r.cells[9]).attr('title', tooltipLines.join('\n')).addClass('msg-desc');
+            
+            if (typeof msg.payload !== 'undefined' && typeof msg.payload.join === 'function') $('<span></span>').text(msg.payload.join(',')).appendTo(r.cells[10]);
             else console.log(msg);
             var prev = o.messageKeys[ctx.messageKey];
             var hasChanged = false;
@@ -1552,7 +1591,20 @@
             $('<span></span>').text(ctx.protocol.name).appendTo($('<td></td>').appendTo(row));
             $('<span></span>').text(ctx.sourceAddr.name).appendTo($('<td></td>').appendTo(row));
             $('<span></span>').text(ctx.destAddr.name).appendTo($('<td></td>').appendTo(row));
-            $('<span></span>').text(ctx.actionName).appendTo($('<td></td>').appendTo(row));
+            $('<span></span>').text(ctx.actionByte).appendTo($('<td></td>').appendTo(row));
+            // Description column
+            var descText = ctx.actionName || ctx.actionByte.toString();
+            if (ctx.actionExt && ctx.actionExt !== ctx.actionByte.toString()) {
+                descText += ' [' + ctx.actionExt + ']';
+            }
+            var descTd = $('<td></td>').appendTo(row);
+            $('<span></span>').text(descText).appendTo(descTd);
+            var tooltipLines = [];
+            tooltipLines.push('Action: ' + ctx.actionByte);
+            if (ctx.actionName && ctx.actionName !== ctx.actionByte.toString()) tooltipLines.push('Name: ' + ctx.actionName);
+            if (ctx.actionExt) tooltipLines.push('Sub: ' + ctx.actionExt);
+            if (ctx.category) tooltipLines.push('Category: ' + ctx.category);
+            descTd.attr('title', tooltipLines.join('\n'));
             $('<span></span>').text(msg.payload.join(',')).appendTo($('<td></td>').appendTo(row));
             if (typeof msg.isValid !== 'undefined' && !msg.isValid) row.addClass('invalid');
             var prev = o.messageKeys[ctx.messageKey];
@@ -1706,6 +1758,8 @@
                     // Need to re-find the row in case DOM changed during async call
                     var currentRow = el.find('tr.msgRow[data-rowid="' + rowId + '"]');
                     if (currentRow.length > 0) {
+                        // Sync changed byte highlighting to descriptor table rows
+                        self._syncChangedBytesToDescriptorTable(currentRow.find('.inline-expansion-content'));
                         self._updateStoredRowHtml(vlist, rowId, currentRow);
                     }
                 });
@@ -2047,6 +2101,47 @@
                 // Scroll row into view
                 targetRow[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+        },
+        _syncChangedBytesToDescriptorTable: function(container) {
+            // Find all bytes marked as changed in the top hex display
+            // and highlight the corresponding rows in the bottom descriptor table
+            var hexSection = container.find('.inline-hex-display');
+            var descriptorTable = container.find('table.payload-descriptor-table');
+            
+            if (!hexSection.length || !descriptorTable.length) return;
+            
+            // Collect all byte indices that have the byte-changed class
+            var changedIndices = [];
+            hexSection.find('td.byte-changed').each(function() {
+                var idx = parseInt($(this).attr('data-byte-index'), 10);
+                if (!isNaN(idx) && changedIndices.indexOf(idx) === -1) {
+                    changedIndices.push(idx);
+                }
+            });
+            
+            if (changedIndices.length === 0) return;
+            
+            // For each descriptor row, check if any of its bytes are changed
+            descriptorTable.find('tr.payload-descriptor-row').each(function() {
+                var $row = $(this);
+                var start = parseInt($row.attr('data-start'), 10);
+                var length = parseInt($row.attr('data-length'), 10);
+                var end = start + length - 1;
+                
+                // Check if any changed byte falls within this row's range
+                var hasChangedByte = false;
+                for (var i = 0; i < changedIndices.length; i++) {
+                    var idx = changedIndices[i];
+                    if (idx >= start && idx <= end) {
+                        hasChangedByte = true;
+                        break;
+                    }
+                }
+                
+                if (hasChangedByte) {
+                    $row.addClass('row-has-changes');
+                }
+            });
         }
     });
 })(jQuery);

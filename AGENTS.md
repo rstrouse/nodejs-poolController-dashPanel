@@ -28,7 +28,15 @@ This document contains:
 ### Message Documentation
 
 When working with **packet structures** or **protocol messages**:
-- `server/messages/docs/messageDoc.json` - Detailed packet documentation
+- `server/messages/docs/messageDoc.*.json` - Detailed packet documentation (split by protocol/action)
+  - `messageDoc.broadcast.json` - Broadcast protocol messages
+  - `messageDoc.broadcast.action30.json` - Action 30 config response (236 payloadKeys)
+  - `messageDoc.broadcast.action222.json` - Action 222 config request (236 payloadKeys)
+  - `messageDoc.broadcast.action168.json` - Action 168 equipment control (16 payloadKeys)
+  - `messageDoc.heater.json` - Heater protocol messages
+  - `messageDoc.intellichem.json` - IntelliChem protocol messages
+  - `messageDoc.screenlogic.json` - ScreenLogic protocol messages
+  - `messageDoc.valve.json` - Valve protocol messages
 - `server/messages/docs/entityFlow.json` - Entity type definitions and matchers
 - `server/messages/docs/constants.json` - Device address names and constants
 

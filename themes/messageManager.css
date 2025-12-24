@@ -326,12 +326,17 @@ tr.vlist-header > td.vlist-header-col:nth-child(8) {
 }
 
 tr.vlist-header > td.vlist-header-col:nth-child(9) {
-  width: 24px;
+  width: 20px;
   padding-left: 0px;
 }
 
 tr.vlist-header > td.vlist-header-col:nth-child(10) {
-  padding-left: 30px;
+  width: 40px;
+  padding-left: 4px;
+}
+
+tr.vlist-header > td.vlist-header-col:nth-child(11) {
+  padding-left: 8px;
 }
 
 tr.msgRow.changed > td:nth-child(4) > span.changed {
@@ -463,6 +468,25 @@ span.msg-detail-byte {
 i.msg-detail-fromto {
   padding-left: 3px;
   padding-right: 3px;
+}
+
+/* Message list description column styling */
+td.msg-desc {
+  font-size: 0.85em;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+td.msg-desc span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+tr.msgRow:hover td.msg-desc {
+  color: #333;
 }
 
 div.msg-detail-section {
@@ -1219,6 +1243,16 @@ table.payload-descriptor-table td.value-changed {
   background-color: #ffebcd !important;
   font-weight: bold;
   box-shadow: inset 0 0 3px rgba(255, 140, 0, 0.5);
+}
+
+/* Highlight rows that contain changed bytes (synced from top hex display) */
+table.payload-descriptor-table tbody tr.row-has-changes {
+  background-color: #ffebcd !important;
+  border-left: 3px solid #ff8c00;
+}
+
+table.payload-descriptor-table tbody tr.row-has-changes:hover {
+  background-color: #fde4be !important;
 }
 
 /* Highlighted payload bytes */

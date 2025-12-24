@@ -1,0 +1,354 @@
+{
+  "SL_CP_4": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Req[PingBrick]",
+    "name": "Ping Brick Request",
+    "desc": "Ping Brick Request"
+  },
+  "SL_CP_5": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Res[PingBrick]",
+    "name": "Ping Brick Response",
+    "desc": "Ping Brick Response"
+  },
+  "SL_CP_16": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Ping",
+    "name": "Ping SL",
+    "desc": "Ping to SL"
+  },
+  "SL_CP_17": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Pong",
+    "name": "Pong from SL",
+    "desc": "SL pong response to the OCP for a ping."
+  },
+  "SL_CP_18": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Req[RemoveClient]",
+    "name": "Remove client from SL",
+    "desc": "Remove the client from the ScreenLogic system"
+  },
+  "SL_CP_4565": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[AreaId]",
+    "name": "Request to OCP for Get Area Id",
+    "desc": "SL request to the OCP for a Get Area Id."
+  },
+  "SL_CP_4566": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[AreaId]",
+    "name": "Response to OCP for Get Area Id",
+    "desc": "SL response to the OCP for a Get Area Id."
+  },
+  "SL_CP_4567": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[AreaId]",
+    "name": "Request to OCP for Set Area Id",
+    "desc": "SL request to the OCP for a Set Area Id."
+  },
+  "SL_CP_4568": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[AreaId]",
+    "name": "Response to OCP for Set Area Id",
+    "desc": "SL response to the OCP for a Set Area Id."
+  },
+  "SL_CP_8110": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[SysTime]",
+    "name": "Request to OCP for system time",
+    "desc": "SL request to the OCP for a system time."
+  },
+  "SL_CP_8111": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[SysTime]",
+    "name": "Response to OCP for system time",
+    "desc": "SL response to the OCP for a system time."
+  },
+  "SL_CP_8120": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[Ver]",
+    "name": "Request to OCP for version",
+    "desc": "SL request to the OCP for the version."
+  },
+  "SL_CP_8121": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[Ver]",
+    "name": "Response to OCP for version",
+    "desc": "SL response to the OCP for the version."
+  },
+  "SL_CP_12500": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[Start/Chg]",
+    "name": "New session or change to session.",
+    "desc": "This packet is sent when a new session is started.  Possibly also indicates a change(?)."
+  },
+  "SL_CP_12501": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[SchChg]",
+    "name": "Async Schedule Change.",
+    "desc": "This packet is sent when a schedule is changed."
+  },
+  "SL_CP_12502": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[HistData]",
+    "name": "Async History Data.",
+    "desc": "This packet is sent when a history data is being compiled."
+  },
+  "SL_CP_12503": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[RunTimeChanged]",
+    "name": "Async RunTime Changed.",
+    "desc": "This packet is sent when a run time has changed."
+  },
+  "SL_CP_12504": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[ColorUpd]",
+    "name": "Async Color Updated.",
+    "desc": "This packet is sent when a color has changed."
+  },
+  "SL_CP_12505": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[ChemChg]",
+    "name": "Async chem data Updated.",
+    "desc": "This packet is sent when a chem data has changed."
+  },
+  "SL_CP_12506": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[ChemHist]",
+    "name": "Async chem history is being compiled.",
+    "desc": "This packet is sent when a chem history is being compiled."
+  },
+  "SL_CP_12510": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CircuitDef]",
+    "name": "Get Circuit Definition Request",
+    "desc": "This packet is sent when a circuit definition is requested."
+  },
+  "SL_CP_12511": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CircuitDef]",
+    "name": "Get Circuit Definition response",
+    "desc": "This packet is sent when a circuit definition is responded to."
+  },
+  "SL_CP_12518": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CircById]",
+    "name": "Request to SL to add get a circuit by Id",
+    "desc": "SL request to get a circuit by Id for async status updates."
+  },
+  "SL_CP_12519": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CircById]",
+    "name": "Response to SL to add get a circuit by Id",
+    "desc": "SL response to get a circuit by Id."
+  },
+  "SL_CP_12522": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[CircById]",
+    "name": "Request to SL to add a new client",
+    "desc": "SL request to the add a new client."
+  },
+  "SL_CP_12520": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[CircById]",
+    "name": "Response to SL to add Set a circuit by Id",
+    "desc": "SL response to Set a circuit by Id."
+  },
+  "SL_CP_12521": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[CircById]",
+    "name": "Request to SL set a circuit by Id",
+    "desc": "SL request to the set a circuit by Id."
+  },
+  "SL_CP_12523": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[AddClient]",
+    "name": "Response to SL to add a new client",
+    "desc": "SL response to the add a new client for async status updates."
+  },
+  "SL_CP_12524": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[RemClient]",
+    "name": "Request to SL to remove a client",
+    "desc": "SL request to the remove a client"
+  },
+  "SL_CP_12525": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[RemClient]",
+    "name": "Response to SL to remove a client",
+    "desc": "SL response to the remove a client"
+  },
+  "SL_CP_12532": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[Ctrl]",
+    "name": "Request to OCP for controller config",
+    "desc": "SL request to the OCP for a controller config."
+  },
+  "SL_CP_12533": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Cfg[Ctrl]",
+    "name": "Response to OCP for controller config",
+    "desc": "SL response to the OCP for a controller config."
+  },
+  "SL_CP_12542": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[Sched]",
+    "name": "Request to OCP for schedule data",
+    "desc": "SL request to the OCP for a schedule data."
+  },
+  "SL_CP_12543": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[Sched]",
+    "name": "Response to OCP for schedule data",
+    "desc": "SL response to the OCP for a schedule data."
+  },
+  "SL_CP_12562": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CustomNames]",
+    "name": "Request to OCP for custom names",
+    "desc": "SL request to the OCP for a custom names."
+  },
+  "SL_CP_12566": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[EquipConfig]",
+    "name": "Response to OCP to get equipment config",
+    "desc": "SL response to the OCP for a equipment config."
+  },
+  "SL_CP_12567": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[EquipConfig]",
+    "name": "Response to OCP to get equipment config",
+    "desc": "SL request to the OCP for a equipment config."
+  },
+  "SL_CP_12568": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[EquipConfig]",
+    "name": "Response to OCP to set equipment config",
+    "desc": "SL response to the OCP for a equipment config."
+  },
+  "SL_CP_12569": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Set[EquipConfig]",
+    "name": "Response to OCP to set equipment config",
+    "desc": "SL request to the OCP for a equipment config."
+  },
+  "SL_CP_12563": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[CustomNames]",
+    "name": "Response to OCP for custom names",
+    "desc": "SL response to the OCP for a custom names."
+  },
+  "SL_CP_12572": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[Chlor]",
+    "name": "Request to OCP for chlor",
+    "desc": "SL request to the OCP for a chlor."
+  },
+  "SL_CP_12573": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[Chlor]",
+    "name": "Response to OCP for chlor",
+    "desc": "SL response to the OCP for a custom names."
+  },
+  "SL_CP_12584": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[pump]",
+    "name": "Request to OCP for pump status",
+    "desc": "SL request to the OCP for a pump status."
+  },
+  "SL_CP_12585": {
+    "proto": "screenlogic",
+    "ocpSpecific": false,
+    "messageType": "Broadcast",
+    "shortName": "Get[pump]",
+    "name": "Response to OCP for pump status",
+    "desc": "SL response to the OCP for a pump status."
+  }
+}

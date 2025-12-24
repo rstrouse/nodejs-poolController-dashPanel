@@ -1,0 +1,34 @@
+{
+  "165_P_H_CP_114": {
+    "proto": "heater",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Heater[status req]",
+    "name": "Heater Status Request",
+    "desc": "OCP requests status from an addressable heater (addresses 112-127). Heater responds with Action 115."
+  },
+  "165_P_CP_H_114": {
+    "proto": "heater",
+    "ocpSpecific": false,
+    "messageType": "request",
+    "shortName": "Heater[status req]",
+    "name": "Heater Status Request",
+    "desc": "OCP requests status from an addressable heater (addresses 112-127). Heater responds with Action 115."
+  },
+  "165_P_CP_H_115": {
+    "proto": "heater",
+    "ocpSpecific": false,
+    "messageType": "response",
+    "shortName": "Heater[status]",
+    "name": "Heater Status Response",
+    "desc": "Addressable heater (addresses 112-127) responds with status to OCP after Action 114 request."
+  },
+  "165_P_H_CP_115": {
+    "proto": "heater",
+    "ocpSpecific": false,
+    "messageType": "response",
+    "shortName": "Heater[status]",
+    "name": "Heater Status Response",
+    "desc": "Addressable heater (addresses 112-127) responds with status to OCP after Action 114 request."
+  }
+}

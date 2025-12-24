@@ -1,0 +1,32 @@
+{
+  "165_P_CHM_CP_210": {
+    "proto": "intellichem",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Get[status]",
+    "name": "Get IntelliChem status",
+    "dest": "Request to get the status from IntelliChem"
+  },
+  "165_P_CHM_CP_146": {
+    "proto": "intellichem",
+    "ocpSpecific": false,
+    "messageType": "Request",
+    "shortName": "Set[options]",
+    "name": "Set IntelliChem options",
+    "dest": "Set options on the IntelliChem controller"
+  },
+  "165_P_CP_CHM_1": {
+    "proto": "broadcast",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "ACK",
+    "desc": "Message Received"
+  },
+  "165_P_CP_CHM_18": {
+    "proto": "response",
+    "ocpSpecific": false,
+    "messageType": "broadcast",
+    "shortName": "State[settings]",
+    "desc": "Message Received"
+  }
+}
