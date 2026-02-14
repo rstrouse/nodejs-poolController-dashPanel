@@ -21,6 +21,7 @@ RUN npm prune --production
 ### Runtime stage
 FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
@@ -46,7 +47,6 @@ USER node
 EXPOSE 5150 5151
 
 # Healthcheck: perform lightweight HTTP request to ensure app responding
-RUN apk add --no-cache curl
 HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=5 \
     CMD curl -fsS http://127.0.0.1:5150/config/appVersion?health || exit 1
 
