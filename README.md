@@ -18,7 +18,7 @@ Below is a minimal example running both the backend `nodejs-poolController` (ser
 ```yaml
 services:
    njspc:
-      image: ghcr.io/sam2kb/njspc
+      image: ghcr.io/tagyoureit/njspc
       container_name: njspc
       restart: unless-stopped
       environment:
@@ -48,7 +48,7 @@ services:
       # user: "0:0"
 
    njspc-dash:
-     image: ghcr.io/sam2kb/njspc-dash
+     image: ghcr.io/rstrouse/njspc-dash
      container_name: njspc-dash
      restart: unless-stopped
      depends_on:
@@ -83,7 +83,7 @@ The application loads configuration from `/app/config.json` at startup and rewri
 1. Create a host directory and seed the file (optional – if omitted, an empty file will be populated after first change):
   ```bash
   mkdir -p config
-  docker run --rm ghcr.io/sam2kb/njspc-dash cat /app/config.json > config/config.json
+  docker run --rm ghcr.io/rstrouse/njspc-dash cat /app/config.json > config/config.json
   ```
 2. Use the bind mount shown in the compose example: `./config/config.json:/app/config.json`.
 3. If the mounted file is empty, defaults + environment overrides are applied and the file will be written once you change settings via the UI/API.
