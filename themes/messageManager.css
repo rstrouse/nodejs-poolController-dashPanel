@@ -1,4 +1,4 @@
-﻿html {
+html {
   width: 100%;
   height: 100%;
   margin: 0px;
@@ -26,7 +26,7 @@ body {
   border: solid 1px green;
 }
 
-[tabindex="-1"]:focus {
+.ui-dialog [tabindex="-1"]:focus {
   outline: none !important;
 }
 
@@ -1596,6 +1596,9 @@ tr.message-row.flash-highlight {
   /* Keep tab header below popups/modals (which use z-index 100+) */
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Put tabs + actions on one row, like the main header/settings. */
@@ -1616,6 +1619,7 @@ tr.message-row.flash-highlight {
 
 .picMessageManager div.mmgrTabBar {
   width: 100%;
+  flex: 1 1 auto;
 }
 
 /* MessageManager doesn't render tabBar contents directly under tabs, so remove the
@@ -1638,7 +1642,6 @@ tr.message-row.flash-highlight {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-left: 10px;
 }
 
 .picMessageManager .view-bar-status {
@@ -1669,6 +1672,15 @@ tr.message-row.flash-highlight {
 .picMessageManager .view-bar-icon-btn i {
   font-size: 1rem;
 }
+.picMessageManager .view-bar-icon-btn:focus-visible,
+.picMessageManager .upload-btn.view-bar-upload:focus-visible,
+.picMessageManager .mmgrButton:focus-visible,
+.picMessageManager .expansion-close-btn:focus-visible,
+.picMessageManager .expansion-entity-btn:focus-visible,
+.picMessageManager .expansion-addqueue-btn:focus-visible {
+  outline: 2px solid #1f6feb;
+  outline-offset: 2px;
+}
 
 /* Choose Files button: match unselected tab styling and invert on hover. */
 .picMessageManager .upload-btn.view-bar-upload {
@@ -1687,6 +1699,18 @@ tr.message-row.flash-highlight {
   border-color: var(--cupertino-label, #64748b);
   color: #ffffff;
   text-shadow: none;
+}
+.picMessageManager .mmgr-live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
 }
 
 /* View containers */

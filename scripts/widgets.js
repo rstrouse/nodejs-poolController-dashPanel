@@ -1,4 +1,4 @@
-﻿var _uniqueId = 1;
+var _uniqueId = 1;
 var _screenLayer = 100;
 
 if (typeof String.prototype.startsWith !== 'function') {
@@ -553,6 +553,100 @@ function setCookie(name, value, days) {
     else if (typeof days === 'undefined')
     document.cookie = name + '=' + value + ';expires=' + expires + '; path=/';
 }
+function _slugifyNavToken(input) {
+    var value = (input || '').toString().toLowerCase().trim();
+    value = value.replace(/<[^>]*>/g, '');
+    value = value.replace(/[^a-z0-9]+/g, '-');
+    value = value.replace(/^-+|-+$/g, '');
+    return value || 'item';
+}
+function _ensureNavId(el, prefix, fallbackText) {
+    var $el = $(el);
+    if ($el.length === 0) return '';
+    var existing = $el.attr('data-nav-id');
+    if (existing) return existing;
+    var id = $el.attr('id') || '';
+    var text = fallbackText || $el.attr('aria-label') || $el.attr('title') || $el.text() || id;
+    var navToken = id ? _slugifyNavToken(id) : _slugifyNavToken(text);
+    var navId = `${prefix}-${navToken}`;
+    $el.attr('data-nav-id', navId);
+    return navId;
+}
+function _applyButtonA11y(el, opts) {
+    var $el = $(el);
+    if ($el.length === 0) return;
+    var options = opts || {};
+    if (!$el.attr('role')) $el.attr('role', options.role || 'button');
+    if (!$el.is('[tabindex]')) $el.attr('tabindex', options.tabIndex === 0 ? 0 : 0);
+    var label = options.label || $el.attr('aria-label') || $el.attr('title') || $el.text();
+    if (label) $el.attr('aria-label', label.toString().trim());
+    if (typeof options.disabled !== 'undefined') $el.attr('aria-disabled', options.disabled ? 'true' : 'false');
+}
+function _bindSpaceEnterActivation(el, selector, cb) {
+    var $el = $(el);
+    $el.on('keydown', selector, function (evt) {
+        if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+            evt.preventDefault();
+            evt.stopPropagation();
+            if (typeof cb === 'function') cb.call(this, evt);
+        }
+    });
+}
+function _isNativeInteractiveElement(el) {
+    if (!el || !el.tagName) return false;
+    var tag = el.tagName.toLowerCase();
+    if (tag === 'button' || tag === 'input' || tag === 'select' || tag === 'textarea') return true;
+    if (tag === 'a' && el.hasAttribute('href')) return true;
+    return false;
+}
+function _bridgeGenericButtons(root) {
+    var scope = root ? $(root) : $(document.body);
+    scope.find('.btn').addBack('.btn').each(function () {
+        var $btn = $(this);
+        if ($btn.hasClass('btn-stateonly') || $btn.hasClass('picTab')) return;
+        if (_isNativeInteractiveElement(this)) return;
+        var disabled = $btn.hasClass('disabled') || $btn.is('[disabled]');
+        if (!$btn.attr('role')) $btn.attr('role', 'button');
+        if (!$btn.is('[tabindex]')) $btn.attr('tabindex', disabled ? -1 : 0);
+        $btn.attr('aria-disabled', disabled ? 'true' : 'false');
+        if (!$btn.attr('aria-label')) {
+            var label = ($btn.attr('title') || $btn.text() || '').toString().trim();
+            if (label) $btn.attr('aria-label', label);
+        }
+        _ensureNavId($btn, 'btn', $btn.attr('id') || $btn.attr('aria-label') || $btn.text());
+    });
+}
+function _initGenericButtonA11yBridge() {
+    if (window.__picGenericButtonBridgeInit) return;
+    window.__picGenericButtonBridgeInit = true;
+    _bridgeGenericButtons(document.body);
+    $(document).off('keydown.picGenericButtons').on('keydown.picGenericButtons', '.btn[role="button"]', function (evt) {
+        var $btn = $(evt.currentTarget);
+        if ($btn.hasClass('disabled') || $btn.hasClass('btn-stateonly') || $btn.attr('aria-disabled') === 'true') return;
+        if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+            evt.preventDefault();
+            evt.stopPropagation();
+            $btn.trigger('click');
+        }
+    });
+    if (typeof MutationObserver !== 'undefined' && document.body) {
+        var observer = new MutationObserver(function (mutations) {
+            for (var i = 0; i < mutations.length; i++) {
+                if (mutations[i].addedNodes && mutations[i].addedNodes.length) {
+                    for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+                        var node = mutations[i].addedNodes[j];
+                        if (node && node.nodeType === 1) _bridgeGenericButtons(node);
+                    }
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        window.__picGenericButtonBridgeObserver = observer;
+    }
+}
+$(document).ready(function () {
+    _initGenericButtonA11yBridge();
+});
 var dataBinder = {
     checkRequired: function (el, show) {
         var isValid = true;
@@ -971,10 +1065,25 @@ $.ui.position.fieldTip = {
             el[0].buttonIcon = function (val) { return self.buttonIcon(val); };
             el[0].disabled = function (val) { return self.disabled(val); };
             if (typeof o.style === 'object') el.css(o.style);
+            _applyButtonA11y(el, {
+                label: o.ariaLabel || o.text || el.attr('title'),
+                disabled: el.hasClass('disabled')
+            });
+            _ensureNavId(el, 'action', o.text || o.id || el.attr('title'));
+            el.off('keydown.picActionButtonA11y').on('keydown.picActionButtonA11y', function (evt) {
+                if (el.hasClass('disabled')) return;
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    el.trigger('click');
+                }
+            });
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
-            return el.find('span.picButtonText').text(val);
+            var text = el.find('span.picButtonText').text(val);
+            if (typeof val !== 'undefined') el.attr('aria-label', val);
+            return text;
         },
         buttonIcon: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -987,6 +1096,8 @@ $.ui.position.fieldTip = {
             else {
                 if (val) el.addClass('disabled');
                 else el.removeClass('disabled');
+                el.attr('aria-disabled', val ? 'true' : 'false');
+                el.attr('tabindex', val ? -1 : 0);
             }
         }
     });
@@ -1028,6 +1139,19 @@ $.ui.position.fieldTip = {
                 });
             });
             if (typeof o.style === 'object') el.css(o.style);
+            _applyButtonA11y(el, {
+                label: o.ariaLabel || o.text || el.attr('title'),
+                disabled: el.hasClass('disabled')
+            });
+            _ensureNavId(el, 'toggle', o.text || o.id || el.attr('title'));
+            el.off('keydown.picOptionButtonA11y').on('keydown.picOptionButtonA11y', function (evt) {
+                if (el.hasClass('disabled')) return;
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    el.trigger('click');
+                }
+            });
         },
         buttonText: function (val) {
             var self = this, o = self.options, el = self.element;
@@ -1057,6 +1181,8 @@ $.ui.position.fieldTip = {
             else {
                 if (val) el.addClass('disabled');
                 else el.removeClass('disabled');
+                el.attr('aria-disabled', val ? 'true' : 'false');
+                el.attr('tabindex', val ? -1 : 0);
             }
         }
     });
@@ -1534,12 +1660,53 @@ $.ui.position.fieldTip = {
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el.addClass('picTabBar');
-            $('<div class="picTabs"></div>').prependTo(el);
+            var tabs = $('<div class="picTabs"></div>').prependTo(el);
             $('<div class="picTabContents tab-contents"></div>').appendTo(el);
+            tabs.attr('role', 'tablist');
+            if (!el.attr('data-nav-group')) {
+                var groupSeed = el.attr('id') || el.attr('class') || 'default';
+                el.attr('data-nav-group', `tabbar-${_slugifyNavToken(groupSeed)}`);
+            }
             el.find('div.picTabs:first').on('click', 'div.picTab', function (evt) {
                 // Set the active tab here.
                 self.selectTabById($(evt.currentTarget).attr('data-tabid'));
                 evt.preventDefault();
+            });
+            el.find('div.picTabs:first').on('keydown', 'div.picTab', function (evt) {
+                var curr = $(evt.currentTarget);
+                var visibleTabs = el.find('div.picTabs:first').children('div.picTab:visible');
+                var ndx = visibleTabs.index(curr);
+                var target;
+                switch (evt.key) {
+                    case 'ArrowLeft':
+                        target = visibleTabs.eq(Math.max(0, ndx - 1));
+                        break;
+                    case 'ArrowRight':
+                        target = visibleTabs.eq(Math.min(visibleTabs.length - 1, ndx + 1));
+                        break;
+                    case 'Home':
+                        target = visibleTabs.first();
+                        break;
+                    case 'End':
+                        target = visibleTabs.last();
+                        break;
+                    case 'Enter':
+                    case ' ':
+                    case 'Spacebar':
+                        self.selectTabById(curr.attr('data-tabid'));
+                        evt.preventDefault();
+                        return;
+                    default:
+                        return;
+                }
+                if (target && target.length) {
+                    evt.preventDefault();
+                    self.selectTabById(target.attr('data-tabid'));
+                    target.focus();
+                }
+            });
+            _bindSpaceEnterActivation(el, 'div.picTabs:first > div.picTab', function () {
+                self.selectTabById($(this).attr('data-tabid'));
             });
             el[0].tabContent = function (tabId) { return self.tabContent(tabId); };
             el[0].selectTabById = function (tabId) { return self.selectTabById(tabId); };
@@ -1561,9 +1728,11 @@ $.ui.position.fieldTip = {
             //console.log({ msg: 'Showing tab', tab: tab, show: show });
             if (show) tab.show();
             else tab.hide();
+            tab.attr('aria-hidden', show ? 'false' : 'true');
             if (tab.hasClass('picTabSelected')) {
                 if (show) self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').show();
                 else self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').hide();
+                self.contents().find('div.picTabContent[data-tabid=' + tabId + ']').attr('aria-hidden', show ? 'false' : 'true');
             }
         },
         selectFirstVisibleTab: function () {
@@ -1593,12 +1762,18 @@ $.ui.position.fieldTip = {
                     var id = $this.attr('data-tabid');
                     if (id === tabId) {
                         $this.addClass('picTabSelected');
+                        $this.attr('aria-selected', 'true');
+                        $this.attr('tabindex', 0);
                         self.contents().find('div.picTabContent[data-tabid=' + id + ']').show();
+                        self.contents().find('div.picTabContent[data-tabid=' + id + ']').attr('aria-hidden', 'false');
                         o.tabId = id;
                     }
                     else {
                         $this.removeClass('picTabSelected');
+                        $this.attr('aria-selected', 'false');
+                        $this.attr('tabindex', -1);
                         self.contents().find('div.picTabContent[data-tabid=' + id + ']').hide();
+                        self.contents().find('div.picTabContent[data-tabid=' + id + ']').attr('aria-hidden', 'true');
                     }
                 });
             }
@@ -1606,7 +1781,7 @@ $.ui.position.fieldTip = {
         selectedTabId: function (tabId) {
             var self = this, o = self.options, el = self.element;
             if (typeof tabId === 'undefined') return o.tabId;
-            else if(tabId !== o.tadId)
+            else if (tabId !== o.tabId)
                 return self.selectTabById(tabId);
         },
         tabs: function () { return this.element.find('div.picTabs:first'); },
@@ -1617,10 +1792,27 @@ $.ui.position.fieldTip = {
             var tab = $('<div class="picTab tab-item"><span class="picTabText"></span></div>');
             tab.appendTo(self.tabs());
             tab.attr('data-tabid', tabObj.id);
+            tab.attr('role', 'tab');
+            tab.attr('aria-selected', 'false');
+            tab.attr('tabindex', -1);
             tab.find('span.picTabText').each(function () { $(this).text(tabObj.text); });
             var content = $('<div class="picTabContent"></div>');
             content.attr('data-tabid', tabObj.id);
             content.appendTo(self.contents());
+            content.attr('role', 'tabpanel');
+            content.attr('aria-hidden', 'true');
+            content.attr('tabindex', 0);
+            if (typeof tabObj.cssClass === 'string') tab.addClass(tabObj.cssClass);
+            var tabNavId = _ensureNavId(tab, 'tab', tabObj.id || tabObj.text);
+            var tabId = `${tabNavId}-${_uniqueId++}`;
+            var panelId = `panel-${_slugifyNavToken(tabObj.id || tabObj.text)}-${_uniqueId++}`;
+            tab.attr('id', tabId);
+            tab.attr('aria-controls', panelId);
+            tab.attr('data-nav-group', el.attr('data-nav-group'));
+            content.attr('id', panelId);
+            content.attr('aria-labelledby', tabId);
+            content.attr('data-nav-group', `${el.attr('data-nav-group')}-panel`);
+            content.attr('data-nav-id', `${tabId}-panel`);
 
             if (typeof tabObj.contents === 'string') content.html(tabObj.contents);
             else if (typeof tabObj.contents === 'function') tabObj.contents(content);
@@ -1676,7 +1868,18 @@ $.ui.position.fieldTip = {
             var header = $('<div class="picPopoverHeader control-panel-title"><div class="picPopoverTitle"><span class="picPopoverTitle"></span></div>').prependTo(el);
             if (!o.autoClose) {
                 $('<div class="picClosePopover pover-icon picIconRight" title="Close"><i class="far fa-window-close"></i></div>').appendTo(header.find('div.picPopoverTitle:first'));
+                el.find('div.picClosePopover:first')
+                    .attr('role', 'button')
+                    .attr('tabindex', 0)
+                    .attr('aria-label', 'Close')
+                    .attr('data-nav-id', `popover-close-${o.id}`);
                 el.on('click', 'div.picClosePopover', function (evt) { el[0].close(); });
+                el.on('keydown', 'div.picClosePopover', function (evt) {
+                    if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                        evt.preventDefault();
+                        el[0].close();
+                    }
+                });
             }
             $('<div class="picPopoverBody"></div>').appendTo(el);
             el.find('span.picPopoverTitle').html(o.title);
@@ -1809,7 +2012,8 @@ $.ui.position.fieldTip = {
         _initPickList: function () {
             var self = this, o = self.options, el = self.element;
             if (o.bind) el.attr('data-bind', o.bind);
-            $('<label class="picPickList-label field-label"></label>').appendTo(el).text(o.labelText);
+            var label = $('<label class="picPickList-label field-label"></label>').appendTo(el).text(o.labelText);
+            if (!label.attr('id')) label.attr('id', `picklist-label-${_uniqueId++}`);
             var itm = self._getItem(o.value);
             if (o.canEdit)
                 $('<div class="picPickList-value fld-value-combo"><input type="text" class="picPickList-value"></input><div>').addClass('editable').appendTo(el);
@@ -1835,6 +2039,18 @@ $.ui.position.fieldTip = {
             if (o.required === true) self.required(true);
             el.attr('data-datatype', o.dataType);
             el.find('span.picSpinner-units').html(o.units);
+            el.attr('role', 'combobox');
+            el.attr('aria-haspopup', 'listbox');
+            el.attr('aria-expanded', 'false');
+            el.attr('aria-labelledby', label.attr('id'));
+            if (!el.is('[tabindex]')) el.attr('tabindex', 0);
+            _ensureNavId(el, 'picklist', o.labelText || o.id);
+            var dropBtn = el.find('div.picPickList-drop:first');
+            _applyButtonA11y(dropBtn, {
+                label: `Open ${o.labelText || 'selection'} options`,
+                disabled: el.hasClass('disabled')
+            });
+            _ensureNavId(dropBtn, 'picklist-toggle', o.labelText || o.id);
             self._applyStyles();
             el.find('div.picPickList-drop').on('click', function (evt) {
                 var div = el.find('div.picPickList-options:first');
@@ -1842,12 +2058,35 @@ $.ui.position.fieldTip = {
                 evt.preventDefault();
                 if (div.length > 0) {
                     div.remove();
+                    el.attr('aria-expanded', 'false');
                     return;
                 }
                 else {
                     $('div.picPickList-options:first').remove();
                     if (!el.hasClass('disabled'))
                         self._buildOptionList();
+                }
+            });
+            el.find('div.picPickList-drop').on('keydown', function (evt) {
+                if (el.hasClass('disabled')) return;
+                if (evt.key === 'ArrowDown' || evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    $(evt.currentTarget).trigger('click');
+                }
+                else if (evt.key === 'Escape') {
+                    el.find('div.picPickList-options:first').remove();
+                    el.attr('aria-expanded', 'false');
+                }
+            });
+            el.on('keydown', function (evt) {
+                if (el.hasClass('disabled')) return;
+                if (evt.key === 'ArrowDown' && el.find('div.picPickList-options:first').length === 0) {
+                    evt.preventDefault();
+                    el.find('div.picPickList-drop:first').trigger('click');
+                }
+                else if (evt.key === 'Escape') {
+                    el.find('div.picPickList-options:first').remove();
+                    el.attr('aria-expanded', 'false');
                 }
             });
             el.find('div.picPickList-drop').on('mousedown touchstart', function (evt) {
@@ -1921,6 +2160,12 @@ $.ui.position.fieldTip = {
         _buildOptionList: function () {
             var self = this, o = self.options, el = self.element;
             div = $('<div class="picPickList-options dropdown-panel"></div>');
+            var listId = `picklist-options-${_uniqueId++}`;
+            div.attr('id', listId);
+            div.attr('role', 'listbox');
+            div.attr('data-nav-group', `${el.attr('data-nav-id') || 'picklist'}-options`);
+            el.attr('aria-controls', listId);
+            el.attr('aria-expanded', 'true');
             //var tblOuter = $('<table class="optOuter"><tbody><tr class="optHeader header-background"><td></td></tr><tr class="optBody"><td><div class="optBody"><div></div></div></td></tr><tr class="optFooter"><td></td></tr></tbody></table>').appendTo(div);
             var tblOuter = self._buildTblOuter().appendTo(div);
             //self._buildOptionHeader().appendTo(tblOuter.find('tr.optHeader:first > td'));
@@ -1933,7 +2178,12 @@ $.ui.position.fieldTip = {
                     var col = o.columns[j];
                     if (j === o.bindColumn) {
                         row.attr('data-value', itm[col.binding]);
-                        if (typeof val !== 'undefined' && val !== null && val.toString() === itm[col.binding].toString()) row.addClass('selected');
+                        var isSelected = typeof val !== 'undefined' && val !== null && val.toString() === itm[col.binding].toString();
+                        if (isSelected) row.addClass('selected');
+                        row.attr('role', 'option');
+                        row.attr('aria-selected', isSelected ? 'true' : 'false');
+                        row.attr('tabindex', isSelected ? 0 : -1);
+                        if (isSelected) row.attr('data-selected', 'true');
                     }
                     var td = $('<td></td>').appendTo(row);
                     var span = $('<span class="optText"></span>').appendTo(td);
@@ -1945,7 +2195,10 @@ $.ui.position.fieldTip = {
             }
             div.appendTo(el);
             if (o.dropdownStyle) div.css(o.dropdownStyle);
-            el.parents('body').one('click', function (evt) { div.remove(); });
+            el.parents('body').one('click', function (evt) {
+                div.remove();
+                el.attr('aria-expanded', 'false');
+            });
             var cols = tblOuter.find('table.optHeader > tbody > tr:first > td');
             var firstRow = tblOuter.find('table.optBody > tbody > tr:first > td');
             if (cols.length > 0 && firstRow.length > 0) {
@@ -1970,8 +2223,37 @@ $.ui.position.fieldTip = {
             div.on('click', 'table.optBody > tbody > tr', function (evt) {
                 evt.stopImmediatePropagation();
                 self.val($(evt.currentTarget).attr('data-value'));
+                div.find('table.optBody > tbody > tr').attr('aria-selected', 'false').attr('tabindex', -1).removeAttr('data-selected');
+                $(evt.currentTarget).attr('aria-selected', 'true').attr('tabindex', 0).attr('data-selected', 'true');
                 setTimeout(function () { div.remove(); }, 0);
+                el.attr('aria-expanded', 'false');
             });
+            div.on('keydown', 'table.optBody > tbody > tr', function (evt) {
+                var row = $(evt.currentTarget);
+                var rows = div.find('table.optBody > tbody > tr[role=option]');
+                var ndx = rows.index(row);
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    row.trigger('click');
+                }
+                else if (evt.key === 'ArrowDown') {
+                    evt.preventDefault();
+                    rows.eq(Math.min(rows.length - 1, ndx + 1)).focus();
+                }
+                else if (evt.key === 'ArrowUp') {
+                    evt.preventDefault();
+                    rows.eq(Math.max(0, ndx - 1)).focus();
+                }
+                else if (evt.key === 'Escape') {
+                    evt.preventDefault();
+                    div.remove();
+                    el.attr('aria-expanded', 'false');
+                    el.focus();
+                }
+            });
+            var selected = div.find('table.optBody > tbody > tr[data-selected=true]:first');
+            if (selected.length) selected.focus();
+            else div.find('table.optBody > tbody > tr[role=option]:first').attr('tabindex', 0).focus();
         },
         _getOffset: function (el) {
             var off = { left: 0, top: 0 };
@@ -2046,6 +2328,9 @@ $.ui.position.fieldTip = {
             else {
                 if (val) el.addClass('disabled');
                 else el.removeClass('disabled');
+                el.attr('aria-disabled', val ? 'true' : 'false');
+                el.attr('tabindex', val ? -1 : 0);
+                el.find('div.picPickList-drop:first').attr('aria-disabled', val ? 'true' : 'false').attr('tabindex', val ? -1 : 0);
             }
         },
         text: function (text) {
@@ -2117,6 +2402,9 @@ $.ui.position.fieldTip = {
                                 evt.oldItem = bcevt.oldItem;
                                 evt.newItem = bcevt.newItem;
                                 el.trigger(evt);
+                                var opts = el.find('div.picPickList-options table.optBody > tbody > tr[role=option]');
+                                opts.attr('aria-selected', 'false').attr('tabindex', -1).removeAttr('data-selected');
+                                opts.filter('[data-value="' + o.value + '"]').attr('aria-selected', 'true').attr('tabindex', 0).attr('data-selected', 'true');
                             }
                         }
                     }
@@ -2621,12 +2909,26 @@ $.ui.position.fieldTip = {
             el.addClass('picAccordian');
             var title = self._buildTitle().appendTo(el);
             var contents = $('<div class="picAccordian-contents"></div>').appendTo(el);
+            var contentId = `pic-accordian-content-${_uniqueId++}`;
+            title.attr('role', 'button');
+            title.attr('tabindex', 0);
+            title.attr('aria-controls', contentId);
+            title.attr('aria-expanded', 'false');
+            _ensureNavId(title, 'accordian', title.text());
+            contents.attr('id', contentId);
+            contents.attr('role', 'region');
             el[0].titleBlock = function () { return el.find('div.picAccordian-title:first'); };
             el[0].text = function (text) { return self.text(text); };
             el[0].expanded = function (val) { return self.expanded(val); };
             el[0].columns = function () { return self.columns(); };
             el.on('click', 'div.picAccordian-title', function () {
                 self.toggle();
+            });
+            el.on('keydown', 'div.picAccordian-title', function (evt) {
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    self.toggle();
+                }
             });
             el.attr('data-expanded', false);
             contents.hide();
@@ -2677,11 +2979,15 @@ $.ui.position.fieldTip = {
                         el.find('div.picAccordian-contents:first').slideDown(250);
                         ico.removeClass('fa-angle-double-right');
                         ico.addClass('fa-angle-double-down');
+                        el.find('div.picAccordian-title:first').attr('aria-expanded', 'true');
+                        el.find('div.picAccordian-contents:first').attr('aria-hidden', 'false');
                     }
                     else {
                         el.find('div.picAccordian-contents:first').slideUp(250);
                         ico.removeClass('fa-angle-double-down');
                         ico.addClass('fa-angle-double-right');
+                        el.find('div.picAccordian-title:first').attr('aria-expanded', 'false');
+                        el.find('div.picAccordian-contents:first').attr('aria-hidden', 'true');
                     }
                 }
             }
@@ -2959,6 +3265,8 @@ $.ui.position.fieldTip = {
             var self = this, o = self.options, el = self.element;
             if (typeof o.style !== 'undefined') el.css(o.style);
             el.addClass('picVirtualList');
+            el.attr('role', 'grid');
+            if (!el.is('[tabindex]')) el.attr('tabindex', 0);
             var tbody = $('<tbody></tbody>').appendTo($('<table></table>').appendTo(el).addClass('vlist-outer')).addClass('vlist-outer');
             $('<tr></tr>').appendTo(tbody).addClass('vlist-header-outer');
             self._addHeaderColumns();
@@ -2986,7 +3294,43 @@ $.ui.position.fieldTip = {
                     //}, 20);
                 }
             });
-            el.on('click', 'tr.vlist-data', function (e) { self.selectRow($(e.currentTarget)); });
+            el.on('click', 'tr.vlist-data', function (e) {
+                self.selectRow($(e.currentTarget));
+                $(e.currentTarget).focus();
+            });
+            el.on('keydown', 'tr.vlist-data', function (evt) {
+                var row = $(evt.currentTarget);
+                var ndx = parseInt(row.attr('data-rowid'), 10);
+                if (isNaN(ndx)) return;
+                var next = ndx;
+                switch (evt.key) {
+                    case 'ArrowDown':
+                        next = Math.min(o.rows.length - 1, ndx + 1);
+                        break;
+                    case 'ArrowUp':
+                        next = Math.max(0, ndx - 1);
+                        break;
+                    case 'Home':
+                        next = 0;
+                        break;
+                    case 'End':
+                        next = Math.max(0, o.rows.length - 1);
+                        break;
+                    case 'Enter':
+                    case ' ':
+                    case 'Spacebar':
+                        evt.preventDefault();
+                        self.selectRow(row);
+                        return;
+                    default:
+                        return;
+                }
+                evt.preventDefault();
+                el[0].selectedIndex(next, true);
+                setTimeout(function () {
+                    el.find('tr.vlist-data[data-rowid=' + next + ']').focus();
+                }, 0);
+            });
         },
         _calculateBlocks: function (clearFilter) {
             var self = this, o = self.options, el = self.element;
@@ -3047,6 +3391,7 @@ $.ui.position.fieldTip = {
                 + '<table class="vlist-body"><tbody class="vlist-body">' + attrs.rows.join('') + '</tbody></table>'
                 + '<div class="vlist-space vlist-bottom" style="height:' + attrs.offset.bottom + 'px;"></div>';
             body[0].innerHTML = html;
+            self._syncRowA11y();
         },
         _getCurrentCluster: function () {
             var self = this, o = self.options, el = self.element;
@@ -3119,9 +3464,12 @@ $.ui.position.fieldTip = {
         createDataRow: function () {
             var self = this, o = self.options, el = self.element;
             var tr = $('<tr></tr>').addClass('vlist-data');
+            tr.attr('role', 'row');
+            tr.attr('tabindex', -1);
             for (var i = 0; i < o.columns.length; i++) {
                 var col = o.columns[i];
                 var td = $('<td></td>').appendTo(tr).addClass('vlist-data');
+                td.attr('role', 'gridcell');
                 if (typeof col.data !== 'undefined') {
                     if (typeof col.data.style !== 'undefined') td.css(col.data.style);
                     if (typeof col.data.elem !== 'undefined') {
@@ -3143,6 +3491,8 @@ $.ui.position.fieldTip = {
                 var row = self.createDataRow();
                 var data = arrData[i];
                 row.attr('data-rowid', o.rows.length);
+                row.attr('aria-rowindex', o.rows.length + 1);
+                row.attr('aria-selected', 'false');
                 var evt = $.Event('bindrow');
                 evt.row = { hidden: false, rowId: o.rows.length, row: row };
                 evt.rowData = data;
@@ -3152,6 +3502,7 @@ $.ui.position.fieldTip = {
                 o.rows.push(evt.row);
                 added.push(evt.row);
             }
+            el.attr('aria-rowcount', o.rows.length);
             return added;
         },
         addRow: function (data) {
@@ -3183,10 +3534,27 @@ $.ui.position.fieldTip = {
                     o.rows[ndx].row = row[0].outerHTML;
                 }
                 else o.selectedIndex = -1;
+                self._syncRowA11y();
                 el.trigger(evt);
                 if (scrollTo) {
                     self.scrollTo(ndx);
                 }
+            }
+        },
+        _syncRowA11y: function () {
+            var self = this, o = self.options, el = self.element;
+            el.attr('aria-rowcount', o.rows.length);
+            el.find('tr.vlist-data').each(function () {
+                var row = $(this);
+                var rowId = parseInt(row.attr('data-rowid'), 10);
+                var selected = row.hasClass('selected') || rowId === o.selectedIndex;
+                row.attr('role', 'row');
+                row.attr('aria-selected', selected ? 'true' : 'false');
+                row.attr('tabindex', selected ? 0 : -1);
+            });
+            if (o.selectedIndex === -1) {
+                var first = el.find('tr.vlist-data:first');
+                if (first.length) first.attr('tabindex', 0);
             }
         },
         clear: function (fn) {

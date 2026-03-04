@@ -1,4 +1,4 @@
-﻿span.picPercentData {
+span.picPercentData {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -48,6 +48,12 @@ div.picModel > i:hover {
   cursor: pointer;
   padding-right: 0.2rem;
   color: orange;
+}
+div.picModel > i:focus-visible,
+div.picConfigIcon:focus-visible,
+div.picLockIcon:focus-visible {
+  outline: 2px solid #1f6feb;
+  outline-offset: 2px;
 }
 
 div.picPanelMode > label,

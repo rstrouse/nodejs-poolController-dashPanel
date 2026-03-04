@@ -92,7 +92,7 @@
             });
             
             var collapsedRight = $('<div class="collapsed-header-right"></div>').appendTo(o.collapsedHeader);
-            var expandBtn = $('<button class="expand-setup-btn" title="Show setup panel"><i class="fas fa-chevron-down"></i></button>').appendTo(collapsedRight);
+            var expandBtn = $('<button type="button" class="expand-setup-btn" title="Show setup panel" aria-label="Show setup panel"><i class="fas fa-chevron-down"></i></button>').appendTo(collapsedRight);
             expandBtn.on('click', function() { self._toggleSetupPanel(true); });
             
             // Collapsed dropdowns sync with expanded ones
@@ -117,7 +117,9 @@
             // === STEP 2: Entity Selection ===
             o.step2Container = $('<div class="entity-flow-step step-2 step-disabled"></div>').appendTo(o.setupPanel);
             var step2Header = $('<div class="step-header"><span class="step-number">2</span><span class="step-title">Select Entity to Analyze</span></div>').appendTo(o.step2Container);
-            var collapseBtn = $('<button class="collapse-setup-btn" title="Collapse to header"><i class="fas fa-chevron-up"></i></button>').appendTo(step2Header);
+            var collapseBtn = $('<button type="button" class="collapse-setup-btn" title="Collapse to header" aria-label="Collapse to header"><i class="fas fa-chevron-up"></i></button>').appendTo(step2Header);
+            o.collapseSetupBtn = collapseBtn;
+            collapseBtn.prop('disabled', true).attr('aria-disabled', 'true');
             collapseBtn.on('click', function() { self._toggleSetupPanel(false); });
             
             var step2Content = $('<div class="step-content"></div>').appendTo(o.step2Container);
@@ -397,6 +399,7 @@
             
             if (allLoaded) {
                 o.step2Container.removeClass('step-disabled');
+                if (o.collapseSetupBtn) o.collapseSetupBtn.prop('disabled', false).attr('aria-disabled', 'false');
                 if (o.modeSelect) o.modeSelect.prop('disabled', false);
                 if (o.flowMultiBtn) o.flowMultiBtn.prop('disabled', false);
                 if (o.flowMultiBtnCollapsed) o.flowMultiBtnCollapsed.prop('disabled', false);
@@ -405,6 +408,7 @@
                 if (o.entitySelect) o.entitySelect.prop('disabled', !hasEntitySource);
             } else {
                 o.step2Container.addClass('step-disabled');
+                if (o.collapseSetupBtn) o.collapseSetupBtn.prop('disabled', true).attr('aria-disabled', 'true');
                 if (o.modeSelect) o.modeSelect.prop('disabled', true);
                 if (o.flowMultiBtn) o.flowMultiBtn.prop('disabled', true);
                 if (o.flowMultiBtnCollapsed) o.flowMultiBtnCollapsed.prop('disabled', true);

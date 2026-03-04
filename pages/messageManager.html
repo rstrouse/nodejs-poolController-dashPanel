@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -45,27 +45,28 @@
 
 </head>
 <body>
-    <div class="mmgrOuter picMessageManager" data-panel="messages">
+    <div class="mmgrOuter picMessageManager" data-panel="messages" role="main" aria-label="Message Manager">
         <header>
             <div class="picController picControlPanel control-panel" style="display:block;"></div>
         </header>
         <div class="messageContainer">
             <!-- Tab Navigation (Settings-style tabBar widget) -->
             <div class="mmgrTabHeader">
-                <div class="mmgrTabBar"></div>
+                <div class="mmgrTabBar" id="mmgrTabBar" data-nav-group="message-manager-tabs"></div>
                 <div class="view-bar-actions">
                     <span class="view-bar-status" title="Replay load status"></span>
-                    <button type="button" class="view-bar-icon-btn view-bar-clear" title="Clear Messages">
+                    <button type="button" class="view-bar-icon-btn view-bar-clear" title="Clear Messages" data-nav-id="mmgr-clear-messages" aria-label="Clear Messages">
                         <i class="fas fa-broom"></i>
                     </button>
-                    <button type="button" class="view-bar-icon-btn view-bar-filter" title="Filter Display">
+                    <button type="button" class="view-bar-icon-btn view-bar-filter" title="Filter Display" data-nav-id="mmgr-filter-display" aria-label="Filter Display">
                         <i class="fas fa-filter"></i>
                     </button>
-                    <button type="button" class="upload-btn view-bar-upload" title="Choose Files">
+                    <button type="button" class="upload-btn view-bar-upload" title="Choose Files" data-nav-id="mmgr-choose-files" aria-label="Choose Replay Files">
                         <i class="fas fa-folder-open"></i> Choose Files
                     </button>
                     <input id="universalReplayFileInput" type="file" accept=".json,.zip,.log" multiple style="display:none;" />
                 </div>
+                <div class="mmgr-live-region" aria-live="polite" aria-atomic="true"></div>
             </div>
             <!-- Message List View -->
             <div class="view-container active" data-view="messages">
@@ -119,11 +120,6 @@
             $mmTabBar.find('div.picTab[data-tabid="tabEntityFlow"] span.picTabText:first')
                 .html('<i class="fas fa-project-diagram"></i>Entity Flow');
 
-            // Move actions into the tab row (right aligned)
-            var $tabsRow = $mmTabBar.find('div.picTabs:first');
-            $('<div class="mmgrTabSpacer"></div>').appendTo($tabsRow);
-            $('.view-bar-actions').appendTo($tabsRow);
-
             // View switching on tab change
             $mmTabBar.on('tabchange', function (evt) {
                 var viewName = 'messages';
@@ -152,6 +148,7 @@
             var $replayStatus = $('.view-bar-status');
             var $clearBtn = $('.view-bar-clear');
             var $filterBtn = $('.view-bar-filter');
+            var $liveRegion = $('.mmgr-live-region');
 
             $replayBtn.on('click', function(e) {
                 e.preventDefault();
@@ -161,6 +158,7 @@
             // Show status updates emitted from Entity Flow widget
             $('div.picEntityFlow').on('replayLoadStatus', function(e) {
                 $replayStatus.text(e.text || '');
+                $liveRegion.text(e.text || '');
             });
 
             $replayInput.on('change', function(e) {
@@ -183,6 +181,7 @@
                 var ml = $('div.picMessages:first')[0];
                 if (ml && ml.clear) ml.clear();
                 $replayStatus.text('');
+                $liveRegion.text('Messages cleared');
                 // Reset upload button text
                 $replayBtn.html('<i class="fas fa-folder-open"></i> Choose Files');
                 $replayBtn.attr('title', 'Choose Files');

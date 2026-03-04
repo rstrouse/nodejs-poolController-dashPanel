@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget('pic.configPage', {
         options: {
             cfg: {},
@@ -110,6 +110,8 @@
             var self = this, o = self.options, el = self.element;
             var tabs = $('<div class="picTabPanel"></div>');
             tabs.appendTo(el);
+            tabs.attr('id', 'configMainTabBar');
+            tabs.attr('data-nav-group', 'config-main-tabs');
             tabs.tabBar();
             tabs.find('div.picTabContents').addClass('picConfigTabContents');
             tabs.on('tabchange', function (evt) { self._onTabChanged(evt); });
@@ -168,6 +170,8 @@
                 if (typeof subTabs !== 'undefined') {
                     var tabs = $('<div class="picTabPanel"></div>');
                     tabs.appendTo(contents);
+                    tabs.attr('id', `${attrs.id || 'config'}SubTabBar`);
+                    tabs.attr('data-nav-group', `${attrs.id || 'config'}-sub-tabs`);
                     tabs.tabBar();
                     tabs.find('div.picTabContents').addClass('picConfigTabContents');
                     //tabs.on('tabchange', function (evt) { self._onTabChanged(evt); });

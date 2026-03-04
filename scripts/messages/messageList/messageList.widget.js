@@ -40,7 +40,7 @@
             };
             el[0].getMessages = function () { return self.getMessages(); };
             el[0].scrollToMessage = function (index) { return self.scrollToMessage(index); };
-            el[0].openFilterDialog = function () { return self.(openFilterDialog)(); };
+            el[0].openFilterDialog = function () { return self.openFilterDialog(); };
             el[0].applyPacketMatchers = function (matchers) { return self.applyPacketMatchers(matchers); };
             el[0].getFilters = function () { return { filters: o.filters.slice(), portFilters: o.portFilters.slice() }; };
             el[0].isMessageFiltered = function (msg) { return self.isMessageFiltered(msg); };
@@ -198,6 +198,11 @@
             $('<div class="picChangesOnly mmgrButton picIconRight" title="Show only changes"><i class="fas fa-not-equal"></i></div>').appendTo(div);
             $('<div class="picReplayLog mmgrButton picIconRight" title="Replay List To njsPC"><i class="fas fa-paper-plane"></i></div>').appendTo(div)
                 .on('click', (evt) => { self._promptReplayList(); });
+            div.find('div.mmgrButton').attr('role', 'button').attr('tabindex', 0);
+            div.find('div.picStartLogs').attr('aria-label', 'Start Or Stop Log').attr('aria-pressed', 'false').attr('data-nav-id', 'mmgr-start-stop-log');
+            div.find('div.picScrolling').attr('aria-label', 'Pin Selection').attr('aria-pressed', 'false').attr('data-nav-id', 'mmgr-pin-selection');
+            div.find('div.picChangesOnly').attr('aria-label', 'Show Only Changes').attr('aria-pressed', 'false').attr('data-nav-id', 'mmgr-show-only-changes');
+            div.find('div.picReplayLog').attr('aria-label', 'Replay List To Controller').attr('data-nav-id', 'mmgr-replay-list');
 
 
             row = $('<tr></tr>').addClass('msgList-body').appendTo(tbody);
@@ -292,6 +297,12 @@
                     self._toggleInlineExpansion(row, msg, prev, forMsg, context);
                 }
             });
+            el.on('keydown', 'tr.msgRow', function (evt) {
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    $(evt.currentTarget).trigger('click');
+                }
+            });
             
             // Handle close button clicks on expansion content
             el.on('click', 'div.expansion-close-btn', function(evt) {
@@ -302,6 +313,7 @@
                 
                 // Close the expansion
                 row.removeClass('row-expanded');
+                row.attr('aria-expanded', 'false');
                 container.remove();
                 delete o.expandedRows[rowId];
                 
@@ -325,8 +337,8 @@
                 console.log('Entity Flow button clicked. msg._id:', msg._id);
                 
                 // Switch to Entity Flow tab
-                var entityFlowTab = $('button.view-tab[data-view="entityFlow"]');
-                if (entityFlowTab.length) entityFlowTab.click();
+                var tabBar = $('div.mmgrTabBar')[0];
+                if (tabBar && tabBar.selectTabById) tabBar.selectTabById('tabEntityFlow');
                 
                 // Use setTimeout to allow tab switch to complete before scrolling
                 setTimeout(function() {
@@ -346,6 +358,12 @@
                 
                 if (msg) {
                     $('div.picSendMessageQueue')[0].addMessage(msg);
+                }
+            });
+            el.on('keydown', 'div.mmgrButton, div.expansion-close-btn, div.expansion-entity-btn, div.expansion-addqueue-btn', function (evt) {
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    $(evt.currentTarget).trigger('click');
                 }
             });
             
@@ -391,6 +409,7 @@
                 //console.log(evt);
                 if (!o.pinScrolling) $(evt.currentTarget).removeClass('selected');
                 else $(evt.currentTarget).addClass('selected');
+                $(evt.currentTarget).attr('aria-pressed', o.pinScrolling ? 'true' : 'false');
             });
             el.on('click', 'div.picChangesOnly', function (evt) {
                 o.changesOnly = !o.changesOnly;
@@ -402,6 +421,7 @@
                     $(evt.currentTarget).removeClass('selected');
                     el.removeClass('changesOnly');
                 }
+                $(evt.currentTarget).attr('aria-pressed', o.changesOnly ? 'true' : 'false');
                 self._filterMessages();
             });
             // Filter/Clear controls moved to the top bar (messageManager.html)
@@ -1403,6 +1423,9 @@
             row.attr('data-msgdir', msg.direction);
             row.attr('data-port', msg.portId);
             row.addClass('msgRow');
+            row.attr('tabindex', 0);
+            row.attr('aria-expanded', 'false');
+            row.attr('aria-label', `Message ${msg._id || obj.rowId}, ${msg.direction || 'unknown'} direction`);
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.messageKey] = ctx;
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
@@ -1486,6 +1509,9 @@
             //    actionByte: action, sourceAddr: addrSource, destAddr: addrDest, payloadLength: length
             row.attr('data-msgdir', msg.direction);
             row.addClass('msgApiRow');
+            row.attr('tabindex', 0);
+            row.attr('aria-expanded', 'false');
+            row.attr('aria-label', `API call ${msg.path || ''}`);
             row.attr('data-msgkey', `${msg.requestor}${msg.path}`);
             $('<span></span>').text('').appendTo(r.cells[1]);
             var dir = $('<i></i>').addClass('fas').addClass(msg.direction === 'out' ? 'fa-arrow-circle-left' : 'fa-arrow-circle-right');
@@ -1521,6 +1547,9 @@
             row.attr('data-msgdir', msg.direction);
             // row.attr('data-port', msg.portId);
             row.addClass('msgRow');
+            row.attr('tabindex', 0);
+            row.attr('aria-expanded', 'false');
+            row.attr('aria-label', `Message ${msg._id || obj.rowId}, ${msg.direction || 'unknown'} direction`);
             var ctx = msgManager.getListContext(msg);
             o.contexts[ctx.messageKey] = ctx;
             if ((typeof msg.isValid !== 'undefined' && !msg.isValid) || (typeof msg.valid !== 'undefined' && !msg.valid)) row.addClass('invalid');
@@ -1697,6 +1726,7 @@
                 if (o.receivingMessages) {
                     el.find('div.picStartLogs > i').removeClass('far').addClass('fas');
                     el.find('div.picStartLogs').addClass('selected');
+                    el.find('div.picStartLogs').attr('aria-pressed', 'true');
                     // Clear the loaded filename and description when starting live logging
                     o.loadedFilename = null;
                     o.loadedDescription = null;
@@ -1705,6 +1735,7 @@
                 else {
                     el.find('div.picStartLogs > i').removeClass('fas').addClass('far');
                     el.find('div.picStartLogs').removeClass('selected');
+                    el.find('div.picStartLogs').attr('aria-pressed', 'false');
 
                 }
             }
@@ -1731,6 +1762,7 @@
                 
                 // User Clicked -> Close it (Toggle)
                 row.removeClass('row-expanded');
+                row.attr('aria-expanded', 'false');
                 expansionDiv.remove();
                 delete o.expandedRows[rowId];
                 
@@ -1756,14 +1788,17 @@
             
             // Go to Entity Flow button (click handled via delegation in _initList)
             var goToEntityBtn = $('<div class="expansion-entity-btn" title="View in Entity Flow"><i class="fas fa-project-diagram"></i></div>');
+            goToEntityBtn.attr('role', 'button').attr('tabindex', 0).attr('aria-label', 'View In Entity Flow').attr('data-nav-id', 'mmgr-expansion-entity-flow');
             btnContainer.append(goToEntityBtn);
             
             // Add to queue button (click handled via delegation in _initList)
             var addToQueueBtn = $('<div class="expansion-addqueue-btn" title="Add to Send Queue"><i class="far fa-hand-point-up"></i></div>');
+            addToQueueBtn.attr('role', 'button').attr('tabindex', 0).attr('aria-label', 'Add To Send Queue').attr('data-nav-id', 'mmgr-expansion-add-queue');
             btnContainer.append(addToQueueBtn);
             
             // Close button
             var closeBtn = $('<div class="expansion-close-btn" title="Close"><i class="fas fa-times"></i></div>');
+            closeBtn.attr('role', 'button').attr('tabindex', 0).attr('aria-label', 'Close Message Details').attr('data-nav-id', 'mmgr-expansion-close');
             btnContainer.append(closeBtn);
             
             container.append(btnContainer);
@@ -1789,6 +1824,7 @@
             self._buildCompactHexDisplay(hexSection, msg, prev, context);
         
             row.addClass('row-expanded');
+            row.attr('aria-expanded', 'true');
             o.expandedRows[rowId] = true;
             
             // Update stored HTML immediately for the hex display
@@ -1819,6 +1855,7 @@
                 var rowId = $row.attr('data-rowid');
                 
                 $row.removeClass('row-expanded');
+                $row.attr('aria-expanded', 'false');
                 $row.find('div.inline-expansion-content').remove();
                 
                 if (rowId) {

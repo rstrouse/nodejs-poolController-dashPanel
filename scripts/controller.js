@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget("pic.controller", {
         options: {},
         _create: function () {
@@ -208,20 +208,50 @@
             row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><span class="service-timeout-remaining"></span><i class="far fa-pause-circle burst-animated"></i></div>');
             row.appendTo(el);
             $('<div class="picSpaDrain" data-status="off"><i class="fas fa-skull-crossbones burst-animated"></i><label>SPA DRAIN ACTIVE</label><i class="fas fa-skull-crossbones burst-animated"></i></div>').appendTo(el);
+            // Keyboard + automation semantics for header icon controls.
+            el.find('div.picModel > i, div.picConfigIcon, div.picLockIcon').attr('role', 'button').attr('tabindex', 0);
+            el.find('div.picModel > i').attr('aria-label', 'Open Settings').attr('data-nav-id', 'settings-open');
+            el.find('div.picConfigIcon').attr('aria-label', 'Toggle Configuration View').attr('data-nav-id', 'config-toggle');
+            el.find('div.picLockIcon').attr('aria-label', 'Lock Or Unlock Settings').attr('data-nav-id', 'security-lock-toggle');
+            el.on('keydown', 'div.picModel > i, div.picConfigIcon, div.picLockIcon', function (evt) {
+                if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'Spacebar') {
+                    evt.preventDefault();
+                    $(evt.currentTarget).trigger('click');
+                }
+            });
             el.find('div.picModel > i').on('click', function (evt) {
                 var btn = evt.currentTarget;
                 self._ensureAdminAccess(function () {
-                    // Open up the settings window.
+                    // Toggle/reuse a single settings popover instance.
+                    if (o.settingsPopover && o.settingsPopover.length && o.settingsPopover.is(':visible')) {
+                        o.settingsPopover[0].close();
+                        o.settingsPopover.remove();
+                        o.settingsPopover = null;
+                        return;
+                    }
+                    // Cleanup any stale popovers left in DOM.
+                    el.parent().find('div.picPopover.picAppSettings').remove();
                     var divPopover = $('<div class="picAppSettings"></div>');
+                    o.settingsPopover = divPopover;
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (e) {
+                        // Guard: initialize contents only once.
+                        if (divPopover.attr('data-settings-initialized') === 'true') return;
+                        divPopover.attr('data-settings-initialized', 'true');
                         let divSettings = $('<div class="picAppSettings"></div>');
                         divSettings.appendTo(e.contents());
                         divSettings.settingsPanel();
-                        divSettings.on('loaded', function (e) { divPopover[0].show(btn); });
                         e.stopImmediatePropagation();
                     });
-                    divPopover.popover({ title: 'Settings', popoverStyle: 'modal', placement: { target: btn } });
+                    divPopover.on('beforeClose', function () {
+                        o.settingsPopover = null;
+                    });
+                    divPopover.popover({
+                        title: 'Settings',
+                        popoverStyle: 'modal',
+                        autoClose: false,
+                        placement: { target: btn }
+                    });
                     divPopover[0].show(btn);
                 });
                 evt.preventDefault();
@@ -1467,6 +1497,8 @@
             var tabs = $('<div class="picTabPanel"></div>');
             console.log('Building controls');
             tabs.appendTo(el);
+            tabs.attr('id', 'settingsTabBar');
+            tabs.attr('data-nav-group', 'settings-tabs');
             tabs.tabBar();
             $.getLocalService('/options', null, function (configData, status, xhr) {
                 console.log(configData);

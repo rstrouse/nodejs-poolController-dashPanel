@@ -39,6 +39,11 @@ div.picPickList.disabled > div.picPickList-drop {
     pointer-events:all;
 }
 
+/* Tooltips should never block clicks on nearby controls. */
+.ui-tooltip {
+    pointer-events: none;
+}
+
 div.container1, div.container2, div.container3 {
     display: flex;
     flex-flow: column;
@@ -96,6 +101,25 @@ div.picTabSelected {
     border-bottom:solid 3px transparent;
     z-index:101;
     margin-bottom:-2px;
+}
+[role="button"]:focus-visible,
+div.picTab:focus-visible,
+div.picActionButton:focus-visible,
+div.picOptionButton:focus-visible,
+div.picPickList-drop:focus-visible,
+div.picAccordian-title:focus-visible,
+tr.vlist-data:focus-visible {
+    outline: 2px solid #1f6feb;
+    outline-offset: 2px;
+}
+[role="button"]:focus:not(:focus-visible),
+div.picTab:focus:not(:focus-visible),
+div.picActionButton:focus:not(:focus-visible),
+div.picOptionButton:focus:not(:focus-visible),
+div.picPickList-drop:focus:not(:focus-visible),
+div.picAccordian-title:focus:not(:focus-visible),
+tr.vlist-data:focus:not(:focus-visible) {
+    outline: none;
 }
 div.picPopoverBody {
     padding:.2em;
