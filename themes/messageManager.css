@@ -1279,6 +1279,34 @@ tr.msgRow.row-expanded > td {
   vertical-align: top;
 }
 
+/* Row expand hint icon */
+i.row-expand-hint {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #FF6B35;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(255,255,255,0.8);
+  pointer-events: none;
+  animation: bounce 2s ease-in-out infinite;
+  z-index: 5;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(calc(-50% + 3px));
+  }
+}
+
+tr.msgRow.selected > td:last-child {
+  position: relative;
+}
+
 /* New: Expansion content that lives INSIDE the row's last cell */
 /* This survives virtual list re-renders because it's part of the row's stored HTML */
 tr.msgRow.row-expanded > td:last-child {

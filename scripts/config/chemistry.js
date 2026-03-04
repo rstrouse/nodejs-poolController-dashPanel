@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget('pic.configChemistry', {
         options: {},
         _create: function () {
@@ -33,6 +33,11 @@
             });
             $.getApiService('/config/options/chemControllers', null, 'Loading Options...', function (opts, status, xhr) {
                 chemOpts = opts;
+                var standaloneSupported = typeof opts.intellichemStandaloneSupported !== 'undefined'
+                    ? makeBool(opts.intellichemStandaloneSupported)
+                    : (($('body').attr('data-controllertype') || '').toLowerCase() === 'nixie');
+                var standaloneEnabledMessage = 'Standalone mode keeps IntelliChem communication active even when the pool body is off. Use for Intellichem-only systems.';
+                var standaloneUnsupportedMessage = 'Standalone mode is only available when Nixie directly controls IntelliChem.';
                 for (var i = 0; i < opts.controllers.length; i++) {
                     $('<div></div>').appendTo(pnl).pnlChemControllerConfig(opts)[0].dataBind(opts.controllers[i]);
                 }
@@ -190,6 +195,7 @@
                                     case 'intellichem':
                                         cc.name = 'IntelliChem';
                                         cc.address = 144;
+                                        cc.intellichemStandalone = standaloneSupported && !!data.intellichemStandalone;
                                         cc.ph = { setpoint: 7.4, dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 7.2, high: 7.6 }, phSupply: 1, acidType: 5, tank: { alarmEmptyEnabled: true, alarmEmptyLevel: 20 } };
                                         cc.orp = { setpoint: 750, dosingMethod: 0, flowReadingsOnly: true, tolerance: { enabled: true, low: 650, high: 800 }, phLockout: 7.8, tank: { alarmEmptyEnabled: true, alarmEmptyLevel: 20 } };
                                         break;
@@ -213,7 +219,7 @@
                     }
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).append('<i class="fas fa-flask" style="font-size:30pt;"></i>');
                     $('<div></div>').css({ textAlign: 'center' }).appendTo(divSelection).text('Chem Controller');
-                    $('<div></div>').appendTo(divSelection).pickList({
+                    var chemTypePick = $('<div></div>').appendTo(divSelection).pickList({
                         required: true,
                         style: { textAlign: 'left' },
                         bindColumn: 0, displayColumn: 2, labelText: 'Chem Controller Type<br/>', binding: 'type',
@@ -224,9 +230,30 @@
                         e.stopPropagation();
                     }).on('mousedown', function (e) {
                         e.stopImmediatePropagation();
-
                     });
-
+                    var standaloneOpt = $('<div></div>').appendTo(divSelection).checkbox({
+                        labelText: 'Intellichem Standalone',
+                        binding: 'intellichemStandalone'
+                    }).css({ marginTop: '.25rem', textAlign: 'left' })
+                      .on('mousedown', function (e) { e.stopImmediatePropagation(); })
+                      .on('click', function (e) { e.stopPropagation(); })
+                      .hide();
+                    var standaloneInfo = $('<span></span>').appendTo(divSelection)
+                        .css({ marginLeft: '.35rem', cursor: 'help', display: 'none' })
+                        .append('<i class="fas fa-info-circle"></i>');
+                    var updateStandaloneOption = function (selectedType) {
+                        var isIntellichem = typeof selectedType !== 'undefined' && selectedType !== null && selectedType.name === 'intellichem';
+                        if (!isIntellichem || !standaloneSupported) {
+                            standaloneOpt.hide();
+                            standaloneInfo.hide();
+                            if (standaloneOpt[0] && typeof standaloneOpt[0].val === 'function') standaloneOpt[0].val(false);
+                            return;
+                        }
+                        standaloneOpt.show();
+                        standaloneInfo.show();
+                        if (standaloneOpt[0] && typeof standaloneOpt[0].disabled === 'function') standaloneOpt[0].disabled(false);
+                    };
+                    chemTypePick.on('selchanged', function (evt) { updateStandaloneOption(evt.newItem); });
                     divSelection = $('<div></div>').addClass('picButton').addClass('chemController-type').addClass('chemDoser').addClass('btn').css({ width: '157px', height: '97px', verticalAlign: 'middle' })
                         .appendTo(line)
                         .on('mouseover', function (e) { $(e.currentTarget).addClass('button-hover'); })
@@ -1158,6 +1185,44 @@
                 columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
                 items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
+            $('<div></div>').appendTo(line).checkbox({
+                labelText: 'Intellichem Standalone',
+                binding: binding + 'intellichemStandalone'
+            }).addClass('pnl-intellichem-standalone')
+              .hide();
+            var standaloneTipMessage = 'Standalone mode keeps IntelliChem communication active even when the pool body is off. Use for Intellichem-only systems.';
+            var standaloneInfo = $('<span></span>').appendTo(line)
+                .addClass('pnl-intellichem-standalone')
+                .css({ marginLeft: '.25rem', cursor: 'help', display: 'none' })
+                .attr('tabindex', 0)
+                .attr('data-tip-message', standaloneTipMessage);
+            $('<i class="fas fa-info-circle"></i>').appendTo(standaloneInfo);
+            var showStandaloneTip = function () {
+                $.pic.fieldTip.clearTips(line);
+                var tipMessage = standaloneInfo.attr('data-tip-message') || standaloneTipMessage;
+                var tipContent = $('<div></div>').css({
+                    maxWidth: '22rem',
+                    whiteSpace: 'normal',
+                    lineHeight: '1.25rem'
+                }).text(tipMessage);
+                $.pic.fieldTip.showTip(line, {
+                    field: standaloneInfo,
+                    message: tipContent,
+                    closeAfter: 5000,
+                    placement: { my: 'right top', at: 'right bottom+8' }
+                });
+                setTimeout(function () {
+                    line.find('div.picFieldTip:last')
+                        .addClass('intellichem-standalone-tip')
+                        .removeClass('left right')
+                        .addClass('bottom');
+                }, 0);
+            };
+            standaloneInfo
+                .on('mouseenter focusin click', function (evt) {
+                    evt.stopPropagation();
+                    showStandaloneTip();
+                });
             $('<hr></hr>').appendTo(pnl);
             $('<div></div>').appendTo(pnl).addClass('pnl-chemcontroller-type');
 
@@ -1208,6 +1273,11 @@
             var cols = acc[0].columns();
             cols[0].elText().text(obj.name);
             var type = o.types.find(elem => elem.val === obj.type);
+            var standaloneSupported = typeof o.intellichemStandaloneSupported !== 'undefined'
+                ? makeBool(o.intellichemStandaloneSupported)
+                : (($('body').attr('data-controllertype') || '').toLowerCase() === 'nixie');
+            var standaloneEnabledMessage = 'Standalone mode keeps IntelliChem communication active even when the pool body is off. Use for Intellichem-only systems.';
+            var standaloneUnsupportedMessage = 'Standalone mode is only available when Nixie directly controls IntelliChem.';
             cols[1].elText().text(typeof type !== 'undefined' ? type.desc : 'Controller');
 
             var ctype = el.attr('data-controllertype');
@@ -1258,10 +1328,27 @@
             if (typeof obj.orp === 'undefined') obj.orp = {
                 mixingTime: 60, maxDosingTime: 20, pump: {}, probe: {}, tank: {}
             };
+            if (typeof obj.intellichemStandalone === 'undefined') obj.intellichemStandalone = false;
             self.splitSeconds('mixingTime', obj.ph, obj.ph.mixingTime);
             self.splitSeconds('mixingTime', obj.orp, obj.orp.mixingTime);
             self.splitSeconds('maxDosingTime', obj.ph, obj.ph.maxDosingTime);
             self.splitSeconds('maxDosingTime', obj.orp, obj.orp.maxDosingTime);
+            el.find('div.picCheckbox[data-bind="intellichemStandalone"]').each(function () {
+                if (type.name === 'intellichem') {
+                    $(this).show();
+                    if (typeof this.disabled === 'function') this.disabled(!standaloneSupported);
+                    if (!standaloneSupported && typeof this.val === 'function') this.val(false);
+                }
+                else $(this).hide();
+            });
+            el.find('span.pnl-intellichem-standalone').each(function () {
+                if (type.name === 'intellichem') {
+                    $(this).show();
+                    var tip = standaloneSupported ? standaloneEnabledMessage : standaloneUnsupportedMessage;
+                    $(this).attr('data-tip-message', tip);
+                }
+                else $(this).hide();
+            });
             if (type.hasAddress) {
                 el.find('*[data-bind="address"]').each(function () {
                     $(this).show();

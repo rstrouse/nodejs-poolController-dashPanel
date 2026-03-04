@@ -1,7 +1,7 @@
 (function ($) {
     $.widget("pic.messageList", {
         options: {
-            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: [], expandedRows: {}, loadedFilename: null, loadedDescription: null
+            receivingMessages: false, pinScrolling: false, changesOnly: false, messageKeys: {}, contexts: {}, messages: {}, portFilters: [], filters: [], rowIds: [], ports: [], expandedRows: {}, loadedFilename: null, loadedDescription: null, lastSelectedRowId: null, justSelectedRowId: null
         },
         _create: function () {
             var self = this, o = self.options, el = self.element;
@@ -40,7 +40,7 @@
             };
             el[0].getMessages = function () { return self.getMessages(); };
             el[0].scrollToMessage = function (index) { return self.scrollToMessage(index); };
-            el[0].openFilterDialog = function () { return self.openFilterDialog(); };
+            el[0].openFilterDialog = function () { return self.(openFilterDialog)(); };
             el[0].applyPacketMatchers = function (matchers) { return self.applyPacketMatchers(matchers); };
             el[0].getFilters = function () { return { filters: o.filters.slice(), portFilters: o.portFilters.slice() }; };
             el[0].isMessageFiltered = function (msg) { return self.isMessageFiltered(msg); };
@@ -242,6 +242,57 @@
             });
             vlist.on('bindrow', function (evt) { self._bindVListRow(evt.row, evt.rowData); });
             
+            // Handle row clicks for second-click expansion
+            el.on('click', 'tr.msgRow', function(evt) {
+                // Don't trigger if clicking on buttons or other interactive elements
+                if ($(evt.target).closest('i.fa-clipboard, div.expansion-close-btn, div.expansion-addqueue-btn, div.expansion-entityflow-btn').length > 0) {
+                    return;
+                }
+                
+                var row = $(this);
+                var rowId = row.attr('data-rowid');
+                
+                // Check if this was just selected by selchanged event (first click)
+                if (o.justSelectedRowId === rowId) {
+                    // Clear the flag so next click will be treated as second click
+                    o.justSelectedRowId = null;
+                    return;
+                }
+                
+                // Check if this row is already selected (second click)
+                if (row.hasClass('selected')) {
+                    // Second click on already-selected row: toggle expansion
+                    var msg = o.messages['m' + rowId];
+                    var ndx = parseInt(rowId, 10);
+                    var msgKey = row.attr('data-msgkey');
+                    var docKey = row.attr('data-dockey');
+                    var prev;
+                    var forMsg;
+                    
+                    // Find previous message with same key
+                    var allRows = vlist[0].getAllRows ? vlist[0].getAllRows() : [];
+                    for (var i = ndx - 1; i >= 0; i--) {
+                        if (allRows[i]) {
+                            var p = $(allRows[i].row);
+                            if (p.attr('data-msgkey') === msgKey) {
+                                prev = o.messages['m' + p.attr('data-rowid')];
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0) {
+                        let id = msg.responseFor[0];
+                        let rid = o.rowIds.find(elem => elem.msgId === id);
+                        if (typeof rid !== 'undefined')
+                            forMsg = o.messages['m' + rid.rowId];
+                    }
+                    
+                    var context = o.contexts[docKey] || o.contexts[msgKey];
+                    self._toggleInlineExpansion(row, msg, prev, forMsg, context);
+                }
+            });
+            
             // Handle close button clicks on expansion content
             el.on('click', 'div.expansion-close-btn', function(evt) {
                 evt.stopPropagation();
@@ -300,31 +351,33 @@
             
             vlist.on('selchanged', function (evt) {
                 var pnlDetail = $('div.picMessageDetail');
-                var msg = o.messages['m' + evt.newRow.attr('data-rowid')];
-                var ndx = parseInt(evt.newRow.attr('data-rowid'), 10);
-                var msgKey = evt.newRow.attr('data-msgkey');
-                var docKey = evt.newRow.attr('data-dockey');
-                var prev;
-                var forMsg;
-                for (var i = ndx - 1; i >= 0; i--) {
-                    var p = $(evt.allRows[i].row);
-                    if (p.attr('data-msgkey') === msgKey) {
-                        prev = o.messages['m' + p.attr('data-rowid')];
-                        break;
-                    }
-                }
-                if (typeof msg.responseFor !== 'undefined' && msg.responseFor.length > 0) {
-                    let id = msg.responseFor[0];
-                    let rid = o.rowIds.find(elem => elem.msgId === id);
-                    if (typeof rid !== 'undefined')
-                        forMsg = o.messages['m' + rid.rowId];
-                }
+                var rowId = evt.newRow.attr('data-rowid');
                 
-                // Get context - try both docKey and msgKey
-                var context = o.contexts[docKey] || o.contexts[msgKey];
+                // Set a flag to prevent the click handler from opening on first click
+                o.justSelectedRowId = rowId;
                 
-                // Toggle inline expansion
-                self._toggleInlineExpansion(evt.newRow, msg, prev, forMsg, context);
+                // First click on a new row: close any open expansions FIRST
+                self._closeAllExpandedRows();
+                
+                // THEN add expansion hint icon to the newly selected row
+                var lastCell = evt.newRow.find('td:last');
+                // Create and add the new hint icon
+                var hintIcon = $('<i></i>')
+                    .addClass('fas fa-chevron-down row-expand-hint')
+                    .attr('title', 'Click to view details')
+                    .css({
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#FF6B35',
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        textShadow: '0 0 3px rgba(255,255,255,0.8)',
+                        pointerEvents: 'none',
+                        zIndex: 5
+                    });
+                lastCell.append(hintIcon);
                 
                 // Hide the bottom detail panel since we're using inline expansion
                 pnlDetail.slideUp(200);
@@ -588,18 +641,7 @@
                 height: 'auto',
                 title: 'Filter Out Messages',
                 buttons: [
-                    {
-                        text: 'Exclude All', icon: '<i class="fas fa-broom"></i>',
-                        click: function () {
-                            // Exclude all message filters (do NOT change ports)
-                            try {
-                                dlg.attr('data-processing', true);
-                                dlg.find('div.picCheckbox.cb-filter').each(function () { this.val(false); });
-                                if (typeof fnUpdateParentChecks === 'function') fnUpdateParentChecks();
-                            } catch (err) { console.log(err); }
-                            finally { dlg.attr('data-processing', false); }
-                        }
-                    },
+                    
                     {
                         text: 'Apply', icon: '<i class="fas fa-save"></i>',
                         click: function () {
@@ -1683,7 +1725,9 @@
         
             // CASE 1: Row is already open
             if (isAlreadyOpen) {
-                if (forceOpen) return; // It's already there, do nothing.
+                if (forceOpen) {
+                    return; // It's already there, do nothing.
+                }
                 
                 // User Clicked -> Close it (Toggle)
                 row.removeClass('row-expanded');
@@ -1783,6 +1827,9 @@
                     self._updateStoredRowHtml(vlist, rowId, $row);
                 }
             });
+            
+            // Remove expansion hint icons from all rows
+            el.find('i.row-expand-hint').remove();
         },
         _updateStoredRowHtml: function(vlist, rowId, row) {
             // Update the stored outerHTML in the virtual list's rows array

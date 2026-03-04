@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget("pic.dashboard", {
         options: { socket: null },
         _create: function () {
@@ -113,6 +113,7 @@
                 $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     self._setControllerType(data.controllerType);
+                    if (typeof data.equipment !== 'undefined') $('body').attr('data-firmware', data.equipment.softwareVersion || '');
                     //if (data.equipment.model.startsWith('IntelliCenter')) {
                     //    $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                     //    $('div.picDashboard').attr('data-hidethemes', 'false');
@@ -160,6 +161,7 @@
                 $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
+                    $('body').attr('data-firmware', data.equipment.softwareVersion || '');
                     if (data.equipment.model.startsWith('IntelliCenter')) {
                         $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                         $('div.picDashboard').attr('data-hidethemes', 'false');

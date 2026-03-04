@@ -2719,42 +2719,32 @@
     "messageType": "request",
     "shortName": "Ctrl[circuit]",
     "name": "Circuit Control (IntelliCenter v3.004+ Wireless)",
-    "desc": "Native circuit control message used by the Wireless remote (addr 36) on IntelliCenter v3.004+. This is the preferred method for controlling circuits on v3.004+ as it doesn't suffer from state reversion issues like Action 168. The OCP responds with an ACK (Action 1 payload [184]). For body circuits (Spa/Pool), multiple 184 messages are sent in sequence with different target IDs.",
+    "desc": "v3.004+ Indexed Circuit Control (Wireless-style). Action 184 is the native circuit control message used by the Wireless remote. This is the preferred method for controlling circuits on v3.004+ as it doesn't suffer from state reversion issues like Action 168. The OCP responds with an ACK (Action 1 payload [184]). For body circuits (Spa/Pool), multiple 184 messages are sent in sequence with different target IDs.",
     "payload": [
       {
         "start": 0,
-        "length": 1,
-        "name": "Channel ID High",
-        "desc": "Channel identifier high byte. Default channel is 104,143 (0x688F). Body context uses 128,142.",
-        "dataType": "byte",
+        "length": 2,
+        "name": "Channel",
+        "desc": "Channel identifier. 0x688F (104,143) for circuits, 0xE89D (232,157) for features.",
+        "dataType": "word",
         "values": {
-          "104": "Default channel (circuit control)",
-          "128": "Body context/select channel"
-        }
-      },
-      {
-        "start": 1,
-        "length": 1,
-        "name": "Channel ID Low",
-        "desc": "Channel identifier low byte.",
-        "dataType": "byte",
-        "values": {
-          "143": "Default channel low (with 104)",
-          "142": "Body context low (with 128)"
+          "0x688F": "Circuit channel (104,143)",
+          "0xE89D": "Feature channel (232,157)",
+          "0x808E": "Body context/select channel (128,142)"
         }
       },
       {
         "start": 2,
         "length": 1,
-        "name": "Sequence",
-        "desc": "Sequence number. Commonly 0, but Pool body control uses 5.",
+        "name": "Index",
+        "desc": "Zero-based index: circuitId - 1 for circuits (0-39), featureId - 1 for features.",
         "dataType": "byte"
       },
       {
         "start": 3,
         "length": 1,
         "name": "Format",
-        "desc": "Message format. 255 = command mode, 0 = body select mode.",
+        "desc": "Message format. 255 = command mode.",
         "dataType": "byte",
         "values": {
           "255": "Command mode",
@@ -2763,23 +2753,23 @@
       },
       {
         "start": 4,
-        "length": 1,
-        "name": "Target ID High",
-        "desc": "Target identifier high byte. Combined with low byte to form the circuit's unique targetId (hi*256 + lo).",
-        "dataType": "byte"
-      },
-      {
-        "start": 5,
-        "length": 1,
-        "name": "Target ID Low",
-        "desc": "Target identifier low byte.",
-        "dataType": "byte"
+        "length": 2,
+        "name": "Target",
+        "desc": "Target identifier. 0xA8ED (168,237) = control primitive for circuits/features.",
+        "dataType": "word",
+        "values": {
+          "0xA8ED": "Control primitive (168,237)",
+          "0xD4B6": "Body context (212,182)",
+          "0x7291": "Body select (114,145)",
+          "0x5E83": "Body type (94,131)",
+          "0x6CE1": "Body zone (108,225)"
+        }
       },
       {
         "start": 6,
         "length": 1,
-        "name": "State / Select",
-        "desc": "State value: 0=OFF, 1=ON. For body select (target 114,145): 0=Spa, 1=Pool.",
+        "name": "State",
+        "desc": "State value: 0=OFF, 1=ON. For body select (target 0x7291): 0=Spa, 1=Pool.",
         "dataType": "byte",
         "values": {
           "0": "OFF / Spa select",
@@ -2789,8 +2779,8 @@
       {
         "start": 7,
         "length": 3,
-        "name": "Context Data",
-        "desc": "Context-specific data. Usually 0,0,0 for circuit control. For body context (target 212,182): Spa ON=[101,4,0], Pool ON=[151,6,0], OFF=[255,255,255].",
+        "name": "Reserved",
+        "desc": "Reserved bytes (0,0,0). For body context (target 0xD4B6): Spa ON=[101,4,0], Pool ON=[151,6,0], OFF=[255,255,255].",
         "dataType": "byte[]"
       }
     ],

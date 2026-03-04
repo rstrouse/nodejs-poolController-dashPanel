@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget('pic.configGeneral', {
         options: {},
         _create: function () {
@@ -223,6 +223,26 @@
                 });
             }
             if (controller !== 'nixie') $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Cooldown Delay', binding: 'options.cooldownDelay' });
+            var firmware = parseFloat($('body').attr('data-firmware') || '0');
+            if (controller === 'intellicenter' && firmware >= 3.008) {
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).valueSpinner({
+                    canEdit: true, labelText: 'Freeze Cycle Time', binding: 'options.freezeCycleTime', dataType: 'number', fmtType: '#,##0', min: 1, max: 60, step: 1, maxlength: 3,
+                    units: 'min', labelAttrs: { style: { width: '14rem', display: 'inline-block' } }, inputAttrs: { style: { width: '4.5rem' } }
+                });
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).pickList({
+                    labelText: 'Freeze Override', binding: 'options.freezeOverride', bindColumn: 0,
+                    columns: [{ binding: 'val', hidden: true, text: 'Val' }, { binding: 'desc', text: 'Duration' }],
+                    items: [
+                        { val: 30, desc: '30 minutes' },
+                        { val: 90, desc: '90 minutes (1.5 hrs)' },
+                        { val: 150, desc: '150 minutes (2.5 hrs)' },
+                        { val: 210, desc: '210 minutes (3.5 hrs)' }
+                    ],
+                    inputAttrs: { style: { width: '14rem' } }, labelAttrs: { style: { width: '14rem', display: 'inline-block' } }
+                });
+            }
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveDelays"></div>').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {

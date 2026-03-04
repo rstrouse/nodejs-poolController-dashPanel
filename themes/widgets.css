@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --picBodies-order: 0;
     --picCircuits-order: 100;
     --picLights-order: 105;
@@ -767,6 +767,10 @@ div.picFieldTip {
         background: -webkit-linear-gradient(top, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* Chrome10-25,Safari5.1-6 */
         background: linear-gradient(to bottom, rgba(252,234,187,1) 0%,rgba(252,205,77,1) 50%,rgba(248,181,0,1) 51%,rgba(251,223,147,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', endColorstr='#fbdf93',GradientType=0 ); /* IE6-9 */
+    }
+    div.picFieldTip.intellichem-standalone-tip.bottom::after {
+        left: calc(100% - 14px);
+        margin-left: 0;
     }
 
 div.picFieldTip-message {
