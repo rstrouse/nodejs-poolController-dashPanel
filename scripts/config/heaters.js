@@ -139,6 +139,7 @@
                         pnlOpts.pnlHeatPumpHeaterOptions({ type: type, tempUnits: o.tempUnits });
                         break;
                     case 'ultratemp':
+                    case 'ultratempdirect':
                         cols[0].elGlyph().removeClass().addClass('fas').addClass('fa-x-ray');
                         pnlOpts = $('<div></div>').appendTo(pnl);
                         pnlOpts.pnlUltraTempHeaterOptions({ type: type, tempUnits: o.tempUnits });
