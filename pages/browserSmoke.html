@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browser Smoke Tests</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 100vh;
+        }
+        .panel {
+            border-right: 1px solid #334155;
+            padding: 16px;
+            background: #111827;
+        }
+        .panel h1 {
+            margin: 0 0 8px;
+            font-size: 1.1rem;
+        }
+        .panel p {
+            margin: 0 0 12px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .btn {
+            border: 1px solid #334155;
+            background: #1f2937;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            background: #334155;
+        }
+        .btn[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+        input[type="checkbox"] {
+            transform: translateY(1px);
+        }
+        .summary {
+            margin: 12px 0;
+            padding: 10px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #0b1220;
+            font-size: 0.9rem;
+        }
+        .results {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+        .result {
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #0b1220;
+        }
+        .result.pass {
+            border-color: #166534;
+        }
+        .result.fail {
+            border-color: #7f1d1d;
+        }
+        .result.skip {
+            border-color: #854d0e;
+        }
+        .name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .meta {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 4px;
+            white-space: pre-wrap;
+        }
+        .workspace {
+            background: #0b1220;
+        }
+        #smoke-frame {
+            width: 100%;
+            min-height: 100vh;
+            border: 0;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <section class="panel">
+            <h1>Browser Smoke Tests</h1>
+            <p>Runs app smoke checks directly in a real browser iframe. No Playwright required.</p>
+            <div class="row">
+                <button id="run-all" class="btn" type="button">Run All Tests</button>
+                <button id="clear-results" class="btn" type="button">Clear</button>
+            </div>
+            <div class="row">
+                <label>
+                    <input id="include-replay" type="checkbox" checked />
+                    Include replay-aware checks
+                </label>
+            </div>
+            <div id="summary" class="summary">Idle</div>
+            <ul id="results" class="results"></ul>
+        </section>
+        <section class="workspace">
+            <iframe id="smoke-frame" title="Smoke Test Sandbox" src="about:blank"></iframe>
+        </section>
+    </div>
+    <script src="/scripts/tests/browserSmokeRunner.js"></script>
+</body>
+</html>

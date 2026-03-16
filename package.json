@@ -15,7 +15,11 @@
     "start": "npm run build && node dist/app.js",
     "start:cached": "node dist/app.js",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "dev:qa": "npm run qa:smoke",
+    "dev:qa:cached": "npm run qa:smoke:cached",
+    "qa:smoke": "npm run build && node scripts/tests/devQaSmokeWorkflow.js",
+    "qa:smoke:cached": "node scripts/tests/devQaSmokeWorkflow.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
