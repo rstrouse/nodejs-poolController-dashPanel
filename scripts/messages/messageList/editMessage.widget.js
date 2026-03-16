@@ -96,7 +96,8 @@
                     { val: 'pump', desc: 'Pump' },
                     { val: 'intellivalve', desc: 'Intellivalve' },
                     { val: 'intellichem', desc: 'Intellichem' },
-                    { val: 'regalmodbus', desc: 'Regal Modbus' }],
+                    { val: 'regalmodbus', desc: 'Regal Modbus' },
+                    { val: 'neptunemodbus', desc: 'Neptune Modbus' }],
                 inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '4rem' } }
             });
             proto.on('selchanged', function (evt) {

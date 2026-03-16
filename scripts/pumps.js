@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     $.widget("pic.pumps", {
         options: { },
         _create: function () {
@@ -131,6 +131,7 @@
                     case 'vs':
                     case 'vs+svrs':
                     case 'regalmodbus':
+                    case 'neptunemodbus':
                         el.find('div.picProgram').hide();
                         el.find('div.picFlow').hide();
                         el.find('div.picSpeed').show();

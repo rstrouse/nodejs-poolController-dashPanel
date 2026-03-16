@@ -1,4 +1,4 @@
-﻿{
+{
   "protocols": [
     {
       "name": "broadcast",
@@ -834,6 +834,17 @@
       "controller": false,
       "length": false,
       "keyFormat": "<address>_<function>_<ack>_<data>_<crclo>_<crchi>"
+    },
+    {
+      "name": "neptunemodbus",
+      "desc": "Neptune Modbus",
+      "actions": {
+        "all": []
+      },
+      "source": false,
+      "controller": false,
+      "length": false,
+      "keyFormat": "<address>_<function>_<data>_<crclo>_<crchi>"
     }
   ],
   "controllers": [
