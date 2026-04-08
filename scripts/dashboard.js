@@ -75,6 +75,12 @@
                     $('div.picDashboard').attr('data-hideintellibrite', 'true');
                     $('div.picDashboard').attr('data-masterid', '1');
                     break;
+                case 'aqualink':
+                    $('div.picDashboard').attr('data-controllertype', 'AquaLink');
+                    $('div.picDashboard').attr('data-hidethemes', 'false');
+                    $('div.picDashboard').attr('data-hideintellibrite', 'true');
+                    $('div.picDashboard').attr('data-masterid', '0');
+                    break;
                 case 'intellitouch':
                     $('div.picDashboard').attr('data-controllertype', 'IntelliTouch');
                     $('div.picDashboard').attr('data-hidethemes', 'true');
@@ -162,7 +168,10 @@
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
                     $('body').attr('data-firmware', data.equipment.softwareVersion || '');
-                    if (data.equipment.model.startsWith('IntelliCenter')) {
+                    if (typeof data.controllerType !== 'undefined') {
+                        self._setControllerType(data.controllerType);
+                    }
+                    else if (data.equipment.model.startsWith('IntelliCenter')) {
                         $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                         $('div.picDashboard').attr('data-hidethemes', 'false');
                     }

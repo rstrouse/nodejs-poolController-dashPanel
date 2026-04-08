@@ -1,4 +1,68 @@
 ﻿(function ($) {
+    function isLightTypeName(name) {
+        switch (name) {
+            case 'light':
+            case 'intellibrite':
+            case 'pooltone':
+            case 'colorlogic':
+            case 'globrite':
+            case 'globritewhite':
+            case 'magicstream':
+            case 'dimmer':
+            case 'colorcascade':
+            case 'samlight':
+            case 'sallight':
+            case 'photongen':
+            case 'watercolors':
+                return true;
+        }
+        return false;
+    }
+    function hasThemeSelector(circuit) {
+        if (typeof circuit === 'undefined' || typeof circuit.type === 'undefined') return false;
+        if (makeBool($('div.picDashboard').attr('data-hidethemes'))) return false;
+        switch (circuit.type.name) {
+            case 'colorlogic':
+            case 'intellibrite':
+            case 'pooltone':
+            case 'globrite':
+            case 'magicstream':
+            case 'colorcascade':
+            case 'samlight':
+            case 'sallight':
+            case 'watercolors':
+                return true;
+        }
+        return false;
+    }
+    function supportsBrightnessControl(circuit) {
+        return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' &&
+            (circuit.type.name === 'dimmer' || circuit.type.name === 'watercolors' || makeBool(circuit.type.supportsBrightness));
+    }
+    function supportsCustomColorControl(circuit) {
+        return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' &&
+            (circuit.type.name === 'watercolors' || makeBool(circuit.type.supportsCustomColor));
+    }
+    function getThemeDisplayName(data) {
+        if (typeof data === 'undefined') return 'none';
+        if (typeof data.color !== 'undefined' && data.color !== null &&
+            (typeof data.lightingTheme === 'undefined' || data.lightingTheme === null || data.lightingTheme.name === 'none')) {
+            return 'customrgb';
+        }
+        return typeof data.lightingTheme !== 'undefined' && data.lightingTheme !== null ? data.lightingTheme.name : 'none';
+    }
+    function applyThemeIndicator(el, data) {
+        let themeName = getThemeDisplayName(data);
+        let theme = el.find('div.picIBColor');
+        theme.attr('data-color', themeName);
+        if (themeName === 'customrgb' && typeof data.color !== 'undefined' && data.color !== null) {
+            theme.css('background', `rgb(${data.color.red}, ${data.color.green}, ${data.color.blue})`);
+        }
+        else {
+            theme.css('background', '');
+        }
+        return themeName;
+    }
     $.widget("pic.circuits", {
         options: {},
         _create: function () {
@@ -42,23 +106,7 @@
             }
         },
         _isLight: function (name) {
-            switch (name) {
-                case 'light':
-                case 'intellibrite':
-                case 'pooltone':
-                case 'colorlogic':
-                case 'globrite':
-                case 'globritewhite':
-                case 'magicstream':
-                case 'dimmer':
-                case 'colorcascade':
-                case 'samlight':
-                case 'sallight':
-                case 'photongen':
-                    console.log(name);
-                    return true;
-            }
-            return false;
+            return isLightTypeName(name);
         },
         setItem: function (type, data) {
             var self = this, o = self.options, el = self.element;
@@ -674,51 +722,18 @@
                         })
                         self.setState(o); */
         },
-        hasPopover: function (circuit) { return this.hasLightThemes(circuit) || this.hasDimmer(circuit); },
+        hasPopover: function (circuit) { return this.hasLightThemes(circuit) || this.hasDimmer(circuit) || this.hasCustomColor(circuit); },
         hasLightThemes: function (circuit) {
-            var self = this, o = self.options, el = self.element;
-            if (makeBool($('div.picDashboard').attr('data-hidethemes'))) return false;
-            switch (circuit.type.name) {
-                case 'colorlogic':
-                case 'intellibrite':
-                case 'pooltone':
-                case 'globrite':
-                case 'magicstream':
-                case 'colorcascade':
-                case 'samlight':
-                case 'sallight':
-                    return true;
-            }
-            return false;
+            return hasThemeSelector(circuit);
         },
         hasDimmer: function (circuit) {
-            var self = this, o = self.options, el = self.element;
-            if (makeBool(el.attr('data-hidethemes'))) return false;
-            switch (circuit.type.name) {
-                case 'dimmer':
-                    return true;
-            }
-            return false;
+            return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' && circuit.type.name === 'dimmer';
+        },
+        hasCustomColor: function (circuit) {
+            return supportsCustomColorControl(circuit);
         },
         isLight: function (circuit) {
-            if (typeof circuit === 'undefined' || typeof circuit.type === 'undefined') return false;
-            // Create a new feature for light types only.
-            switch (circuit.type.name) {
-                case 'light':
-                case 'intellibrite':
-                case 'pooltone':
-                case 'colorlogic':
-                case 'globrite':
-                case 'globritewhite':
-                case 'magicstream':
-                case 'dimmer':
-                case 'colorcascade':
-                case 'samlight':
-                case 'sallight':
-                case 'photongen':
-                    return true;
-            }
-            return false;
+            return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' && isLightTypeName(circuit.type.name);
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -745,8 +760,7 @@
                 else {
                     el.find('i.picDropdownButton').removeClass('fa-spin');
                 }
-
-                el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
+                let themeName = applyThemeIndicator(el, data);
                 el.attr('data-state', data.isOn);
                 if (typeof data.endTime === 'undefined' || !data.isOn) {
                     el.attr('data-endtime', null);
@@ -758,8 +772,10 @@
                 self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
-                    pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-                    pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+                    pnl.find('div.picIBColorSelector div.picIndicator').attr('data-status', 'off');
+                    if (themeName !== 'none' && themeName !== 'customrgb') {
+                        pnl.find('div.picIBColorSelector[data-color=' + themeName + '] div.picIndicator').attr('data-status', 'on');
+                    }
                 });
                 if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel').text(data.name);
                 if (typeof data.showInFeatures !== 'undefined') el.attr('data-showinfeatures', data.showInFeatures);
@@ -886,6 +902,7 @@
                             case 'samlight':
                             case 'sallight':
                             case 'photongen':
+                            case 'watercolors':
                                 let div = $('<div class="picLight picFeature picCircuit btn"></div>');
                                 //console.log({ msg: 'Building light', light: data.circuits[i] });
                                 div.appendTo(inner);
@@ -936,22 +953,7 @@
         },
         isLight: function (circuit) {
             try {
-                // Create a new feature for light types only.
-                switch (circuit.type.name) {
-                    case 'light':
-                    case 'intellibrite':
-                    case 'pooltone':
-                    case 'colorlogic':
-                    case 'globrite':
-                    case 'globritewhite':
-                    case 'magicstream':
-                    case 'dimmer':
-                    case 'colorcascade':
-                    case 'samlight':
-                    case 'sallight':
-                    case 'photongen':
-                        return true;
-                }
+                return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' && isLightTypeName(circuit.type.name);
             } catch (err) { console.error(err); }
             return false;
         },
@@ -1144,29 +1146,13 @@
             });
         },
         isLight: function (circuit) {
-            // Create a new feature for light types only.
-            switch (circuit.type.name) {
-                case 'light':
-                case 'intellibrite':
-                case 'colorlogic':
-                case 'pooltone':
-                case 'globrite':
-                case 'globritewhite':
-                case 'magicstream':
-                case 'dimmer':
-                case 'colorcascade':
-                case 'samlight':
-                case 'sallight':
-                case 'photongen':
-                    return true;
-            }
-            return false;
+            return typeof circuit !== 'undefined' && typeof circuit.type !== 'undefined' && isLightTypeName(circuit.type.name);
         },
         setState: function (data) {
             var self = this, o = self.options, el = self.element;
             try {
                 el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
-                el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
+                let themeName = applyThemeIndicator(el, data);
                 if (data.action.val !== 0) {
                     el.find('i.picDropdownButton').addClass('fa-spin');
                 }
@@ -1185,8 +1171,10 @@
                 self.countdownEndTime();
                 el.parent().find('div.picLightThemes[data-circuitid=' + data.id + ']').each(function () {
                     let pnl = $(this);
-                    pnl.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-                    pnl.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+                    pnl.find('div.picIBColorSelector div.picIndicator').attr('data-status', 'off');
+                    if (themeName !== 'none' && themeName !== 'customrgb') {
+                        pnl.find('div.picIBColorSelector[data-color=' + themeName + '] div.picIndicator').attr('data-status', 'on');
+                    }
                 });
             } catch (err) { console.error(err); }
             //if (!self.isLight(data)) el.remove(true);
@@ -1233,6 +1221,80 @@
             self._buildControls();
             console.log(o);
             o = { processing: false };
+        },
+        _setRgbPreview: function (color) {
+            var self = this, o = self.options, el = self.element;
+            let preview = el.find('div.picLightRgbPreview:first');
+            if (preview.length === 0) return;
+            if (typeof color === 'undefined' || color === null) {
+                preview.css('background', '');
+                preview.text('No custom RGB selected');
+                return;
+            }
+            preview.css('background', `rgb(${color.red}, ${color.green}, ${color.blue})`);
+            preview.text(`RGB ${color.red}, ${color.green}, ${color.blue}`);
+        },
+        _buildBrightness: function (circ) {
+            var self = this, o = self.options, el = self.element;
+            if (!supportsBrightnessControl(circ) || circ.type.name === 'dimmer') return;
+            let section = $('<div class="picLightSettingsSection"></div>').appendTo(el);
+            $('<div class="picLightSectionTitle"></div>').text('Brightness').appendTo(section);
+            let row = $('<div class="picLightSettingsRow"></div>').appendTo(section);
+            $('<div class="picValueSpinner picLightBrightnessSpinner"></div>').appendTo(row)
+                .valueSpinner({
+                    labelText: 'Level',
+                    units: '%',
+                    val: typeof circ.level !== 'undefined' ? circ.level : 100,
+                    min: 0,
+                    max: 100,
+                    step: 5,
+                    canEdit: true,
+                    inputAttrs: { maxlength: 3, style: { width: '3rem' } },
+                    labelAttrs: { style: { width: '3rem' } }
+                })
+                .on('change', function (evt) {
+                    $.putApiService('state/light/setBrightness', { id: circ.id, level: parseInt(evt.value, 10) });
+                });
+        },
+        _buildCustomColor: function (circ) {
+            var self = this, o = self.options, el = self.element;
+            if (!supportsCustomColorControl(circ)) return;
+            let section = $('<div class="picLightSettingsSection"></div>').appendTo(el);
+            $('<div class="picLightSectionTitle"></div>').text('Custom RGB').appendTo(section);
+            $('<div class="picLightRgbPreview"></div>').appendTo(section);
+            let row = $('<div class="picLightSettingsRow"></div>').appendTo(section);
+            let color = $.extend({ red: 0, green: 0, blue: 0 }, circ.color || {});
+            ['red', 'green', 'blue'].forEach(function (component) {
+                $('<div class="picValueSpinner picLightRgbSpinner"></div>').attr('data-component', component).appendTo(row)
+                    .valueSpinner({
+                        labelText: component.charAt(0).toUpperCase(),
+                        val: color[component],
+                        min: 0,
+                        max: 255,
+                        step: 1,
+                        canEdit: true,
+                        inputAttrs: { maxlength: 3, style: { width: '3rem' } },
+                        labelAttrs: { style: { width: '1.25rem' } }
+                    })
+                    .on('change', function () {
+                        let current = {
+                            red: row.find('div.picLightRgbSpinner[data-component=red]')[0].val(),
+                            green: row.find('div.picLightRgbSpinner[data-component=green]')[0].val(),
+                            blue: row.find('div.picLightRgbSpinner[data-component=blue]')[0].val()
+                        };
+                        self._setRgbPreview(current);
+                    });
+            });
+            $('<div></div>').appendTo(section).actionButton({ text: 'Apply RGB', icon: '<i class="fas fa-palette"></i>' })
+                .on('click', function () {
+                    $.putApiService('state/light/setColor', {
+                        id: circ.id,
+                        red: row.find('div.picLightRgbSpinner[data-component=red]')[0].val(),
+                        green: row.find('div.picLightRgbSpinner[data-component=green]')[0].val(),
+                        blue: row.find('div.picLightRgbSpinner[data-component=blue]')[0].val()
+                    });
+                });
+            self._setRgbPreview(circ.color);
         },
         _buildCommands: function (circ) {
             var self = this, o = self.options, el = self.element;
@@ -1326,6 +1388,8 @@
             $.getApiService(`/state/circuit/${circuitId}`, function (circ, status, xhr) {
                 console.log(circ);
                 self._buildThemes(circ);
+                self._buildBrightness(circ);
+                self._buildCustomColor(circ);
                 self._buildCommands(circ);
                 self._setProcessing(circ.action);
 
@@ -1398,8 +1462,20 @@
             //el.find('div.picFeatureToggle').find('div.picIndicator').attr('data-status', data.isOn ? 'on' : 'off');
             //el.find('div.picIBColor').attr('data-color', typeof data.lightingTheme !== 'undefined' ? data.lightingTheme.name : 'none');
             //el.attr('data-state', data.isOn);
-            el.find('div.picIBColorSelector:not([data-color=' + data.lightingTheme.name + ']) div.picIndicator').attr('data-status', 'off');
-            el.find('div.picIBColorSelector[data-color=' + data.lightingTheme.name + '] div.picIndicator').attr('data-status', 'on');
+            let themeName = getThemeDisplayName(data);
+            el.find('div.picIBColorSelector div.picIndicator').attr('data-status', 'off');
+            if (themeName !== 'none' && themeName !== 'customrgb') {
+                el.find('div.picIBColorSelector[data-color=' + themeName + '] div.picIndicator').attr('data-status', 'on');
+            }
+            el.find('div.picLightBrightnessSpinner').each(function () {
+                this.val(typeof data.level !== 'undefined' ? data.level : 100);
+            });
+            if (typeof data.color !== 'undefined') {
+                el.find('div.picLightRgbSpinner[data-component=red]').each(function () { this.val(data.color.red || 0); });
+                el.find('div.picLightRgbSpinner[data-component=green]').each(function () { this.val(data.color.green || 0); });
+                el.find('div.picLightRgbSpinner[data-component=blue]').each(function () { this.val(data.color.blue || 0); });
+            }
+            self._setRgbPreview(data.color);
             console.log(data.action);
             self._setProcessing(data.action);
         },

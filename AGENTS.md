@@ -112,3 +112,9 @@ After modifying entity extraction or flow timeline logic:
 4. Check that byte offsets shown in "Relevant Bytes" column are correct
 5. Test Flow Timeline spans appear for the expected packet sequences
 
+### Offline AquaLink Light UI Testing
+
+- When using fixture data without a live AquaLink controller, the dashboard can remain in `Initializing`; do not treat that alone as a WaterColors UI regression.
+- For WaterColors runtime controls, the `Light Settings` popup opens from the palette icon on the light tile, not from clicking the entire tile body.
+- Browser automation can hit the tile toggle instead of the palette icon; confirm with screenshots before concluding the popup is broken.
+

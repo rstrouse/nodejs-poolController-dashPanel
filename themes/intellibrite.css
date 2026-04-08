@@ -64,6 +64,32 @@ div.picCSColors {
 div.picIBThemes {
     max-width: 22.5rem;
 }
+div.picLightSettingsSection {
+    margin-top: .5rem;
+}
+div.picLightSectionTitle {
+    font-weight: bold;
+    margin: .25rem 0;
+}
+div.picLightSettingsRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem;
+}
+div.picLightRgbPreview {
+    height: 1.5rem;
+    line-height: 1.5rem;
+    border-radius: 5px;
+    border: solid 1px gray;
+    margin-bottom: .35rem;
+    padding: 0 .5rem;
+    color: white;
+    text-shadow: -1px -1px 1px rgba(0,0,0,.4), 1px 1px 1px rgba(0,0,0,.4);
+    box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+    -webkit-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+    -moz-box-shadow: 3px 3px 3px rgba(127,127,127,0.5);
+}
 div.picCSColor {
     width: 4.5rem;
     height: 1.4rem;
@@ -387,6 +413,54 @@ div.picIBColor[data-color=voodoolounge] {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fc4219', endColorstr='#9000d3',GradientType=1 ); 
     color: white;
     text-shadow: -1px 0px 3px rgba(0,0,0,1), 1px 1px 1px rgba(128,12,12,.5);
+}
+
+/* WaterColors Themes */
+div.picIBColor[data-color=alpinewhite] {
+    background-color: floralwhite;
+    color: black;
+    text-shadow: -1px -1px 1px rgba(0,0,0,.1), 1px 1px 1px rgba(255,255,255,.5);
+}
+div.picIBColor[data-color=skyblue] {
+    background-color: deepskyblue;
+}
+div.picIBColor[data-color=cobaltblue] {
+    background-color: cobaltblue;
+}
+div.picIBColor[data-color=caribbeanblue] {
+    background: linear-gradient(to right, #00c6ff 0%, #0072ff 100%);
+}
+div.picIBColor[data-color=springgreen] {
+    background-color: springgreen;
+    color: black;
+}
+div.picIBColor[data-color=emeraldgreen] {
+    background-color: #50c878;
+    color: black;
+}
+div.picIBColor[data-color=emeraldrose] {
+    background: linear-gradient(to right, #50c878 0%, #ff66b3 100%);
+}
+div.picIBColor[data-color=violet] {
+    background-color: violet;
+    color: black;
+}
+div.picIBColor[data-color=slowcolorsplash] {
+    background: linear-gradient(to right, #ff6b6b 0%, #ffd93d 25%, #6bff95 50%, #4d96ff 75%, #b16cea 100%);
+}
+div.picIBColor[data-color=fastcolorsplash] {
+    background: linear-gradient(to right, #ff003c 0%, #ff8a00 16%, #f6ff00 32%, #00ff85 48%, #00c2ff 64%, #3b00ff 82%, #c800ff 100%);
+}
+div.picIBColor[data-color=americathebeautiful] {
+    background: linear-gradient(to right, #ff0000 0%, #ffffff 50%, #0c3bf5 100%);
+    color: black;
+    text-shadow: -1px -1px 1px rgba(0,0,0,.1), 1px 1px 1px rgba(255,255,255,.5);
+}
+div.picIBColor[data-color=fattuesday] {
+    background: linear-gradient(to right, #ffd700 0%, #00a651 50%, #6a0dad 100%);
+}
+div.picIBColor[data-color=discotech] {
+    background: linear-gradient(to right, #ff005d 0%, #ff8a00 20%, #fff200 40%, #00ff85 60%, #00c2ff 80%, #8a2be2 100%);
 }
 
 
