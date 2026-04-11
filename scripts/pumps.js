@@ -103,14 +103,11 @@
                     else {
                         // Determine pump on/off status based on pump type
                         var isOn = false;
-                        if (type.name === 'regalmodbus' || type.name === 'regalmodbus2') {
+                        if (type.name === 'regalmodbus') {
                             // For modbus pumps, use actual speed/flow indicators
                             // Pump is considered "on" if it's actually running at a speed > 0
                             isOn = (typeof data.rpm !== 'undefined' && data.rpm > 0) || 
                                    (typeof data.speed !== 'undefined' && data.speed > 0);
-                            if (data.id === 1) {  // Debug for pump 1 only to avoid spam
-                                console.debug(`[Pump ${data.id}] Modbus pump state - rpm: ${data.rpm}, speed: ${data.speed}, isOn: ${isOn}`);
-                            }
                         }
                         else {
                             // For relay-based pumps, use command or relay status
