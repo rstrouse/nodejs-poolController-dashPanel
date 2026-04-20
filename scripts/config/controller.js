@@ -1194,4 +1194,159 @@
             dataBinder.bind(el, obj);
         }
     });
+    // ==========================================================================
+    // Virtual Equipment (wire-level slave simulators)
+    // --------------------------------------------------------------------------
+    // This tab configures downstream devices (pumps, etc.) that njsPC impersonates
+    // on the RS-485 bus toward whichever master is live (real OCP or Nixie).
+    // The config is persisted in data/virtualEquipment.json on the server, NOT in
+    // poolConfig.json, so it does not appear in sys.pumps / state.pumps.
+    // ==========================================================================
+    $.widget('pic.configVirtualEquipment', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].onVirtualEquipmentUpdate = function (data) { self._render(data); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picConfigCategory').addClass('cfgVirtualEquipment');
+            el.attr('data-role', 'virtualEquipment');
+
+            $('<div></div>').appendTo(el).addClass('virtualEquipment-warning')
+                .html('For testing only. Do not enable a virtual pump at the same address as a real pump on the bus.');
+            $('<div></div>').appendTo(el).addClass('virtualEquipment-narrative')
+                .html('A virtual pump makes njsPC answer as if a physical IntelliFlo pump were present at the given bus address. ' +
+                      'Either a real OCP or Nixie can address it. Collision detection will auto-disable the virtual pump if a real pump is also answering.');
+            $('<hr></hr>').appendTo(el);
+
+            $('<div class="virtualEquipment-pump-panel"></div>').appendTo(el);
+
+            self._loadAndRender();
+        },
+        _loadAndRender: function () {
+            var self = this;
+            $.getApiService('/config/virtualEquipment', null, function (data) {
+                self._render(data);
+            });
+        },
+        _render: function (data) {
+            var self = this, el = self.element;
+            var pnl = el.find('div.virtualEquipment-pump-panel');
+            pnl.empty();
+
+            // v1: single VS pump at address 96.  We show a single form regardless
+            // of what's in the data file; any existing pump populates it.
+            var pump = (data && Array.isArray(data.pumps) && data.pumps.length > 0) ? data.pumps[0] : null;
+
+            self._renderPumpForm(pnl, pump);
+            self._renderRuntimeSection(pnl, pump);
+        },
+        _renderPumpForm: function (pnl, pump) {
+            var self = this;
+            var form = $('<div class="virtualEquipment-form"></div>').appendTo(pnl);
+
+            var row1 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'Address', binding: 'address',
+                min: 96, max: 111, step: 1, value: pump ? pump.address : 96,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginRight: '.25rem' } }
+            }).attr('title', 'Bus address of the virtual pump. 96 = Pump 1, 97 = Pump 2, etc.');
+
+            $('<div></div>').appendTo(row1).pickList({
+                required: true,
+                value: pump ? pump.type : 'vs',
+                bindColumn: 0, displayColumn: 1, labelText: 'Type', binding: 'type',
+                columns: [
+                    { binding: 'val', hidden: true, text: 'Type' },
+                    { binding: 'desc', text: 'Description', style: { whiteSpace: 'nowrap' } }
+                ],
+                items: [{ val: 'vs', desc: 'IntelliFlo VS (RPM)' }],
+                inputAttrs: { style: { width: '13rem' } },
+                labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } }
+            });
+
+            var row2 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row2).checkbox({
+                labelText: 'Enabled', binding: 'enabled'
+            }).each(function () { this.val(pump ? pump.enabled === true : false); })
+              .attr('title', 'Enable the virtual pump. When enabled it will answer bus packets addressed to it.');
+
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(form);
+
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save', icon: '<i class="fas fa-save"></i>' });
+            btnSave.on('click', function () {
+                var v = dataBinder.fromElement(form);
+                if (!dataBinder.checkRequired(form)) return;
+                $.putApiService('/config/virtualEquipment/pump', v, 'Saving virtual pump...', function () {
+                    self._loadAndRender();
+                });
+            });
+
+            if (pump) {
+                var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete', icon: '<i class="fas fa-trash"></i>' });
+                btnDelete.on('click', function () {
+                    $.pic.modalDialog.createConfirm('dlgConfirmDeleteVirtualPump', {
+                        message: 'Delete the virtual pump at address ' + pump.address + '?',
+                        width: '350px', height: 'auto', title: 'Confirm Delete Virtual Pump',
+                        buttons: [{
+                            text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                            click: function () {
+                                $.pic.modalDialog.closeDialog(this);
+                                $.deleteApiService('/config/virtualEquipment/pump/' + pump.address, null, 'Deleting virtual pump...', function () {
+                                    self._loadAndRender();
+                                });
+                            }
+                        }, {
+                            text: 'No', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                });
+            }
+        },
+        _renderRuntimeSection: function (pnl, pump) {
+            var self = this;
+            var runtimeWrap = $('<div class="virtualEquipment-runtime"></div>').appendTo(pnl);
+            if (!pump) {
+                $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-hint')
+                    .text('No virtual pump configured. Fill in the form above and click Save to create one.');
+                return;
+            }
+
+            if (pump.autoDisabled) {
+                var banner = $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-conflict-banner');
+                banner.html('<strong>Auto-disabled:</strong> ' + (pump.autoDisabledReason || 'A real pump appears to be responding at this address.'));
+                if (pump.autoDisabledAt) banner.append($('<div class="virtualEquipment-timestamp"></div>').text('at ' + pump.autoDisabledAt));
+                var reBtn = $('<div></div>').appendTo(banner).actionButton({ text: 'Re-enable', icon: '<i class="fas fa-bolt"></i>' });
+                reBtn.on('click', function () {
+                    $.putApiService('/config/virtualEquipment/pump/' + pump.address + '/reenable', {}, 'Re-enabling virtual pump...', function () {
+                        self._loadAndRender();
+                    });
+                });
+            }
+
+            var grid = $('<div class="virtualEquipment-runtime-grid"></div>').appendTo(runtimeWrap);
+            grid.attr('data-address', pump.address);
+            var rt = pump.runtime || {};
+            self._setRuntimeGrid(grid, pump, rt);
+        },
+        _setRuntimeGrid: function (grid, pump, rt) {
+            grid.empty();
+            function row(label, value) {
+                var r = $('<div class="virtualEquipment-runtime-row"></div>').appendTo(grid);
+                $('<span class="virtualEquipment-runtime-label"></span>').text(label + ':').appendTo(r);
+                $('<span class="virtualEquipment-runtime-value"></span>').text(value).appendTo(r);
+            }
+            row('Effective', pump.isEffective ? 'yes' : 'no');
+            row('Running', rt.running ? 'yes' : 'no');
+            row('Remote control', rt.remote ? 'yes' : 'no');
+            row('Target RPM', rt.targetRpm != null ? rt.targetRpm : '—');
+            row('Watts (simulated)', rt.watts != null ? rt.watts : '—');
+            row('Packets answered', rt.packetCount != null ? rt.packetCount : 0);
+            row('Last packet', rt.lastPacketAt || '—');
+        }
+    });
 })(jQuery);

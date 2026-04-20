@@ -317,6 +317,14 @@
                     this.setState(data);
                 });
             });
+            o.socket.on('virtualEquipment', function (data) {
+                // Emitted by njsPC VirtualEquipmentManager on every state change
+                // or collision event. Any open Virtual Equipment tab re-renders
+                // from this snapshot without a REST round-trip.
+                $('div.cfgVirtualEquipment').each(function () {
+                    if (typeof this.onVirtualEquipmentUpdate === 'function') this.onVirtualEquipmentUpdate(data);
+                });
+            });
             o.socket.on('equipmentMessage', function (data) {
                 console.log({ evt: 'equipmentMessage', data: data });
             });

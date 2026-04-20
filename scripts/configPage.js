@@ -100,10 +100,16 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configMockControllerType();
                     break;
+                case 'tabVirtualEquipment':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configVirtualEquipment();
+                    break;
             }
             if (typeof evt.oldTab !== 'undefined') {
                 // Need to clear the tab so that we stop getting the RS485 output messages
                 if (evt.oldTab.id === 'tabRS485' && evt.newTab.id !== 'tabRS485') evt.oldTab.contents.empty();
+                // Clear virtual equipment socket binding when leaving that tab
+                if (evt.oldTab.id === 'tabVirtualEquipment' && evt.newTab.id !== 'tabVirtualEquipment') evt.oldTab.contents.empty();
             }
         },
         _buildControls: function () {
@@ -125,7 +131,8 @@
                     { id: 'tabInterfaces', text: 'Interfaces', cssClass: 'cfgInterfaces' },
                     { id: 'tabRS485', text: 'Comms', cssClass: 'cfgRS485Port' },
                     // { id: 'tabScreenlogic', text: 'ScreenLogic', cssClass: 'cfgScreenlogic' },
-                    { id: 'tabMockControllerType', text: 'Anslq25 (Mock Controller)', cssClass: 'cfgMockControllerType' }],
+                    { id: 'tabMockControllerType', text: 'Anslq25 (Mock Controller)', cssClass: 'cfgMockControllerType' },
+                    { id: 'tabVirtualEquipment', text: 'Virtual Equipment', cssClass: 'cfgVirtualEquipment' }],
                 );
                 //tabs[0].showTab('tabController', false);
                 tab = self._addConfigTab({ id: 'tabGeneral', text: 'General', cssClass: 'cfgGeneral' });

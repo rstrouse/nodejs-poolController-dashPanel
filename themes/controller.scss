@@ -207,6 +207,69 @@ div.anslq25-ct-narrative-warning {
     font:bold;
     color:red;
 }
+/* Virtual Equipment (Controller sub-tab) */
+div.cfgVirtualEquipment {
+    max-width: 42rem;
+}
+div.virtualEquipment-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: .5rem .75rem;
+    border-radius: .25rem;
+    margin-bottom: .5rem;
+    font-size: .9em;
+}
+div.virtualEquipment-narrative {
+    font-size: .85em;
+    margin-bottom: .5rem;
+    line-height: 1.35;
+}
+div.virtualEquipment-form {
+    padding: .25rem 0;
+}
+div.virtualEquipment-runtime {
+    margin-top: 1rem;
+    padding-top: .5rem;
+    border-top: 1px dashed #ccc;
+}
+div.virtualEquipment-hint {
+    font-style: italic;
+    color: #888;
+    font-size: .85em;
+}
+div.virtualEquipment-runtime-grid {
+    display: block;
+    padding: .25rem 0;
+}
+div.virtualEquipment-runtime-row {
+    display: flex;
+    justify-content: flex-start;
+    font-size: .85em;
+    padding: .1rem 0;
+}
+span.virtualEquipment-runtime-label {
+    display: inline-block;
+    width: 10rem;
+    color: #555;
+}
+span.virtualEquipment-runtime-value {
+    font-weight: 600;
+}
+div.virtualEquipment-conflict-banner {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: .5rem .75rem;
+    border-radius: .25rem;
+    margin-bottom: .5rem;
+    font-size: .9em;
+}
+div.virtualEquipment-timestamp {
+    font-size: .75em;
+    color: #555;
+    margin-top: .15rem;
+}
 div.sysmessage-button {
     display:inline-block;
     position:relative;
