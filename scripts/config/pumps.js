@@ -52,6 +52,8 @@
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             var isNixie = $('body').attr('data-controllertype') === 'nixie';
+            var isIntelliCenter = self._isIntelliCenter();
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgPump');
             var binding = '';
@@ -64,7 +66,7 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'master').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'3.25rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width:'3.25rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Pump Type', style: { whiteSpace: 'nowrap' } }],
@@ -150,6 +152,10 @@
                             }
                         }
                         if (valid) {
+                            if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
+                            if (self._isIntelliCenterV3() && typeof v.speedStepSize !== 'undefined') {
+                                v.speedStepSize = self._normalizeSpeedStepSize(v.speedStepSize, 10);
+                            }
                             $.putApiService('/config/pump', v, 'Saving Pump...', function (data, status, xhr) {
                                 console.log(data);
                                 self.dataBind(data);
@@ -194,12 +200,38 @@
                 });
             });
         },
+        _isIntelliCenterV3: function () {
+            var controller = ($('body').attr('data-controllertype') || '').toLowerCase();
+            var firmware = parseFloat($('body').attr('data-firmware') || '0');
+            return controller === 'intellicenter' && !isNaN(firmware) && firmware >= 3;
+        },
+        _isIntelliCenter: function () {
+            return ($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter';
+        },
+        _normalizeSpeedStepSize: function (rawStep, fallback) {
+            var parsedStep = parseInt(rawStep, 10);
+            if (isNaN(parsedStep) || parsedStep <= 0) parsedStep = fallback;
+            parsedStep = Math.max(10, parsedStep);
+            return Math.round(parsedStep / 10) * 10;
+        },
+        _getPumpStepSize: function (pump, unitsName) {
+            var self = this;
+            var fallback = unitsName === 'rpm' ? 10 : 1;
+            if (!self._isIntelliCenterV3()) return fallback;
+            if (unitsName === 'rpm') return self._normalizeSpeedStepSize(pump.speedStepSize, fallback);
+            var parsedStep = parseInt(pump.flowStepSize, 10);
+            return !isNaN(parsedStep) && parsedStep > 0 ? parsedStep : fallback;
+        },
         _buildRelayPanel: function (type) {
             var self = this, o = self.options, el = self.element;
 
         },
-        _resetPumpPanel: function (type) {
+        _resetPumpPanel: function (type, pump) {
             var self = this, o = self.options, el = self.element;
+            pump = pump || {};
+            var isIntelliCenterV3 = self._isIntelliCenterV3();
+            var speedStepSize = self._getPumpStepSize(pump, 'rpm');
+            var flowStepSize = self._getPumpStepSize(pump, 'gpm');
             
             // Add the hex address to the address list if we're dealing with a (newer) pump type that has addresses.
             if (typeof type.addresses !== 'undefined') {
@@ -214,7 +246,11 @@
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
             if (typeof type.maxPrimingTime !== 'undefined') {
                 $('<div></div>').appendTo(line).valueSpinner({ canEdit:true, labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                // Flow-only pumps (e.g. IntelliFlo VF) have priming time but no priming speed setting.
+                if (typeof type.minSpeed !== 'undefined' && typeof type.maxSpeed !== 'undefined')
+                    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: speedStepSize, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                else
+                    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingSpeed').appendTo(line);
             }
             else {
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingTime').appendTo(line);
@@ -222,22 +258,38 @@
             }
             line = $('<div></div>').appendTo(pnl).css({ margin: '3px' });
             if (typeof type.minSpeed !== 'undefined') 
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Speed', binding: binding + 'minSpeed', min: type.minSpeed, max: type.maxSpeed, step: speedStepSize, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minSpeed').appendTo(line);
             if (typeof type.maxSpeed !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: 10, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Speed', binding: binding + 'maxSpeed', min: type.minSpeed, max: type.maxSpeed, step: speedStepSize, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxSpeed').appendTo(line);
             line = $('<div></div>').appendTo(pnl).css({ marginLeft: '3px' });
             if (typeof type.minFlow !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Minimum Flow', binding: binding + 'minFlow', min: type.minFlow, max: type.maxFlow, step: flowStepSize, units: 'gpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'minFlow').appendTo(line);
             if (typeof type.maxFlow !== 'undefined')
-                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Maximum Flow', binding: binding + 'maxFlow', min: type.minFlow, max: type.maxFlow, step: flowStepSize, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             else
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'maxFlow').appendTo(line);
+            if (isIntelliCenterV3) {
+                line = $('<div></div>').appendTo(pnl).css({ marginLeft: '3px' });
+                if (typeof type.minSpeed !== 'undefined')
+                    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Speed Step', binding: binding + 'speedStepSize', min: 10, max: Math.max(type.maxSpeed || 10, 10), step: 10, units: 'rpm', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                else
+                    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'speedStepSize').val(pump.speedStepSize || speedStepSize).appendTo(line);
+                if (typeof type.minFlow !== 'undefined')
+                    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Flow Step', binding: binding + 'flowStepSize', min: 1, max: Math.max(type.maxFlow || 1, 1), step: 1, units: 'gpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
+                else
+                    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'flowStepSize').val(pump.flowStepSize || flowStepSize).appendTo(line);
+            }
+            else {
+                line = $('<div></div>').appendTo(pnl);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'speedStepSize').val(pump.speedStepSize || speedStepSize).appendTo(line);
+                $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'flowStepSize').val(pump.flowStepSize || flowStepSize).appendTo(line);
+            }
 
             if ((type.maxCircuits > 0) || (type.maxRelays > 0)) $('<hr></hr>').appendTo(pnl).css({ margin: '3px' });
             var tabs = $('<div></div>').appendTo(pnl).tabBar();
@@ -251,7 +303,7 @@
             btnAddCircuit.on('click', function (e) {
                 var pmp = dataBinder.fromElement(el);
                 var type = o.pumpTypes.find(elem => elem.val === pmp.type);
-                self.addCircuit(type, { units: 0 });
+                self.addCircuit(type, { units: 0 }, pmp);
             });
             var clist = $('<div class="picCircuitsList-list" style="min-width:25rem;"></div>').appendTo(pnlCircuits);
             clist.on('click', 'i.picRemoveOption', function (e) {
@@ -300,7 +352,7 @@
             else if (type.maxRelays > 0) tabs[0].selectTabById('tabPumpRelays');
             else tabs[0].selectTabById('tabPumpCircuits');
         },
-        addCircuit: function (type, circ) {
+        addCircuit: function (type, circ, pump) {
             var self = this, o = self.options, el = self.element;
             var clist = el.find('div.picCircuitsList-list:first');
             var circuits = clist.find('div.picCircuitOption');
@@ -333,7 +385,7 @@
 
             var hasMultiUnits = unitsSupported.length > 1;
             var unitsType = units.name === 'rpm' ? 'Speed' : 'Flow';
-            var step = units.name === 'rpm' ? 10 : 1;
+            var step = self._getPumpStepSize(pump || {}, units.name);
 
             $('<div></div>').appendTo(line).pickList({
                 required: true,
@@ -388,14 +440,14 @@
             var type = o.pumpTypes.find(elem => elem.val === obj.type) || { val: -1, name: 'invalid', desc: 'Unknown Type' };
             var cols = acc[0].columns();
             var isNixie = $('body').attr('data-controllertype') === 'nixie';
-            self._resetPumpPanel(type);
+            self._resetPumpPanel(type, obj);
             var circuits = '';
             if (typeof obj.circuits !== 'undefined') {
                 for (var i = 0; i < obj.circuits.length; i++) {
                     if (i > 0) circuits += ', ';
                     var c = o.circuits.find(elem => elem.id === obj.circuits[i].circuit);
                     if (typeof c !== 'undefined') circuits += c.name;
-                    self.addCircuit(type, obj.circuits[i]);
+                    self.addCircuit(type, obj.circuits[i], obj);
                 }
             }
             var ddAddr = el.find('div.picPickList[data-bind$=address]');

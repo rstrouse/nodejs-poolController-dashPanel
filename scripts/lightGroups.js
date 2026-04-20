@@ -31,9 +31,11 @@
         self.setState(o);
         el
             .on('mousedown', function (evt) {
+                if ($(evt.target).hasClass('picDropdownButton')) return;
                 $(this).data('lastPressed', new Date().getTime());
             })
             .on('mouseup', function (evt) {
+                if ($(evt.target).hasClass('picDropdownButton')) return;
                 evt.stopPropagation();
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
@@ -92,9 +94,11 @@
             el.attr('data-state', data.isOn);
             if (data.action.val !== 0) {
                 el.find('i.picDropdownButton').addClass('fa-spin');
+                $(`div[data-groupid=${o.id}] > span.picLightEndTime`).text(data.action.desc + '...');
             }
             else {
                 el.find('i.picDropdownButton').removeClass('fa-spin');
+                $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
             }
             el.attr('data-state', data.isOn);
             if (typeof data.endTime === 'undefined') {

@@ -173,6 +173,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgAuxCircuit');
             var binding = '';
@@ -198,7 +200,7 @@
                 nameId.show();
             }
             else {
-                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: {} } });
                 nameId.hide();
                 nameId[0].required(false);
             }
@@ -235,6 +237,7 @@
                 delete v.eggTimerHours;
                 delete v.eggTimerMinutes;
                 console.log(v);
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 $.putApiService('/config/circuit', v, 'Saving Circuit...', function (c, status, xhr) {
                     self.dataBind(c);
                 });
@@ -319,6 +322,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgFeature');
             var binding = '';
@@ -343,7 +348,7 @@
                 nameId[0].required(true);
             }
             else {
-                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: {} } });
                 nameId.hide();
                 nameId[0].required(false);
             }
@@ -377,6 +382,7 @@
                 delete v.eggTimerHours;
                 delete v.eggTimerMinutes;
                 console.log(v);
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 if (dataBinder.checkRequired(p)) {
                     $.putApiService('/config/feature', v, 'Saving Feature...', function (c, status, xhr) {
                         self.dataBind(c);
@@ -443,6 +449,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgCircuitGroup');
             var binding = '';
@@ -466,7 +474,7 @@
                 nameId[0].required(true);
             }
             else {
-                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: {} } });
+                var name = $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: {} } });
                 nameId.hide();
                 nameId[0].required(false);
             }
@@ -514,6 +522,7 @@
                 delete v.eggTimerHours;
                 delete v.eggTimerMinutes;
                 console.log(v);
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 // Check to make sure we haven't declared the same circuit more than once.
                 var hash = {};
                 var isValid = true;
@@ -646,6 +655,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgLightGroup');
             var binding = '';
@@ -658,7 +669,7 @@
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'type').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { display: '' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { display: '' } } });
             if (o.equipmentNames.length > 0) {
                 line.hide();
                 line = $('<div></div>');
@@ -709,6 +720,7 @@
                     delete v.eggTimerHours;
                     delete v.eggTimerMinutes;
                 }
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 if (typeof v.circuits === 'undefined') {
                     isValid = false;
                     $('<div></div>').appendTo(el.find('div.picCircuitsList-btnPanel:first')).fieldTip({ message: 'No circuits<br></br>have been created.' });

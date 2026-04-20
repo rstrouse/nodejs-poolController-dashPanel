@@ -53,6 +53,8 @@
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgValve');
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             var binding = '';
             var acc = $('<div></div>').appendTo(el).accordian({
                 columns: [{ binding: 'name', glyph: 'fas fa-compass', style: { width: '9rem' } }, { binding: 'type', style: { width: '14rem', textAlign: 'center' } }, { binding: 'circuit', style: { width: '8rem' } } ]
@@ -63,7 +65,7 @@
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isIntake').appendTo(line);
             $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isReturn').appendTo(line);
             // $('<input type="hidden" data-datatype="bool"></input>').attr('data-bind', 'isVirtual').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginLeft: '.25rem', width:'3rem' } } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { marginLeft: '.25rem', width:'3rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Valve Type', style: { whiteSpace: 'nowrap' } }],
@@ -88,6 +90,7 @@
                 var v = dataBinder.fromElement(p);
                 console.log(v);
                 if (dataBinder.checkRequired(p)) {
+                    if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                     $.putApiService('/config/valve', v, 'Saving Valve: ' + v.name + '...', function (data, status, xhr) {
                         console.log({ data: data, status: status, xhr: xhr });
                         self.dataBind(data);

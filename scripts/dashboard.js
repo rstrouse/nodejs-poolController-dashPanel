@@ -19,6 +19,7 @@
             el.find('div.picChemistry').each(function () { this.initChemistry(); });
             el.find('div.picSchedules').each(function () { this.initSchedules(); });
             el.find('div.picFilters').each(function () { this.initFilters(); });
+            el.find('div.picValves').each(function () { this.initValves(); });
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -40,6 +41,10 @@
         _createFiltersPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picFilters').each(function () { this.initFilters(data); });
+        },
+        _createValvesPanel: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picValves').each(function () { this.initValves(data); });
         },
 
         _reset: function () {
@@ -120,6 +125,10 @@
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     self._setControllerType(data.controllerType);
                     if (typeof data.equipment !== 'undefined') $('body').attr('data-firmware', data.equipment.softwareVersion || '');
+                    if (typeof data.temps !== 'undefined' && typeof data.temps.units !== 'undefined') {
+                        var resetUnits = typeof data.temps.units === 'object' ? data.temps.units.val : data.temps.units;
+                        $('body').attr('data-units', resetUnits);
+                    }
                     //if (data.equipment.model.startsWith('IntelliCenter')) {
                     //    $('div.picDashboard').attr('data-controllertype', 'IntelliCenter');
                     //    $('div.picDashboard').attr('data-hidethemes', 'false');
@@ -142,6 +151,7 @@
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     self._createFiltersPanel(data);
+                    self._createValvesPanel(data);
                     if (typeof data.equipment !== 'undefined' && typeof data.equipment.messages !== 'undefined') {
                         $('div.picSysMessages').each(function () {
                             console.log('binding messages');
@@ -168,6 +178,10 @@
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
                     $('body').attr('data-firmware', data.equipment.softwareVersion || '');
+                    if (typeof data.temps !== 'undefined' && typeof data.temps.units !== 'undefined') {
+                        var initUnits = typeof data.temps.units === 'object' ? data.temps.units.val : data.temps.units;
+                        $('body').attr('data-units', initUnits);
+                    }
                     if (typeof data.controllerType !== 'undefined') {
                         self._setControllerType(data.controllerType);
                     }
@@ -193,6 +207,7 @@
                     self._createChemistryPanel(data);
                     self._createSchedulesPanel(data);
                     self._createFiltersPanel(data);
+                    self._createValvesPanel(data);
                     self._initSockets();
                     console.log(data);
                     console.log('initializing element order');
@@ -233,12 +248,16 @@
                     $(':root').css('--picFilters-order', getStorage('--picFilters-order'));
                     if (typeof getStorage('--picFilters-display') === 'undefined') setStorage('--picFilters-display', $(':root').css('--picFilters-display'));
                     $(':root').css('--picFilters-display', getStorage('--picFilters-display'));
+                    if (typeof getStorage('--picValves-order') === 'undefined') setStorage('--picValves-order', $(':root').css('--picValves-order'));
+                    $(':root').css('--picValves-order', getStorage('--picValves-order'));
+                    if (typeof getStorage('--picValves-display') === 'undefined') setStorage('--picValves-display', $(':root').css('--picValves-display'));
+                    $(':root').css('--picValves-display', getStorage('--picValves-display'));
 
                     if (typeof getStorage('--show-time-remaining') === 'undefined') setStorage('--show-time-remaining', $(':root').css('--show-time-remaining'));
                     $(':root').css('--show-time-remaining', getStorage('--show-time-remaining'));
 
                     // put elements in correct container div
-                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters'];
+                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters', 'picValves'];
                     arr.forEach(id => {
                         console.log(id);
                         let el = $(`.${id}`);
@@ -342,6 +361,16 @@
             });
             o.socket.on('temps', function (data) {
                 console.log({ evt: 'temps', data: data });
+                var socketUnits = typeof data.units === 'object' && data.units !== null ? data.units.val : data.units;
+                if (typeof socketUnits !== 'undefined') {
+                    var currentUnits = $('body').attr('data-units');
+                    $('body').attr('data-units', socketUnits);
+                    if (String(currentUnits) !== String(socketUnits)) {
+                        $('div.cfgBody').each(function () {
+                            if (typeof this.setSystemUnits === 'function') this.setSystemUnits(data.units);
+                        });
+                    }
+                }
                 $('div.picBodies').each(function () {
                     this.setTemps(data);
                 });
@@ -390,7 +419,9 @@
             });
             o.socket.on('valve', function (data) {
                 console.log({ evt: 'valve', data: data });
-
+                $('div.picValves').each(function () {
+                    this.setValveData(data);
+                });
             });
             o.socket.on('panelMode', function (data) {
                 console.log({ evt: 'panelMode', data: data });

@@ -32,6 +32,7 @@
     <script type="text/javascript" src="scripts/bodies.js"></script>
     <script type="text/javascript" src="scripts/circuits.js"></script>
     <script type="text/javascript" src="scripts/pumps.js"></script>
+    <script type="text/javascript" src="scripts/valves.js"></script>
     <script type="text/javascript" src="scripts/chemistry.js"></script>
     <script type="text/javascript" src="scripts/lightGroups.js"></script>
     <script type="text/javascript" src="scripts/schedules.js"></script>
@@ -86,6 +87,7 @@
                 <div class="picCircuits picControlPanel control-panel"></div>
                 <div class="picLights picControlPanel control-panel"></div>
                 <div class="picFilters picControlPanel control-panel"></div>
+                <div class="picValves picControlPanel control-panel"></div>
                 <div class="picVirtualCircuits picControlPanel control-panel"></div>
             </div>
             <div class="container2"></div>
@@ -112,6 +114,7 @@
             $('div.picChemistry').chemistry();
             $('div.picSchedules').schedules();
             $('div.picFilters').bodyFilters();
+            $('div.picValves').valves();
         });
     </script>
 </body>

@@ -24,9 +24,29 @@
             var self = this, o = self.options, el = self.element;
             self._buildControls();
             el[0].dataBind = function (obj) { return self.dataBind(obj); };
+            el[0].setSystemUnits = function (units) { return self.setSystemUnits(units); };
+        },
+        _capacityUnitsFromSystem: function (units) {
+            var normalized = units;
+            if (typeof normalized === 'object' && normalized !== null && typeof normalized.val !== 'undefined') normalized = normalized.val;
+            if (typeof normalized === 'string') {
+                var lower = normalized.toLowerCase();
+                if (lower === 'c' || lower === 'metric') return 2;
+                if (lower === 'f' || lower === 'english') return 1;
+                normalized = parseInt(normalized, 10);
+            }
+            return parseInt(normalized, 10) === 4 ? 2 : 1;
+        },
+        _normalizeCapacityUnits: function (capacityUnits) {
+            var normalized = capacityUnits;
+            if (typeof normalized === 'object' && normalized !== null && typeof normalized.val !== 'undefined') normalized = normalized.val;
+            normalized = parseInt(normalized, 10);
+            return isNaN(normalized) ? NaN : normalized;
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgBody');
             var binding = '';
@@ -34,16 +54,20 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Capacity', binding: binding + 'capacity', min: 0, max: 500000, step: 1000, inputAttrs: { maxlength: 7 }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Show in Dashboard', binding: binding + 'showInDashboard' });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
+            var controller = $('body').attr('data-controllertype');
+            if (controller !== 'intellicenter') {
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
+            }
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Body', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 console.log(v);
                 $.putApiService('/config/body', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
                     console.log({ data: data, status: status, xhr: xhr });
@@ -55,7 +79,10 @@
             var self = this, o = self.options, el = self.element;
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
-            var units = o.capacityUnits.find(elem => obj.capacityUnits === elem.val) || { val: 1, name: 'gal', desc: 'Gallons' };
+            var capacityUnits = self._normalizeCapacityUnits(obj.capacityUnits);
+            if (isNaN(capacityUnits)) capacityUnits = self._capacityUnitsFromSystem($('body').attr('data-units'));
+            var units = o.capacityUnits.find(elem => capacityUnits === elem.val) || { val: 1, name: 'gal', desc: 'Gallons' };
+            obj.capacityUnits = capacityUnits;
             if (typeof obj.type === 'undefined') {
                 if (name.toLowerCase() === 'pool') obj.type = 0;
                 else if (name.toLowerCase() === 'spa') obj.type = 1;
@@ -74,6 +101,12 @@
             cols[0].elText().text(obj.name);
             cols[1].elText().text(capacity.format('#,##0') + ' ' + units.desc);
             dataBinder.bind(el, obj);
+        },
+        setSystemUnits: function (units) {
+            var self = this, o = self.options, el = self.element;
+            var obj = dataBinder.fromElement(el) || {};
+            obj.capacityUnits = self._capacityUnitsFromSystem(units);
+            self.dataBind(obj);
         }
     });
     $.widget('pic.configFilters', {
@@ -104,6 +137,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgFilter');
             var binding = '';
@@ -111,7 +146,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'filterType',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Media Type', style: { whiteSpace: 'nowrap' } }],
@@ -155,6 +190,7 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
+                if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                 if (v.cleanPressure <= v.dirtyPressure) {
                     $.putApiService('/config/filter', v, 'Saving ' + v.name + '...', function (data, status, xhr) {
                         console.log({ data: data, status: status, xhr: xhr });

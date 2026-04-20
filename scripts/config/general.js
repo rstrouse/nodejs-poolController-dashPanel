@@ -31,13 +31,15 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgPersonalInfo');
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Personal Information', glyph: 'far fa-newspaper', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Pool Alias', binding: 'alias', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Owner', binding: 'owner.name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Pool Alias', binding: 'alias', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width: '5.7rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Owner', binding: 'owner.name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Phone', binding: 'owner.phone', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
             $('<div></div>').appendTo(line).inputField({ labelText: 'e-mail', binding: 'owner.email', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
@@ -89,6 +91,10 @@
             btnSave.on('click', function (e) {
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 var v = dataBinder.fromElement(p);
+                if (isIntelliCenter) {
+                    if (typeof v.alias === 'string') v.alias = v.alias.substring(0, 15);
+                    if (typeof v.owner === 'object' && v.owner !== null && typeof v.owner.name === 'string') v.owner.name = v.owner.name.substring(0, 15);
+                }
                 $.putApiService('/config/general', v, 'Saving Personal Information...', function(data, status, xhr) {
                     self.dataBind(data);
                 });
@@ -115,17 +121,13 @@
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Timezone & Locality', glyph: 'far fa-clock', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
-            // If this is IntelliCenter we do not have this option yet.
-            var pnlType = $('div.dashOuter').attr('data-controllertype');
-            if (pnlType !== 'IntelliCenter') {
-                $('<div></div>').appendTo(line).pickList({
-                    labelText: 'Units', binding: 'options.units',
-                    displayColumn: 1,
-                    columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'System Units', style: { whiteSpace: 'nowrap' } }],
-                    items: o.systemUnits, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '5.7rem' } }
-                });
-                line = $('<div></div>').appendTo(pnl);
-            }
+            $('<div></div>').appendTo(line).pickList({
+                labelText: 'Units', binding: 'options.units',
+                displayColumn: 1,
+                columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'System Units', style: { whiteSpace: 'nowrap' } }],
+                items: o.systemUnits, inputAttrs: { style: { width: '7rem' } }, labelAttrs: { style: { width: '5.7rem' } }
+            });
+            line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
                 labelText: 'Time Zone', binding: 'location.timeZone',
                 displayColumn: 2,
@@ -194,8 +196,11 @@
             el.addClass('picConfigCategory cfgDelays');
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Delays', glyph: 'fas fa-stopwatch', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Operation Priority', binding: 'options.manualPriority' });
+            var line;
+            if (controller !== 'intellicenter') {
+                line = $('<div></div>').appendTo(pnl);
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Operation Priority', binding: 'options.manualPriority' });
+            }
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
             if (controller === 'nixie') {
@@ -231,17 +236,8 @@
                     units: 'min', labelAttrs: { style: { width: '14rem', display: 'inline-block' } }, inputAttrs: { style: { width: '4.5rem' } }
                 });
                 line = $('<div></div>').appendTo(pnl);
-                $('<div></div>').appendTo(line).pickList({
-                    labelText: 'Freeze Override', binding: 'options.freezeOverride', bindColumn: 0,
-                    columns: [{ binding: 'val', hidden: true, text: 'Val' }, { binding: 'desc', text: 'Duration' }],
-                    items: [
-                        { val: 30, desc: '30 minutes' },
-                        { val: 90, desc: '90 minutes (1.5 hrs)' },
-                        { val: 150, desc: '150 minutes (2.5 hrs)' },
-                        { val: 210, desc: '210 minutes (3.5 hrs)' }
-                    ],
-                    inputAttrs: { style: { width: '14rem' } }, labelAttrs: { style: { width: '14rem', display: 'inline-block' } }
-                });
+                $('<label></label>').css({ width: '14rem', display: 'inline-block' }).text('Freeze Override').appendTo(line);
+                $('<span></span>').css({ fontStyle: 'italic', opacity: 0.7 }).text('See OCP').appendTo(line);
             }
             btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             btnSave = $('<div id="btnSaveDelays"></div>').appendTo(btnPnl).actionButton({ text: 'Save Delays', icon: '<i class="fas fa-save"></i>' });

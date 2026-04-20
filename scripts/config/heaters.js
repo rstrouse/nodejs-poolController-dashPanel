@@ -16,13 +16,15 @@
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Heater', icon: '<i class="fas fa-plus" ></i>' });
+                if (opts.heaters.length >= 5) btnAdd.addClass('disabled');
                 btnAdd.on('click', function (e) {
+                    if ($(this).hasClass('disabled')) return;
                     var heaters = el.find('div.picConfigCategory.cfgHeater');
-                    //$(this).addClass('disabled');
-                    //$(this).find('i').addClass('burst-animated');
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlHeaterConfig(opts);
                     pnl[0].dataBind({ id: -1, name: 'Heater ' + (heaters.length + 1), master: parseInt($('div.picDashboard').attr('data-masterid') || 0, 10) });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
+                    heaters = el.find('div.picConfigCategory.cfgHeater');
+                    if (heaters.length >= 5) $(this).addClass('disabled');
                 });
             });
         }
@@ -36,6 +38,8 @@
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
+            var isIntelliCenter = (($('body').attr('data-controllertype') || '').toLowerCase() === 'intellicenter');
+            var maxNameLength = isIntelliCenter ? 15 : 16;
             el.empty();
             el.addClass('picConfigCategory cfgHeater');
             var binding = '';
@@ -47,7 +51,7 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
-            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width:'4rem'} } });
+            $('<div></div>').appendTo(line).inputField({ required: true, labelText: 'Name', binding: binding + 'name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width:'4rem'} } });
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 2, labelText: 'Type', binding: binding + 'type',
                 columns: [{ binding: 'val', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: true, text: 'Code', style: { whiteSpace: 'nowrap' } }, { binding: 'desc', text: 'Heater Type', style: { whiteSpace: 'nowrap' } }],
@@ -73,6 +77,7 @@
                 var p = $(e.target).parents('div.picAccordian-contents:first');
                 if (dataBinder.checkRequired(p,true)) {
                     var v = dataBinder.fromElement(p);
+                    if (isIntelliCenter && typeof v.name === 'string') v.name = v.name.substring(0, 15);
                     console.log(v);
                     $.putApiService('/config/heater', v, 'Saving Heater...', function (c, status, xhr) {
                         console.log(c);
@@ -381,7 +386,7 @@
             });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Boost Temp', binding: binding + 'maxBoostTemp', min: 5, max: 10, step: 1, units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Economy Time', binding: binding + 'economyTime', min: 1, max: 6, step: 1, units: 'hrs', inputAttrs: { style: { width: '2.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
-            if (!pnlType.endsWith('touch')) {
+            if (!pnlType.endsWith('touch') && !pnlType.startsWith('intellicenter')) {
                 el.find('div[data-bind=maxBoostTemp]').each(function () { this.disabled(true); });
                 el.find('div[data-bind=economyTime]').each(function () { this.disabled(true); });
             }

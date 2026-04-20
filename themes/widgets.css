@@ -7,6 +7,7 @@
     --picChemistry-order: 10;
     --picSchedules-order: 15;
     --picFilters-order: 17;
+    --picValves-order: 20;
     --picBodies-display: block;
     --picCircuits-display: block;
     --picLights-display: block;
@@ -15,6 +16,7 @@
     --picChemistry-display: block;
     --picSchedules-display: block;
     --picFilters-display: block;
+    --picValves-display: block;
     --number-of-columns: 2;
     --dashContainer2-display: block;
     --dashContainer3-display: block;
@@ -295,6 +297,10 @@ div.picFilters {
     order: var(--picFilters-order);
     display: var(--picFilters-display) !important;
 }
+div.picValves {
+    order: var(--picValves-order);
+    display: var(--picValves-display) !important;
+}
 div.picLights{
     order :var(--picLights-order);
     display: var(--picLights-display) !important;
@@ -506,6 +512,39 @@ label.picUnits, span.picUnits {
 div.picPump, div.picChlorinator, div.picSchedule, div.picChemController, div.picChemDoser, div.picBodyFilter {
     font-size:.9rem;
     cursor:pointer;
+}
+div.picValve {
+    font-size: .9rem;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    padding-top: .15rem;
+    padding-bottom: .15rem;
+}
+span.picValveTypeIcon {
+    display: inline-block;
+    min-width: 1.2rem;
+    text-align: center;
+}
+label.picValveName {
+    flex: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+span.picValveStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    white-space: nowrap;
+}
+span.picValveStatusText {
+    font-size: .85em;
+}
+i.picValveStatusIcon {
+    font-size: .8em;
+    opacity: .8;
 }
     div.picBodyFilter > span.picFilterPercentage {
         display: inline-block;
