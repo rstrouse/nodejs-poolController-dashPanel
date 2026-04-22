@@ -38,6 +38,14 @@
                 $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (state, status, xhr) {
                     $('body').attr('data-controllertype', state.equipment.controllerType);
+                    // Seed the runtime plugin address so address-label resolvers
+                    // (message list, entity flow) can show "njsPC" on whichever
+                    // bus slot njsPC is actually occupying (32 vs 33).
+                    if (state && state.equipment && typeof msgManager !== 'undefined'
+                        && msgManager && typeof msgManager.setRuntimePluginAddress === 'function'
+                        && typeof state.equipment.pluginAddress === 'number') {
+                        msgManager.setRuntimePluginAddress(state.equipment.pluginAddress);
+                    }
                     self._createControllerPanel(state);
                     self._initSockets();
                     console.log(state);
@@ -69,6 +77,11 @@
             o.socket.on('equipment', function (data) {
                 console.log({ evt: 'equipment', data: data });
                 $('body').attr('data-controllertype', data.controllerType);
+                if (data && typeof data.pluginAddress === 'number'
+                    && typeof msgManager !== 'undefined' && msgManager
+                    && typeof msgManager.setRuntimePluginAddress === 'function') {
+                    msgManager.setRuntimePluginAddress(data.pluginAddress);
+                }
                 $('div.picController').each(function () {
                     this.setEquipmentState(data);
                 });

@@ -60,21 +60,19 @@
                 e.preventDefault();
                 e.stopImmediatePropagation();
             });
-            $('<div></div>').attr('id', 'btnSendQueue').appendTo(btnPnl).actionButton({ text: 'Send Queue', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
-                self.sendQueue();
-            });
-            $('<div></div>').attr('id', 'btnReplayQueue').appendTo(btnPnl).actionButton({ text: 'Replay (to app)', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
-                self.replayQueue();
-            });
             $('<div></div>').attr('id', 'btnRunTests').appendTo(btnPnl).actionButton({ text: 'Run Script', icon: '<i class="far fa-paper-plane"></i>' }).on('click', function (e) {
                 el.addClass('processing');
                 outModule.begin();
             }).hide();
 
+            // Player panel (Prev / Play / Play 1 / Next / Pause + Target toggle + speed slider)
+            self._buildPlayerPanel(btnPnl);
+
             $('<div></div>').addClass('cancel-button').appendTo(btnPnl).actionButton({ text: 'Cancel Processing', icon: '<i class="fas fa-ban burst-animated" style="color:crimson;vertical-align:top;"></i>' }).on('click', function (e) {
+                self._playerReset();
                 self.msgQueue.length = 0;
                 el.removeClass('processing');
-                outModule.cancel();
+                if (typeof outModule !== 'undefined' && outModule && typeof outModule.cancel === 'function') outModule.cancel();
             });
             
             el.on('click', 'div.queued-message-remove', function (evt) {
@@ -158,8 +156,7 @@
                 el.find('div.queue-send-list').hide();
                 el.find('#btnRunTests').hide();
                 el.find('#btnAddMessage').hide();
-                el.find('#btnSendQueue').hide();
-                el.find('#btnReplayQueue').hide();
+                el.find('div.queue-player').hide();
                 el.find('div.picEditQueue').hide();
                 el.find('div.picSaveQueue').hide();
                 //$('script#scriptTestModule').remove();
@@ -186,8 +183,7 @@
                 el.find('div.queue-send-list').show();
                 el.find('#btnRunTests').hide();
                 el.find('#btnAddMessage').show();
-                el.find('#btnSendQueue').show();
-                el.find('#btnReplayQueue').show();
+                el.find('div.queue-player').show();
                 el.find('div.picEditQueue').show();
                 el.find('div.picSaveQueue').show();
             }
@@ -234,63 +230,252 @@
                 self.bindQueue(data);
             });
         },
-        sendQueue: function () {
-            var self = this, o = self.options, el = self.element;
-            el.addClass('processing');
-            // Send out the messages on the interval.
-            el.find('div.queued-message').each(function () {
-                self.msgQueue.push(this);
-            });
-            o.messagesToSend = self.msgQueue.length;
-            o.messagesSent = 0;
-            el.find('div.picMessageListTitle:first > span').text('Sending Messages...');
+        _buildPlayerPanel: function (parent) {
+            var self = this, o = self.options;
+            if (o.playerTarget !== 'bus' && o.playerTarget !== 'app') o.playerTarget = 'bus';
+            var panel = $('<div class="queue-player"></div>').appendTo(parent)
+                .css({ display: 'inline-block', verticalAlign: 'middle', marginLeft: '6px' });
 
-            self.processNextMessage();
-        },
-        replayQueue: function () {
-            var self = this, o = self.options, el = self.element;
-            el.addClass('processing');
-            // Send out the messages on the interval.
-            el.find('div.queued-message').each(function () {
-                self.msgQueue.push(this);
+            // Target: App (inbound → njsPC parser) vs Bus (outbound → RS-485)
+            var divTarget = $('<div class="queue-player-target"></div>').appendTo(panel)
+                .css({ display: 'inline-block', fontSize: '.8rem', marginRight: '10px', verticalAlign: 'middle' });
+            $('<span></span>').text('Target: ').appendTo(divTarget).css({ marginRight: '6px' });
+            var targetGroup = 'sendQueueTarget_' + Math.random().toString(36).slice(2, 8);
+            var lblApp = $('<label></label>').appendTo(divTarget).css({ marginRight: '10px', cursor: 'pointer' });
+            var rbApp = $('<input type="radio" />').attr('name', targetGroup).attr('value', 'app')
+                .prop('checked', o.playerTarget === 'app').appendTo(lblApp)
+                .css({ verticalAlign: 'middle', marginRight: '3px' });
+            $('<span></span>').text('App').appendTo(lblApp);
+            var lblBus = $('<label></label>').appendTo(divTarget).css({ cursor: 'pointer' });
+            var rbBus = $('<input type="radio" />').attr('name', targetGroup).attr('value', 'bus')
+                .prop('checked', o.playerTarget === 'bus').appendTo(lblBus)
+                .css({ verticalAlign: 'middle', marginRight: '3px' });
+            $('<span></span>').text('Bus').appendTo(lblBus);
+            divTarget.on('change', 'input[type=radio]', function () {
+                o.playerTarget = rbBus.prop('checked') ? 'bus' : 'app';
             });
-            o.messagesToSend = self.msgQueue.length;
-            o.messagesSent = 0;
-            el.find('div.picMessageListTitle:first > span').text('Sending Messages...');
 
-            self.processNextMessage(true);
+            // Playback controls
+            var divControls = $('<div class="queue-player-controls"></div>').attr('data-mode', 'stopped')
+                .appendTo(panel).css({ display: 'inline-block', verticalAlign: 'middle' });
+            var fnCreateButton = function (title, icon) {
+                var btn = $('<span></span>').attr('title', title).addClass('btn').appendTo(divControls)
+                    .css({ display: 'inline-block', width: '2.3rem', textAlign: 'center', cursor: 'pointer' });
+                $('<i></i>').appendTo(btn).addClass(icon);
+                return btn;
+            };
+            var btnPrev = fnCreateButton('Previous Message', 'fas fa-backward-step');
+            var btnPlay = fnCreateButton('Play Queue', 'fas fa-play');
+            var btnPlayOne = $('<span></span>').attr('title', 'Send 1 Message').addClass('btn').appendTo(divControls)
+                .css({ display: 'inline-block', width: '2.3rem', textAlign: 'center', cursor: 'pointer' });
+            $('<i></i>').appendTo(btnPlayOne).addClass('fas fa-play');
+            $('<sup></sup>').text('1').appendTo(btnPlayOne).css({ fontSize: '.6rem', marginLeft: '1px', fontWeight: 'bold' });
+            var btnNext = fnCreateButton('Next Message', 'fas fa-forward-step');
+            var btnPause = fnCreateButton('Pause', 'fas fa-pause').addClass('disabled');
+
+            // Status label
+            var divStatus = $('<span class="queue-player-status"></span>').appendTo(panel)
+                .css({ marginLeft: '8px', fontSize: '.8rem', verticalAlign: 'middle' }).text('Stopped');
+
+            // Speed slider
+            var divSlider = $('<div class="queue-player-slider"></div>').appendTo(panel)
+                .css({ display: 'inline-block', width: '160px', marginLeft: '10px', verticalAlign: 'middle', paddingTop: '2px' });
+            var slider = $('<input></input>').attr('type', 'range').attr('min', -100).attr('max', 100).attr('value', 0)
+                .appendTo(divSlider).css({ width: '100%' });
+            var divSLabel = $('<div></div>').appendTo(divSlider).css({ fontSize: '.65rem', width: '100%', height: '14px' });
+            $('<span></span>').text('Faster').appendTo(divSLabel).css({ float: 'left' });
+            $('<span></span>').text('Slower').appendTo(divSLabel).css({ float: 'right' });
+
+            self._player = {
+                panel: panel, controls: divControls, status: divStatus,
+                btnPrev: btnPrev, btnPlay: btnPlay, btnPlayOne: btnPlayOne, btnNext: btnNext, btnPause: btnPause,
+                slider: slider, rbApp: rbApp, rbBus: rbBus,
+                index: -1, timer: null
+            };
+
+            btnPrev.on('click', function () { self._playerPrev(); });
+            btnPlay.on('click', function () { self._playerPlay(); });
+            btnPlayOne.on('click', function () { self._playerPlayOne(); });
+            btnNext.on('click', function () { self._playerNext(); });
+            btnPause.on('click', function () { self._playerPause(); });
         },
-        processNextMessage: function (toApp) {
-            var self = this, o = self.options, el = self.element;
+        _playerMessages: function () {
+            return this.element.find('div.queue-send-list > div.queued-message');
+        },
+        _playerTargetMode: function () { return this._player.rbBus.prop('checked') ? 'bus' : 'app'; },
+        _playerDelayFor: function (msg) {
+            var d = (msg && typeof msg.delay === 'number') ? msg.delay : 0;
+            var adj = this._player.slider.val() / 100;
+            return Math.max(0, d + d * adj);
+        },
+        _playerSend: function (msg) {
             var mm = $('div.picMessageManager')[0];
-            if (self.msgQueue.length > 0) {
-                var elMsg = $(self.msgQueue.shift());
-                if (elMsg) {
-                    var msg = elMsg.data('message');
-                    el.find('div.queued-message').removeClass('sending');
-                    elMsg.addClass('sending');
-                    if (msg) {
-                        setTimeout(function () {
-                            o.messagesSent++;
-                            elMsg.addClass('sent');
-                            if (toApp){
-                                mm.sendInboundMessage(msg);
-                                self.processNextMessage(true);
-                            }
-                            else {
-                                mm.sendOutboundMessage(msg);
-                                self.processNextMessage();
-                            }
-                        }, (msg.delay || 0));
+            if (!mm) return;
+            if (this._playerTargetMode() === 'bus') mm.sendOutboundMessage(msg);
+            else mm.sendInboundMessage(msg);
+        },
+        _playerClearTimer: function () {
+            if (this._player && this._player.timer) { clearTimeout(this._player.timer); this._player.timer = null; }
+        },
+        _playerSetButtons: function (mode) {
+            var p = this._player;
+            switch (mode) {
+                case 'play':
+                    p.btnPrev.addClass('disabled');
+                    p.btnNext.addClass('disabled');
+                    p.btnPlay.addClass('disabled');
+                    p.btnPlayOne.addClass('disabled');
+                    p.btnPause.removeClass('flicker-animated').removeClass('disabled');
+                    break;
+                case 'paused':
+                    p.btnPrev.removeClass('disabled');
+                    p.btnNext.removeClass('disabled');
+                    p.btnPlay.removeClass('disabled');
+                    p.btnPlayOne.removeClass('disabled');
+                    p.btnPause.removeClass('disabled').addClass('flicker-animated');
+                    break;
+                case 'stopped':
+                default:
+                    p.btnPrev.removeClass('disabled');
+                    p.btnNext.removeClass('disabled');
+                    p.btnPlay.removeClass('disabled');
+                    p.btnPlayOne.removeClass('disabled');
+                    p.btnPause.removeClass('flicker-animated').addClass('disabled');
+                    break;
+            }
+        },
+        _playerReset: function () {
+            var self = this, el = self.element;
+            if (!self._player) return;
+            self._playerClearTimer();
+            self._player.controls.attr('data-mode', 'stopped');
+            self._player.status.text('Stopped');
+            el.find('div.queue-send-list > div.queued-message').removeClass('sending').removeClass('sent');
+            self._playerSetButtons('stopped');
+            self._player.index = -1;
+            el.removeClass('processing');
+            el.find('div.picMessageListTitle:first > span').text('Send Message Queue');
+        },
+        _playerFinish: function () {
+            var self = this, el = self.element;
+            self._playerClearTimer();
+            self._player.controls.attr('data-mode', 'stopped');
+            self._player.status.text('Complete');
+            self._playerSetButtons('stopped');
+            el.removeClass('processing');
+            el.find('div.picMessageListTitle:first > span').text('Send Message Queue');
+        },
+        _playerProcessAt: function (i) {
+            var self = this, el = self.element;
+            var msgs = self._playerMessages();
+            if (i < 0 || i >= msgs.length) { self._playerFinish(); return; }
+            var elMsg = $(msgs[i]);
+            var msg = elMsg.data('message');
+            if (!msg) { self._playerFinish(); return; }
+            self._player.index = i;
+            msgs.removeClass('sending');
+            elMsg.addClass('sending');
+            self._player.status.text('Sending ' + (i + 1) + ' of ' + msgs.length);
+            var t = self._playerDelayFor(msg);
+            self._playerClearTimer();
+            self._player.timer = setTimeout(function () {
+                try {
+                    self._playerSend(msg);
+                    elMsg.removeClass('sending').addClass('sent');
+                } catch (err) { console.log('Error sending queued message: ' + err); }
+                finally {
+                    var mode = self._player.controls.attr('data-mode');
+                    if (mode === 'play') {
+                        if (i + 1 < msgs.length) self._playerProcessAt(i + 1);
+                        else self._playerFinish();
+                    }
+                    else {
+                        // Single step completed; park in paused state.
+                        self._player.controls.attr('data-mode', 'paused');
+                        self._playerSetButtons('paused');
+                        self._player.status.text('Paused at ' + (i + 1) + ' of ' + msgs.length);
                     }
                 }
+            }, t);
+        },
+        _playerStartIndex: function () {
+            var msgs = this._playerMessages();
+            var start = this._player.index < 0 ? 0 : this._player.index + 1;
+            if (start >= msgs.length) {
+                msgs.removeClass('sent');
+                start = 0;
+            }
+            return start;
+        },
+        _playerPlay: function () {
+            var self = this, el = self.element;
+            var p = self._player;
+            if (p.btnPlay.hasClass('disabled')) return;
+            var msgs = self._playerMessages();
+            if (msgs.length === 0) return;
+            el.addClass('processing');
+            p.controls.attr('data-mode', 'play');
+            self._playerSetButtons('play');
+            p.status.text('Playing...');
+            self._playerProcessAt(self._playerStartIndex());
+        },
+        _playerPlayOne: function () {
+            var self = this, el = self.element;
+            var p = self._player;
+            if (p.btnPlayOne.hasClass('disabled')) return;
+            var msgs = self._playerMessages();
+            if (msgs.length === 0) return;
+            el.addClass('processing');
+            p.controls.attr('data-mode', 'paused');
+            self._playerSetButtons('paused');
+            self._playerProcessAt(self._playerStartIndex());
+        },
+        _playerPrev: function () {
+            var self = this, el = self.element;
+            var p = self._player;
+            if (p.btnPrev.hasClass('disabled')) return;
+            var msgs = self._playerMessages();
+            if (msgs.length === 0) return;
+            el.addClass('processing');
+            var start = p.index > 0 ? p.index - 1 : 0;
+            p.controls.attr('data-mode', 'paused');
+            self._playerSetButtons('paused');
+            self._playerProcessAt(start);
+        },
+        _playerNext: function () {
+            var self = this, el = self.element;
+            var p = self._player;
+            if (p.btnNext.hasClass('disabled')) return;
+            var msgs = self._playerMessages();
+            if (msgs.length === 0) return;
+            var start = p.index < 0 ? 0 : p.index + 1;
+            if (start >= msgs.length) return;
+            el.addClass('processing');
+            p.controls.attr('data-mode', 'paused');
+            self._playerSetButtons('paused');
+            self._playerProcessAt(start);
+        },
+        _playerPause: function () {
+            var self = this;
+            var p = self._player;
+            if (p.btnPause.hasClass('disabled')) return;
+            self._playerClearTimer();
+            var mode = p.controls.attr('data-mode');
+            if (mode === 'paused') {
+                // Resume continuous play from the next message.
+                var msgs = self._playerMessages();
+                var start = p.index + 1;
+                if (start >= msgs.length) { self._playerFinish(); return; }
+                p.controls.attr('data-mode', 'play');
+                self._playerSetButtons('play');
+                p.status.text('Playing...');
+                self._playerProcessAt(start);
             }
             else {
-                el.find('div.queued-message').removeClass('sending').removeClass('sent');
-                el.removeClass('processing');
-                el.find('div.picMessageListTitle:first > span').text('Send Message Queue');
-                $('<div></div>').appendTo(el.find('div.picMessageListTitle:first > span')).fieldTip({
-                    message: `${o.messagesSent} of ${o.messagesToSend} queued messages sent` });
+                // Pause mid-play.
+                p.controls.attr('data-mode', 'paused');
+                self._playerSetButtons('paused');
+                p.status.text('Paused at ' + (p.index + 1));
             }
         }
     });

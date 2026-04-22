@@ -969,15 +969,15 @@
     },
     {
       "val": 32,
-      "desc": "Indoor Control Panel",
-      "name": "ICP",
+      "desc": "Indoor Control Panel 1 (may be njsPC when it has converged onto this slot)",
+      "name": "ICP1",
       "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },
     {
       "val": 33,
-      "name": "njsPC",
-      "desc": "Default plugin address",
+      "name": "ICP2",
+      "desc": "Indoor Control Panel 2 (default njsPC plugin address)",
       "protocol": "!chlorinator,!aqualink,any",
       "key": "CP"
     },

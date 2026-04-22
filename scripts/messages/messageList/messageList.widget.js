@@ -443,13 +443,13 @@
             let dlg = $.pic.modalDialog.createDialog('dlgReplayList', {
                 width: '357px',
                 height: 'auto',
-                title: `Replay Messages to njsPC`,
+                title: `Replay Messages`,
                 position: { my: "center top", at: "center top", of: el },
                 buttons: [
                     {
                         text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
                         click: function () {
-                            divControls.attr('data-mode', 'stop');
+                            divControls.attr('data-mode', 'stopped');
                             $.pic.modalDialog.closeDialog(this);
                         }
                     }
@@ -459,6 +459,36 @@
             let div = $('<div></div>').appendTo(dlg);
             let divMessage = $('<div></div>').appendTo(div).css({ textAlign: 'center' }).text('Stopped');
             $('<hr></hr>').appendTo(div).css({ margin: '2px' });
+            // Target selector: App (inbound → njsPC parser) vs Bus (outbound → RS-485).
+            // Selection persists on the widget options for the lifetime of the page, so
+            // reopening the dialog remembers the last choice without any storage.
+            if (o.replayTarget !== 'bus' && o.replayTarget !== 'app') o.replayTarget = 'app';
+            let divTarget = $('<div></div>').appendTo(div)
+                .css({ textAlign: 'center', fontSize: '.8rem', margin: '4px 0' });
+            $('<span></span>').text('Target: ').appendTo(divTarget).css({ marginRight: '6px' });
+            let targetGroup = 'replayTarget_' + Math.random().toString(36).slice(2, 8);
+            let lblApp = $('<label></label>').appendTo(divTarget).css({ marginRight: '12px', cursor: 'pointer' });
+            let rbApp = $('<input type="radio" />')
+                .attr('name', targetGroup).attr('value', 'app').prop('checked', o.replayTarget === 'app')
+                .appendTo(lblApp).css({ verticalAlign: 'middle', marginRight: '3px' });
+            $('<span></span>').text('App').appendTo(lblApp);
+            let lblBus = $('<label></label>').appendTo(divTarget).css({ cursor: 'pointer' });
+            let rbBus = $('<input type="radio" />')
+                .attr('name', targetGroup).attr('value', 'bus').prop('checked', o.replayTarget === 'bus')
+                .appendTo(lblBus).css({ verticalAlign: 'middle', marginRight: '3px' });
+            $('<span></span>').text('Bus').appendTo(lblBus);
+            let fnGetTarget = () => rbBus.prop('checked') ? 'bus' : 'app';
+            // App mode replays only inbound-captured packets (they become outbound toward njsPC).
+            // Bus mode retransmits every valid, unhidden packet regardless of original direction.
+            let fnMsgMatchesTarget = (msg) => {
+                if (fnGetTarget() === 'bus') return true;
+                return msg.direction === 'in';
+            };
+            divTarget.on('change', 'input[type=radio]', () => {
+                o.replayTarget = fnGetTarget();
+                // Walker filter changes with target; reset progression to current selection.
+                currIndex = vlist[0].selectedIndex();
+            });
             let divControls = $('<div></div>').attr('data-mode', 'stopped').appendTo(div).css({ textAlign: 'center' });
             let divSlider = $('<div></div>').appendTo(div).css({ paddingLeft: '27px', paddingRight: '27px', paddingTop:'7px' });
             let slider = $('<input></input>').attr('type', 'range').attr('min', -100).attr('max', 100).attr('value', 0).appendTo(divSlider).css({ width: '100%' });
@@ -478,7 +508,7 @@
                 if (currIndex >= vlist[0].totalRows()) return;
                 let obj = vlist[0].objByIndex(currIndex);
                 let msg = o.messages['m' + obj.rowId];
-                if (!obj.hidden && msg.isValid && msg.direction === 'in') {
+                if (!obj.hidden && msg.isValid && fnMsgMatchesTarget(msg)) {
                     return msg;
                 }
                 if (currIndex + 1 >= vlist[0].totalRows()) return;
@@ -488,7 +518,7 @@
                 if (currIndex < 0) return;
                 let obj = vlist[0].objByIndex(currIndex);
                 let msg = o.messages['m' + obj.rowId];
-                if (!obj.hidden && msg.isValid && msg.direction === 'in') {
+                if (!obj.hidden && msg.isValid && fnMsgMatchesTarget(msg)) {
                     return msg;
                 }
                 if (currIndex - 1 < 0) return;
@@ -514,7 +544,8 @@
                     delete m.messageKey;
                     delete m.rowId;
                     vlist[0].selectedIndex(currIndex, true);
-                    mm.sendInboundMessage(m);
+                    if (fnGetTarget() === 'bus') mm.sendOutboundMessage(m);
+                    else mm.sendInboundMessage(m);
                 } catch (err) { console.log(`Error processing message ${err}`); }
                 finally {
                     switch (divControls.attr('data-mode')) {
@@ -534,7 +565,6 @@
                                 btnPlay.removeClass('disabled');
                                 btnPause.removeClass('flicker-animated');
                                 if (!btnPause.hasClass('disabled')) btnPause.addClass('disabled');
-                                if (!btnStop.hasClass('disabled')) btnStop.addClass('disabled');
                             }
                             break;
                     }
@@ -567,12 +597,42 @@
                 if (typeof msg !== 'undefined') {
                     btnPause.removeClass('flicker-animated');
                     btnPause.removeClass('disabled');
-                    btnStop.removeClass('disabled');
                     btnPlay.addClass('disabled');
                     divControls.attr('data-mode', 'play');
                     playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
                 }
 
+            });
+            // Play exactly one message and park in the paused state (does NOT auto-chain).
+            let btnPlayOne = $('<span></span>')
+                .attr('title', 'Play 1 Message')
+                .addClass('btn')
+                .appendTo(divControls)
+                .css({ display: 'inline-block', width: '3rem', textAlign: 'center' });
+            $('<i></i>').appendTo(btnPlayOne).addClass('fas fa-play');
+            $('<sup></sup>').text('1').appendTo(btnPlayOne)
+                .css({ fontSize: '.6rem', marginLeft: '1px', fontWeight: 'bold' });
+            btnPlayOne.on('click', (evt) => {
+                if ($(evt.currentTarget).hasClass('disabled')) return;
+                if (playTimer) {
+                    clearTimeout(playTimer);
+                    playTimer = null;
+                }
+                // If already mid-playback or previously stepped, advance to the next message.
+                // If stopped/initial, start at the currently selected message.
+                let mode = divControls.attr('data-mode');
+                if (mode !== 'stopped' && currIndex < vlist[0].totalRows()) currIndex++;
+                let msg = fnGetNextMessage();
+                if (typeof msg !== 'undefined') {
+                    divControls.attr('data-mode', 'paused');
+                    btnPause.removeClass('disabled');
+                    btnPlay.removeClass('disabled');
+                    btnPrev.removeClass('disabled');
+                    btnNext.removeClass('disabled');
+                    if (!btnPause.hasClass('flicker-animated')) btnPause.addClass('flicker-animated');
+                    divMessage.text('Paused');
+                    playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
+                }
             });
             let btnNext = fnCreateButton('Next Message', 'fas fa-forward-step').on('click', (evt) => {
                 if ($(evt.target).hasClass('disabled')) return;
@@ -601,7 +661,6 @@
                     if (!btnNext.hasClass('disabled')) btnNext.addClass('disabled');
                     btnPlay.addClass('disabled');
                     btnPause.removeClass('disabled');
-                    btnStop.removeClass('disabled');
                     divControls.attr('data-mode', 'play');
                     let msg = fnGetNextMessage();
                     if (typeof msg !== 'undefined') playTimer = setTimeout(async () => { await fnProcessMessage(msg); }, 100);
@@ -610,26 +669,10 @@
                     if (!btnPause.hasClass('flicker-animated')) btnPause.addClass('flicker-animated');
                     divMessage.text('Paused');
                     divControls.attr('data-mode', 'paused');
-                    btnStop.removeClass('disabled');
                     btnPrev.removeClass('disabled');
                     btnNext.removeClass('disabled');
                     btnPlay.removeClass('disabled');
                 }
-            });
-            let btnStop = fnCreateButton('Stop Replay', 'fas fa-stop').addClass('disabled').on('click', (evt) => {
-                if ($(evt.target).hasClass('disabled')) return;
-                divControls.attr('data-mode', 'stopped');
-                divMessage.text('Stopped');
-                if (playTimer) {
-                    clearTimeout(playTimer);
-                    playTimer = null;
-                }
-                btnPrev.removeClass('disabled');
-                btnNext.removeClass('disabled');
-                btnPlay.removeClass('disabled');
-                btnPause.removeClass('flicker-animated');
-                if(!btnPause.hasClass('disabled')) btnPause.addClass('disabled');
-                if(!btnStop.hasClass('disabled')) btnStop.addClass('disabled');
             });
             if (currIndex === -1) {
                 divControls.find('span').addClass('disabled');

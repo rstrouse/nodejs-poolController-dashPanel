@@ -290,12 +290,19 @@
                             
                             spin.attr('data-units', circuit.units.val);
                             let isConfigurable = false;
-                            if (data.type.maxRelays > 1 && data.type.name !== 'ds') {
+                            // VS/VSF/VF/hwvs pump types do not define maxRelays on data.type, so treat
+                            // "undefined" the same as "<= 0" (i.e. pure speed/flow pump, not a relay-programmed pump).
+                            // Without this, any pump whose type omits maxRelays (Intelliflo VS, VSF, VF, Hayward VS, etc.)
+                            // would fall through and have its +/- spinner removed on the home-page popover.
+                            var typeMaxRelays = parseInt(data.type.maxRelays, 10);
+                            var isRelayProgrammed = !isNaN(typeMaxRelays) && typeMaxRelays > 1 && data.type.name !== 'ds';
+                            var isSpeedFlowPump = isNaN(typeMaxRelays) || typeMaxRelays <= 0;
+                            if (isRelayProgrammed) {
                                 spin.valueSpinner({ val: circuit.relay, min: 1, max: data.type.maxSpeeds || data.type.maxRelays, step: 1, binding: 'relay' });
                                 spin.find('div.picSpinner-value').css({ width: '3.5rem' });
                                 isConfigurable = true;
                             }
-                            else if (data.type.maxRelays <= 0) {
+                            else if (isSpeedFlowPump) {
                                 let unitsVal = parseInt(circuit.units.val, 10);
                                 let isSpeedUnits = unitsVal === 0;
                                 let minVal = parseInt(isSpeedUnits ? data.minSpeed : data.minFlow, 10);

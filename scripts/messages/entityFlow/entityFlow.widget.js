@@ -2476,7 +2476,9 @@
             return srcName + '→' + destName;
         },
         _getDeviceName: function(addr) {
-            // Address mappings from constants.json
+            // Static fallback mapping. Kept in sync with server/messages/docs/constants.json.
+            // NOTE: 32/33 are both "ICPn"; whichever slot njsPC is currently on is
+            // relabeled to "njsPC" below via msgManager.runtime.pluginAddress.
             var names = {
                 0: 'OCP',           // AquaLink Control Panel
                 12: 'Valve',        // IntelliValve
@@ -2485,8 +2487,8 @@
                 17: 'Exp1',         // Expansion Panel 1
                 18: 'Exp2',         // Expansion Panel 2
                 19: 'Exp3',         // Expansion Panel 3
-                32: 'ICP',          // Indoor Control Panel
-                33: 'njsPC',        // Default plugin address
+                32: 'ICP1',         // Indoor Control Panel slot 1 (may be njsPC)
+                33: 'ICP2',         // Indoor Control Panel slot 2 (default njsPC slot)
                 34: 'SL',           // ScreenLogic
                 35: 'SL2',          // ScreenLogic2
                 36: 'WL',           // IntelliCenter Wireless
@@ -2513,7 +2515,11 @@
                 144: 'Chem',        // IntelliChem
                 160: 'Remote'       // Wireless Remote
             };
-            return names[addr] || addr.toString();
+            var base = names[addr] || addr.toString();
+            if (typeof msgManager !== 'undefined' && msgManager && typeof msgManager.resolveAddressLabel === 'function') {
+                return msgManager.resolveAddressLabel(addr, base);
+            }
+            return base;
         },
         _getActionDescription: function(action, sub) {
             var self = this, o = self.options;

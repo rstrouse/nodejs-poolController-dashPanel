@@ -4,12 +4,34 @@ var msgManager = {
     constants: {},
     keyBytes: {},
     configCategoryMap: null,
+    // Runtime plugin address reported by njsPC. For IntelliCenter v3.004+ this may
+    // differ from the configured address (e.g. 32 vs 33) when the OCP converges
+    // njsPC onto the first ICP slot. Resolver code uses this to relabel whichever
+    // address njsPC currently occupies as "njsPC".
+    runtime: { pluginAddress: null },
     init: function () {
         this.loadConstants();
         this.loadKeyBytes();
         this.loadConfigCategoryMap();
         console.log('Messages loaded');
         console.log(this);
+    },
+    setRuntimePluginAddress: function (addr) {
+        if (typeof addr !== 'number' || !isFinite(addr)) return;
+        var normalized = Math.max(0, Math.min(255, Math.trunc(addr)));
+        if (this.runtime.pluginAddress === normalized) return;
+        this.runtime.pluginAddress = normalized;
+        // Let any interested widgets (message list, entity flow) re-render labels.
+        try { $(document).trigger('msgManager:pluginAddressChanged', { pluginAddress: normalized }); }
+        catch (err) { /* noop */ }
+    },
+    // Resolve a bus address to a label, applying the runtime "njsPC" override for
+    // whichever slot njsPC is currently occupying.
+    resolveAddressLabel: function (addr, baseName) {
+        if (typeof addr === 'number' && this.runtime && this.runtime.pluginAddress === addr) {
+            return 'njsPC';
+        }
+        return baseName;
     },
     loadConstants: function (cb) {
         var self = this;
@@ -76,6 +98,15 @@ var msgManager = {
             return false;
 
         }) || { val: dest || 0, key: dest || 0, name: 'unk[' + dest + ']' };
+        // Runtime override: when njsPC has converged onto a different bus slot
+        // (e.g. the first ICP address 32 instead of the default 33), relabel that
+        // slot as "njsPC" so the UI reflects where the app actually lives. We
+        // clone the matched entry so the static constants table stays intact.
+        var rtAddr = this.runtime && typeof this.runtime.pluginAddress === 'number' ? this.runtime.pluginAddress : null;
+        if (rtAddr !== null) {
+            if (source === rtAddr) addrSource = $.extend({}, addrSource, { name: 'njsPC' });
+            if (dest === rtAddr) addrDest = $.extend({}, addrDest, { name: 'njsPC' });
+        }
         //var addrSource = { val: source, key: source };
         //var addrDest = { val: dest, key: dest };
         var length = msg.payloadLength;
