@@ -38,11 +38,11 @@
             return 'Unk[' + byte + ']';
 
         },
-        mapSourceByte: function (msg) { return msg.protocol === 'chlorinator' ? '' : this.extractByte(msg.header, 3); },
+        mapSourceByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'jandy' ? '' : this.extractByte(msg.header, 3); },
         mapDestByte: function (msg) { return this.extractByte(msg.header, 2); },
-        mapActionByte: function (msg) { return msg.protocol === 'chlorinator' ? this.extractByte(msg.header, 3) : this.extractByte(msg.header, 4); },
-        mapSource: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : this.mapAddress(this.extractByte(msg.header, 3)); },
-        mapDest: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : this.mapAddress(this.extractByte(msg.header, 2)); },
+        mapActionByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'jandy' ? this.extractByte(msg.header, 3) : this.extractByte(msg.header, 4); },
+        mapSource: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : msg.protocol === 'jandy' ? 'njsPC' : this.mapAddress(this.extractByte(msg.header, 3)); },
+        mapDest: function (msg) { return msg.protocol === 'chlorinator' ? 'chlor' : msg.protocol === 'jandy' ? this.mapAddress(this.extractByte(msg.header, 2)) : this.mapAddress(this.extractByte(msg.header, 2)); },
         mapChlorinatorAction: function (msg) {
             switch (this.extractByte(msg.header, 3)) {
                 case 0:
@@ -59,6 +59,17 @@
                     return 'Set[name]';
             }
             return '----';
+        },
+        mapJandyAction: function (msg) {
+            switch (this.extractByte(msg.header, 3)) {
+                case 12:
+                    return 'Set[heat]';
+                case 13:
+                    return 'Status';
+                case 37:
+                    return 'Get[temp]';
+            }
+            return 'Cmd[' + this.extractByte(msg.header, 3) + ']';
         },
         mapIntelliCenterAction: function (msg) {
             var action = this.extractByte(msg.header, 4);
@@ -275,17 +286,19 @@
         },
         getActionByte: function (msg) {
             if (msg.protocol === 'chlorinator') return this.extractByte(msg.payload, 0);
+            if (msg.protocol === 'jandy') return this.extractByte(msg.header, 3);
             return this.extractByte(msg.header, 4);
         },
-        getSourceByte: function (msg) { return msg.protocol === 'chlorinator' ? 0 : this.extractByte(msg.header, 3); },
+        getSourceByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'jandy' ? 0 : this.extractByte(msg.header, 3); },
         getDestByte: function (msg) { return msg.protocol === 'chlorinator' ? 0 : this.extractByte(msg.header, 2); },
-        getControllerByte: function (msg) { return msg.protocol === 'chlorinator' ? 0 : this.extractByte(msg.header, 1); },
+        getControllerByte: function (msg) { return msg.protocol === 'chlorinator' || msg.protocol === 'jandy' ? 0 : this.extractByte(msg.header, 1); },
         mapAction: function (msg) {
             if (msg.protocol === 'broadcast') return this.mapBroadcastAction(msg);
             else if (msg.protocol === 'chlorinator') return this.mapChlorinatorAction(msg);
             else if (msg.protocol === 'intellichem') return this.mapIntelliChemAction(msg);
             else if (msg.protocol === 'intellivalve') return this.mapIntelliValveAction(msg);
             else if (msg.protocol === 'pump') return this.mapPumpAction(msg);
+            else if (msg.protocol === 'jandy') return this.mapJandyAction(msg);
         },
         isMessageDiff: function (msg1, msg2) {
             if (!msg1.isValid || !msg2.isValid) return false;
