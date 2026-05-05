@@ -224,9 +224,9 @@
                 self._ensureAdminAccess(function () {
                     // Toggle/reuse a single settings popover instance.
                     if (o.settingsPopover && o.settingsPopover.length && o.settingsPopover.is(':visible')) {
-                        o.settingsPopover[0].close();
-                        o.settingsPopover.remove();
+                        var pov = o.settingsPopover;
                         o.settingsPopover = null;
+                        pov[0].close();
                         return;
                     }
                     // Cleanup any stale popovers left in DOM.
