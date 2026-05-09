@@ -158,6 +158,16 @@
                         pnlOpts = $('<div></div>').appendTo(pnl);
                         pnlOpts.pnlHybridHeaterOptions({ type: type, tempUnits: o.tempUnits });
                         break;
+                    case 'jxi':
+                        cols[0].elGlyph().removeClass().addClass('fas').addClass('fa-fire-alt');
+                        pnlOpts = $('<div></div>').appendTo(pnl);
+                        pnlOpts.pnlJxiHeaterOptions({ type: type, tempUnits: o.tempUnits });
+                        break;
+                    case 'lxi':
+                        cols[0].elGlyph().removeClass().addClass('fas').addClass('fa-fire-alt');
+                        pnlOpts = $('<div></div>').appendTo(pnl);
+                        pnlOpts.pnlLxiHeaterOptions({ type: type, tempUnits: o.tempUnits });
+                        break;
                 }
             }
             return pnl;
@@ -390,6 +400,69 @@
                 el.find('div[data-bind=maxBoostTemp]').each(function () { this.disabled(true); });
                 el.find('div[data-bind=economyTime]').each(function () { this.disabled(true); });
             }
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, obj);
+        }
+    });
+
+    $.widget('pic.pnlJxiHeaterOptions', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            el.addClass('pnl-jxi-heater');
+            var binding = '';
+            var line = $('<div></div>').appendTo(el);
+            var addresses = [];
+            for (var i = 0; i <= 3; i++) addresses.push({ val: 104 + i, desc: (i + 1).toString() });
+            $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
+                columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
+                items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width: '4rem', marginLeft: '.25rem' } }
+            });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: 'min', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Start Temp Delta', binding: binding + 'startTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Stop Temp Delta', binding: binding + 'stopTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+        },
+        dataBind: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            dataBinder.bind(el, obj);
+        }
+    });
+    $.widget('pic.pnlLxiHeaterOptions', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+            el[0].dataBind = function (obj) { return self.dataBind(obj); };
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.empty();
+            el.addClass('pnl-lxi-heater');
+            var binding = '';
+            var line = $('<div></div>').appendTo(el);
+            var addresses = [];
+            for (var i = 0; i <= 3; i++) addresses.push({ val: 56 + i, desc: (i + 1).toString() });
+            $('<div></div>').appendTo(line).pickList({
+                required: true,
+                bindColumn: 0, displayColumn: 1, labelText: 'Address', binding: binding + 'address',
+                columns: [{ binding: 'val', hidden: true, text: 'Address' }, { binding: 'desc', text: 'Address' }],
+                items: addresses, inputAttrs: { style: { width: '3rem' } }, labelAttrs: { style: { width: '4rem', marginLeft: '.25rem' } }
+            });
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Cooldown Delay', binding: binding + 'cooldownDelay', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: 'min', inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Start Temp Delta', binding: binding + 'startTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
+            $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Stop Temp Delta', binding: binding + 'stopTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
