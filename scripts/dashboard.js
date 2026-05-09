@@ -118,7 +118,9 @@
             console.log('resetting state');
             $.getLocalService('/config/serviceUri', null, function (data, status, xhr) {
                 console.log(data);
-                o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                var ip = data.ip || '';
+                if (ip.indexOf(':') !== -1 && ip.indexOf('.') !== -1) ip = ip.split(':')[0];
+                o.apiServiceUrl = data.protocol + ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 o.useProxy = makeBool(data.useProxy);
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $('body').attr('data-apiproxy', o.useProxy);
@@ -171,7 +173,9 @@
             console.log('initializing state');
             $.getLocalService('/config/serviceUri', null, function (data, status, xhr) {
                 console.log(data);
-                o.apiServiceUrl = data.protocol + data.ip + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
+                var ip2 = data.ip || '';
+                if (ip2.indexOf(':') !== -1 && ip2.indexOf('.') !== -1) ip2 = ip2.split(':')[0];
+                o.apiServiceUrl = data.protocol + ip2 + (typeof data.port !== 'undefined' && !isNaN(data.port) ? ':' + data.port : '');
                 o.useProxy = makeBool(data.useProxy);
                 $('body').attr('data-apiserviceurl', o.apiServiceUrl);
                 $('body').attr('data-apiproxy', o.useProxy);

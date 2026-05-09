@@ -1263,7 +1263,9 @@
                                     divSelection.data('server', server);
                                     divSelection.on('click', function (e) {
                                         var srv = $(e.currentTarget).data('server');
-                                        dataBinder.bind(divOuter, { services: { ip: srv.resolvedHost, port: srv.port, protocol: srv.protocol + '//' } });
+                                        var ip = srv.resolvedHost || srv.hostname || '';
+                                        if (ip.indexOf(':') !== -1 && ip.indexOf('.') !== -1) ip = ip.split(':')[0];
+                                        dataBinder.bind(divOuter, { services: { ip: ip, port: srv.port, protocol: srv.protocol + '//' } });
                                         $.pic.modalDialog.closeDialog(dlg[0]);
                                     });
                                 }
