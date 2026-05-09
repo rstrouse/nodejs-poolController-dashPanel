@@ -1197,10 +1197,9 @@
     // ==========================================================================
     // Virtual Equipment (wire-level slave simulators)
     // --------------------------------------------------------------------------
-    // This tab configures downstream devices (pumps, etc.) that njsPC impersonates
-    // on the RS-485 bus toward whichever master is live (real OCP or Nixie).
-    // The config is persisted in data/virtualEquipment.json on the server, NOT in
-    // poolConfig.json, so it does not appear in sys.pumps / state.pumps.
+    // This tab configures downstream devices (pumps, chlorinators, etc.) that
+    // njsPC impersonates on the RS-485 bus toward whichever master is live
+    // (real OCP or Nixie). Persisted in data/virtualEquipment.json.
     // ==========================================================================
     $.widget('pic.configVirtualEquipment', {
         options: {},
@@ -1215,13 +1214,15 @@
             el.attr('data-role', 'virtualEquipment');
 
             $('<div></div>').appendTo(el).addClass('virtualEquipment-warning')
-                .html('For testing only. Do not enable a virtual pump at the same address as a real pump on the bus.');
-            $('<div></div>').appendTo(el).addClass('virtualEquipment-narrative')
-                .html('A virtual pump makes njsPC answer as if a physical IntelliFlo pump were present at the given bus address. ' +
-                      'Either a real OCP or Nixie can address it. Collision detection will auto-disable the virtual pump if a real pump is also answering.');
-            $('<hr></hr>').appendTo(el);
+                .html('For testing only. Do not enable virtual equipment at addresses used by real hardware.');
 
-            $('<div class="virtualEquipment-pump-panel"></div>').appendTo(el);
+            var tabs = $('<div></div>').appendTo(el).tabBar();
+            var pumpTab = tabs[0].addTab({ id: 'tabVirtualPump', text: 'Pump' });
+            var chlorTab = tabs[0].addTab({ id: 'tabVirtualChlorinator', text: 'Chlorinator' });
+
+            $('<div class="virtualEquipment-pump-panel"></div>').appendTo(pumpTab);
+            $('<div class="virtualEquipment-chlor-panel"></div>').appendTo(chlorTab);
+            tabs[0].selectTabById('tabVirtualPump');
 
             self._loadAndRender();
         },
@@ -1233,18 +1234,24 @@
         },
         _render: function (data) {
             var self = this, el = self.element;
-            var pnl = el.find('div.virtualEquipment-pump-panel');
-            pnl.empty();
-
-            // v1: single VS pump at address 96.  We show a single form regardless
-            // of what's in the data file; any existing pump populates it.
+            var pumpPnl = el.find('div.virtualEquipment-pump-panel');
+            pumpPnl.empty();
             var pump = (data && Array.isArray(data.pumps) && data.pumps.length > 0) ? data.pumps[0] : null;
+            self._renderPumpForm(pumpPnl, pump);
+            self._renderPumpRuntime(pumpPnl, pump);
 
-            self._renderPumpForm(pnl, pump);
-            self._renderRuntimeSection(pnl, pump);
+            var chlorPnl = el.find('div.virtualEquipment-chlor-panel');
+            chlorPnl.empty();
+            var chlor = (data && Array.isArray(data.chlorinators) && data.chlorinators.length > 0) ? data.chlorinators[0] : null;
+            self._renderChlorForm(chlorPnl, chlor);
+            self._renderChlorRuntime(chlorPnl, chlor);
         },
+        // ===== Pump sub-tab =====
         _renderPumpForm: function (pnl, pump) {
             var self = this;
+            $('<div></div>').appendTo(pnl).addClass('virtualEquipment-narrative')
+                .html('A virtual pump makes njsPC answer as if a physical IntelliFlo pump were present. ' +
+                      'Collision detection auto-disables if a real pump is also answering.');
             var form = $('<div class="virtualEquipment-form"></div>').appendTo(pnl);
 
             var row1 = $('<div></div>').appendTo(form);
@@ -1275,7 +1282,6 @@
               .attr('title', 'Enable the virtual pump. When enabled it will answer bus packets addressed to it.');
 
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(form);
-
             var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save', icon: '<i class="fas fa-save"></i>' });
             btnSave.on('click', function () {
                 var v = dataBinder.fromElement(form);
@@ -1307,7 +1313,7 @@
                 });
             }
         },
-        _renderRuntimeSection: function (pnl, pump) {
+        _renderPumpRuntime: function (pnl, pump) {
             var self = this;
             var runtimeWrap = $('<div class="virtualEquipment-runtime"></div>').appendTo(pnl);
             if (!pump) {
@@ -1315,7 +1321,6 @@
                     .text('No virtual pump configured. Fill in the form above and click Save to create one.');
                 return;
             }
-
             if (pump.autoDisabled) {
                 var banner = $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-conflict-banner');
                 banner.html('<strong>Auto-disabled:</strong> ' + (pump.autoDisabledReason || 'A real pump appears to be responding at this address.'));
@@ -1327,26 +1332,118 @@
                     });
                 });
             }
-
             var grid = $('<div class="virtualEquipment-runtime-grid"></div>').appendTo(runtimeWrap);
             grid.attr('data-address', pump.address);
             var rt = pump.runtime || {};
-            self._setRuntimeGrid(grid, pump, rt);
+            self._setRuntimeGrid(grid, [
+                ['Effective', pump.isEffective ? 'yes' : 'no'],
+                ['Running', rt.running ? 'yes' : 'no'],
+                ['Remote control', rt.remote ? 'yes' : 'no'],
+                ['Target RPM', rt.targetRpm != null ? rt.targetRpm : '\u2014'],
+                ['Watts (simulated)', rt.watts != null ? rt.watts : '\u2014'],
+                ['Packets answered', rt.packetCount != null ? rt.packetCount : 0],
+                ['Last packet', rt.lastPacketAt || '\u2014']
+            ]);
         },
-        _setRuntimeGrid: function (grid, pump, rt) {
-            grid.empty();
-            function row(label, value) {
-                var r = $('<div class="virtualEquipment-runtime-row"></div>').appendTo(grid);
-                $('<span class="virtualEquipment-runtime-label"></span>').text(label + ':').appendTo(r);
-                $('<span class="virtualEquipment-runtime-value"></span>').text(value).appendTo(r);
+        // ===== Chlorinator sub-tab =====
+        _renderChlorForm: function (pnl, chlor) {
+            var self = this;
+            $('<div></div>').appendTo(pnl).addClass('virtualEquipment-narrative')
+                .html('A virtual chlorinator makes njsPC answer as if a physical IntelliChlor cell were present. ' +
+                      'The OCP polls address 80 every ~2s; once enabled the virtual cell responds and clears "Communication Lost".');
+            var form = $('<div class="virtualEquipment-form"></div>').appendTo(pnl);
+
+            var row1 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'Address', binding: 'address',
+                min: 80, max: 83, step: 1, value: chlor ? chlor.address : 80,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginRight: '.25rem' } }
+            }).attr('title', 'Chlorinator bus address. 80 = slot 1, 81 = slot 2, etc.');
+
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'Salt (ppm)', binding: 'saltLevel',
+                min: 0, max: 6400, step: 50, value: chlor ? chlor.saltLevel : 3400,
+                inputAttrs: { style: { width: '5rem' } },
+                labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } }
+            }).attr('title', 'Simulated salt level in ppm. Reported to the OCP in status responses.');
+
+            var row2 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row2).checkbox({
+                labelText: 'Enabled', binding: 'enabled'
+            }).each(function () { this.val(chlor ? chlor.enabled === true : false); })
+              .attr('title', 'Enable the virtual chlorinator. When enabled it responds to OCP polls.');
+
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(form);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save', icon: '<i class="fas fa-save"></i>' });
+            btnSave.on('click', function () {
+                var v = dataBinder.fromElement(form);
+                if (!dataBinder.checkRequired(form)) return;
+                $.putApiService('/config/virtualEquipment/chlorinator', v, 'Saving virtual chlorinator...', function () {
+                    self._loadAndRender();
+                });
+            });
+
+            if (chlor) {
+                var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete', icon: '<i class="fas fa-trash"></i>' });
+                btnDelete.on('click', function () {
+                    $.pic.modalDialog.createConfirm('dlgConfirmDeleteVirtualChlor', {
+                        message: 'Delete the virtual chlorinator at address ' + chlor.address + '?',
+                        width: '350px', height: 'auto', title: 'Confirm Delete Virtual Chlorinator',
+                        buttons: [{
+                            text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                            click: function () {
+                                $.pic.modalDialog.closeDialog(this);
+                                $.deleteApiService('/config/virtualEquipment/chlorinator/' + chlor.address, null, 'Deleting virtual chlorinator...', function () {
+                                    self._loadAndRender();
+                                });
+                            }
+                        }, {
+                            text: 'No', icon: '<i class="far fa-window-close"></i>',
+                            click: function () { $.pic.modalDialog.closeDialog(this); }
+                        }]
+                    });
+                });
             }
-            row('Effective', pump.isEffective ? 'yes' : 'no');
-            row('Running', rt.running ? 'yes' : 'no');
-            row('Remote control', rt.remote ? 'yes' : 'no');
-            row('Target RPM', rt.targetRpm != null ? rt.targetRpm : '—');
-            row('Watts (simulated)', rt.watts != null ? rt.watts : '—');
-            row('Packets answered', rt.packetCount != null ? rt.packetCount : 0);
-            row('Last packet', rt.lastPacketAt || '—');
+        },
+        _renderChlorRuntime: function (pnl, chlor) {
+            var self = this;
+            var runtimeWrap = $('<div class="virtualEquipment-runtime"></div>').appendTo(pnl);
+            if (!chlor) {
+                $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-hint')
+                    .text('No virtual chlorinator configured. Fill in the form above and click Save to create one.');
+                return;
+            }
+            if (chlor.autoDisabled) {
+                var banner = $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-conflict-banner');
+                banner.html('<strong>Auto-disabled:</strong> ' + (chlor.autoDisabledReason || 'A real chlorinator appears to be responding at this address.'));
+                if (chlor.autoDisabledAt) banner.append($('<div class="virtualEquipment-timestamp"></div>').text('at ' + chlor.autoDisabledAt));
+                var reBtn = $('<div></div>').appendTo(banner).actionButton({ text: 'Re-enable', icon: '<i class="fas fa-bolt"></i>' });
+                reBtn.on('click', function () {
+                    $.putApiService('/config/virtualEquipment/chlorinator/' + chlor.address + '/reenable', {}, 'Re-enabling virtual chlorinator...', function () {
+                        self._loadAndRender();
+                    });
+                });
+            }
+            var grid = $('<div class="virtualEquipment-runtime-grid"></div>').appendTo(runtimeWrap);
+            grid.attr('data-address', chlor.address);
+            var rt = chlor.runtime || {};
+            self._setRuntimeGrid(grid, [
+                ['Effective', chlor.isEffective ? 'yes' : 'no'],
+                ['Salt (simulated)', chlor.saltLevel + ' ppm'],
+                ['Target output', rt.targetOutput != null ? rt.targetOutput + '%' : '\u2014'],
+                ['Packets answered', rt.packetCount != null ? rt.packetCount : 0],
+                ['Last packet', rt.lastPacketAt || '\u2014']
+            ]);
+        },
+        // ===== Shared =====
+        _setRuntimeGrid: function (grid, rows) {
+            grid.empty();
+            for (var i = 0; i < rows.length; i++) {
+                var r = $('<div class="virtualEquipment-runtime-row"></div>').appendTo(grid);
+                $('<span class="virtualEquipment-runtime-label"></span>').text(rows[i][0] + ':').appendTo(r);
+                $('<span class="virtualEquipment-runtime-value"></span>').text(rows[i][1]).appendTo(r);
+            }
         }
     });
 })(jQuery);
