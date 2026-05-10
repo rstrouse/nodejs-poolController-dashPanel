@@ -207,6 +207,8 @@
                 evt.stopImmediatePropagation();
                 var lastPressed = $(this).data('lastPressed');
                 if (el.hasClass('disabled')) return;
+                var bodyId = parseInt(el.attr('data-id'), 10);
+                if (!$.pic.icSecurity.canWrite(bodyId === 1 ? 11 : 10)) return;
                 if (lastPressed) {
                     let ind = $(evt.target);
                     var duration = new Date().getTime() - lastPressed;
@@ -250,6 +252,12 @@
                       
                
             el.on('click', 'div.picBodySetpoints', function (evt) {
+                var bodyId = parseInt(el.attr('data-id'), 10);
+                if (bodyId === 1) {
+                    if (!$.pic.icSecurity.canWrite(20, 21)) return;
+                } else {
+                    if (!$.pic.icSecurity.canWrite(18, 19)) return;
+                }
                 var body = el;
                 var settings = {
                     name: body.attr('data-body'),

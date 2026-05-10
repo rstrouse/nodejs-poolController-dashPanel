@@ -237,6 +237,7 @@
             $('<div class="picProgram"><span class=picCommand>Program #</span><span class="picCommand" data-bind="command" data-fmttype="number" data-fmtmask="#" data-fmtempty="---"></span></div>').appendTo(el);
 
             el.on('click', function (evt) {
+                if (!$.pic.icSecurity.canWrite(1)) return;
                 let type = parseInt(el.attr('data-pumptype'), 10);
                 evt.stopImmediatePropagation();
                 evt.preventDefault();

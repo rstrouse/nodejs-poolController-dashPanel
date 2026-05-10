@@ -256,6 +256,7 @@
                 }
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
+                    if (!$.pic.icSecurity.canWrite(13)) return;
                     var duration = new Date().getTime() - lastPressed;
                     $(this).data('lastPressed', false);
                     let ind = el.find('div.picFeatureToggle').find('div.picIndicator')
@@ -393,6 +394,7 @@
                  }
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
+                    if (!$.pic.icSecurity.canWrite(2)) return;
                     var duration = new Date().getTime() - lastPressed;
                     $(this).data('lastPressed', false);
                     let ind = el.find('div.picFeatureToggle').find('div.picIndicator')
@@ -657,6 +659,7 @@
                 evt.stopImmediatePropagation();
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
+                    if (!$.pic.icSecurity.canWrite(13)) return;
                     var duration = new Date().getTime() - lastPressed;
                     $(this).data('lastPressed', false);
                     if (duration > 750) {

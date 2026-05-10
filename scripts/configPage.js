@@ -163,6 +163,7 @@
 
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
                 tabs[0].selectTabById('tabGeneral');
+                self._applyIcPermissions(tabs);
                 el.trigger(evt);
             });
         },
@@ -192,6 +193,39 @@
                 }
             });
             return divOuter;
+        },
+        _applyIcPermissions: function (tabs) {
+            if ($('body').attr('data-controllertype') !== 'intellicenter') return;
+            var ctrl = $('div.picController');
+            var session = null;
+            if (ctrl.length && ctrl[0].icSession) session = ctrl[0].icSession;
+            if (!session) {
+                try { session = ctrl.data('picController').options.icSession; } catch (e) { }
+            }
+            if (!session || (!session.roleId && !session.isGuest)) return;
+            if (session.isAdmin) return;
+            var mask = session.permissionsMask || 0;
+            var hasBit = function (bit) { return ((mask >> (31 - bit)) & 1) === 1; };
+            var tabSectionMap = {
+                'tabGeneral': [5, 4],
+                'tabBodySetup': [10, 11, 18, 19, 20, 21],
+                'tabCircuits': [13, 12, 2],
+                'tabPumps': [1],
+                'tabValves': [1],
+                'tabChemistry': [0],
+                'tabHeaters': [1, 18, 20],
+                'tabSchedules': [14]
+            };
+            for (var tabId in tabSectionMap) {
+                var bits = tabSectionMap[tabId];
+                var allowed = false;
+                for (var i = 0; i < bits.length; i++) {
+                    if (hasBit(bits[i])) { allowed = true; break; }
+                }
+                if (!allowed) {
+                    tabs.find('[data-tabid="' + tabId + '"]').hide();
+                }
+            }
         },
         _buildCircuitsTab: function (contents) {
             var self = this, o = self.options, el = self.element;

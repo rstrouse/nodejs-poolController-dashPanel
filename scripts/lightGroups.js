@@ -39,6 +39,7 @@
                 evt.stopPropagation();
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
+                    if (!$.pic.icSecurity.canWrite(12)) return;
                     var duration = new Date().getTime() - lastPressed;
                     $(this).data('lastPressed', false);
                     let ind = el.find('div.picFeatureToggle').find('div.picIndicator')
@@ -69,6 +70,7 @@
         //     setTimeout(function () { self.resetState(); }, 2000);
         // });
         el.on('click', 'i.picDropdownButton', function (evt) {
+            if (!$.pic.icSecurity.canWrite(12)) return;
             var divPopover = $('<div class="picIBThemes"></div>');
             var btn = evt.currentTarget;
             divPopover.appendTo(el.parent());

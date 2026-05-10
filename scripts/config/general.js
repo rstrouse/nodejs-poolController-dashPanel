@@ -371,6 +371,30 @@
     });
 })(jQuery); // Alerts
 (function ($) {
+    var _sectionLabels = [
+        'Vacation Mode', 'Support', 'General Settings', 'Alerts & Notifications',
+        'User Portal', 'Groups', 'Advanced Settings', 'Chemistry',
+        'Status', 'Schedules', 'Features', 'Lights',
+        'Pool', 'Spa', 'Usage', 'Multi Body Drawer',
+        'Service Mode Ckts'
+    ];
+    function _countBits(permBytes) {
+        var mask = ((permBytes[0] & 0xFF) * 16777216) + ((permBytes[1] & 0xFF) * 65536) + ((permBytes[2] & 0xFF) * 256) + (permBytes[3] & 0xFF);
+        var count = 0;
+        while (mask) { count += mask & 1; mask >>>= 1; }
+        return count;
+    }
+    function _getBit(permBytes, bitIndex) {
+        var byteIdx = Math.floor(bitIndex / 8);
+        var bitIdx = bitIndex % 8;
+        return (permBytes[byteIdx] & (1 << bitIdx)) !== 0;
+    }
+    function _setBit(permBytes, bitIndex, val) {
+        var byteIdx = Math.floor(bitIndex / 8);
+        var bitIdx = bitIndex % 8;
+        if (val) permBytes[byteIdx] = permBytes[byteIdx] | (1 << bitIdx);
+        else permBytes[byteIdx] = permBytes[byteIdx] & ~(1 << bitIdx);
+    }
     $.widget('pic.pnlSecurity', {
         options: {},
         _create: function () {
@@ -384,23 +408,150 @@
             el.addClass('picConfigCategory cfgSecurity');
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Security', glyph: 'fas fa-user-secret', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div></div>').appendTo(pnl);
-            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            btnSave = $('<div id="btnSaveSecurity"></div>').appendTo(btnPnl).actionButton({ text: 'Save Security', icon: '<i class="fas fa-save"></i>' });
-            btnSave.on('click', function (e) {
-                $(this).addClass('disabled');
-                $(this).find('i').addClass('burst-animated');
-                // Send this off to the server.
-                //$(this).find('span.picButtonText').text('Loading Config...');
-                //$.putApiService('/app/config/reload', function (data, status, xhr) {
-            });
-
-
-
+            self._toggleLine = $('<div></div>').appendTo(pnl);
+            self._roleList = $('<div class="cfgSecurityRoles"></div>').appendTo(pnl);
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
-            dataBinder.bind(el, obj);
+            if (!obj || typeof obj.enabled === 'undefined') {
+                $.getApiService('/config/options/security', null, function (data) {
+                    if (data && data.security) self._bindData(data.security);
+                });
+                return;
+            }
+            self._bindData(obj);
+        },
+        _bindData: function (obj) {
+            var self = this, o = self.options, el = self.element;
+            if ($('body').attr('data-controllertype') !== 'intellicenter') {
+                self._toggleLine.empty();
+                $('<div></div>').appendTo(self._toggleLine).css({ padding: '.5rem', fontStyle: 'italic' })
+                    .text('Security for this panel type is managed via the hamburger menu (Settings \u2192 Security tab).');
+                return;
+            }
+            o.security = obj;
+            self._toggleLine.empty();
+            var chkEnabled = $('<div></div>').appendTo(self._toggleLine).checkbox({ labelText: 'Security Enabled', binding: 'enabled' });
+            chkEnabled.find('input').prop('checked', obj.enabled);
+            chkEnabled.on('changed', function (evt) {
+                self._saveAdminToggle('enabled', evt.newVal);
+            });
+            var chkGuest = $('<div></div>').appendTo(self._toggleLine).checkbox({ labelText: 'Guest Enabled', binding: 'guestEnabled' });
+            chkGuest.find('input').prop('checked', (obj.enabledByte & 0x40) !== 0);
+            chkGuest.on('changed', function (evt) {
+                self._saveAdminToggle('guestEnabled', evt.newVal);
+            });
+            chkGuest.css({ marginLeft: '1.5rem', display: 'inline-block' });
+            chkEnabled.css({ display: 'inline-block' });
+            self._renderRoles(obj.roles);
+        },
+        _saveAdminToggle: function (field, val) {
+            var self = this, o = self.options;
+            var admin = o.security.roles.find(function (r) { return r.id === 1; });
+            if (!admin) return;
+            var data = { id: 1, name: admin.name, pin: admin.pin, timeout: admin.timeout, permissionsBytes: admin.permissionsBytes.slice() };
+            data[field] = val;
+            $.putApiService('/config/security/role', data, 'Saving Security...', function (result) {
+                if (result && result.roles) {
+                    o.security = result;
+                    self._renderRoles(result.roles);
+                }
+            });
+        },
+        _renderRoles: function (roles) {
+            var self = this, o = self.options;
+            self._roleList.empty();
+            var hdr = $('<div class="cfgSecurityRoleHeader"></div>').appendTo(self._roleList);
+            hdr.css({ display: 'flex', fontWeight: 'bold', padding: '.25rem 0', borderBottom: '1px solid var(--panel-border-color, #444)' });
+            $('<span></span>').appendTo(hdr).text('Role').css({ width: '10rem' });
+            $('<span></span>').appendTo(hdr).text('PIN').css({ width: '4rem', textAlign: 'center' });
+            $('<span></span>').appendTo(hdr).text('Timeout').css({ width: '5rem', textAlign: 'center' });
+            $('<span></span>').appendTo(hdr).text('Sections').css({ width: '5rem', textAlign: 'center' });
+            $('<span></span>').appendTo(hdr).text('').css({ width: '4rem' });
+            for (var i = 0; i < roles.length; i++) {
+                var r = roles[i];
+                if (!r.name && r.pin === '0000' && !_countBits(r.permissionsBytes || [0, 0, 0, 0])) continue;
+                self._renderRoleRow(r);
+            }
+        },
+        _renderRoleRow: function (role) {
+            var self = this, o = self.options;
+            var row = $('<div class="cfgSecurityRoleRow"></div>').appendTo(self._roleList);
+            row.css({ display: 'flex', alignItems: 'center', padding: '.25rem 0', borderBottom: '1px solid var(--panel-border-color, #333)' });
+            $('<span></span>').appendTo(row).text(role.name || '(unnamed)').css({ width: '10rem' });
+            $('<span></span>').appendTo(row).text(role.pin === '0000' ? '-' : '****').css({ width: '4rem', textAlign: 'center' });
+            $('<span></span>').appendTo(row).text(role.timeout + 'm').css({ width: '5rem', textAlign: 'center' });
+            var bits = _countBits(role.permissionsBytes || [0, 0, 0, 0]);
+            $('<span></span>').appendTo(row).text(bits + '/22').css({ width: '5rem', textAlign: 'center' });
+            var btnEdit = $('<div></div>').appendTo(row).actionButton({ text: 'Edit', icon: '<i class="fas fa-edit"></i>' });
+            btnEdit.css({ width: '4rem' });
+            btnEdit.on('click', function () { self._openRoleEditor(role); });
+        },
+        _openRoleEditor: function (role) {
+            var self = this, o = self.options;
+            var dlg = $('<div></div>').appendTo(document.body);
+            var permBytes = (role.permissionsBytes || [0, 0, 0, 0]).slice();
+            dlg.modalDialog({
+                title: 'Edit Role: ' + (role.name || 'Role ' + role.id),
+                width: '28rem',
+                buttons: [
+                    {
+                        text: 'Save', icon: '<i class="fas fa-save"></i>',
+                        click: function () {
+                            var data = {
+                                id: role.id,
+                                name: dlg.find('[data-field="name"] input').val(),
+                                pin: dlg.find('[data-field="pin"] input').val(),
+                                timeout: parseInt(dlg.find('[data-field="timeout"] input').val(), 10) || 5,
+                                permissionsBytes: permBytes
+                            };
+                            $.putApiService('/config/security/role', data, 'Saving Role...', function (result) {
+                                if (result && result.roles) {
+                                    o.security = result;
+                                    self._renderRoles(result.roles);
+                                }
+                                dlg.parents('.ui-dialog:first').remove();
+                                dlg.remove();
+                            });
+                        }
+                    },
+                    {
+                        text: 'Cancel', icon: '<i class="fas fa-times"></i>',
+                        click: function () { dlg.parents('.ui-dialog:first').remove(); dlg.remove(); }
+                    }
+                ]
+            });
+            var contents = dlg.find('.ui-dialog-content, .picModalDialog-contents').first();
+            if (!contents.length) contents = dlg;
+            contents.empty();
+            var line = $('<div></div>').appendTo(contents);
+            var fldName = $('<div></div>').attr('data-field', 'name').appendTo(line).inputField({ labelText: 'Name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '4.5rem' } } });
+            fldName.find('input').val(role.name || '');
+            line = $('<div></div>').appendTo(contents);
+            var fldPin = $('<div></div>').attr('data-field', 'pin').appendTo(line).inputField({ labelText: 'PIN', inputAttrs: { maxlength: 4, type: 'password' }, labelAttrs: { style: { width: '4.5rem' } } });
+            fldPin.find('input').val(role.pin || '0000');
+            var fldTimeout = $('<div></div>').attr('data-field', 'timeout').appendTo(line).inputField({ labelText: 'Timeout', inputAttrs: { maxlength: 2, type: 'number', min: 1, max: 10 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '1rem' } } });
+            fldTimeout.find('input').val(role.timeout || 5);
+            var secHdr = $('<div></div>').appendTo(contents).css({ marginTop: '.5rem', fontWeight: 'bold' });
+            secHdr.text('Sections');
+            var btnAll = $('<span></span>').appendTo(secHdr).text(' [All]').css({ cursor: 'pointer', fontWeight: 'normal', color: 'var(--link-color, #6cf)' });
+            var btnNone = $('<span></span>').appendTo(secHdr).text(' [None]').css({ cursor: 'pointer', fontWeight: 'normal', color: 'var(--link-color, #6cf)', marginLeft: '.5rem' });
+            var checkboxes = [];
+            var grid = $('<div></div>').appendTo(contents).css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.15rem', marginTop: '.25rem' });
+            for (var i = 0; i < _sectionLabels.length; i++) {
+                (function (idx) {
+                    var chk = $('<div></div>').appendTo(grid).checkbox({ labelText: _sectionLabels[idx] });
+                    chk.find('input').prop('checked', _getBit(permBytes, idx));
+                    chk.on('changed', function (evt) { _setBit(permBytes, idx, evt.newVal); });
+                    checkboxes.push(chk);
+                })(i);
+            }
+            btnAll.on('click', function () {
+                for (var i = 0; i < _sectionLabels.length; i++) { _setBit(permBytes, i, true); checkboxes[i].find('input').prop('checked', true); }
+            });
+            btnNone.on('click', function () {
+                for (var i = 0; i < _sectionLabels.length; i++) { _setBit(permBytes, i, false); checkboxes[i].find('input').prop('checked', false); }
+            });
         }
     });
 })(jQuery); // Security

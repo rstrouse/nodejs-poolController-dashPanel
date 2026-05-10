@@ -1,4 +1,21 @@
 (function ($) {
+    $.pic = $.pic || {};
+    $.pic.icSecurity = {
+        canWrite: function (/* ...bits */) {
+            if ($('body').attr('data-controllertype') !== 'intellicenter') return true;
+            var ctrl = $('div.picController');
+            var session;
+            try { session = ctrl.data('picController').options.icSession; } catch (e) { return true; }
+            if (!session) return true;
+            if (session.isAdmin) return true;
+            if (session.isGuest && session.permissionsMask === 0) return false;
+            var mask = session.permissionsMask || 0;
+            for (var i = 0; i < arguments.length; i++) {
+                if (((mask >> (31 - arguments[i])) & 1) === 1) return true;
+            }
+            return false;
+        }
+    };
     $.widget("pic.controller", {
         options: {},
         _create: function () {
@@ -143,11 +160,12 @@
         },
         _ensureAdminAccess: function (onAllowed) {
             var self = this, o = self.options, el = self.element;
+            if ($('body').attr('data-controllertype') === 'intellicenter') {
+                return self._ensureIcv3Access(onAllowed);
+            }
             self._refreshSecurityStatus(function () {
-                // Not active => allow access (prevents lockout before password configured)
                 if (!self._isSecurityActive()) {
                     if (o.security && o.security.hasPassword !== true) {
-                        // If user has enabled security but no password, allow setup when they try.
                         if (o.security && o.security.enabled === true) return self._showSecurityDialog('setup', onAllowed);
                     }
                     return (typeof onAllowed === 'function') ? onAllowed() : undefined;
@@ -155,6 +173,169 @@
                 if (o.security.unlocked === true) return (typeof onAllowed === 'function') ? onAllowed() : undefined;
                 return self._showSecurityDialog('unlock', onAllowed);
             });
+        },
+        _ensureIcv3Access: function (onAllowed) {
+            var self = this, o = self.options, el = self.element;
+            if (o.icSession && (o.icSession.roleId || o.icSession.isGuest)) {
+                var elapsed = Date.now() - (o.icSession.lastActivity || 0);
+                if (elapsed < (o.icSession.timeout || 5) * 60000) {
+                    o.icSession.lastActivity = Date.now();
+                    self._startIcTimeoutTimer();
+                    return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                }
+                o.icSession = null;
+            }
+            $.getApiService('/config/security/session', null, function (data) {
+                if (!data || !data.enabled) {
+                    return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                }
+                if (data.session && data.session.isAuthenticated) {
+                    o.icSession = {
+                        roleId: data.session.roleId,
+                        roleName: data.session.roleName,
+                        isAdmin: data.session.isAdmin,
+                        permissionsMask: data.session.permissionsMask || 0xFFFFFFFF,
+                        timeout: data.session.timeout || 5,
+                        lastActivity: Date.now()
+                    };
+                    self._applyIcSecurityUi();
+                    self._startIcTimeoutTimer();
+                    return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                }
+                if (data.guestEnabled) {
+                    o.icSession = {
+                        roleId: 0,
+                        roleName: 'Guest',
+                        isAdmin: false,
+                        isGuest: true,
+                        permissionsMask: data.guestPermissionsMask || 0,
+                        timeout: 60,
+                        lastActivity: Date.now()
+                    };
+                    self._applyIcSecurityUi();
+                    return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+                }
+                self._showIcPinDialog(onAllowed);
+            }, function () {
+                return (typeof onAllowed === 'function') ? onAllowed() : undefined;
+            });
+        },
+        _showIcPinDialog: function (onAllowed) {
+            var self = this, o = self.options, el = self.element;
+            var pinInput, pinLine, errMsg;
+            var showErr = function (msg) {
+                if (o._errTimeout) clearTimeout(o._errTimeout);
+                errMsg.text(msg);
+                o._errTimeout = setTimeout(function () { errMsg.text(''); }, 4000);
+            };
+            var doLogin = function () {
+                var pin = pinInput ? pinInput.val() || '' : '';
+                if (pin.length < 4) {
+                    showErr('Enter a 4-digit PIN.');
+                    return;
+                }
+                var useProxy = makeBool($('body').attr('data-apiproxy'));
+                var baseUrl = useProxy ? '/njsPC' : $('body').attr('data-apiserviceurl');
+                $.ajax({
+                    url: baseUrl + '/config/security/login',
+                    type: 'PUT',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ pin: pin }),
+                    success: function (result) {
+                        if (result && result.session && result.session.isAuthenticated) {
+                            o.icSession = {
+                                roleId: result.session.roleId,
+                                roleName: result.session.roleName,
+                                isAdmin: result.session.isAdmin,
+                                permissionsMask: result.session.permissionsMask || 0xFFFFFFFF,
+                                timeout: result.session.timeout || 5,
+                                lastActivity: Date.now()
+                            };
+                            $.pic.modalDialog.closeDialog(dlg);
+                            self._applyIcSecurityUi();
+                            self._startIcTimeoutTimer();
+                            if (typeof onAllowed === 'function') onAllowed();
+                        }
+                    },
+                    error: function () {
+                        pinInput.val('');
+                        showErr('Invalid PIN.');
+                        setTimeout(function () { pinInput.focus(); }, 50);
+                    }
+                });
+            };
+            var dlg = $.pic.modalDialog.createDialog('dlgIcPin', {
+                width: '320px',
+                height: 'auto',
+                title: 'IntelliCenter Security',
+                position: { my: "center bottom", at: "center top", of: el },
+                buttons: [{
+                    text: 'Login', icon: '<i class="fas fa-lock-open"></i>',
+                    click: function () { doLogin(); }
+                }, {
+                    text: 'Cancel', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
+            });
+            dlg.empty();
+            var line = $('<div></div>').appendTo(dlg);
+            $('<div></div>').appendTo(line).addClass('info-message').text('Enter your panel PIN to access configuration.');
+            $('<hr></hr>').appendTo(dlg);
+            pinLine = $('<div class="picOptionLine"></div>').appendTo(dlg);
+            $('<label></label>').appendTo(pinLine).css({ width: '4rem', display: 'inline-block' }).addClass('field-label').text('PIN');
+            pinInput = $('<input/>').appendTo(pinLine)
+                .attr('type', 'password')
+                .attr('maxlength', '4')
+                .attr('inputmode', 'numeric')
+                .css({ width: '6rem', fontSize: '1.2rem', letterSpacing: '.3rem' });
+            errMsg = $('<div></div>').appendTo(dlg).css({ color: '#d00', fontSize: '.8rem', padding: '.2rem .5rem', marginTop: '.3rem', minHeight: '1rem' });
+            pinInput.on('keydown', function (evt) {
+                if (evt.key === 'Enter') { evt.preventDefault(); doLogin(); }
+            });
+            dlg.css({ overflow: 'visible' });
+            setTimeout(function () { pinInput.focus(); }, 100);
+        },
+        _applyIcSecurityUi: function () {
+            var self = this, o = self.options, el = self.element;
+            var active = !!(o.icSession && (o.icSession.roleId || o.icSession.isGuest));
+            var isGuest = active && o.icSession.isGuest;
+            el.find('div.picLockIcon').css({ display: 'inline-block' });
+            el.find('div.picLockIcon > i').attr('class', active && !isGuest ? 'fas fa-unlock' : 'fas fa-lock');
+            el.find('div.picModel > i').toggleClass('picAdminLocked', !active);
+            el.find('div.picConfigIcon').toggleClass('picAdminLocked', !active);
+            el.find('div.picConfigIcon > i').toggleClass('picAdminLocked', !active);
+            el.find('.picIcReadOnly').remove();
+            if (isGuest) {
+                $('<span class="picIcReadOnly"></span>')
+                    .text('Guest')
+                    .css({ fontSize: '.7rem', color: '#f08000', marginLeft: '.3rem' })
+                    .insertAfter(el.find('div.picLockIcon'));
+            }
+        },
+        _startIcTimeoutTimer: function () {
+            var self = this, o = self.options;
+            if (o._icTimeoutTimer) clearInterval(o._icTimeoutTimer);
+            if (!o.icSession || !o.icSession.roleId) return;
+            o.icSession.lastActivity = Date.now();
+            if (!o._icActivityBound) {
+                o._icActivityBound = true;
+                $(document).on('click.icTimeout keydown.icTimeout', function () {
+                    if (o.icSession && o.icSession.roleId) o.icSession.lastActivity = Date.now();
+                });
+            }
+            o._icTimeoutTimer = setInterval(function () {
+                if (!o.icSession || !o.icSession.roleId) { clearInterval(o._icTimeoutTimer); return; }
+                var elapsed = Date.now() - (o.icSession.lastActivity || 0);
+                if (elapsed >= (o.icSession.timeout || 5) * 60000) {
+                    clearInterval(o._icTimeoutTimer);
+                    o._icTimeoutTimer = null;
+                    o.icSession = null;
+                    self._applyIcSecurityUi();
+                    var baseUrl = (makeBool($('body').attr('data-apiproxy')) ? '/njsPC' : $('body').attr('data-apiserviceurl'));
+                    $.ajax({ url: baseUrl + '/config/security/logout', type: 'PUT', dataType: 'json', contentType: 'application/json; charset=utf-8', data: '{}' });
+                }
+            }, 30000);
         },
         _showPanelMode: function () {
             var self = this, o = self.options, el = self.element;
@@ -260,26 +441,45 @@
 
             el.find('div.picConfigIcon').on('click', function (evt) {
                 let btn = $(this);
+                let container = $('div.dashOuter');
+                if (container.attr('data-panel') === 'configuration') {
+                    btn.find('i').attr('class', 'fas fa-cogs');
+                    container.attr('data-panel', 'dashboard');
+                    self._closeConfigPage();
+                    return;
+                }
                 self._ensureAdminAccess(function () {
-                    let container = $('div.dashOuter');
-                    switch (container.attr('data-panel')) {
-                        case 'dashboard':
-                            btn.find('i').attr('class', 'fas fa-home');
-                            container.attr('data-panel', 'configuration');
-                            self._buildConfigPage();
-                            break;
-                        case 'configuration':
-                            btn.find('i').attr('class', 'fas fa-cogs');
-                            container.attr('data-panel', 'dashboard');
-                            self._closeConfigPage();
-                            break;
-                    }
+                    btn.find('i').attr('class', 'fas fa-home');
+                    container.attr('data-panel', 'configuration');
+                    self._buildConfigPage();
                 });
             });
 
             el.find('div.picLockIcon').on('click', function (evt) {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
+                if ($('body').attr('data-controllertype') === 'intellicenter') {
+                    if (o.icSession && o.icSession.roleId && !o.icSession.isGuest) {
+                        o.icSession = null;
+                        self._applyIcSecurityUi();
+                        $.ajax({
+                            url: (makeBool($('body').attr('data-apiproxy')) ? '/njsPC' : $('body').attr('data-apiserviceurl')) + '/config/security/logout',
+                            type: 'PUT',
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf-8',
+                            data: JSON.stringify({})
+                        });
+                        return;
+                    }
+                    self._showIcPinDialog(function () {
+                        var container = $('div.dashOuter');
+                        if (container.attr('data-panel') === 'configuration') {
+                            self._closeConfigPage();
+                            self._buildConfigPage();
+                        }
+                    });
+                    return;
+                }
                 self._refreshSecurityStatus(function () {
                     if (self._isSecurityActive() && o.security.unlocked === true) {
                         $.postLocalService('/security/lock', {}, 'Locking...', function () {
@@ -287,7 +487,6 @@
                         });
                     }
                     else {
-                        // If not configured but enabled, allow setup.
                         if (o.security && o.security.enabled === true && o.security.hasPassword !== true) {
                             return self._showSecurityDialog('setup', function () { });
                         }
@@ -298,6 +497,34 @@
 
             // Initialize lock UI (fails open if route is missing).
             self._refreshSecurityStatus(function () { self._applySecurityUi(); });
+            if ($('body').attr('data-controllertype') === 'intellicenter') {
+                $.getApiService('/config/security/session', null, function (sdata) {
+                    if (!sdata || !sdata.enabled) return;
+                    if (sdata.session && sdata.session.isAuthenticated) {
+                        o.icSession = {
+                            roleId: sdata.session.roleId,
+                            roleName: sdata.session.roleName,
+                            isAdmin: sdata.session.isAdmin,
+                            permissionsMask: sdata.session.permissionsMask || 0xFFFFFFFF,
+                            timeout: sdata.session.timeout || 5,
+                            lastActivity: Date.now()
+                        };
+                        self._applyIcSecurityUi();
+                        self._startIcTimeoutTimer();
+                    } else if (sdata.guestEnabled) {
+                        o.icSession = {
+                            roleId: 0,
+                            roleName: 'Guest',
+                            isAdmin: false,
+                            isGuest: true,
+                            permissionsMask: sdata.guestPermissionsMask || 0,
+                            timeout: 60,
+                            lastActivity: Date.now()
+                        };
+                        self._applyIcSecurityUi();
+                    }
+                });
+            }
             self.setControllerState(data);
             self.setEquipmentState(typeof data !== 'undefined' ? data.equipment : undefined);
         },

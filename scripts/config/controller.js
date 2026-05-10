@@ -1219,9 +1219,11 @@
             var tabs = $('<div></div>').appendTo(el).tabBar();
             var pumpTab = tabs[0].addTab({ id: 'tabVirtualPump', text: 'Pump' });
             var chlorTab = tabs[0].addTab({ id: 'tabVirtualChlorinator', text: 'Chlorinator' });
+            var ichemTab = tabs[0].addTab({ id: 'tabVirtualIntelliChem', text: 'IntelliChem' });
 
             $('<div class="virtualEquipment-pump-panel"></div>').appendTo(pumpTab);
             $('<div class="virtualEquipment-chlor-panel"></div>').appendTo(chlorTab);
+            $('<div class="virtualEquipment-ichem-panel"></div>').appendTo(ichemTab);
             tabs[0].selectTabById('tabVirtualPump');
 
             self._loadAndRender();
@@ -1236,8 +1238,9 @@
             var self = this, el = self.element;
             var pumpPnl = el.find('div.virtualEquipment-pump-panel');
             pumpPnl.empty();
-            var pump = (data && Array.isArray(data.pumps) && data.pumps.length > 0) ? data.pumps[0] : null;
-            self._renderPumpForm(pumpPnl, pump);
+            var pumpAddr = parseInt(pumpPnl.attr('data-selected-address')) || 96;
+            var pump = (data && Array.isArray(data.pumps)) ? data.pumps.find(function(p) { return p.address === pumpAddr; }) : null;
+            self._renderPumpForm(pumpPnl, pump, pumpAddr);
             self._renderPumpRuntime(pumpPnl, pump);
 
             var chlorPnl = el.find('div.virtualEquipment-chlor-panel');
@@ -1245,9 +1248,15 @@
             var chlor = (data && Array.isArray(data.chlorinators) && data.chlorinators.length > 0) ? data.chlorinators[0] : null;
             self._renderChlorForm(chlorPnl, chlor);
             self._renderChlorRuntime(chlorPnl, chlor);
+
+            var ichemPnl = el.find('div.virtualEquipment-ichem-panel');
+            ichemPnl.empty();
+            var ichem = (data && Array.isArray(data.intellichems) && data.intellichems.length > 0) ? data.intellichems[0] : null;
+            self._renderIntelliChemForm(ichemPnl, ichem);
+            self._renderIntelliChemRuntime(ichemPnl, ichem);
         },
         // ===== Pump sub-tab =====
-        _renderPumpForm: function (pnl, pump) {
+        _renderPumpForm: function (pnl, pump, selectedAddr) {
             var self = this;
             $('<div></div>').appendTo(pnl).addClass('virtualEquipment-narrative')
                 .html('A virtual pump makes njsPC answer as if a physical IntelliFlo pump were present. ' +
@@ -1255,12 +1264,17 @@
             var form = $('<div class="virtualEquipment-form"></div>').appendTo(pnl);
 
             var row1 = $('<div></div>').appendTo(form);
-            $('<div></div>').appendTo(row1).valueSpinner({
+            var addrSpinner = $('<div></div>').appendTo(row1).valueSpinner({
                 labelText: 'Address', binding: 'address',
-                min: 96, max: 111, step: 1, value: pump ? pump.address : 96,
+                min: 96, max: 111, step: 1, value: selectedAddr || 96,
                 inputAttrs: { style: { width: '4rem' } },
                 labelAttrs: { style: { marginRight: '.25rem' } }
             }).attr('title', 'Bus address of the virtual pump. 96 = Pump 1, 97 = Pump 2, etc.');
+            addrSpinner.on('change', function () {
+                var newAddr = parseInt(this.val());
+                pnl.attr('data-selected-address', newAddr);
+                self._loadAndRender();
+            });
 
             $('<div></div>').appendTo(row1).pickList({
                 required: true,
@@ -1290,28 +1304,6 @@
                     self._loadAndRender();
                 });
             });
-
-            if (pump) {
-                var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete', icon: '<i class="fas fa-trash"></i>' });
-                btnDelete.on('click', function () {
-                    $.pic.modalDialog.createConfirm('dlgConfirmDeleteVirtualPump', {
-                        message: 'Delete the virtual pump at address ' + pump.address + '?',
-                        width: '350px', height: 'auto', title: 'Confirm Delete Virtual Pump',
-                        buttons: [{
-                            text: 'Yes', icon: '<i class="fas fa-trash"></i>',
-                            click: function () {
-                                $.pic.modalDialog.closeDialog(this);
-                                $.deleteApiService('/config/virtualEquipment/pump/' + pump.address, null, 'Deleting virtual pump...', function () {
-                                    self._loadAndRender();
-                                });
-                            }
-                        }, {
-                            text: 'No', icon: '<i class="far fa-window-close"></i>',
-                            click: function () { $.pic.modalDialog.closeDialog(this); }
-                        }]
-                    });
-                });
-            }
         },
         _renderPumpRuntime: function (pnl, pump) {
             var self = this;
@@ -1383,28 +1375,6 @@
                     self._loadAndRender();
                 });
             });
-
-            if (chlor) {
-                var btnDelete = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Delete', icon: '<i class="fas fa-trash"></i>' });
-                btnDelete.on('click', function () {
-                    $.pic.modalDialog.createConfirm('dlgConfirmDeleteVirtualChlor', {
-                        message: 'Delete the virtual chlorinator at address ' + chlor.address + '?',
-                        width: '350px', height: 'auto', title: 'Confirm Delete Virtual Chlorinator',
-                        buttons: [{
-                            text: 'Yes', icon: '<i class="fas fa-trash"></i>',
-                            click: function () {
-                                $.pic.modalDialog.closeDialog(this);
-                                $.deleteApiService('/config/virtualEquipment/chlorinator/' + chlor.address, null, 'Deleting virtual chlorinator...', function () {
-                                    self._loadAndRender();
-                                });
-                            }
-                        }, {
-                            text: 'No', icon: '<i class="far fa-window-close"></i>',
-                            click: function () { $.pic.modalDialog.closeDialog(this); }
-                        }]
-                    });
-                });
-            }
         },
         _renderChlorRuntime: function (pnl, chlor) {
             var self = this;
@@ -1432,6 +1402,97 @@
                 ['Effective', chlor.isEffective ? 'yes' : 'no'],
                 ['Salt (simulated)', chlor.saltLevel + ' ppm'],
                 ['Target output', rt.targetOutput != null ? rt.targetOutput + '%' : '\u2014'],
+                ['Packets answered', rt.packetCount != null ? rt.packetCount : 0],
+                ['Last packet', rt.lastPacketAt || '\u2014']
+            ]);
+        },
+        // ===== IntelliChem sub-tab =====
+        _renderIntelliChemForm: function (pnl, ichem) {
+            var self = this;
+            $('<div></div>').appendTo(pnl).addClass('virtualEquipment-narrative')
+                .html('A virtual IntelliChem makes njsPC answer as if a physical IntelliChem controller were present. ' +
+                      'The OCP polls address 144 every ~2s; once enabled the virtual device responds and clears "Communication Lost".');
+            var form = $('<div class="virtualEquipment-form"></div>').appendTo(pnl);
+
+            var row1 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'Address', binding: 'address',
+                min: 144, max: 158, step: 1, value: ichem ? ichem.address : 144,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginRight: '.25rem' } }
+            }).attr('title', 'IntelliChem bus address. 144 = IC 1, 145 = IC 2, etc.');
+
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'pH Level', binding: 'phLevel',
+                min: 6.0, max: 8.5, step: 0.1, value: ichem ? ichem.phLevel : 7.5,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } }
+            }).attr('title', 'Simulated pH reading.');
+
+            $('<div></div>').appendTo(row1).valueSpinner({
+                labelText: 'ORP', binding: 'orpLevel',
+                min: 0, max: 900, step: 10, value: ichem ? ichem.orpLevel : 700,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } }
+            }).attr('title', 'Simulated ORP reading (mV).');
+
+            var row2 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row2).valueSpinner({
+                labelText: 'Temp', binding: 'temperature',
+                min: 32, max: 104, step: 1, value: ichem ? ichem.temperature : 78,
+                inputAttrs: { style: { width: '4rem' } },
+                labelAttrs: { style: { marginRight: '.25rem' } }
+            }).attr('title', 'Simulated water temperature.');
+
+            $('<div></div>').appendTo(row2).valueSpinner({
+                labelText: 'Salt (ppm)', binding: 'saltLevel',
+                min: 0, max: 6400, step: 50, value: ichem ? ichem.saltLevel : 3400,
+                inputAttrs: { style: { width: '5rem' } },
+                labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } }
+            }).attr('title', 'Simulated salt level in ppm.');
+
+            var row3 = $('<div></div>').appendTo(form);
+            $('<div></div>').appendTo(row3).checkbox({
+                labelText: 'Enabled', binding: 'enabled'
+            }).each(function () { this.val(ichem ? ichem.enabled === true : false); })
+              .attr('title', 'Enable the virtual IntelliChem. When enabled it responds to OCP polls.');
+
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(form);
+            var btnSave = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Save', icon: '<i class="fas fa-save"></i>' });
+            btnSave.on('click', function () {
+                var v = dataBinder.fromElement(form);
+                if (!dataBinder.checkRequired(form)) return;
+                $.putApiService('/config/virtualEquipment/intellichem', v, 'Saving virtual IntelliChem...', function () {
+                    self._loadAndRender();
+                });
+            });
+        },
+        _renderIntelliChemRuntime: function (pnl, ichem) {
+            var self = this;
+            var runtimeWrap = $('<div class="virtualEquipment-runtime"></div>').appendTo(pnl);
+            if (!ichem) {
+                $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-hint')
+                    .text('No virtual IntelliChem configured. Fill in the form above and click Save to create one.');
+                return;
+            }
+            if (ichem.autoDisabled) {
+                var banner = $('<div></div>').appendTo(runtimeWrap).addClass('virtualEquipment-conflict-banner');
+                banner.html('<strong>Auto-disabled:</strong> ' + (ichem.autoDisabledReason || 'A real IntelliChem appears to be responding at this address.'));
+                if (ichem.autoDisabledAt) banner.append($('<div class="virtualEquipment-timestamp"></div>').text('at ' + ichem.autoDisabledAt));
+                var reBtn = $('<div></div>').appendTo(banner).actionButton({ text: 'Re-enable', icon: '<i class="fas fa-bolt"></i>' });
+                reBtn.on('click', function () {
+                    $.putApiService('/config/virtualEquipment/intellichem/' + ichem.address + '/reenable', {}, 'Re-enabling virtual IntelliChem...', function () {
+                        self._loadAndRender();
+                    });
+                });
+            }
+            var grid = $('<div class="virtualEquipment-runtime-grid"></div>').appendTo(runtimeWrap);
+            var rt = ichem.runtime || {};
+            self._setRuntimeGrid(grid, [
+                ['Effective', ichem.isEffective ? 'yes' : 'no'],
+                ['pH (simulated)', ichem.phLevel],
+                ['ORP (simulated)', ichem.orpLevel + ' mV'],
+                ['Temperature', ichem.temperature + '°'],
                 ['Packets answered', rt.packetCount != null ? rt.packetCount : 0],
                 ['Last packet', rt.lastPacketAt || '\u2014']
             ]);

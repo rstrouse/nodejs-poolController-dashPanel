@@ -175,6 +175,7 @@
         _buildPopover: function () {
             var self = this, o = self.options, el = self.element;
             el.on('click', function (evt) {
+                if (!$.pic.icSecurity.canWrite(0)) return;
                 $.getApiService('/state/chlorinator/' + el.attr('data-id'), function (data, status, xhr) {
                     console.log(data);
                     var divPopover = $('<div class="picChlorSettings"></div>');
@@ -416,6 +417,7 @@
         _buildPopover: function () {
             var self = this, o = self.options, el = self.element;
             el.on('click', function (evt) {
+                if (!$.pic.icSecurity.canWrite(0)) return;
                 $.getApiService('/state/chemController/' + el.attr('data-id'), function (data, status, xhr) {
                     console.log(data);
                     var divPopover = $('<div class="picChemControllerSettings"></div>');
@@ -556,6 +558,7 @@
         _buildPopover: function () {
             var self = this, o = self.options, el = self.element;
             el.on('click', function (evt) {
+                if (!$.pic.icSecurity.canWrite(0)) return;
                 $.getApiService('/state/chemDoser/' + el.attr('data-id'), function (data, status, xhr) {
                     console.log(data);
                     var divPopover = $('<div class="picChemDoserSettings"></div>');
