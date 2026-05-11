@@ -378,8 +378,13 @@
         'Pool', 'Spa', 'Usage', 'Multi Body Drawer',
         'Service Mode Ckts'
     ];
+    var _disabledBits = [15];
+    var _subItems = {
+        12: [{ bit: 21, label: 'Set Point' }, { bit: 20, label: 'Heat Mode' }],
+        13: [{ bit: 19, label: 'Set Point' }, { bit: 18, label: 'Heat Mode' }]
+    };
     function _countBits(permBytes) {
-        var mask = ((permBytes[0] & 0xFF) * 16777216) + ((permBytes[1] & 0xFF) * 65536) + ((permBytes[2] & 0xFF) * 256) + (permBytes[3] & 0xFF);
+        var mask = ((permBytes[0] & 0xFF) * 16777216) + ((permBytes[1] & 0xFF) * 65536) + ((permBytes[2] & 0xFF) * 256) + (permBytes[3] & 0x3F);
         var count = 0;
         while (mask) { count += mask & 1; mask >>>= 1; }
         return count;
@@ -456,11 +461,13 @@
                     o.security = result;
                     self._renderRoles(result.roles);
                 }
+                $('div.picController').each(function () { if (this.refreshIcSecurity) this.refreshIcSecurity(); });
             });
         },
         _renderRoles: function (roles) {
             var self = this, o = self.options;
             self._roleList.empty();
+            if (!roles || !roles.length) return;
             var hdr = $('<div class="cfgSecurityRoleHeader"></div>').appendTo(self._roleList);
             hdr.css({ display: 'flex', fontWeight: 'bold', padding: '.25rem 0', borderBottom: '1px solid var(--panel-border-color, #444)' });
             $('<span></span>').appendTo(hdr).text('Role').css({ width: '10rem' });
@@ -473,12 +480,16 @@
                 if (!r.name && r.pin === '0000' && !_countBits(r.permissionsBytes || [0, 0, 0, 0])) continue;
                 self._renderRoleRow(r);
             }
+            var btnLine = $('<div></div>').appendTo(self._roleList).css({ padding: '.25rem 0' });
+            var btnAdd = $('<div></div>').appendTo(btnLine).actionButton({ text: 'Add Role', icon: '<i class="fas fa-plus"></i>' });
+            btnAdd.on('click', function () { self._addRole(); });
         },
         _renderRoleRow: function (role) {
             var self = this, o = self.options;
             var row = $('<div class="cfgSecurityRoleRow"></div>').appendTo(self._roleList);
             row.css({ display: 'flex', alignItems: 'center', padding: '.25rem 0', borderBottom: '1px solid var(--panel-border-color, #333)' });
-            $('<span></span>').appendTo(row).text(role.name || '(unnamed)').css({ width: '10rem' });
+            var nameSpan = $('<span></span>').appendTo(row).text(role.name || '(unnamed)').css({ width: '10rem', cursor: 'pointer' });
+            nameSpan.on('click', function () { self._openRoleEditor(role); });
             $('<span></span>').appendTo(row).text(role.pin === '0000' ? '-' : '****').css({ width: '4rem', textAlign: 'center' });
             $('<span></span>').appendTo(row).text(role.timeout + 'm').css({ width: '5rem', textAlign: 'center' });
             var bits = _countBits(role.permissionsBytes || [0, 0, 0, 0]);
@@ -486,23 +497,30 @@
             var btnEdit = $('<div></div>').appendTo(row).actionButton({ text: 'Edit', icon: '<i class="fas fa-edit"></i>' });
             btnEdit.css({ width: '4rem' });
             btnEdit.on('click', function () { self._openRoleEditor(role); });
+            if (role.id !== 1 && role.id !== 9) {
+                var btnDel = $('<div></div>').appendTo(row).actionButton({ text: 'Del', icon: '<i class="fas fa-trash"></i>' });
+                btnDel.css({ width: '4rem', marginLeft: '.25rem' });
+                btnDel.on('click', function () { self._deleteRole(role); });
+            }
         },
         _openRoleEditor: function (role) {
             var self = this, o = self.options;
-            var dlg = $('<div></div>').appendTo(document.body);
             var permBytes = (role.permissionsBytes || [0, 0, 0, 0]).slice();
-            dlg.modalDialog({
+            var dlg = $.pic.modalDialog.createDialog('dlgSecurityRole', {
                 title: 'Edit Role: ' + (role.name || 'Role ' + role.id),
                 width: '28rem',
+                height: 'auto',
                 buttons: [
                     {
                         text: 'Save', icon: '<i class="fas fa-save"></i>',
                         click: function () {
+                            var pinEl = dlg.find('[data-field="pin"] input');
+                            var toEl = dlg.find('[data-field="timeout"]')[0];
                             var data = {
                                 id: role.id,
                                 name: dlg.find('[data-field="name"] input').val(),
-                                pin: dlg.find('[data-field="pin"] input').val(),
-                                timeout: parseInt(dlg.find('[data-field="timeout"] input').val(), 10) || 5,
+                                pin: pinEl.length ? pinEl.val() : (role.pin || '0000'),
+                                timeout: toEl && toEl.val ? (parseInt(toEl.val(), 10) || 5) : (role.timeout || 5),
                                 permissionsBytes: permBytes
                             };
                             $.putApiService('/config/security/role', data, 'Saving Role...', function (result) {
@@ -510,28 +528,30 @@
                                     o.security = result;
                                     self._renderRoles(result.roles);
                                 }
-                                dlg.parents('.ui-dialog:first').remove();
-                                dlg.remove();
+                                $.pic.modalDialog.closeDialog(dlg);
                             });
                         }
                     },
                     {
                         text: 'Cancel', icon: '<i class="fas fa-times"></i>',
-                        click: function () { dlg.parents('.ui-dialog:first').remove(); dlg.remove(); }
+                        click: function () { $.pic.modalDialog.closeDialog(dlg); }
                     }
                 ]
             });
-            var contents = dlg.find('.ui-dialog-content, .picModalDialog-contents').first();
-            if (!contents.length) contents = dlg;
-            contents.empty();
+            dlg.empty();
+            var contents = dlg;
+            var isBuiltin = (role.id === 1 || role.id === 9);
             var line = $('<div></div>').appendTo(contents);
             var fldName = $('<div></div>').attr('data-field', 'name').appendTo(line).inputField({ labelText: 'Name', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '4.5rem' } } });
             fldName.find('input').val(role.name || '');
-            line = $('<div></div>').appendTo(contents);
-            var fldPin = $('<div></div>').attr('data-field', 'pin').appendTo(line).inputField({ labelText: 'PIN', inputAttrs: { maxlength: 4, type: 'password' }, labelAttrs: { style: { width: '4.5rem' } } });
-            fldPin.find('input').val(role.pin || '0000');
-            var fldTimeout = $('<div></div>').attr('data-field', 'timeout').appendTo(line).inputField({ labelText: 'Timeout', inputAttrs: { maxlength: 2, type: 'number', min: 1, max: 10 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '1rem' } } });
-            fldTimeout.find('input').val(role.timeout || 5);
+            if (isBuiltin) fldName.find('input').prop('disabled', true);
+            if (role.id !== 9) {
+                line = $('<div></div>').appendTo(contents);
+                var fldPin = $('<div></div>').attr('data-field', 'pin').appendTo(line).inputField({ labelText: 'PIN', inputAttrs: { maxlength: 4, type: 'password', style: 'width:6rem' }, labelAttrs: { style: { width: '4.5rem' } } });
+                fldPin.find('input').val(role.pin || '0000').css({ width: '6rem' });
+                var fldTimeout = $('<div></div>').attr('data-field', 'timeout').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Timeout', dataType: 'number', min: 1, max: 10, step: 1, maxlength: 2, units: 'min', value: role.timeout || 5, labelAttrs: { style: { width: '4.5rem', marginLeft: '1rem' } }, inputAttrs: { style: { width: '3rem' } } });
+            }
+            if (role.id === 1) return;
             var secHdr = $('<div></div>').appendTo(contents).css({ marginTop: '.5rem', fontWeight: 'bold' });
             secHdr.text('Sections');
             var btnAll = $('<span></span>').appendTo(secHdr).text(' [All]').css({ cursor: 'pointer', fontWeight: 'normal', color: 'var(--link-color, #6cf)' });
@@ -540,17 +560,76 @@
             var grid = $('<div></div>').appendTo(contents).css({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.15rem', marginTop: '.25rem' });
             for (var i = 0; i < _sectionLabels.length; i++) {
                 (function (idx) {
-                    var chk = $('<div></div>').appendTo(grid).checkbox({ labelText: _sectionLabels[idx] });
+                    var hasSubs = !!_subItems[idx];
+                    var cell = hasSubs ? $('<div></div>').appendTo(grid).css({ display: 'flex', flexDirection: 'column' }) : null;
+                    var chk = $('<div></div>').appendTo(cell || grid).checkbox({ labelText: _sectionLabels[idx] });
                     chk.find('input').prop('checked', _getBit(permBytes, idx));
+                    if (_disabledBits.indexOf(idx) >= 0) {
+                        chk.find('input').prop('disabled', true);
+                        chk.css({ opacity: 0.5 });
+                    }
                     chk.on('changed', function (evt) { _setBit(permBytes, idx, evt.newVal); });
                     checkboxes.push(chk);
+                    if (hasSubs) {
+                        for (var s = 0; s < _subItems[idx].length; s++) {
+                            (function (sub) {
+                                var subChk = $('<div></div>').appendTo(cell).checkbox({ labelText: '\u21b3 ' + sub.label });
+                                subChk.css({ paddingLeft: '1.2rem' });
+                                subChk.find('input').prop('checked', _getBit(permBytes, sub.bit));
+                                subChk.on('changed', function (evt) { _setBit(permBytes, sub.bit, evt.newVal); });
+                            })(_subItems[idx][s]);
+                        }
+                    }
                 })(i);
             }
             btnAll.on('click', function () {
                 for (var i = 0; i < _sectionLabels.length; i++) { _setBit(permBytes, i, true); checkboxes[i].find('input').prop('checked', true); }
+                for (var k in _subItems) { for (var s = 0; s < _subItems[k].length; s++) _setBit(permBytes, _subItems[k][s].bit, true); }
+                _setBit(permBytes, 17, true);
+                contents.find('input[type="checkbox"]').prop('checked', true);
             });
             btnNone.on('click', function () {
                 for (var i = 0; i < _sectionLabels.length; i++) { _setBit(permBytes, i, false); checkboxes[i].find('input').prop('checked', false); }
+                for (var k in _subItems) { for (var s = 0; s < _subItems[k].length; s++) _setBit(permBytes, _subItems[k][s].bit, false); }
+                _setBit(permBytes, 17, false);
+                contents.find('input[type="checkbox"]').prop('checked', false);
+            });
+        },
+        _addRole: function () {
+            var self = this, o = self.options;
+            var nextId = 2;
+            if (o.security && o.security.roles) {
+                for (var i = 0; i < o.security.roles.length; i++) {
+                    var rid = o.security.roles[i].id;
+                    if (rid >= 2 && rid <= 8 && rid >= nextId) nextId = rid + 1;
+                }
+            }
+            if (nextId > 8) return;
+            self._openRoleEditor({ id: nextId, name: '', pin: '0000', timeout: 5, permissionsBytes: [0, 0, 0, 0] });
+        },
+        _deleteRole: function (role) {
+            var self = this, o = self.options;
+            $.pic.modalDialog.createConfirm('dlgConfirmDeleteRole', {
+                message: 'Are you sure you want to delete role "' + role.name + '"?',
+                width: '350px',
+                height: 'auto',
+                title: 'Confirm Delete Role',
+                buttons: [{
+                    text: 'Yes', icon: '<i class="fas fa-trash"></i>',
+                    click: function () {
+                        $.pic.modalDialog.closeDialog(this);
+                        var data = { id: role.id, name: '', pin: '0000', timeout: 5, permissionsBytes: [0, 0, 0, 0] };
+                        $.putApiService('/config/security/role', data, 'Deleting Role...', function (result) {
+                            if (result && result.roles) {
+                                o.security = result;
+                                self._renderRoles(result.roles);
+                            }
+                        });
+                    }
+                }, {
+                    text: 'No', icon: '<i class="far fa-window-close"></i>',
+                    click: function () { $.pic.modalDialog.closeDialog(this); }
+                }]
             });
         }
     });

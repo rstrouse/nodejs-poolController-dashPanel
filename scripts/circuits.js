@@ -249,6 +249,7 @@
             }
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                if (el.find('i.picDropdownButton').hasClass('fa-spin')) return;
                 const diffX = Math.abs(evt.pageX - startX);
                 const diffY = Math.abs(evt.pageY - startY);
                 if (diffX > delta && diffY > delta) {
@@ -317,9 +318,13 @@
                 if (typeof data.action !== 'undefined')   { 
                     if (data.action.val !== 0) {
                         el.find('i.picDropdownButton').addClass('fa-spin');
+                        el.css('opacity', '0.5');
+                        el.css('pointer-events', 'none');
                     }
                     else {
                         el.find('i.picDropdownButton').removeClass('fa-spin');
+                        el.css('opacity', '');
+                        el.css('pointer-events', '');
                     }
                 }
             } catch (err) { console.error(`Error processing circuit setState ${err.message}`); }
@@ -387,6 +392,7 @@
             }
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                if (el.find('i.picDropdownButton').hasClass('fa-spin')) return;
                 const diffX = Math.abs(evt.pageX - startX);
                 const diffY = Math.abs(evt.pageY - startY);
                 if (diffX > delta && diffY > delta) {
@@ -650,6 +656,7 @@
             };
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                if (el.find('i.picDropdownButton').hasClass('fa-spin')) return;
                 const diffX = Math.abs(evt.pageX - startX);
                 const diffY = Math.abs(evt.pageY - startY);
                 if (diffX > delta && diffY > delta) {
@@ -759,9 +766,13 @@
                 }
                 if (data.action.val !== 0) {
                     el.find('i.picDropdownButton').addClass('fa-spin');
+                    el.css('opacity', '0.5');
+                    el.css('pointer-events', 'none');
                 }
                 else {
                     el.find('i.picDropdownButton').removeClass('fa-spin');
+                    el.css('opacity', '');
+                    el.css('pointer-events', '');
                 }
                 let themeName = applyThemeIndicator(el, data);
                 el.attr('data-state', data.isOn);
@@ -1058,6 +1069,7 @@
             };
             let end = function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                if (el.find('i.picDropdownButton').hasClass('fa-spin')) return;
                 const diffX = Math.abs(evt.pageX - startX);
                 const diffY = Math.abs(evt.pageY - startY);
                 if (diffX > delta && diffY > delta) {
@@ -1158,9 +1170,13 @@
                 let themeName = applyThemeIndicator(el, data);
                 if (data.action.val !== 0) {
                     el.find('i.picDropdownButton').addClass('fa-spin');
+                    el.css('opacity', '0.5');
+                    el.css('pointer-events', 'none');
                 }
                 else {
                     el.find('i.picDropdownButton').removeClass('fa-spin');
+                    el.css('opacity', '');
+                    el.css('pointer-events', '');
                 }
                 el.attr('data-state', data.isOn);
                 if (typeof data.name !== 'undefined') el.find('label.picFeatureLabel').text(data.name);

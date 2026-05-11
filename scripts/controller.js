@@ -28,6 +28,7 @@
             el[0].enablePanels = function (bEnable) { self.enablePanels(bEnable); };
             // allow other widgets (e.g. Settings) to trigger a re-evaluation of locked UI
             el[0].refreshSecurity = function () { self._refreshSecurityStatus(function () { self._applySecurityUi(); }); };
+            el[0].refreshIcSecurity = function () { self._refreshIcSecurity(); };
         },
         _refreshSecurityStatus: function (cb) {
             var self = this, o = self.options, el = self.element;
@@ -46,26 +47,23 @@
         },
         _applySecurityUi: function () {
             var self = this, o = self.options, el = self.element;
+            if (o.icSession && (o.icSession.roleId || o.icSession.isGuest)) {
+                self._applyIcSecurityUi();
+                return;
+            }
             var active = self._isSecurityActive();
             var unlocked = !!(o.security && o.security.unlocked === true);
             var style = (o.security && o.security.lockUiStyle) ? o.security.lockUiStyle : 'LOCKED_VISIBLE';
-            // In hide mode, only hide the hamburger/gear while locked. Once unlocked, show them.
             var hideIcons = active && style === 'HIDE_SHOW_LOCK_ICON' && !unlocked;
-            // Hamburger/gear should be gray only when locked.
             var dimIcons = active && !unlocked;
 
-            // Visual treatment when locked (subtle gray).
             el.find('div.picModel > i').toggleClass('picAdminLocked', dimIcons);
             el.find('div.picConfigIcon').toggleClass('picAdminLocked', dimIcons);
-            // Ensure the icon itself is gray even if styles target the <i> element.
             el.find('div.picConfigIcon > i').toggleClass('picAdminLocked', dimIcons);
 
-            // Hide/show hamburger + gear and lock icon depending on style.
             el.find('div.picModel > i').css({ display: hideIcons ? 'none' : '' });
             el.find('div.picConfigIcon').css({ display: hideIcons ? 'none' : '' });
-            // Lock icon should always be visible when security is active, and flip between lock/unlock glyph.
             el.find('div.picLockIcon').css({ display: active ? 'inline-block' : 'none' });
-            // Flip icon based on current state (subtle cue)
             el.find('div.picLockIcon > i').attr('class', (active && unlocked) ? 'fas fa-unlock' : 'fas fa-lock');
         },
         _showSecurityDialog: function (mode, onSuccess) {
@@ -296,11 +294,53 @@
             dlg.css({ overflow: 'visible' });
             setTimeout(function () { pinInput.focus(); }, 100);
         },
+        _refreshIcSecurity: function () {
+            var self = this, o = self.options, el = self.element;
+            if ($('body').attr('data-controllertype') !== 'intellicenter') return;
+            $.getApiService('/config/security/session', null, function (sdata) {
+                if (!sdata || !sdata.enabled) {
+                    if (o.icSession) {
+                        o.icSession = null;
+                        if (o._icTimeoutTimer) { clearInterval(o._icTimeoutTimer); o._icTimeoutTimer = null; }
+                        self._applyIcSecurityUi();
+                    }
+                    return;
+                }
+                if (sdata.session && sdata.session.isAuthenticated) {
+                    o.icSession = {
+                        roleId: sdata.session.roleId,
+                        roleName: sdata.session.roleName,
+                        isAdmin: sdata.session.isAdmin,
+                        permissionsMask: sdata.session.permissionsMask || 0xFFFFFFFF,
+                        timeout: sdata.session.timeout || 5,
+                        lastActivity: Date.now()
+                    };
+                    self._applyIcSecurityUi();
+                    self._startIcTimeoutTimer();
+                } else if (sdata.guestEnabled) {
+                    o.icSession = {
+                        roleId: 0,
+                        roleName: 'Guest',
+                        isAdmin: false,
+                        isGuest: true,
+                        permissionsMask: sdata.guestPermissionsMask || 0,
+                        timeout: 60,
+                        lastActivity: Date.now()
+                    };
+                    if (o._icTimeoutTimer) { clearInterval(o._icTimeoutTimer); o._icTimeoutTimer = null; }
+                    self._applyIcSecurityUi();
+                } else {
+                    o.icSession = null;
+                    if (o._icTimeoutTimer) { clearInterval(o._icTimeoutTimer); o._icTimeoutTimer = null; }
+                    self._applyIcSecurityUi();
+                }
+            });
+        },
         _applyIcSecurityUi: function () {
             var self = this, o = self.options, el = self.element;
             var active = !!(o.icSession && (o.icSession.roleId || o.icSession.isGuest));
             var isGuest = active && o.icSession.isGuest;
-            el.find('div.picLockIcon').css({ display: 'inline-block' });
+            el.find('div.picLockIcon').css({ display: active ? 'inline-block' : 'none' });
             el.find('div.picLockIcon > i').attr('class', active && !isGuest ? 'fas fa-unlock' : 'fas fa-lock');
             el.find('div.picModel > i').toggleClass('picAdminLocked', !active);
             el.find('div.picConfigIcon').toggleClass('picAdminLocked', !active);

@@ -26,6 +26,10 @@
                     evt.newTab.contents.empty();
                     $('<div></div>').appendTo(evt.newTab.contents).configFilters();
                     break;
+                case 'tabCovers':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configCovers();
+                    break;
                 case 'tabCircuits':
                     self._buildCircuitsTab(evt.newTab.contents);
                     break;
@@ -82,7 +86,8 @@
                     $('<div></div>').appendTo(evt.newTab.contents).configLightGroups();
                     break;
                 case 'tabRemotes':
-                    self._buildRemotesTab(evt.newTab.contents);
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configRemotes();
                     break;
                 case 'tabHeaters':
                     evt.newTab.contents.empty();
@@ -139,7 +144,8 @@
                 tab = self._addConfigTab({ id: 'tabBodySetup', text: 'Bodies', cssClass: 'cfgTabBodies' },
                     [
                         { id: 'tabBodies', text: 'Bodies', cssClass: 'cfgBodies' },
-                        { id: 'tabFilters', text: 'Filters', cssClass: 'cfgFiters' }
+                        { id: 'tabFilters', text: 'Filters', cssClass: 'cfgFiters' },
+                        { id: 'tabCovers', text: 'Covers', cssClass: 'cfgCovers' }
                     ]);
                 tab = self._addConfigTab({ id: 'tabCircuits', text: 'Circuits', cssClass: 'cfgCircuits' },
                     [{ id: 'tabAuxCircuits', text: 'Aux-Circuits', cssClass: 'cfgAuxCircuits' },
@@ -159,7 +165,7 @@
                 tab = self._addConfigTab({ id: 'tabValves', text: 'Valves', cssClass: 'cfgValves' });
                 tab = self._addConfigTab({ id: 'tabChemistry', text: 'Chemistry', cssClass: 'cfgChemistry' });
                 tab = self._addConfigTab({ id: 'tabHeaters', text: 'Heaters', cssClass: 'cfgHeaters' });
-                //tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
+                tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
 
                 tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
                 tabs[0].selectTabById('tabGeneral');
@@ -212,6 +218,7 @@
                 'tabCircuits': [13, 12, 2],
                 'tabPumps': [1],
                 'tabValves': [1],
+                'tabRemotes': [1],
                 'tabChemistry': [0],
                 'tabHeaters': [1, 18, 20],
                 'tabSchedules': [14]
@@ -255,7 +262,7 @@
             switch (tabId) {
                 case 'tabBodies':
                 case 'tabFilters':
-                    //tabs.selectedTabId(tabId);
+                case 'tabCovers':
                     break;
                 default:
                     tabs.selectTabById('tabBodies');

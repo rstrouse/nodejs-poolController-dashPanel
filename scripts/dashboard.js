@@ -405,6 +405,9 @@
             });
             o.socket.on('config', function (data) {
                 console.log({ evt: 'config', data: data });
+                $('div.picController').each(function () {
+                    if (this.refreshIcSecurity) this.refreshIcSecurity();
+                });
             });
             o.socket.on('schedule', function (data) {
                 console.log({ evt: 'schedule', data: data });

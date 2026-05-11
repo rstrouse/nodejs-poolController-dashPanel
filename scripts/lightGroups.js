@@ -36,6 +36,7 @@
             })
             .on('mouseup', function (evt) {
                 if ($(evt.target).hasClass('picDropdownButton')) return;
+                if (el.find('i.picDropdownButton').hasClass('fa-spin')) return;
                 evt.stopPropagation();
                 var lastPressed = $(this).data('lastPressed');
                 if (lastPressed) {
@@ -96,10 +97,12 @@
             el.attr('data-state', data.isOn);
             if (data.action.val !== 0) {
                 el.find('i.picDropdownButton').addClass('fa-spin');
+                el.find('div.picFeatureToggle').css('opacity', '0.5').css('pointer-events', 'none');
                 $(`div[data-groupid=${o.id}] > span.picLightEndTime`).text(data.action.desc + '...');
             }
             else {
                 el.find('i.picDropdownButton').removeClass('fa-spin');
+                el.find('div.picFeatureToggle').css('opacity', '').css('pointer-events', '');
                 $(`div[data-groupid=${o.id}] > span.picLightEndTime`).empty();
             }
             el.attr('data-state', data.isOn);
