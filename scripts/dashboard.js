@@ -20,6 +20,7 @@
             el.find('div.picSchedules').each(function () { this.initSchedules(); });
             el.find('div.picFilters').each(function () { this.initFilters(); });
             el.find('div.picValves').each(function () { this.initValves(); });
+            el.find('div.picCovers').each(function () { this.initCovers(); });
         },
         _createControllerPanel: function (data) {
             var self = this, o = self.options, el = self.element;
@@ -45,6 +46,10 @@
         _createValvesPanel: function (data) {
             var self = this, o = self.options, el = self.element;
             el.find('div.picValves').each(function () { this.initValves(data); });
+        },
+        _createCoversPanel: function (data) {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picCovers').each(function () { this.initCovers(data); });
         },
 
         _reset: function () {
@@ -154,6 +159,7 @@
                     self._createSchedulesPanel(data);
                     self._createFiltersPanel(data);
                     self._createValvesPanel(data);
+                    self._createCoversPanel(data);
                     if (typeof data.equipment !== 'undefined' && typeof data.equipment.messages !== 'undefined') {
                         $('div.picSysMessages').each(function () {
                             console.log('binding messages');
@@ -212,6 +218,7 @@
                     self._createSchedulesPanel(data);
                     self._createFiltersPanel(data);
                     self._createValvesPanel(data);
+                    self._createCoversPanel(data);
                     self._initSockets();
                     console.log(data);
                     console.log('initializing element order');
@@ -256,20 +263,26 @@
                     $(':root').css('--picValves-order', getStorage('--picValves-order'));
                     if (typeof getStorage('--picValves-display') === 'undefined') setStorage('--picValves-display', $(':root').css('--picValves-display'));
                     $(':root').css('--picValves-display', getStorage('--picValves-display'));
+                    if (typeof getStorage('--picCovers-order') === 'undefined') setStorage('--picCovers-order', $(':root').css('--picCovers-order'));
+                    $(':root').css('--picCovers-order', getStorage('--picCovers-order'));
+                    if (typeof getStorage('--picCovers-display') === 'undefined') setStorage('--picCovers-display', $(':root').css('--picCovers-display'));
+                    $(':root').css('--picCovers-display', getStorage('--picCovers-display'));
 
                     if (typeof getStorage('--show-time-remaining') === 'undefined') setStorage('--show-time-remaining', $(':root').css('--show-time-remaining'));
                     $(':root').css('--show-time-remaining', getStorage('--show-time-remaining'));
 
                     // put elements in correct container div
-                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters', 'picValves'];
+                    let arr = ['picBodies', 'picCircuits', 'picLights', 'picSchedules', 'picChemistry', 'picPumps', 'picVirtualCircuits', 'picFilters', 'picValves', 'picCovers'];
                     arr.forEach(id => {
                         console.log(id);
                         let el = $(`.${id}`);
                         let elVarName = `--${id}-order`;
-                        if (getStorage(elVarName) >= 200) {
+                        let order = getStorage(elVarName);
+                        el.css('order', order);
+                        if (order >= 200) {
                             $(el).appendTo('.container3');
                         }
-                        else if (getStorage(elVarName) >= 100) {
+                        else if (order >= 100) {
                             $(el).appendTo('.container2');
                         }
                         else {
@@ -436,6 +449,12 @@
                 console.log({ evt: 'valve', data: data });
                 $('div.picValves').each(function () {
                     this.setValveData(data);
+                });
+            });
+            o.socket.on('cover', function (data) {
+                console.log({ evt: 'cover', data: data });
+                $('div.picCovers').each(function () {
+                    this.setCoverData(data);
                 });
             });
             o.socket.on('panelMode', function (data) {

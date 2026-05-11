@@ -14,7 +14,7 @@
                 var pnl = $('<div></div>').addClass('pnlRemotes').appendTo(el);
                 for (var i = 0; i < remotes.length; i++) {
                     if (!remotes[i].isActive) continue;
-                    $('<div></div>').appendTo(pnl).pnlRemoteConfig({ remoteTypes: opts.remoteTypes, circuits: opts.circuits, pumps: opts.pumps || [], maxRemotes: opts.maxRemotes })[0].dataBind(remotes[i]);
+                    $('<div></div>').appendTo(pnl).pnlRemoteConfig({ remoteTypes: opts.remoteTypes, circuits: opts.circuits, pumps: opts.pumps || [], bodies: opts.bodies || [], maxRemotes: opts.maxRemotes })[0].dataBind(remotes[i]);
                 }
             });
         }
@@ -48,7 +48,7 @@
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Body', binding: 'body',
                 columns: [{ binding: 'val', hidden: true, text: 'Id' }, { binding: 'desc', text: 'Body' }],
-                items: [{ val: 0, desc: 'Pool' }, { val: 1, desc: 'Spa' }, { val: 2, desc: 'Body 3' }, { val: 3, desc: 'Body 4' }],
+                items: o.bodies.length > 0 ? o.bodies : [{ val: 0, desc: 'Pool' }, { val: 1, desc: 'Spa' }],
                 inputAttrs: { style: { width: '5rem' } }, labelAttrs: { style: { marginLeft: '.25rem' } }
             });
             var pumpItems = [{ id: 0, name: 'Unassigned' }].concat((o.pumps || []).map(function (p) { return { id: p.id, name: p.name }; }));
@@ -78,7 +78,36 @@
                 }).addClass('btnAssignment btnAssignment' + b);
             }
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            $('<div id="btnSaveRemote"></div>').appendTo(btnPnl).actionButton({ text: 'Save Remote', icon: '<i class="fas fa-save"></i>', disabled: true });
+            $('<div id="btnSaveRemote"></div>').appendTo(btnPnl).actionButton({ text: 'Save Remote', icon: '<i class="fas fa-save"></i>' })
+                .on('click', function (e) {
+                    var p = $(e.target).parents('div.picAccordian-contents:first');
+                    var v = dataBinder.fromElement(p);
+                    console.log({ msg: 'Save Remote raw', v: v });
+                    if (dataBinder.checkRequired(p)) {
+                        v.id = parseInt(v.id, 10);
+                        v.type = parseInt(v.type, 10);
+                        v.body = parseInt(v.body, 10);
+                        var pumpVal = parseInt(v.pumpId, 10);
+                        v.pumpId = (!isNaN(pumpVal) && pumpVal > 0) ? pumpVal - 1 : 255;
+                        var addrVal = parseInt(v.address, 10);
+                        if (v.addressMode === false || v.addressMode === 'false' || v.addressMode === 0) v.address = 0;
+                        else v.address = !isNaN(addrVal) ? addrVal : 0;
+                        for (var b = 1; b <= 10; b++) {
+                            var btnVal = parseInt(v['button' + b], 10);
+                            if (!isNaN(btnVal) && btnVal > 0)
+                                v['button' + b] = btnVal - 1;
+                            else
+                                v['button' + b] = 255;
+                        }
+                        delete v.addressMode;
+                        console.log({ msg: 'Save Remote encoded', v: v });
+                        $.putApiService('/config/remote', v, 'Saving Remote: ' + v.name + '...', function (data, status, xhr) {
+                            console.log({ msg: 'Save Remote response', data: data });
+                            var remote = typeof data.data !== 'undefined' ? data.data : data;
+                            self.dataBind(remote);
+                        });
+                    }
+                });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -86,7 +115,7 @@
             var cols = acc[0].columns();
             var type = o.remoteTypes.find(function (elem) { return elem.val === obj.type; });
             var maxButtons = type ? type.maxButtons : 4;
-            cols[0].elText().text(obj.name || type.desc + ' #' + obj.id);
+            cols[0].elText().text(obj.name || (type ? type.desc + ' #' + obj.id : 'Remote #' + obj.id));
             cols[1].elText().text(type ? type.desc : 'Unknown');
             var bodyNames = ['Pool', 'Spa', 'Body 3', 'Body 4'];
             cols[2].elText().text(bodyNames[obj.body] || '');
@@ -113,6 +142,15 @@
             } else {
                 channelEl.hide();
                 addrModeEl.hide();
+            }
+            var bodyEl = el.find('[data-bind="body"]').closest('.picPickList');
+            if (obj.type === 2) {
+                bindObj.body = 1;
+                bodyEl.find('select,input').prop('disabled', true);
+                bodyEl.addClass('disabled');
+            } else {
+                bodyEl.find('select,input').prop('disabled', false);
+                bodyEl.removeClass('disabled');
             }
             dataBinder.bind(el, bindObj);
         }
