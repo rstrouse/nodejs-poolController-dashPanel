@@ -17,8 +17,11 @@
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Pump', icon: '<i class="fas fa-plus" ></i>' });
+                if (pumps.length >= opts.maxPumps) btnAdd.addClass('disabled');
                 btnAdd.on('click', function (e) {
+                    if ($(this).hasClass('disabled')) return;
                     var groups = el.find('div.picConfigCategory.cfgPump');
+                    if (groups.length >= opts.maxPumps) return;
                     //$(this).addClass('disabled');
                     //$(this).find('i').addClass('burst-animated');
                     var pnl = $('<div></div>').insertBefore(btnPnl).pnlPumpConfig({ rs485ports: opts.rs485ports, pumpTypes: opts.pumpTypes, maxPumps: opts.maxPumps, pumpUnits: opts.pumpUnits, circuits: opts.circuits, bodies: opts.bodies, models: opts.models, servers: opts.servers });
@@ -35,6 +38,7 @@
                         addresses: pt.addresses,
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
+                    if (el.find('div.picConfigCategory.cfgPump').length >= opts.maxPumps) btnAdd.addClass('disabled');
                 });
 
             });

@@ -474,7 +474,11 @@
                 $('div.picController').each(function () {
                     this.setControllerState(data);
                 });
-
+                if (typeof data.vacation !== 'undefined') {
+                    $('div.picScheduleContainer').each(function () {
+                        this.setVacationMode(data.vacation);
+                    });
+                }
             });
             o.socket.on('pump', function (data) {
                 console.log({ evt: 'pump', data: data });

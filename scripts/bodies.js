@@ -156,6 +156,7 @@
             var bodyIcon = $('<div></div>').addClass('picBodyIcon');
             var line = $('<div></div').appendTo(bodyIcon);
             $('<label></label>').addClass('picBodyText').appendTo(line);
+            $('<div></div>').addClass('picFreezeStatusText').css({ display: 'none', fontSize: '0.6rem', fontWeight: 'bold', textAlign: 'center', lineHeight: '1.1' }).appendTo(bodyIcon);
             $('<div></div>').addClass('picIndicator').appendTo(bodyIcon);
             bodyIcon.appendTo(el);
 
@@ -232,7 +233,9 @@
                         }
                         else {
                             ind.attr('data-status', 'pending');
-                            $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: !makeBool(ind.attr('data-state')) }, function (circ, status, xhr) {
+                            var reqState = !makeBool(ind.attr('data-state'));
+                            if (self._isFreezeActive() && makeBool(ind.attr('data-state'))) reqState = true;
+                            $.putApiService('state/circuit/setState', { id: parseInt(el.attr('data-circuitid'), 10), state: reqState }, function (circ, status, xhr) {
                                 self.setCircuitState(circ);
                             }, function () {
                                 if (ind.attr('data-status') === 'pending') ind.attr('data-status', makeBool(ind.attr('data-state')) ? 'on' : 'off');
@@ -317,7 +320,13 @@
                     else el.show();
                 }
                 el.find('div.picIndicator').attr('data-state', makeBool(data.isOn) ? 'on' : 'off');
-                el.find('div.picIndicator').attr('data-status', data.isOn ? data.stopDelay ? 'delayoff' : 'on' : data.startDelay ? 'delayon': 'off');
+                var indStatus = data.isOn ? data.stopDelay ? 'delayoff' : 'on' : data.startDelay ? 'delayon': 'off';
+                if (data.isOn && self._isFreezeActive()) {
+                    indStatus = data.manualFreezeOverride ? 'freezeoverride' : 'freeze';
+                }
+                el.find('div.picIndicator').attr('data-status', indStatus);
+                self._applyFreezeIndicatorStyle(el, indStatus);
+                self._updateFreezeLabel(data);
                 el.attr('data-ison', data.isOn);
                 self.disabled(data.stopDelay);
                 el.attr('data-setpoint', data.setPoint);
@@ -389,10 +398,43 @@
         },
         setCircuitState: function (data) {
             var self = this, o = self.options, el = self.element;
-            el.find('div.picIndicator').attr('data-status', data.isOn ? data.stopDelay ? 'delayoff' : 'on' : data.startDelay ? 'delayon' : 'off');
+            var indStatus = data.isOn ? data.stopDelay ? 'delayoff' : 'on' : data.startDelay ? 'delayon' : 'off';
+            if (data.isOn && self._isFreezeActive()) {
+                indStatus = data.manualFreezeOverride ? 'freezeoverride' : 'freeze';
+            }
+            el.find('div.picIndicator').attr('data-status', indStatus);
+            self._applyFreezeIndicatorStyle(el, indStatus);
             self.disabled(data.stopDelay);
             el.find('div.picBodyIcon div.picIndicator').attr('data-state', data.isOn);
             el.find('label.picBodyText').text(data.name);
+            self._updateFreezeLabel(data);
+        },
+        _isFreezeActive: function () {
+            return $('div.picFreezeProtect').attr('data-status') === 'on';
+        },
+        _updateFreezeLabel: function (data) {
+            var el = this.element;
+            var lbl = el.find('div.picFreezeStatusText');
+            if (data.isOn && this._isFreezeActive()) {
+                if (data.manualFreezeOverride) {
+                    lbl.html('Manual<br>Override').css('color', '#007aff').show();
+                } else {
+                    lbl.html('Freeze<br>Cycle').css('color', '#34c759').show();
+                }
+            } else {
+                lbl.hide();
+            }
+        },
+        _applyFreezeIndicatorStyle: function (el, status) {
+            var ind = el.find('div.picIndicator');
+            if (status === 'freeze' || status === 'on') {
+                ind.css('background', '');
+                ind.attr('data-status', 'on');
+            } else if (status === 'freezeoverride') {
+                ind.css('background', 'radial-gradient(ellipse farthest-corner at center, rgb(100,180,255) 0%, rgb(0,122,255) 100%)');
+            } else {
+                ind.css('background', '');
+            }
         },
         setUnits: function (units) {
             var self = this, o = self.options, el = self.element;

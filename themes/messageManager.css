@@ -851,6 +851,14 @@ div.picSpaDrain[data-status=off] {
   display: none;
 }
 
+div.picIndicator[data-status=freeze] {
+  background: radial-gradient(ellipse farthest-corner at center, rgb(130, 255, 160) 0%, rgb(52, 199, 89) 100%);
+}
+
+div.picIndicator[data-status=freezeoverride] {
+  background: radial-gradient(ellipse farthest-corner at center, rgb(100, 180, 255) 0%, rgb(0, 122, 255) 100%);
+}
+
 div.picModel > i {
   cursor: pointer;
   padding-right: 0.2rem;

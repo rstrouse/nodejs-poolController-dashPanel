@@ -1,24 +1,27 @@
 ﻿(function ($) {
     $.widget("pic.schedules", {
-        options: { },
+        options: { vacation: false },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             el[0].initSchedules = function (data) { self._initSchedules(data); };
             el[0].setScheduleData = function (data) { self.setScheduleData(data); };
+            el[0].setVacationMode = function (vacation) { self.setVacationMode(vacation); };
         },
         _initSchedules: function(data) {
             var self = this, o = self.options, el = self.element;
             el.empty();
+            if (typeof data !== 'undefined' && typeof data.vacation !== 'undefined') o.vacation = data.vacation === true;
+            var targetGroup = o.vacation ? 1 : 0;
             let div = $('<div class="picCircuitTitle control-panel-title"></div>');
             div.appendTo(el);
             let span = $('<span class="picCircuitTitle"></span>');
             span.appendTo(div);
-            span.text('Schedules');
+            span.text(o.vacation ? 'Schedules - Vacation Mode' : 'Schedules');
             if (typeof data !== 'undefined' && typeof data.schedules !== 'undefined') {
                 var schedules = data.schedules.sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
-                    // Create a new schedule for each installed schedule.
                     if (data.isActive === false || data.schedules[i].disabled) continue;
+                    if ((data.schedules[i].schedGroup || 0) !== targetGroup) continue;
                     let divSched = $('<div class="picSchedule"></div>');
                     divSched.appendTo(el);
                     divSched.schedule(data.schedules[i]);
@@ -33,8 +36,24 @@
             }
             else el.hide();
         },
+        setVacationMode: function (vacation) {
+            var self = this, o = self.options, el = self.element;
+            var prev = o.vacation;
+            o.vacation = vacation === true;
+            if (prev !== o.vacation) {
+                el.find('span.picCircuitTitle').text(o.vacation ? 'Schedules - Vacation Mode' : 'Schedules');
+                $.getApiService('/state/all', null, function (data) {
+                    self._initSchedules(data);
+                });
+            }
+        },
         setScheduleData: function (data) {
             var self = this, o = self.options, el = self.element;
+            var targetGroup = o.vacation ? 1 : 0;
+            if ((data.schedGroup || 0) !== targetGroup) {
+                $('div.picSchedule[data-id=' + data.id + ']').remove();
+                return;
+            }
             var pnl = $('div.picSchedule[data-id=' + data.id + ']');
             if (pnl.length === 0) {
                 if (data.isActive === false || data.disabled) $(this).remove();
@@ -42,7 +61,6 @@
                     var scheds = el.find('div.picSchedule');
                     var div = $('<div class="picSchedule"><div>');
                     var add = true;
-                    // Insert it in the right place.
                     scheds.each(function () {
                         var id = parseInt($(this).attr('data-id'), 10);
                         if (id > data.id) {

@@ -675,6 +675,37 @@
                     if (data.mode.name !== 'auto') self.enablePanels(false);
                     else self.enablePanels(true);
                     el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+                    if (data.freeze) {
+                        var overrides = [];
+                        if (data.temps && data.temps.bodies) {
+                            for (var i = 0; i < data.temps.bodies.length; i++) {
+                                var b = data.temps.bodies[i];
+                                if (b.manualFreezeOverride) overrides.push(b.name);
+                                var bodyEl = $('div.picBody[data-body="' + b.name + '"]');
+                                if (bodyEl.length) {
+                                    var lbl = bodyEl.find('div.picFreezeStatusText');
+                                    var ind = bodyEl.find('div.picIndicator');
+                                    if (b.isOn) {
+                                        if (b.manualFreezeOverride) {
+                                            lbl.html('Manual<br>Override').css('color', '#007aff').show();
+                                            ind.css('background', 'radial-gradient(ellipse farthest-corner at center, rgb(100,180,255) 0%, rgb(0,122,255) 100%)');
+                                            ind.attr('data-status', 'freezeoverride');
+                                        } else {
+                                            lbl.html('Freeze<br>Cycle').css('color', '#34c759').show();
+                                            ind.css('background', '');
+                                            ind.attr('data-status', 'on');
+                                        }
+                                    } else {
+                                        lbl.hide();
+                                        ind.css('background', '');
+                                    }
+                                }
+                            }
+                        }
+                        var bannerText = 'FREEZE PROTECTION';
+                        if (overrides.length > 0) bannerText += ' \u2014 ' + overrides.join(', ') + ': Manual Override';
+                        el.find('div.picFreezeProtect > label').text(bannerText);
+                    }
                     el.find('div.picVacationMode').attr('data-status', data.vacation ? 'on' : 'off');
                     if (typeof data.valveMode !== 'undefined') el.find('div.picSpaDrain').attr('data-status', data.valveMode.name === 'spadrain' ? 'on' : 'off');
                     el.attr('data-status', data.status.val);
