@@ -314,6 +314,11 @@
                     this.dataBind(data);
                 });
             });
+            o.socket.on('alertConfig', function (data) {
+                $('div.cfgAlerts').each(function () {
+                    if (this.dataBind) this.dataBind(data);
+                });
+            });
 
             o.socket.on('circuit', function (data) {
                 console.log({ evt: 'circuit', data: data });

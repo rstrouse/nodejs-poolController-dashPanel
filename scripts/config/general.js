@@ -349,29 +349,132 @@
         options: {},
         _create: function () {
             var self = this, o = self.options, el = self.element;
-            self._buildControls();
             el[0].dataBind = function (obj) { return self.dataBind(obj); };
+            self._buildControls();
         },
         _buildControls: function () {
             var self = this, o = self.options, el = self.element;
             el.empty();
             el.addClass('picConfigCategory cfgAlerts');
-            var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Alerts', glyph: 'far fa-bell', style: { width: '15rem' } }] });
-            var pnl = acc.find('div.picAccordian-contents');
-            var line = $('<div></div>').appendTo(pnl);
-            btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
-            btnSave = $('<div id="btnSaveAlerts"></div>').appendTo(btnPnl).actionButton({ text: 'Save Alerts', icon: '<i class="fas fa-save"></i>' });
-            btnSave.on('click', function (e) {
-                $(this).addClass('disabled');
-                $(this).find('i').addClass('burst-animated');
-                // Send this off to the server.
-                //$(this).find('span.picButtonText').text('Loading Config...');
-                //$.putApiService('/app/config/reload', function (data, status, xhr) {
-            });
+            var outerAcc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Alerts & Notifications', glyph: 'far fa-bell', style: { width: '15rem' } }] });
+            var outerPnl = outerAcc.find('div.picAccordian-contents');
+            self.contentPnl = $('<div></div>').appendTo(outerPnl);
+            var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(outerPnl);
+            $('<div id="btnSaveAlerts"></div>').appendTo(btnPnl).actionButton({ text: 'Save Alerts', icon: '<i class="fas fa-save"></i>' })
+                .on('click', function (e) { self._save($(this)); });
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
-            dataBinder.bind(el, obj);
+            $.getApiService('/config/options/alerts', null, function (data, status, xhr) {
+                self._alerts = data.alerts || {};
+                self._definitions = data.definitions || {};
+                self._renderCategories();
+            });
+        },
+        _renderCategories: function () {
+            var self = this;
+            var pnl = self.contentPnl;
+            pnl.empty();
+            var categoryFieldMap = {
+                circuits: 'circuitNotifications',
+                pumps: 'pumpNotifications',
+                ultratemp: 'ultratempNotifications',
+                chlorinator: 'chlorinatorNotifications',
+                intellichem: 'intellichemNotifications',
+                hybrid: 'hybridNotifications',
+                connectedGas: 'connectedGasNotifications'
+            };
+            var categoryLabels = {
+                circuits: 'Circuits',
+                pumps: 'Pumps',
+                ultratemp: 'UltraTemp Heater',
+                chlorinator: 'IntelliChlor',
+                intellichem: 'IntelliChem',
+                hybrid: 'Hybrid Heater',
+                connectedGas: 'Connected Gas Heater'
+            };
+            for (var cat in self._definitions) {
+                var items = self._definitions[cat];
+                if (!items || items.length === 0) continue;
+                var field = categoryFieldMap[cat];
+                var mask = self._alerts[field] || 0;
+                var label = categoryLabels[cat] || cat;
+                var enabledCount = 0;
+                for (var i = 0; i < items.length; i++) {
+                    if ((mask >>> items[i].bit) & 1) enabledCount++;
+                }
+                var section = $('<div></div>').addClass('picAlertSection').appendTo(pnl);
+                var header = $('<div></div>').addClass('picAlertSection-header header-background').css({ cursor: 'pointer', padding: '.25rem .5rem', marginTop: '.25rem', display: 'flex', alignItems: 'center' }).appendTo(section);
+                $('<i class="fas fa-exclamation-triangle" style="margin-right:.5rem"></i>').appendTo(header);
+                $('<span></span>').text(label).css({ width: '12rem', fontWeight: 'bold' }).appendTo(header);
+                var countSpan = $('<span></span>').text(enabledCount + '/' + items.length).css({ width: '4rem', textAlign: 'center' }).appendTo(header);
+                $('<i class="fas fa-chevron-right" style="margin-left:auto;transition:transform .2s"></i>').appendTo(header);
+                var body = $('<div></div>').addClass('picAlertSection-body').css({ display: 'none', padding: '.25rem .5rem .25rem 1.5rem' }).appendTo(section);
+                (function(h, b) {
+                    h.on('click', function (e) {
+                        e.stopPropagation();
+                        var chevron = h.find('i.fa-chevron-right, i.fa-chevron-down');
+                        if (b.is(':visible')) {
+                            b.slideUp(150);
+                            chevron.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+                        } else {
+                            b.slideDown(150);
+                            chevron.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+                        }
+                    });
+                })(header, body);
+                var btnRow = $('<div></div>').css({ marginBottom: '.25rem' }).appendTo(body);
+                (function(catKey, bodyEl) {
+                    $('<a href="javascript:void(0)"></a>').text('Select All').css({ marginRight: '1rem', fontSize: '.85rem' }).appendTo(btnRow).on('click', function (e) {
+                        e.stopPropagation();
+                        bodyEl.find('input[type="checkbox"]').prop('checked', true).trigger('change');
+                    });
+                    $('<a href="javascript:void(0)"></a>').text('Select None').css({ fontSize: '.85rem' }).appendTo(btnRow).on('click', function (e) {
+                        e.stopPropagation();
+                        bodyEl.find('input[type="checkbox"]').prop('checked', false).trigger('change');
+                    });
+                })(cat, body);
+                for (var j = 0; j < items.length; j++) {
+                    var item = items[j];
+                    var checked = (mask >>> item.bit) & 1;
+                    var line = $('<div></div>').appendTo(body);
+                    $('<div></div>').appendTo(line).checkbox({ labelText: item.desc, binding: cat + '_bit' + item.bit, value: checked ? true : false });
+                }
+            }
+        },
+        _save: function (btn) {
+            var self = this;
+            btn.addClass('disabled');
+            btn.find('i').addClass('burst-animated');
+            var payload = {};
+            var categoryFieldMap = {
+                circuits: 'circuitNotifications',
+                pumps: 'pumpNotifications',
+                ultratemp: 'ultratempNotifications',
+                chlorinator: 'chlorinatorNotifications',
+                intellichem: 'intellichemNotifications',
+                hybrid: 'hybridNotifications',
+                connectedGas: 'connectedGasNotifications'
+            };
+            for (var cat in self._definitions) {
+                var items = self._definitions[cat];
+                if (!items || items.length === 0) continue;
+                var mask = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var cb = self.contentPnl.find('[data-bind="' + cat + '_bit' + items[i].bit + '"] input[type="checkbox"]');
+                    if (cb.is(':checked')) mask = (mask | (1 << items[i].bit)) >>> 0;
+                }
+                payload[cat] = mask;
+            }
+            $.putApiService('/config/alerts', payload, 'Saving Alerts...', function (data, status, xhr) {
+                self._alerts = data || {};
+                self._renderCategories();
+                btn.removeClass('disabled');
+                btn.find('i').removeClass('burst-animated');
+            }, function (err) {
+                btn.removeClass('disabled');
+                btn.find('i').removeClass('burst-animated');
+            });
         }
     });
 })(jQuery); // Alerts
