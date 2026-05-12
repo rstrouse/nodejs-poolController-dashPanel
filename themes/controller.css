@@ -27,6 +27,11 @@ div.picFreezeProtect {
   color: blue;
 }
 
+div.picVacationMode {
+  text-align: center;
+  color: #ff8c00;
+}
+
 div.picSpaDrain {
   text-align: center;
   color: black;
@@ -35,6 +40,7 @@ div.picSpaDrain {
 div.picPanelMode[data-status=""],
 div.picPanelMode[data-status=auto],
 div.picFreezeProtect[data-status=off],
+div.picVacationMode[data-status=off],
 div.picSpaDrain[data-status=off] {
   display: none;
 }
@@ -58,6 +64,7 @@ div.picLockIcon:focus-visible {
 
 div.picPanelMode > label,
 div.picFreezeProtect > label,
+div.picVacationMode > label,
 div.picSpaDrain > label {
   font-weight: bold;
   color: red;

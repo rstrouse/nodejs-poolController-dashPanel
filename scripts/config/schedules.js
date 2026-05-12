@@ -1,6 +1,6 @@
 ﻿(function ($) {
     $.widget('pic.configSchedules', {
-        options: {},
+        options: { schedGroup: 0 },
         _create: function () {
             var self = this, o = self.options, el = self.element;
             self._buildControls();
@@ -11,14 +11,14 @@
             el.addClass('cfgSchedules');
             $.getApiService('/config/options/schedules', null, 'Loading Options...', function (opts, status, xhr) {
                 console.log(opts);
-                var schedules = opts.schedules.sort((a, b) => a.id - b.id);
+                var schedules = opts.schedules.filter(function(s) { return (s.schedGroup || 0) === o.schedGroup; }).sort((a, b) => a.id - b.id);
                 for (var i = 0; i < schedules.length; i++) {
                     $('<div></div>').appendTo(el).pnlScheduleConfig({
                         bodies: opts.bodies,
                         scheduleTimeTypes: opts.scheduleTimeTypes, maxSchedules: opts.maxSchedules,
                         scheduleTypes: opts.scheduleTypes, scheduleDays: opts.scheduleDays, heatSources: opts.heatSources,
                         tempUnits: opts.tempUnits, circuits: opts.circuits, clockMode: opts.clockMode, displayTypes: opts.displayTypes
-                    })[0].dataBind(opts.schedules[i]);
+                    })[0].dataBind(schedules[i]);
                 }
                 var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(el);
                 var btnAdd = $('<div></div>').appendTo(btnPnl).actionButton({ text: 'Add Schedule', icon: '<i class="fas fa-plus" ></i>' });
@@ -34,7 +34,8 @@
                     pnl[0].dataBind({
                         id: -1, startTime: 480, endTime: 1020,
                         scheduleType: st.val, startTimeType: tt.val, endTimeType: tt.val, circuit: 0, display: 0,
-                        heatSetpoint: 78, coolSetpoint: 100, heatSource: 0, scheduleDays: 127, startDate: (function() { var today = new Date(); today.setHours(0, 0, 0, 0); return today.toISOString(); })()
+                        heatSetpoint: 78, coolSetpoint: 100, heatSource: 0, scheduleDays: 127, schedGroup: o.schedGroup,
+                        startDate: (function() { var today = new Date(); today.setHours(0, 0, 0, 0); return today.toISOString(); })()
                        
                     });
                     pnl.find('div.picAccordian:first')[0].expanded(true);
@@ -70,6 +71,7 @@
             }
             line = $('<div></div>').addClass('schedule-circuit').appendTo(pnl);
             $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'id').appendTo(line);
+            $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'schedGroup').appendTo(line);
             $('<div></div>').appendTo(line).pickList({
                 required: true, bindColumn: 0, displayColumn: 1, labelText: 'Circuit', binding: binding + 'circuit',
                 columns: [{ binding: 'id', hidden: true, text: 'Id', style: { whiteSpace: 'nowrap' } }, { binding: 'name', text: 'Circuit', style: { whiteSpace: 'nowrap' } }],
@@ -155,10 +157,8 @@
             inline = $('<div></div>').addClass('inline-line').appendTo(pnlTime).css({ display: 'table-cell', paddingRight: '7px' });
             $('<div></div>').appendTo(inline).pnlScheduleDays({ singleSelect: false, days: o.scheduleDays, binding: binding + 'scheduleDays' }).css({ paddingLeft: '.25rem' });
             line = $('<div></div>').appendTo(inline);
-            $('<div></div>').appendTo(line).dateField({
-                labelText: 'Schedule Date', binding: binding + 'startDate', canEdit: true,
-                labelAttrs: {}, inputAttrs: { maxlength: 15, style: { width: '7rem' } }
-            }).css({ whiteSpace: 'nowrap' });
+            $('<label style="display:inline-block;width:7rem;font-weight:bold;white-space:nowrap">Schedule Date</label>').appendTo(line);
+            $('<input type="date" data-bind="' + binding + 'startDate" data-datatype="date" style="padding:0.2rem 0.4rem"/>').appendTo(line);
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
             var btnSave = $('<div id="btnSaveBody"></div>').appendTo(btnPnl).actionButton({ text: 'Save Schedule', icon: '<i class="fas fa-save"></i>' });
             el.on('selchanged', 'div.picPickList[data-bind=circuit]', function (evt) {
@@ -294,7 +294,7 @@
             let ct = $('body').attr('data-controllertype');
             let shouldShowStartDate = schedType.startDate && ct !== 'nixie';
             
-            shouldShowStartDate ? el.find('div.picPickList[data-bind=startDate]').show()[0].required(true) : el.find('div.picPickList[data-bind=startDate]').hide()[0].required(false);
+            shouldShowStartDate ? el.find('input[data-bind=startDate]').closest('div').show() : el.find('input[data-bind=startDate]').closest('div').hide();
             schedType.startTime ? el.find('div.schedule-time.start-time').show().find('div.picValueSpinner[data-bind=startTime]')[0].required(true) : el.find('div.schedule-time.start-time').hide().find('div.picValueSpinner[data-bind=startTime]')[0].required(false);
             schedType.endTime ? el.find('div.schedule-time.end-time').show().find('div.picValueSpinner[data-bind=endTime]')[0].required(true) : el.find('div.schedule-time.end-time').hide().find('div.picValueSpinner[data-bind=endTime]')[0].required(false);
             el.find('div.pnl-scheduleDays').each(function () {
@@ -377,6 +377,7 @@
             obj.endTimeOffsetMins = (etOffset) - (obj.endTimeOffsetHours * 60);
             console.log(obj);
             dataBinder.bind(el, obj);
+            if (obj.startDate) el.find('input[data-bind=startDate]').val(String(obj.startDate).substring(0, 10));
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);
         }
     });
@@ -476,3 +477,38 @@
         }
     });
 })(jQuery); // Schedule Panel
+(function ($) {
+    $.widget('pic.configVacationSchedules', {
+        options: {},
+        _create: function () {
+            var self = this, o = self.options, el = self.element;
+            self._buildControls();
+        },
+        _buildControls: function () {
+            var self = this, o = self.options, el = self.element;
+            el.addClass('picConfigCategory cfgVacationSchedules');
+            $.getApiService('/config/options/general', null, function (genOpts, status, xhr) {
+                var vacation = genOpts.pool.options.vacation || {};
+                var vacPnl = $('<div class="vacation-settings-panel"></div>').appendTo(el);
+                $('<div class="vacation-header"><i class="fas fa-umbrella-beach"></i> <span>Vacation Settings</span></div>').appendTo(vacPnl);
+                var line = $('<div class="vacation-setting-line"></div>').appendTo(vacPnl);
+                $('<label>Enabled:</label>').appendTo(line);
+                $('<span class="vacation-value"></span>').text(vacation.enabled ? 'Yes' : 'No').appendTo(line);
+                line = $('<div class="vacation-setting-line"></div>').appendTo(vacPnl);
+                $('<label>Use Date Range:</label>').appendTo(line);
+                $('<span class="vacation-value"></span>').text(vacation.useTimeframe ? 'Yes' : 'No').appendTo(line);
+                if (vacation.useTimeframe) {
+                    line = $('<div class="vacation-setting-line"></div>').appendTo(vacPnl);
+                    $('<label>Start:</label>').appendTo(line);
+                    $('<span class="vacation-value"></span>').text(new Date(vacation.startDate).toLocaleDateString()).appendTo(line);
+                    line = $('<div class="vacation-setting-line"></div>').appendTo(vacPnl);
+                    $('<label>End:</label>').appendTo(line);
+                    $('<span class="vacation-value"></span>').text(new Date(vacation.endDate).toLocaleDateString()).appendTo(line);
+                }
+                $('<div class="vacation-note"><i class="fas fa-info-circle"></i> Vacation settings are managed from the OCP/ICP panel.</div>').appendTo(vacPnl);
+                $('<hr/>').appendTo(el);
+                $('<div></div>').appendTo(el).configSchedules({ schedGroup: 1 });
+            });
+        }
+    });
+})(jQuery); // Vacation Schedules

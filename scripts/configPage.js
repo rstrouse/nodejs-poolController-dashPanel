@@ -94,8 +94,15 @@
                     $('<div></div>').appendTo(evt.newTab.contents).configHeaters();
                     break;
                 case 'tabSchedules':
+                    self._buildScheduleTab(evt.newTab.contents);
+                    break;
+                case 'tabRegularSchedules':
                     evt.newTab.contents.empty();
-                    $('<div></div>').appendTo(evt.newTab.contents).configSchedules();
+                    $('<div></div>').appendTo(evt.newTab.contents).configSchedules({ schedGroup: 0 });
+                    break;
+                case 'tabVacationSchedules':
+                    evt.newTab.contents.empty();
+                    $('<div></div>').appendTo(evt.newTab.contents).configVacationSchedules();
                     break;
                 case 'tabInterfaces':
                     evt.newTab.contents.empty();
@@ -167,7 +174,9 @@
                 tab = self._addConfigTab({ id: 'tabHeaters', text: 'Heaters', cssClass: 'cfgHeaters' });
                 tab = self._addConfigTab({ id: 'tabRemotes', text: 'Remotes', cssClass: 'cfgRemotes' });
 
-                tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' });
+                tab = self._addConfigTab({ id: 'tabSchedules', text: 'Schedules', cssClass: 'cfgSchedules' },
+                    [{ id: 'tabRegularSchedules', text: 'Regular', cssClass: 'cfgRegularSchedules' },
+                     { id: 'tabVacationSchedules', text: 'Vacation', cssClass: 'cfgVacationSchedules' }]);
                 tabs[0].selectTabById('tabGeneral');
                 self._applyIcPermissions(tabs);
                 el.trigger(evt);
@@ -270,13 +279,24 @@
             }
         },
 
-        _buildControllerTab: function (contents) {
+        _buildScheduleTab: function (contents) {
             var self = this, o = self.options, el = self.element;
-            // Find the currently selected tab.  We want to reload it.
             var tabs = contents.find('div.picTabBar:first')[0];
             var tabId = tabs.selectedTabId();
-            //tabs.showTab('tabControllerType', false);
-            //tabs.showTab('tabRS485', false);
+            switch (tabId) {
+                case 'tabRegularSchedules':
+                case 'tabVacationSchedules':
+                    break;
+                default:
+                    tabs.selectTabById('tabRegularSchedules');
+                    break;
+            }
+        },
+
+        _buildControllerTab: function (contents) {
+            var self = this, o = self.options, el = self.element;
+            var tabs = contents.find('div.picTabBar:first')[0];
+            var tabId = tabs.selectedTabId();
             switch (tabId) {
                 case 'tabControllerType':
                     case 'tabInterfaces':

@@ -428,6 +428,8 @@
             row.appendTo(el);
             row = $('<div class="picPanelMode" data-status="auto"><i class="far fa-pause-circle burst-animated"></i><label></label><span class="service-timeout-remaining"></span><i class="far fa-pause-circle burst-animated"></i></div>');
             row.appendTo(el);
+            row = $('<div class="picVacationMode" data-status="off"><i class="fas fa-umbrella-beach burst-animated"></i><label>VACATION MODE</label><i class="fas fa-umbrella-beach burst-animated"></i></div>');
+            row.appendTo(el);
             $('<div class="picSpaDrain" data-status="off"><i class="fas fa-skull-crossbones burst-animated"></i><label>SPA DRAIN ACTIVE</label><i class="fas fa-skull-crossbones burst-animated"></i></div>').appendTo(el);
             // Keyboard + automation semantics for header icon controls.
             el.find('div.picModel > i, div.picConfigIcon, div.picLockIcon').attr('role', 'button').attr('tabindex', 0);
@@ -673,6 +675,7 @@
                     if (data.mode.name !== 'auto') self.enablePanels(false);
                     else self.enablePanels(true);
                     el.find('div.picFreezeProtect').attr('data-status', data.freeze ? 'on' : 'off');
+                    el.find('div.picVacationMode').attr('data-status', data.vacation ? 'on' : 'off');
                     if (typeof data.valveMode !== 'undefined') el.find('div.picSpaDrain').attr('data-status', data.valveMode.name === 'spadrain' ? 'on' : 'off');
                     el.attr('data-status', data.status.val);
                     $('div.picActionButton[id$=btnReloadConfig]').each(function () {
@@ -702,6 +705,7 @@
                     el.find('div.picPanelMode').attr('data-status', '');
                     el.find('div.picPanelMode > label').text('');
                     el.find('div.picFreezeProtect').attr('data-status', 'off');
+                    el.find('div.picVacationMode').attr('data-status', 'off');
                     el.attr('data-status', 2);
                     $('div.picActionButton[id$=btnReloadConfig]').each(function () {
                         let btn = $(this);

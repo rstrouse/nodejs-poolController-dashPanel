@@ -120,3 +120,68 @@ div.pnl-scheduleDays div.table-cell.dayheader {
   width: 2.4rem;
   font-weight: bold;
 }
+
+div.vacation-settings-panel {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fffbf0;
+}
+
+div.vacation-header {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #ff8c00;
+  margin-bottom: 0.4rem;
+}
+
+div.vacation-setting-line {
+  padding: 0.15rem 0;
+}
+
+div.vacation-setting-line > label {
+  display: inline-block;
+  width: 8rem;
+  font-weight: bold;
+}
+
+div.vacation-note {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #666;
+}
+
+div.vacation-config-panel {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+div.vacation-config-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #ff8c00;
+  margin-bottom: 0.6rem;
+}
+
+div.vacation-config-line {
+  padding: 0.25rem 0;
+}
+
+div.vacation-config-line > label {
+  display: inline-block;
+  width: 7rem;
+  font-weight: bold;
+}
+
+input.vacation-date-input {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+div.vacation-sched-header {
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.3rem 0;
+}

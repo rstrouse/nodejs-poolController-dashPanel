@@ -17,6 +17,7 @@
                 $('<div></div>').appendTo(el).pnlSensorCalibration({ freezeThreshold: opts.pool.options.freezeThreshold, sensorUnits: opts.pool.options.units, sensors: opts.sensors, tempUnits: opts.tempUnits, systemUnits: opts.systemUnits })[0].dataBind(opts.pool);
                 $('<div></div>').appendTo(el).pnlAlerts({})[0].dataBind(opts.alerts);
                 $('<div></div>').appendTo(el).pnlSecurity({})[0].dataBind(opts.security);
+                $('<div></div>').appendTo(el).pnlVacation({})[0].dataBind(opts.pool.options.vacation || {});
             });
         }
     });
@@ -201,8 +202,13 @@
                 line = $('<div></div>').appendTo(pnl);
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Operation Priority', binding: 'options.manualPriority' });
             }
+            var isIcV3 = controller === 'intellicenter' && parseFloat($('body').attr('data-firmware') || '0') >= 3.008;
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+            if (isIcV3) {
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.valveDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+            } else {
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.pumpDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });
+            }
             if (controller === 'nixie') {
                 $('<div></div>').appendTo(line).valueSpinner({
                     canEdit: true, labelText: 'Delay Time', binding: 'options.valveDelayTime', dataType: 'number', fmtType: '#,##0', value: o.valveDelayTime, min: 0, max: 240, step: 1, maxlength: 5,
@@ -228,8 +234,7 @@
                 });
             }
             if (controller !== 'nixie') $('<div></div>').appendTo(line).checkbox({ labelText: 'Heater Cooldown Delay', binding: 'options.cooldownDelay' });
-            var firmware = parseFloat($('body').attr('data-firmware') || '0');
-            if (controller === 'intellicenter' && firmware >= 3.008) {
+            if (isIcV3) {
                 line = $('<div></div>').appendTo(pnl);
                 $('<div></div>').appendTo(line).valueSpinner({
                     canEdit: true, labelText: 'Freeze Cycle Time', binding: 'options.freezeCycleTime', dataType: 'number', fmtType: '#,##0', min: 1, max: 60, step: 1, maxlength: 3,
