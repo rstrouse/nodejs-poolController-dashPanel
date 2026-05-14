@@ -9,7 +9,7 @@
   "messageType": "Response",
   "shortName": "Cfg[item]",
   "name": "Config Item Response",
-  "desc": "Response to a configuration request.",
+  "desc": "Response to a configuration request. v3.004+: Action 30 case 15 is the AUTHORITATIVE source for circuit/feature/group states. v3.004+: OCP may respond with empty payload (datalen=0) for unsupported category/item pairs; treat as 'request complete' without parsing. v3.004+: Schedule time values use BIG-ENDIAN byte order (v1.x uses little-endian).",
   "payloadKeys": {
     "0_0": {
       "shortName": "options 0",
@@ -153,12 +153,13 @@
           "start": 24,
           "length": 1,
           "name": "Body #1 Heat Mode",
-          "desc": "The heat mode for the first body.",
+          "desc": "The heat mode for the first body. IntelliCenter uses its own heat mode values (not *Touch nibble-packed). v3.004+ may add UltraTemp/HeatPump-specific modes depending on installed heaters.",
           "values": {
             "0": "Off",
             "3": "Heater",
             "5": "Solar Only",
-            "21": "Solar Preferred"
+            "21": "Solar Preferred",
+            "NOTE": "These are IntelliCenter-specific values from sys.board.valueMaps.heatModes, NOT *Touch values"
           }
         },
         {
@@ -668,7 +669,7 @@
       "shortName": "sched 1-20 start",
       "category": "Schedules",
       "name": "Current configuration",
-      "desc": "schedule start time",
+      "desc": "schedule start time. v3.004+ CRITICAL: 16-bit time values use BIG-ENDIAN (hi*256+lo). v1.x uses little-endian. Example: [2,33] = 545 min = 9:05 AM on v3.",
       "response": "165_63_16_15_30:3_0"
     },
     "3_1": {
@@ -1926,8 +1927,8 @@
     "15_0": {
       "shortName": "relay states",
       "category": "Relays",
-      "name": "Current configuration",
-      "desc": "circuit states",
+      "name": "Circuit/Feature/Group States (AUTHORITATIVE for v3.004+)",
+      "desc": "Circuit, feature, circuit group, and schedule states. v3.004+: This is the AUTHORITATIVE source for all state data. Action 204 feature states are STALE on v3. Action 2 feature bits are unreliable on v3. Offsets: v1.x circuits=bytes 2-6, features=bytes 8-11, groups=bytes 12-13. v3.004+ circuits=bytes 3-7, features=bytes 9-12, groups=bytes 13-14, schedules=bytes 15+.",
       "response": "165_63_16_15_30:15_0"
     }
   }

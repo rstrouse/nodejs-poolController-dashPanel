@@ -185,19 +185,49 @@
             "defaultType": "Request"
           },
           {
+            "val": 179,
+            "desc": "Heartbeat Request (v3.004+)",
+            "defaultType": "Request"
+          },
+          {
+            "val": 180,
+            "desc": "Heartbeat Response (v3.004+)",
+            "defaultType": "Response"
+          },
+          {
+            "val": 184,
+            "desc": "Circuit Control - Indexed (v3.004+)",
+            "defaultType": "Request"
+          },
+          {
+            "val": 217,
+            "desc": "Device List Broadcast (v3.004+)",
+            "defaultType": "Broadcast"
+          },
+          {
             "val": 222,
             "desc": "Request Config Item",
             "defaultType": "Request"
           },
           {
-            "val": 222,
+            "val": 228,
             "desc": "Request Config Versions",
             "defaultType": "Request"
           },
           {
             "val": 204,
-            "desc": "Comms Status",
+            "desc": "Extended Status (feature states STALE on v3.004+)",
             "defaultType": "Broadcast"
+          },
+          {
+            "val": 251,
+            "desc": "Device Announcement/Registration (v3.004+)",
+            "defaultType": "Request"
+          },
+          {
+            "val": 253,
+            "desc": "Registration Confirmation (v3.004+)",
+            "defaultType": "Response"
           }
         ]
       },

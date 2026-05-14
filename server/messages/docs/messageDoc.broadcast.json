@@ -12,7 +12,7 @@
     "messageType": "broadcast",
     "shortName": "Status",
     "name": "Equipment Status",
-    "desc": "Reflects the current state of circuits, features, bodies, and equipment attached to the OCP.",
+    "desc": "Reflects the current state of circuits, features, bodies, and equipment attached to the OCP. Broadcast every ~2 seconds by OCP to all devices.",
     "payload": [
       {
         "start": 0,
@@ -73,7 +73,7 @@
         "length": 1,
         "name": "Feature States 1-8",
         "dataType": "bits",
-        "desc": "Bit flags for features 1-8 (IDs 129-136). v3.004+: All 8 bits are reliable. v1.x: Upper nibble unreliable after v1.047.",
+        "desc": "Bit flags for features 1-8 (IDs 129-136). v3.004+: Feature decoding from Action 2 is DISABLED (not a simple bitmask; can corrupt UI). v1.x: Upper nibble unreliable after v1.047. For v3.004+, authoritative feature state comes from Action 30 case 15.",
         "values": "Bit 0=Feature 1 (ID 129), Bit 1=Feature 2 (ID 130), ..., Bit 7=Feature 8 (ID 136)"
       },
       {
@@ -81,7 +81,7 @@
         "length": 1,
         "name": "Feature States 9-16",
         "dataType": "bits",
-        "desc": "Bit flags for features 9-16 (IDs 137-144). v3.004+: Bits 0-1 confirmed for features 9-10. v1.x: Unreliable after v1.047.",
+        "desc": "Bit flags for features 9-16 (IDs 137-144). v3.004+: Feature decoding from Action 2 is DISABLED (encoding not reliable). Features 9+ (137+) are NOT broadcast via Action 2 at all. v1.x: Unreliable after v1.047.",
         "values": "Bit 0=Feature 9 (ID 137), Bit 1=Feature 10 (ID 138), ..."
       },
       {
@@ -224,16 +224,16 @@
         "start": 27,
         "length": 1,
         "name": "Model Byte 1",
-        "desc": "Controller model identifier byte 1. Used for controller detection.",
+        "desc": "Controller model identifier byte 1. Used for controller detection. IntelliCenter v1.064=[64,0], v1.232=[0,2], v3.004=[3,2]. IntelliTouch: 0-5.",
         "dataType": "byte"
       },
       {
         "start": 28,
         "length": 1,
         "name": "Model Byte 2",
-        "desc": "Controller model identifier byte 2 - determines controller type",
+        "desc": "Controller model identifier byte 2 - determines controller type. Detection: (model2==0 && model1>=23) OR (model2==2 && model1==0) OR (model2==2 && model1==3) = IntelliCenter.",
         "dataType": "byte",
-        "values": "0-5=IntelliTouch, 11=SunTouch, 13-14=EasyTouch, 0/2=IntelliCenter"
+        "values": "0-5=IntelliTouch, 11=SunTouch, 13-14=EasyTouch, 0/2=IntelliCenter(v1.232/v3.004), 0=IntelliCenter(v1.0xx)"
       }
     ]
   },
@@ -439,7 +439,7 @@
     "messageType": "broadcast",
     "shortName": "Ext Status",
     "name": "Extended Status",
-    "desc": "Reflects the current state of IntelliCenter features, bodies, and equipment attached to the OCP. Contains expansion module info, firmware version, date/time, and equipment states. IntelliCenter ONLY - not used by *Touch controllers.",
+    "desc": "Reflects the current state of IntelliCenter features, bodies, and equipment attached to the OCP. Contains expansion module info, firmware version, date/time, and equipment states. IntelliCenter ONLY - not used by *Touch controllers. WARNING: v3.004+ feature states (byte 9/19) are STALE and must NOT be processed. Authoritative feature state for v3.004+ is Action 30 case 15.",
     "payload": [
       {
         "start": 0,
@@ -503,7 +503,7 @@
         "start": 9,
         "length": 4,
         "name": "Feature States (v1.x only)",
-        "desc": "Bit flags for feature states starting at feature ID 129. Each bit represents one feature (up to 32 features). NOT PROCESSED in v3.004+ - authoritative source is Action 30 case 15. Actual length is variable based on configured features.",
+        "desc": "Bit flags for feature states starting at feature ID 129. Each bit represents one feature (up to 32 features). v3.004+: DO NOT PROCESS - byte 19 contains STALE data that never updates. Authoritative source for v3.004+ is Action 30 case 15. v1.x: Reliable. Actual length is variable based on configured features.",
         "dataType": "bits",
         "notes": "v3.004+ ignores this field due to stale data issue"
       },
@@ -511,7 +511,7 @@
         "start": 13,
         "length": 1,
         "name": "Master Module Byte 1",
-        "desc": "Master expansion module identifier byte 1. For v1.x: low nibble is module type. For v3.004+: high nibble is module type.",
+        "desc": "Master expansion module identifier byte 1. v1.x: module type = (byte & 0x0F) low nibble. v3.004+: module type = (byte >> 4) high nibble. Example: 0x50 (80) = i10PS on v3, 0x05 (5) = i10PS on v1.",
         "dataType": "byte"
       },
       {
@@ -2719,7 +2719,7 @@
     "messageType": "request",
     "shortName": "Ctrl[circuit]",
     "name": "Circuit Control (IntelliCenter v3.004+ Wireless)",
-    "desc": "v3.004+ Indexed Circuit Control (Wireless-style). Action 184 is the native circuit control message used by the Wireless remote. This is the preferred method for controlling circuits on v3.004+ as it doesn't suffer from state reversion issues like Action 168. The OCP responds with an ACK (Action 1 payload [184]). For body circuits (Spa/Pool), multiple 184 messages are sent in sequence with different target IDs.",
+    "desc": "v3.004+ Indexed Circuit/Feature/Body Control. Action 184 is the native control message used by the Wireless remote and njsPC on v3.004+. This is the preferred method for controlling circuits on v3.004+ as Action 168 causes state reversion. The OCP responds with ACK (Action 1 payload [184]). njsPC does NOT persist per-circuit target IDs; outbound control uses fixed Wireless-style frames with indexed channels. For body circuits (Spa/Pool), a multi-packet sequence is required (Body Select → Body Context → Body Toggle). Inbound Action 184 from OCP/panels is intentionally a no-op (no state mutation); use Action 30/Action 2 for authoritative state.",
     "payload": [
       {
         "start": 0,
@@ -2786,39 +2786,28 @@
     ],
     "targetIds": {
       "168_237": {
-        "name": "Body Toggle",
+        "name": "Control Primitive (0xA8ED)",
         "targetId": 43245,
-        "desc": "Body toggle primitive. Byte 6 is state (0=OFF, 1=ON). Used as final step in body control sequence.",
-        "example": "[104,143,0,255,168,237,1,0,0,0]"
+        "desc": "Shared control primitive for circuits, features, and body toggle. Byte 2 = index (circuitId-1 for circuits, featureId-1 for features, bodyIndex for bodies). Byte 6 = state (0=OFF, 1=ON).",
+        "example": "[104,143,2,255,168,237,1,0,0,0] = Circuit 3 ON"
       },
       "212_182": {
-        "name": "Body Context",
+        "name": "Body Context (0xD4B6)",
         "targetId": 54454,
-        "desc": "Body context/status message. Bytes 6-9 contain body-specific context: Spa ON=[0,101,4,0], Pool ON=[128,151,6,0], OFF=[255,255,255,255].",
-        "example": "[104,143,5,255,212,182,128,151,6,0]"
+        "desc": "Body context message sent before body toggle. Bytes 6-9 contain body-specific context: Spa ON=[0,101,4,0], Pool ON=[128,151,6,0], OFF=[255,255,255,255]. Spa index=0, Pool index=5.",
+        "example": "[104,143,5,255,212,182,128,151,6,0] = Pool context ON"
       },
       "114_145": {
-        "name": "Body Select",
+        "name": "Body Select (0x7291)",
         "targetId": 29329,
-        "desc": "Body selection/context. Byte 6 selects body: 0=Spa, 1=Pool. Uses channel 128,142 and format 0.",
-        "example": "[128,142,0,0,114,145,1,0,0,0]"
+        "desc": "Body selection. Uses channel 128,142 and format 0. Byte 6: 0=Spa, 1=Pool. Usage is inconsistent across captures; not always required for body switching.",
+        "example": "[128,142,0,0,114,145,1,0,0,0] = Select Pool"
       },
       "94_131": {
-        "name": "Body Mode",
+        "name": "Body Mode (0x5E83)",
         "targetId": 24195,
         "desc": "Body/mode control. Byte 6: 128=OFF, 129=ON. Uses channel 128,142 and format 0.",
         "example": "[128,142,0,0,94,131,129,0,0,0]"
-      },
-      "108_225": {
-        "name": "Pool Circuit",
-        "targetId": 27873,
-        "desc": "Pool circuit (circuit 6) direct control. Note: Wireless remote does NOT use this for body control - see Body Toggle instead.",
-        "example": "[104,143,0,255,108,225,1,0,0,0]"
-      },
-      "circuit_specific": {
-        "name": "Circuit Control",
-        "desc": "Each circuit has a unique targetId learned from OCP broadcasts (poolConfig.json). Use the circuit's targetId with state 0/1 in byte 6.",
-        "example": "[104,143,0,255,<hi>,<lo>,<state>,0,0,0]"
       }
     },
     "sequences": {
@@ -2844,11 +2833,15 @@
       }
     },
     "notes": [
-      "Wireless remote address is 36, OCP address is 16",
+      "Wireless remote address is 36, OCP address is 16, ICP address is 32",
       "Header: [165,1,16,36,184,10] for Wireless→OCP",
       "ACK: [165,1,36,16,1,1] payload [184] for OCP→Wireless",
-      "TargetIds are learned from OCP broadcasts and stored in poolConfig.json",
-      "For v1.x systems without targetIds, use Action 168 instead"
+      "njsPC uses fixed indexed frames (channel + circuitId-1 + target 0xA8ED), NOT per-circuit learned targetIds",
+      "Circuits: channel [104,143], index = circuitId - 1, format 255, target [168,237]",
+      "Features: channel [232,157], index = featureId - 1, format 0, target [168,237]",
+      "Bodies: multi-step sequence (Body Select → Body Context → Body Toggle) with dedicated targets",
+      "For v1.x systems, use Action 168 instead (Action 184 is v3.004+ only)",
+      "Inbound Action 184 is intentionally a no-op in njsPC (no state mutation from inbound 184)"
     ]
   },
   "165_P_BC_CP_252": {

@@ -8,7 +8,7 @@
   "messageType": "request",
   "shortName": "Set[item]",
   "name": "Set Config Item (IntelliCenter)",
-  "desc": "Set a configuration item on the IntelliCenter OCP. The first byte identifies the configuration category, second byte the sub-item, and third byte typically the item index (0-based).",
+  "desc": "Set a configuration item on the IntelliCenter OCP. The first byte identifies the configuration category, second byte the sub-item, and third byte typically the item index (0-based). v3.004+: Wireless sends full options block for type 0, with setpoint offsets shifted +1 compared to Action 30. v3.004+: For circuit control, prefer Action 184 (indexed) over Action 168 case 15 to avoid state reversion.",
   "payload": [
     {
       "start": 0,
@@ -54,7 +54,7 @@
     "0_0": {
       "shortName": "Set[options]",
       "name": "Set Options/Body Heat Settings",
-      "desc": "Sets options configuration including temp sensor calibration, clock settings, delays, and body heat setpoints. Byte 2 identifies specific option item.",
+      "desc": "Sets options configuration including temp sensor calibration, clock settings, delays, and body heat setpoints. Byte 2 identifies specific option item. v3.004+ WARNING: When received from Wireless (Action 168 type 0), body setpoint/mode offsets are shifted +1 compared to Action 30 type 0 due to an extra byte in early positions. v3 offsets: poolSetpoint=20, poolCool=21, spaSetpoint=22, spaCool=23, poolMode=24, spaMode=25 (vs Action 30: 19, 20, 21, 22, 23, 24).",
       "payload": [
         {
           "start": 0,
@@ -482,7 +482,7 @@
     "3_0": {
       "shortName": "Set[schedule]",
       "name": "Set Schedule Configuration",
-      "desc": "Sets or deletes a schedule including start/end times, circuit, days, and heat settings.",
+      "desc": "Sets or deletes a schedule including start/end times, circuit, days, and heat settings. v3.004+ CRITICAL: 16-bit time values (start/end) use BIG-ENDIAN byte order. v1.x uses LITTLE-ENDIAN.",
       "payload": [
         {
           "start": 0,
@@ -512,14 +512,14 @@
           "start": 3,
           "length": 2,
           "name": "Start Time",
-          "desc": "Start time in minutes from midnight (little endian). E.g., 480 = 8:00 AM",
+          "desc": "Start time in minutes from midnight. v1.x: little-endian. v3.004+: BIG-ENDIAN (hi*256+lo). E.g., [2,33] = 545 = 9:05 AM",
           "dataType": "int16"
         },
         {
           "start": 5,
           "length": 2,
           "name": "End Time",
-          "desc": "End time in minutes from midnight (little endian). E.g., 1020 = 5:00 PM",
+          "desc": "End time in minutes from midnight. v1.x: little-endian. v3.004+: BIG-ENDIAN (hi*256+lo). E.g., 1020 = 5:00 PM",
           "dataType": "int16"
         },
         {
@@ -1456,7 +1456,7 @@
     "15_0": {
       "shortName": "Set[circuit state]",
       "name": "Set Circuit/Feature States",
-      "desc": "Sets the on/off state of circuits and features. Used internally by createCircuitStateMessage.",
+      "desc": "Sets the on/off state of circuits and features. Used internally by createCircuitStateMessage. v3.004+ WARNING: For circuit/feature control, prefer Action 184 (indexed) which does not suffer from state reversion. Action 168 case 15 still works for v3 but the OCP may briefly accept then revert. v3.004+ offsets: circuits=bytes 3-7, features=bytes 9-12, groups=bytes 13-14, schedules=bytes 15+ (shifted by +1 from v1.x offsets of 2-6, 8-11, 12-13, 14+).",
       "payload": [
         {
           "start": 0,
