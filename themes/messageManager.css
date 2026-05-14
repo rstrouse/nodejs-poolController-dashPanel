@@ -1601,12 +1601,15 @@ tr.message-row.flash-highlight {
 /* MessageManager header uses Settings-style tabBar() (picTabs/picTab). */
 .mmgrTabHeader {
   flex-shrink: 0;
-  /* Keep tab header below popups/modals (which use z-index 100+) */
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
+  background: #ffffff;
+  border: solid 1px gray;
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(27, 27, 27, 0.4);
 }
 
 /* Put tabs + actions on one row, like the main header/settings. */
@@ -1614,11 +1617,10 @@ tr.message-row.flash-highlight {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  background: #ffffff;
-  /* Match control-panel border + shadow so it visually aligns with panels above/below */
-  border: solid 1px gray;
-  border-radius: 5px;
-  box-shadow: 5px 5px 5px rgba(27, 27, 27, 0.4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .picMessageManager div.mmgrTabBar > div.picTabContents {
@@ -1649,7 +1651,12 @@ tr.message-row.flash-highlight {
 .picMessageManager .view-bar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .picMessageManager .view-bar-status {
@@ -1664,12 +1671,13 @@ tr.message-row.flash-highlight {
 .picMessageManager .view-bar-icon-btn {
   background: transparent;
   border: none;
-  color: inherit;
+  color: #333;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
+  transition: color 0.2s;
 }
 
 .picMessageManager .view-bar-icon-btn:hover {
@@ -1679,6 +1687,18 @@ tr.message-row.flash-highlight {
 
 .picMessageManager .view-bar-icon-btn i {
   font-size: 1rem;
+}
+
+.picMessageManager .view-bar-filter.filter-active {
+  background: #ff8c00;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.picMessageManager .view-bar-filter.filter-active:hover {
+  background: #ffa033;
+  color: #fff;
+  text-shadow: none;
 }
 .picMessageManager .view-bar-icon-btn:focus-visible,
 .picMessageManager .upload-btn.view-bar-upload:focus-visible,
@@ -1693,19 +1713,17 @@ tr.message-row.flash-highlight {
 /* Choose Files button: match unselected tab styling and invert on hover. */
 .picMessageManager .upload-btn.view-bar-upload {
   background: transparent;
-  border: solid 1px transparent;
-  border-radius: 5px;
-  padding: 6px 10px;
+  border: none;
+  padding: 4px 6px;
   cursor: pointer;
-  color: var(--cupertino-secondary-label, slategray);
+  color: #333;
   font-weight: 500;
-  text-shadow: 1px 1px 2px gainsboro;
+  text-shadow: none;
+  transition: color 0.2s;
 }
 
 .picMessageManager .upload-btn.view-bar-upload:hover {
-  background: var(--cupertino-label, #64748b);
-  border-color: var(--cupertino-label, #64748b);
-  color: #ffffff;
+  color: orange;
   text-shadow: none;
 }
 .picMessageManager .mmgr-live-region {

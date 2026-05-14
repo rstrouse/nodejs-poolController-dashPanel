@@ -13,6 +13,7 @@
             el[0].receivingMessages = function (val) { return self.receivingMessages(val); };
             el[0].cancelBulkMessages = function () { };
             el[0].clear = function () { self.clear(); };
+            el[0].clearMessages = function () { self.clearMessages(); };
             el[0].clearOutbound = function () { self.clearOutbound(); };
             el[0].pinSelection = function (val) {
                 if (typeof val !== 'undefined') {
@@ -690,6 +691,9 @@
                 //else obj.hidden = self._calcMessageFilter(obj);
             });
             // Emit event so Entity Flow can respond to filter changes
+            var $fb = $('.view-bar-filter');
+            if (o.filters.length > 0 || o.portFilters.length > 0) $fb.addClass('filter-active');
+            else $fb.removeClass('filter-active');
             var evt = $.Event('messageFiltersChanged');
             evt.filters = o.filters.slice(); // copy
             evt.portFilters = o.portFilters.slice();
@@ -1403,6 +1407,14 @@
             o.messageKeys = {};
             o.rowIds = [];
             o.ports = [];
+            self._toggleEmptyPlaceholder(true);
+        },
+        clearMessages: function () {
+            var self = this, o = self.options, el = self.element;
+            el.find('div.picVirtualList')[0].clear();
+            o.messages = {};
+            o.messageKeys = {};
+            o.rowIds = [];
             self._toggleEmptyPlaceholder(true);
         },
         clearOutbound: function () {

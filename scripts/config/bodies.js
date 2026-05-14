@@ -59,7 +59,8 @@
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Show in Dashboard', binding: binding + 'showInDashboard' });
             line = $('<div></div>').appendTo(pnl);
             var controller = $('body').attr('data-controllertype');
-            if (controller !== 'intellicenter') {
+            var isIcV3 = controller === 'intellicenter' && parseFloat($('body').attr('data-firmware') || '0') >= 3.008;
+            if (controller !== 'intellicenter' || isIcV3) {
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Spa Manual Heat', binding: binding + 'manualHeat' }).hide();
             }
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);

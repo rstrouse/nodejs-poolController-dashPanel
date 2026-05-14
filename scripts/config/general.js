@@ -198,11 +198,11 @@
             var acc = $('<div></div>').appendTo(el).accordian({ columns: [{ text: 'Delays', glyph: 'fas fa-stopwatch', style: { width: '15rem' } }] });
             var pnl = acc.find('div.picAccordian-contents');
             var line;
-            if (controller !== 'intellicenter') {
+            var isIcV3 = controller === 'intellicenter' && parseFloat($('body').attr('data-firmware') || '0') >= 3.008;
+            if (controller !== 'intellicenter' || isIcV3) {
                 line = $('<div></div>').appendTo(pnl);
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Operation Priority', binding: 'options.manualPriority' });
             }
-            var isIcV3 = controller === 'intellicenter' && parseFloat($('body').attr('data-firmware') || '0') >= 3.008;
             line = $('<div></div>').appendTo(pnl);
             if (isIcV3) {
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Pump Off During Valve Action', binding: 'options.valveDelay', labelAttrs: { style: { width: '14rem', display: 'inline-block' } } });

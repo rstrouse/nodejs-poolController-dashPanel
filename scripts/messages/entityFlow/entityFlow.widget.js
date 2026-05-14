@@ -44,6 +44,7 @@
             el[0].getSelectedEntity = function() { return self.getSelectedEntity(); };
             el[0].importFiles = function(files) { return self.importFiles(files); };
             el[0].clearAll = function() { return self.clearAll(); };
+            el[0].clearMessages = function() { return self.clearMessages(); };
             el[0].scrollToPacket = function(index, msg) { return self.scrollToPacket(index, msg); };
             el[0].scrollToPacketById = function(msgId) { return self.scrollToPacketById(msgId); };
             
@@ -302,6 +303,19 @@
         clearAll: function() {
             var self = this;
             self._clearAll();
+            self.refresh();
+        },
+        clearMessages: function() {
+            var self = this, o = self.options;
+            o.messages = [];
+            o.rangeStart = 0;
+            o.rangeEnd = 1;
+            self._updateHandlePositions();
+            self._setLoadStatus('');
+            self._updateFileStatusPanel();
+            var msgList = $('div.picMessages:first')[0];
+            if (msgList && msgList.clearMessages) msgList.clearMessages();
+            else if (msgList && msgList.clear) msgList.clear();
             self.refresh();
         },
         _clearAll: function() {
