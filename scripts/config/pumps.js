@@ -248,13 +248,9 @@
             pnl.empty();
             var line = $('<div></div>').appendTo(pnl);
             var lblStyle = { width: '8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
-            if (typeof type.maxPrimingTime !== 'undefined') {
+            if (typeof type.maxPrimingTime !== 'undefined' && typeof type.minSpeed !== 'undefined' && typeof type.maxSpeed !== 'undefined') {
                 $('<div></div>').appendTo(line).valueSpinner({ canEdit:true, labelText: 'Priming Time', binding: binding + 'primingTime', min: 0, max: type.maxPrimingTime, step: 1, units: 'min', style: { width: '17rem' }, inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle } });
-                // Flow-only pumps (e.g. IntelliFlo VF) have priming time but no priming speed setting.
-                if (typeof type.minSpeed !== 'undefined' && typeof type.maxSpeed !== 'undefined')
-                    $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: speedStepSize, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
-                else
-                    $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingSpeed').appendTo(line);
+                $('<div></div>').appendTo(line).valueSpinner({ labelText: 'Priming Speed', binding: binding + 'primingSpeed', min: type.minSpeed, max: type.maxSpeed, step: speedStepSize, units: 'rpm', inputAttrs: { maxlength: 5 }, labelAttrs: { style: lblStyle }, canEdit: true });
             }
             else {
                 $('<input type="hidden" data-datatype="int"></input>').attr('data-bind', 'primingTime').appendTo(line);
@@ -399,10 +395,12 @@
                 items: o.circuits, inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { marginLeft: '.25rem', display: 'none' } }
             });
             if (typeof type.maxFlow !== 'undefined' || typeof type.maxSpeed !== 'undefined') {
-                var val = typeof circ[unitsType.toLocaleLowerCase()] !== 'undefined' ? circ[unitsType.toLowerCase()] : type['max' + unitsType];
+                var minVal = units.name === 'rpm' ? (pump.minSpeed || type.minSpeed) : (pump.minFlow || type.minFlow);
+                var maxVal = units.name === 'rpm' ? (pump.maxSpeed || type.maxSpeed) : (pump.maxFlow || type.maxFlow);
+                var val = typeof circ[unitsType.toLocaleLowerCase()] !== 'undefined' ? circ[unitsType.toLowerCase()] : maxVal;
                 $('<div></div>').appendTo(line).valueSpinner({
                     labelText: unitsType,
-                    binding: binding + unitsType.toLowerCase(), min: type['min' + unitsType], max: type['max' + unitsType], step: step,
+                    binding: binding + unitsType.toLowerCase(), min: minVal, max: maxVal, step: step,
                     units: hasMultiUnits ? '' : units.name,
                     value: val,
                     style: { marginLeft: '.25rem' },

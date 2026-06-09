@@ -282,6 +282,16 @@
                     var divPopover = $('<div></div>');
                     divPopover.appendTo(el.parent());
                     divPopover.on('initPopover', function (evt) {
+                        var modeCanCool = function (modeVal) {
+                            for (var i = 0; i < data.length; i++) {
+                                if (data[i].val === modeVal) return makeBool(data[i].hasCoolSetpoint);
+                            }
+                            return false;
+                        };
+                        var syncCoolVis = function (modeVal) {
+                            var canCool = modeCanCool(modeVal);
+                            divPopover.find('div[data-bind="coolSetpoint"]').toggle(canCool);
+                        };
                         if (settings.hasCooling) {
                             $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Heat Point', val: settings.setPoint, min: units === "F" ? 40 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { width: '5rem' } }, style: { display: 'block' } })
                                 .on('change', function (e) {
@@ -296,8 +306,10 @@
                             $('<div></div>').appendTo(evt.contents()).valueSpinner({ canEdit: true, labelText: 'Set Point', val: settings.setPoint, min: units === "F" ? 40 : 5, max: units === "F" ? 104 : 41, step: 1, binding: 'heatSetpoint', units: '<span>&deg;</span><span class="picTempUnits">' + units + '</span>', labelAttrs: { style: { marginRight: '.25rem' } } })
                                 .on('change', function (e) { self.putSetpoint(e.value); });
                         $('<div></div>').appendTo(evt.contents()).selector({ val: parseInt(body.attr('data-heatmode'), 10), test: 'text', opts: data, bind: 'heatMode' });
+                        if (settings.hasCooling) syncCoolVis(settings.heatMode);
                         evt.contents().find('div.picSelector').on('selchange', function (e) {
                             self.putHeatMode(parseInt(e.newVal, 10));
+                            if (settings.hasCooling) syncCoolVis(parseInt(e.newVal, 10));
                         });
                     });
                     divPopover.popover({ title: body.attr('data-body') + ' Heat Settings', popoverStyle: 'modal', placement: { target: body } });
@@ -341,12 +353,17 @@
                     el.find('div.picBodySetpoints').show();
                     if (data.heaterOptions.hasCoolSetpoint) {
                         el.find('label.picSetpointText.heatSetpoint').text('Heat Point');
-                        if (!pnlType.toLowerCase().includes('touch')){
-                            el.find('div.coolSetpoint').show();
+                        var modeCanCool = data.heatMode && makeBool(data.heatMode.hasCoolSetpoint);
+                        if (modeCanCool) {
+                            if (!pnlType.toLowerCase().includes('touch')){
+                                el.find('div.coolSetpoint').show();
+                            }
+                            else {
+                                $('div.picPool div.coolSetpoint').show();
+                            }
                         }
                         else {
-                            // Touch doesn't have cooling setpoints on the spa; only pool
-                            $('div.picPool div.coolSetpoint').show();
+                            el.find('div.coolSetpoint').hide();
                         }
                         el.attr('data-hascooling', true);
                     }
@@ -367,6 +384,9 @@
                     case 'hybheat':
                     case 'mtheat':
                     case 'hpheat':
+                    case 'utheat':
+                    case 'meheat':
+                    case 'eti250heat':
                     case 'heater':
                     case 'dual':
                         el.find('span.picSolarOn').hide();
@@ -375,6 +395,7 @@
                         el.find('span.picCooldown').hide();
                         break;
                     case 'hpcool':
+                    case 'utcool':
                     case 'cooling':
                         el.find('span.picSolarOn').hide();
                         el.find('span.picHeaterOn').hide();

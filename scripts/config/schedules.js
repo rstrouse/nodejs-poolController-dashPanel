@@ -177,10 +177,11 @@
                 var spin = p.find('div.picValueSpinner[data-bind$=Time]:first');
                 var mult = p.find('div.picPickList[data-bind$=Mult]:first');
                 var off = p.find('div.timeoffset:first');
+                let ct = $('body').attr('data-controllertype');
                 if (evt.newItem.name !== 'manual') {
                     spin.hide();
-                    mult.show();
-                    off.show();
+                    if (ct === 'nixie') { mult.show(); off.show(); }
+                    else { mult.hide(); off.hide(); }
                     spin[0].required(false);
                 }
                 else {
@@ -379,6 +380,10 @@
             dataBinder.bind(el, obj);
             if (obj.startDate) el.find('input[data-bind=startDate]').val(String(obj.startDate).substring(0, 10));
             if (o.scheduleTimeTypes.length <= 1) el.find('div.picPickList[data-bind$=TimeType]').hide()[0].required(false);
+            if ($('body').attr('data-controllertype') !== 'nixie') {
+                el.find('div.picPickList[data-bind$=Mult]').hide();
+                el.find('div.timeoffset').hide();
+            }
         }
     });
     $.widget('pic.pnlScheduleDays', {

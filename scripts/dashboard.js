@@ -131,7 +131,11 @@
                 $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     self._setControllerType(data.controllerType);
-                    if (typeof data.equipment !== 'undefined') $('body').attr('data-firmware', data.equipment.softwareVersion || '');
+                    if (typeof data.equipment !== 'undefined') {
+                        var fwRaw = data.equipment.softwareVersion || '';
+                        var fwMatch = fwRaw.match(/(\d+\.\d+)/);
+                        $('body').attr('data-firmware', fwMatch ? fwMatch[1] : fwRaw);
+                    }
                     if (typeof data.temps !== 'undefined' && typeof data.temps.units !== 'undefined') {
                         var resetUnits = typeof data.temps.units === 'object' ? data.temps.units.val : data.temps.units;
                         $('body').attr('data-units', resetUnits);
@@ -187,7 +191,9 @@
                 $('body').attr('data-apiproxy', o.useProxy);
                 $.getApiService('/state/all', null, function (data, status, xhr) {
                     if (typeof data.equipment === 'undefined' || typeof data.equipment.model === 'undefined') { self._clearPanels(); return; }
-                    $('body').attr('data-firmware', data.equipment.softwareVersion || '');
+                    var fwRaw2 = (data.equipment && data.equipment.softwareVersion) || '';
+                    var fwMatch2 = fwRaw2.match(/(\d+\.\d+)/);
+                    $('body').attr('data-firmware', fwMatch2 ? fwMatch2[1] : fwRaw2);
                     if (typeof data.temps !== 'undefined' && typeof data.temps.units !== 'undefined') {
                         var initUnits = typeof data.temps.units === 'object' ? data.temps.units.val : data.temps.units;
                         $('body').attr('data-units', initUnits);
@@ -514,6 +520,18 @@
                 });
                 if (screenlogic.length === 0){
                     self.receiveScreenlogicStats(false);
+                }
+            });
+            o.socket.on('icwsStats', function (data) {
+                // IntelliCenter v3 local WebSocket stats (mutually exclusive with rs485Stats / screenlogicStats).
+                var icws = el.find(`div.pnl-ocpwsStats`);
+                icws.each(function () { this.dataBind({ ocpws: data }); });
+                // Surface basic status on the comms config page panel as well.
+                var st = el.find('span.pnl-ocpws-status');
+                if (st.length) {
+                    var counter = (data && data.counter) || {};
+                    st.text((data && data.status) + ' / in:' + (counter.framesIn || 0) + ' out:' + (counter.framesOut || 0)
+                        + (data && data.lastError ? ' (err: ' + data.lastError + ')' : ''));
                 }
             });
             o.socket.on('chemController', function (data) {

@@ -481,7 +481,7 @@
             var binding = '';
             $('<span></span>').addClass('mockCheck').checkbox({ labelText: 'Mock Port', binding: binding + 'mock' }).css({ display: 'none' }).appendTo(line);
             $('<div></div>').appendTo(line).checkbox({ labelText: 'Enabled', binding: binding + 'enabled' });
-            let portTypes = [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'netConnect', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'screenlogic', name: 'ScreenLogic', desc: 'ScreenLogic TCP Connection' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }]
+            let portTypes = [{ val: 'local', name: 'Local', desc: 'Local RS485 comm port' }, { val: 'netConnect', name: 'Network', desc: 'Network RS485 Port (SOCAT ...etc)' }, { val: 'screenlogic', name: 'ScreenLogic', desc: 'ScreenLogic TCP Connection' }, { val: 'ocpws', name: 'IntelliCenter Network', desc: 'Local WebSocket to IntelliCenter v3 OCP (port 6680)' }, { val: 'mock', name: 'Mock Port', desc: 'Fake port and mock responses' }]
             $('<div></div>').appendTo(line).pickList({
                 required: true,
                 bindColumn: 0, displayColumn: 1, labelText: 'Port Type', binding: binding + 'type',
@@ -499,6 +499,7 @@
                             pnl.find('div.pnl-rs485-mock').hide();
                             pnl.find('div.pnl-rs485-inactivity').show();
                             pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-ocpws').hide();
                             pnl.find('div.pnl-rs485Stats').show();
                             break;
                         case 'mock':
@@ -507,6 +508,7 @@
                             pnl.find('div.pnl-rs485-mock').show();
                             pnl.find('div.pnl-rs485-inactivity').hide();
                             pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-ocpws').hide();
                             pnl.find('div.pnl-rs485Stats').show();
                             break;
                         case 'screenlogic':
@@ -515,6 +517,16 @@
                             pnl.find('div.pnl-rs485-mock').hide();
                             pnl.find('div.pnl-rs485-inactivity').hide();
                             pnl.find('div.pnl-screenlogic').show();
+                            pnl.find('div.pnl-ocpws').hide();
+                            pnl.find('div.pnl-rs485Stats').hide();
+                            break;
+                        case 'ocpws':
+                            pnl.find('div.pnl-rs485-network').hide();
+                            pnl.find('div.pnl-rs485-local').hide();
+                            pnl.find('div.pnl-rs485-mock').hide();
+                            pnl.find('div.pnl-rs485-inactivity').hide();
+                            pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-ocpws').show();
                             pnl.find('div.pnl-rs485Stats').hide();
                             break;
                         case 'local':
@@ -524,6 +536,7 @@
                             pnl.find('div.pnl-rs485-mock').hide();
                             pnl.find('div.pnl-rs485-inactivity').show();
                             pnl.find('div.pnl-screenlogic').hide();
+                            pnl.find('div.pnl-ocpws').hide();
                             pnl.find('div.pnl-rs485Stats').show();
                             break;
                     }
@@ -534,6 +547,7 @@
                     pnl.find('div.pnl-rs485-mock').hide();
                     pnl.find('div.pnl-rs485-inactivity').hide();
                     pnl.find('div.pnl-screenlogic').hide();
+                    pnl.find('div.pnl-ocpws').hide();
                     pnl.find('div.pnl-rs485Stats').hide();
                 }
             });
@@ -599,6 +613,70 @@
             line = $('<div></div>').appendTo(divSL);
 
 
+            // IntelliCenter v3 local WebSocket panel (mutually exclusive with RS-485 / ScreenLogic).
+            var divOCPWS = $('<div></div>').addClass('pnl-ocpws').appendTo(divSettings).hide();
+            line = $('<div></div>').appendTo(divOCPWS);
+            $('<div></div>').appendTo(line).pickList({
+                canEdit: true,
+                bindColumn: 0, displayColumn: 0, labelText: 'Discovered',
+                binding: 'ocpws.alias',
+                columns: [
+                    { binding: 'alias', text: 'Alias', style: { whiteSpace: 'nowrap', minWidth: '10rem' } },
+                    { binding: 'host', text: 'Host', style: { whiteSpace: 'nowrap', minWidth: '12rem' } },
+                    { binding: 'port', text: 'Port', style: { whiteSpace: 'nowrap', minWidth: '5rem' } }
+                ],
+                items: [], inputAttrs: { style: { width: '12rem' } }, labelAttrs: { style: { marginRight: '.25rem', textAlign: 'right', padding: '0px' } }
+            }).addClass('pickOcpwsAlias').on('selchanged', function (evt) {
+                if (typeof evt.newItem !== 'undefined') {
+                    var hostInp = el.find('div[data-bind$=ocpws\\.host]:first');
+                    var portInp = el.find('div[data-bind$=ocpws\\.port]:first');
+                    if (hostInp[0] && typeof hostInp[0].val === 'function') hostInp[0].val(evt.newItem.host || '');
+                    if (portInp[0] && typeof portInp[0].val === 'function') portInp[0].val(evt.newItem.port || 6680);
+                }
+            });
+            line = $('<div></div>').appendTo(divOCPWS).css({ display: 'flex', alignItems: 'center' });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Host', binding: 'ocpws.host', inputAttrs: { maxlength: 64, style: { width: '11rem' } }, labelAttrs: { style: { width: '5rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: ':', binding: 'ocpws.port', dataType: 'number', fmtMask: '#', inputAttrs: { maxlength: 6, style: { width: '4rem' } }, labelAttrs: { style: { marginLeft: '.25rem', width: 'auto' } } });
+            line = $('<div></div>').appendTo(divOCPWS);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Reconnect', fmtMask: "#,##0", binding: 'ocpws.reconnectMs', min: 1000, max: 60000, step: 500, units: 'ms', inputAttrs: { maxlength: 6 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(divOCPWS);
+            $('<div></div>').appendTo(line).valueSpinner({ canEdit: true, labelText: 'Msg Timeout', fmtMask: "#,##0", binding: 'ocpws.messageTimeoutMs', min: 1000, max: 60000, step: 500, units: 'ms', inputAttrs: { maxlength: 6 }, labelAttrs: { style: { width: '8.3rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(divOCPWS).css({ marginTop: '.5rem' });
+            var btnDisc = $('<div></div>').appendTo(line).actionButton({ text: 'Discover', icon: '<i class="fas fa-search"></i>' });
+            var btnTest = $('<div></div>').appendTo(line).actionButton({ text: 'Test', icon: '<i class="fas fa-plug"></i>' }).css({ marginLeft: '.5rem' });
+            var lblOcpwsStatus = $('<span></span>').appendTo(line).addClass('pnl-ocpws-status').css({ marginLeft: '1rem', fontSize: '.85rem', fontStyle: 'italic' });
+            btnDisc.on('click', function () {
+                lblOcpwsStatus.text('Searching mDNS for IntelliCenter OCP...');
+                $.getApiService('/config/options/ocpws/search', null, 'Discovering IntelliCenter on the network...', function (units) {
+                    var pick = el.find('.pickOcpwsAlias');
+                    var list = units || [];
+                    if (pick[0] && typeof pick[0].items === 'function') pick[0].items(list);
+                    lblOcpwsStatus.text(list.length ? (list.length + ' found') : 'No IntelliCenter OCP advertised on the LAN');
+                    // If exactly one result, auto-select and copy host/port into the form.
+                    if (list.length === 1) {
+                        var item = list[0];
+                        if (pick[0] && typeof pick[0].val === 'function') pick[0].val(item.alias);
+                        var hostInp = el.find('div[data-bind$=ocpws\\.host]:first');
+                        var portInp = el.find('div[data-bind$=ocpws\\.port]:first');
+                        if (hostInp[0] && typeof hostInp[0].val === 'function') hostInp[0].val(item.host || '');
+                        if (portInp[0] && typeof portInp[0].val === 'function') portInp[0].val(item.port || 6680);
+                    }
+                });
+            });
+            btnTest.on('click', function () {
+                var p = dataBinder.fromElement(divSettings);
+                var host = (p.ocpws && p.ocpws.host) || '';
+                var port = (p.ocpws && p.ocpws.port) || 6680;
+                if (!host) { lblOcpwsStatus.text('Enter a host or run Discover first.'); return; }
+                lblOcpwsStatus.text('Testing ' + host + ':' + port + ' ...');
+                var url = '/config/options/ocpws/test?host=' + encodeURIComponent(host) + '&port=' + encodeURIComponent(port);
+                $.getApiService(url, null, 'Testing IntelliCenter WS...', function (r) {
+                    if (r && r.ok) lblOcpwsStatus.text('Reachable. Firmware: ' + (r.ver || 'unknown'));
+                    else lblOcpwsStatus.text('Failed: ' + ((r && r.error) || 'no response'));
+                });
+            });
+
+
             // Create the statistics panel.
             $('<div></div>').appendTo(divStatus).css({ fontSize: '.8rem' }).configRS485PortStats();
             var btnPnl = $('<div class="picBtnPanel btn-panel"></div>').appendTo(pnl);
@@ -631,11 +709,30 @@
                         password: p.screenlogic.password,
                     }
                 }
+                if (p.type === 'ocpws') {
+                    obj.ocpws = {
+                        host: (p.ocpws && p.ocpws.host) || '',
+                        port: (p.ocpws && p.ocpws.port) || 6680,
+                        alias: (p.ocpws && p.ocpws.alias) || '',
+                        reconnectMs: (p.ocpws && p.ocpws.reconnectMs) || 5000,
+                        messageTimeoutMs: (p.ocpws && p.ocpws.messageTimeoutMs) || 10000,
+                    }
+                }
                 var bValid = true;
                 if (p.enabled) {
-                    if (obj.rs485Port.trim() === '') {
+                    if (p.type !== 'ocpws' && p.type !== 'screenlogic' && obj.rs485Port.trim() === '') {
                         $('<div></div>').appendTo(el.find('div[data-bind$=rs485Port]:first')).fieldTip({ message: 'You must supply the port name' });
                         bValid = false;
+                    }
+                    if (p.type === 'ocpws') {
+                        if (!obj.ocpws || !obj.ocpws.host || obj.ocpws.host.trim() === '') {
+                            $('<div></div>').appendTo(el.find('div[data-bind$=ocpws.host]:first')).fieldTip({ message: 'IntelliCenter WS host is required' });
+                            bValid = false;
+                        }
+                        if (!obj.ocpws || isNaN(obj.ocpws.port) || obj.ocpws.port < 1 || obj.ocpws.port > 65535) {
+                            $('<div></div>').appendTo(el.find('div[data-bind$=ocpws.port]:first')).fieldTip({ message: 'Port must be between 1 and 65,535' });
+                            bValid = false;
+                        }
                     }
                     if (obj.netConnect) {
                         if (obj.netHost.trim() === '') {
@@ -744,7 +841,10 @@
             }, obj);
             var acc = el.find('div.picAccordian:first');
             var cols = acc[0].columns();
-            if (obj.netConnect === true) {
+            if (obj.type === 'ocpws') {
+                cols[0].elGlyph().attr('class', 'fas fa-wifi')
+            }
+            else if (obj.netConnect === true) {
                 cols[0].elGlyph().attr('class', 'fas fa-ethernet')
             }
             else if (obj.mock === true) {
@@ -754,7 +854,12 @@
                 cols[0].elGlyph().attr('class', 'fas fa-route');
             console.log(obj);
             cols[0].elText().text(port.portId !== 0 ? 'Aux Port' : 'Primary Port');
-            cols[1].elText().text(obj.type === 'screenlogic' ? `ScreenLogic ${obj.screenlogic.systemName}` : port.netConnect ? `${port.netHost}:${port.netPort}` : port.mock ? `Mock Port` : port.rs485Port);
+            cols[1].elText().text(
+                obj.type === 'ocpws' ? `IntelliCenter ${(obj.ocpws && obj.ocpws.alias) ? obj.ocpws.alias + ' ' : ''}${(obj.ocpws && obj.ocpws.host) || ''}${obj.ocpws && obj.ocpws.port ? ':' + obj.ocpws.port : ''}`
+                : obj.type === 'screenlogic' ? `ScreenLogic ${obj.screenlogic.systemName}`
+                : port.netConnect ? `${port.netHost}:${port.netPort}`
+                : port.mock ? `Mock Port`
+                : port.rs485Port);
             if (port.portId === 0) {
                 el.find('div.btnDeleteRS485Port').hide();
                 let sl = el.find('div.pnl-screenlogic')
@@ -995,7 +1100,7 @@
             line = $('<div></div>').appendTo(grpSend);
             $('<div></div>').appendTo(line).staticField({ labelText: 'Failure Rate', dataType: 'number', fmtMask: '#,##0.##', units: '%', binding: 'sndFailureRate', inputAttrs: { style: { width: '5.7rem', textAlign: 'right', display: 'inline-block' } }, labelAttrs: { style: { width: '5.5rem' } } }).css({ lineHeight: 1 });
             var db = $('div.picDashboard').each(function () {
-                this.receiveScreenlogicStats(true);
+                this.receivePortStats(true);
             });
         },
         dataBind: function (obj) {

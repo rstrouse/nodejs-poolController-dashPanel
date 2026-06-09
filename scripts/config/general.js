@@ -202,6 +202,7 @@
             if (controller !== 'intellicenter' || isIcV3) {
                 line = $('<div></div>').appendTo(pnl);
                 $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Operation Priority', binding: 'options.manualPriority' });
+                $('<div></div>').appendTo(line).checkbox({ labelText: 'Manual Heat', binding: 'options.manualHeat' });
             }
             line = $('<div></div>').appendTo(pnl);
             if (isIcV3) {
