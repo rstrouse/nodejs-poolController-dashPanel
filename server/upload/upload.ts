@@ -1,6 +1,6 @@
-﻿import * as express from 'express';
-import * as extend from 'extend';
-import * as multer from 'multer';
+﻿import express from 'express';
+import extend from 'extend';
+import multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 

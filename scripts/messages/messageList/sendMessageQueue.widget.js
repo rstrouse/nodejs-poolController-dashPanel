@@ -161,7 +161,7 @@
                 el.find('div.picSaveQueue').hide();
                 //$('script#scriptTestModule').remove();
                 if (typeof outModule !== 'undefined') delete typeof outModule;
-                $.getScript('scripts/messages/testModules/' + queue._fileName, // + '?ver=' + new Date().getTime(),
+                $.ajax({ url: 'scripts/messages/testModules/' + queue._fileName, dataType: 'script', cache: true }).done(
                     function (data, status, xhr) {
                     console.log({ outModule: outModule, data: data, status: status, xhr: xhr });
                     el.find('#btnRunTests').show();

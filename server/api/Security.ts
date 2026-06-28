@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import { securityService } from "../security/SecurityService";
 
 export class SecurityRoute {

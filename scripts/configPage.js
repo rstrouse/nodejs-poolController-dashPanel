@@ -255,7 +255,7 @@
                 case 'tabLightGroups':
                 case 'tabAuxCircuits':
                 case 'tabCustomNames':
-                    //tabs.selectedTabId(tabId);
+                    tabs[0].selectTabById(tabId);
                     break;
                 default:
                     tabs[0].selectTabById('tabAuxCircuits');
@@ -272,6 +272,7 @@
                 case 'tabBodies':
                 case 'tabFilters':
                 case 'tabCovers':
+                    tabs.selectTabById(tabId);
                     break;
                 default:
                     tabs.selectTabById('tabBodies');
@@ -286,6 +287,7 @@
             switch (tabId) {
                 case 'tabRegularSchedules':
                 case 'tabVacationSchedules':
+                    tabs.selectTabById(tabId);
                     break;
                 default:
                     tabs.selectTabById('tabRegularSchedules');
@@ -299,10 +301,10 @@
             var tabId = tabs.selectedTabId();
             switch (tabId) {
                 case 'tabControllerType':
-                    case 'tabInterfaces':
-                    case 'tabRS485':
-                    case 'tabScreenlogic':
-                    //tabs.selectedTabId(tabId);
+                case 'tabInterfaces':
+                case 'tabRS485':
+                case 'tabScreenlogic':
+                    tabs.selectTabById(tabId);
                     break;
                 default:
                     tabs.selectTabById('tabInterfaces');
@@ -322,7 +324,7 @@
                 case 'tabChemistry':
                 case 'tabHeaters':
                 case 'tabRemotes':
-                    //tabs.selectedTabId(tabId);
+                    tabs.selectTabById(tabId);
                     break;
                 default:
                     tabs.selectTabById('tabValves');

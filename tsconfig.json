@@ -2,12 +2,14 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "module": "commonjs",
+    "moduleResolution": "node",
     "noEmitOnError": true,
     "removeComments": false,
     "sourceMap": true,
-    "target": "ESNext",
+    "target": "ES2022",
     "preserveConstEnums": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules"

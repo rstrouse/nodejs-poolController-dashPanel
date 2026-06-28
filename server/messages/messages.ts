@@ -1,6 +1,6 @@
 ﻿import * as path from 'path';
 import * as fs from 'fs';
-import * as extend from 'extend';
+import extend from 'extend';
 import { logger } from '../logger/Logger';
 
 import { protocol } from 'socket.io-client';

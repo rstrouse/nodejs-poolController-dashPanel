@@ -1,7 +1,7 @@
-﻿import * as express from "express";
+﻿import express from "express";
 import * as http from "http";
-import * as url from "url";
-import * as extend from 'extend';
+
+import extend from 'extend';
 import { ApiError } from '../Errors';
 import { config } from "../config/Config";
 import { logger } from "../logger/Logger";
@@ -13,7 +13,7 @@ import { webApp } from "../Server";
 
 export class RelayRoute {
     public static initRoutes(app: express.Application) {
-        app.all('/njsPC/*', async (req, res, next) => {
+        app.all('/njsPC/*path', async (req, res, next) => {
             try {
                 await njsPCRelay.relayRequest(req, res, next);
             }
@@ -126,7 +126,7 @@ class ServiceRelay {
         try {
             let proxyUrl = `${this.serviceUrl}${req.url.replace('/njsPC', '')}`;
             logger.info(`Relaying request: ${proxyUrl}`);
-            let uri = url.parse(proxyUrl);
+            let uri = new URL(proxyUrl);
             let headers = {};
             if (typeof req.headers.connection !== 'undefined') headers['connection'] = req.headers.connection;
             if (typeof req.headers.accept !== 'undefined') headers['accept'] = req.headers.accept;
@@ -134,7 +134,7 @@ class ServiceRelay {
             if (typeof req.headers['content-type'] !== 'undefined') headers['content-type'] = req.headers['content-type'];
             if (typeof req.headers['content-length'] !== 'undefined') headers['content-length'] = req.headers['content-length'];
             let opts = {
-                protocol: uri.protocol, hostname: uri.hostname, path: uri.path, port: uri.port,
+                protocol: uri.protocol, hostname: uri.hostname, path: uri.pathname + uri.search, port: uri.port,
                 headers: headers,
                 method: req.method,
                 agent: false

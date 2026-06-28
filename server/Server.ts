@@ -1,6 +1,6 @@
 ﻿import * as os from 'os';
 import * as path from "path";
-import * as express from "express";
+import express from "express";
 import * as fs from "fs";
 import { URL } from "url";
 import { Client } from "node-ssdp";
@@ -9,7 +9,7 @@ import { logger } from "../server/logger/Logger";
 import * as http2 from "http2";
 import * as http from "http";
 import * as https from "https";
-import * as extend from 'extend';
+import extend from 'extend';
 import { ApiError } from './Errors';
 import { UploadRoute, BackgroundUpload } from "./upload/upload";
 import { setTimeout } from "timers";
@@ -111,8 +111,8 @@ export class HttpServer extends ProtoServer {
             this.server = http.createServer(this.app);
             if (cfg.httpsRedirect) {
                 var cfgHttps = config.getSection('web.server.https');
-                this.app.get('*', (res: express.Response, req: express.Request) => {
-                    let host = res.get('host');
+                this.app.get('/{*path}', (req: express.Request, res: express.Response) => {
+                    let host = req.get('host');
                     host = typeof cfgHttps.port !== 'undefined' ? host.replace(/:\d+$/, ':' + cfgHttps.port) : host;
                     this._httpPort = cfgHttps.port;
                     return res.redirect('https://' + host + req.url);
@@ -153,8 +153,9 @@ export class HttpServer extends ProtoServer {
             });
             this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
             this.app.use('/jquery', express.static(path.join(process.cwd(), '/node_modules/jquery/'), { maxAge: '60d' }));
-            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
-            this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui/dist/themes/base/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui/dist/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/scripts/vendor/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
             // Do not aggressively cache app scripts; we ship updates by replacing files in-place.
             this.app.use('/scripts', (req, res, next) => {
@@ -170,7 +171,7 @@ export class HttpServer extends ProtoServer {
             MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);
             // This is last so that it is picked up when we have an error.
-            this.app.use((error, req, res, next) => {
+            this.app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
                 logger.error(error);
                 if (!res.headersSent) {
                     let httpCode = error.httpCode || 500;
@@ -322,8 +323,9 @@ export class HttpsServer extends HttpServer {
 	    let serlf = this;
 	    this.app.use('/socket.io-client', express.static(path.join(process.cwd(), '/node_modules/socket.io-client/dist/'), { maxAge: '60d' }));
             this.app.use('/jquery', express.static(path.join(process.cwd(), '/node_modules/jquery/'), { maxAge: '60d' }));
-            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-dist/'), { maxAge: '60d' }));
-            this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/node_modules/jquery-ui-touch-punch-c/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui/dist/themes/base/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui', express.static(path.join(process.cwd(), '/node_modules/jquery-ui/dist/'), { maxAge: '60d' }));
+            this.app.use('/jquery-ui-touch-punch', express.static(path.join(process.cwd(), '/scripts/vendor/'), { maxAge: '60d' }));
             this.app.use('/font-awesome', express.static(path.join(process.cwd(), '/node_modules/@fortawesome/fontawesome-free/'), { maxAge: '60d' }));
             // Do not aggressively cache app scripts; we ship updates by replacing files in-place.
             this.app.use('/scripts', (req, res, next) => {
@@ -338,7 +340,7 @@ export class HttpsServer extends HttpServer {
             ConfigRoute.initRoutes(this.app);
             MessagesRoute.initRoutes(this.app);
             UploadRoute.initRoutes(this.app);
-            this.app.use((error, req, res, next) => {
+            this.app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
                 logger.error(error);
                 if (!res.headersSent) {
                     let httpCode = error.httpCode || 500;

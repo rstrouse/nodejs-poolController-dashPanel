@@ -282,7 +282,7 @@ function _redactForLog(url, data) {
 // PUT and Delete for ReST calls.
 jQuery.each(["put", "delete"], function (i, method) {
     jQuery[method] = function (url, data, callback, type) {
-        if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
+        if (typeof data === 'function' || (Array.isArray(data) && typeof data[0] === 'function')) {
             type = type || callback;
             callback = data;
             data = undefined;
@@ -313,7 +313,7 @@ jQuery.each(["put", "delete"], function (i, method) {
 });
 jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
     jQuery[method + 'LocalService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
-        if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
+        if (typeof data === 'function' || (Array.isArray(data) && typeof data[0] === 'function')) {
             method = method || successCallback;
             completeCallback = errorCallback;
             errorCallback = successCallback;
@@ -390,7 +390,7 @@ jQuery.mergeCallbacks = function (target, source) {
 };
 jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
     jQuery[method + 'ApiService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
-        if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
+        if (typeof data === 'function' || (Array.isArray(data) && typeof data[0] === 'function')) {
             method = method || successCallback;
             completeCallback = errorCallback;
             errorCallback = successCallback;
@@ -455,7 +455,7 @@ jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
 });
 jQuery.each(['get', 'put', 'delete', 'post'], function (i, method) {
     jQuery[method + 'FileApiService'] = function (url, data, message, successCallback, errorCallback, completeCallback) {
-        if (jQuery.isFunction(data) || (jQuery.isArray(data) && jQuery.isFunction(data[0]))) {
+        if (typeof data === 'function' || (Array.isArray(data) && typeof data[0] === 'function')) {
             method = method || successCallback;
             completeCallback = errorCallback;
             errorCallback = successCallback;
@@ -1371,6 +1371,7 @@ $.ui.position.fieldTip = {
             if (typeof val === 'undefined') return o.val;
             if (val > o.max) val = o.max;
             else if (val < o.min) val = o.min;
+            if (o.step > 1) val = Math.round((val - o.min) / o.step) * o.step + o.min;
             o.val = Math.min(Math.max(o.min, val), o.max);
             let fld = el.find('div.picSpinner-value');
             // Only set the value back if we are not editing it.

@@ -40,13 +40,13 @@
             var pnl = acc.find('div.picAccordian-contents');
             var line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'Pool Alias', binding: 'alias', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width: '5.7rem' } } });
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Owner', binding: 'owner.name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
+            if (!isIntelliCenter) $('<div></div>').appendTo(line).inputField({ labelText: 'Owner', binding: 'owner.name', inputAttrs: { maxlength: maxNameLength }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Phone', binding: 'owner.phone', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
-            $('<div></div>').appendTo(line).inputField({ labelText: 'e-mail', binding: 'owner.email', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
+            if (!isIntelliCenter) $('<div></div>').appendTo(line).inputField({ labelText: 'Phone', binding: 'owner.phone', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'e-mail', binding: 'owner.email', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: isIntelliCenter ? '5.7rem' : '4.5rem', marginLeft: isIntelliCenter ? '' : '.7rem' } } });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Alt Phone', binding: 'owner.phone2', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Alt e-mail', binding: 'owner.email2', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
+            $('<div></div>').appendTo(line).inputField({ labelText: 'Phone2', binding: 'owner.phone2', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });
+            if (!isIntelliCenter) $('<div></div>').appendTo(line).inputField({ labelText: 'Alt e-mail', binding: 'owner.email2', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '4.5rem', marginLeft: '.7rem' } } });
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).pickList({
                 labelText: 'Country', binding: 'location.country',
@@ -54,7 +54,7 @@
                 items: o.countries, inputAttrs: { style: { width: '7rem' } }, bindColumn: 1, labelAttrs: { style: { width: '5.7rem' } }
             });
             line = $('<div></div>').appendTo(pnl);
-            $('<div></div>').appendTo(line).inputField({ labelText: 'Address', binding: 'location.address', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '5.7rem' } } });
+            if (!isIntelliCenter) $('<div></div>').appendTo(line).inputField({ labelText: 'Address', binding: 'location.address', inputAttrs: { maxlength: 32 }, labelAttrs: { style: { width: '5.7rem' } } });
 
             line = $('<div></div>').appendTo(pnl);
             $('<div></div>').appendTo(line).inputField({ labelText: 'City', binding: 'location.city', inputAttrs: { maxlength: 16 }, labelAttrs: { style: { width: '5.7rem' } } });

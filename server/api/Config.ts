@@ -1,5 +1,5 @@
-﻿import * as express from "express";
-import * as extend from 'extend';
+﻿import express from "express";
+import extend from 'extend';
 import * as dns from 'dns';
 import { ApiError } from '../Errors';
 import { UploadRoute, BackgroundUpload } from "../upload/upload";
