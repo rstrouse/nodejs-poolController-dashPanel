@@ -106,6 +106,7 @@ export class HttpServer extends ProtoServer {
     public init(cfg) {
         if (cfg.enabled) {
             this.app = express();
+            this.app.set('trust proxy', true);
             this._httpPort = cfg.port;
             //this.app.use();
             this.server = http.createServer(this.app);
@@ -259,6 +260,7 @@ export class HttpsServer extends HttpServer {
         if (!cfg.enabled) return;
         try {
             this.app = express();
+            this.app.set('trust proxy', true);
             // Enable Authentication (not yet implemented - this code from nodejs-poolController)
             /*             if (cfg.authentication === 'basic') {
                             let basic = auth.basic({

@@ -15,7 +15,11 @@ export class ConfigRoute {
             try {
                 let srv = config.getSection('web.services');
                 if (srv.useProxy) {
-                    //console.log({ protocol: `${req.protocol}://`, ip: `${req.hostname}:${req.socket.localPort}`, useProxy: true });
+                    srv = extend(true, {}, srv, {
+                        protocol: `${req.protocol}://`,
+                        ip: req.hostname,
+                        port: parseInt(req.get('X-Forwarded-Port'), 10) || req.socket.localPort
+                    });
                 }
                 res.status(200).send(srv);
             }
