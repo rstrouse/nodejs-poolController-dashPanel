@@ -432,6 +432,8 @@
             line = $('<div></div>').appendTo(el);
             $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Start Temp Delta', binding: binding + 'startTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Stop Temp Delta', binding: binding + 'stopTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Feed Temp to Active Body', binding: 'feedBodyTemp' }).attr('title', 'When enabled, the heater\'s built-in water temperature sensor\r\nfeeds the body\'s water temp display. Only updates while\r\nthe body circuit is running.');
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
@@ -463,6 +465,8 @@
             line = $('<div></div>').appendTo(el);
             $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Start Temp Delta', binding: binding + 'startTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { width: '7.5rem', marginLeft: '1rem', marginRight: '.25rem' } } });
             $('<div></div>').appendTo(line).valueSpinner({ value: 1, canEdit: true, labelText: 'Stop Temp Delta', binding: binding + 'stopTempDelta', min: 0, max: 10, step: 1, fmtMask: '#,##0.#', units: '&deg;' + o.tempUnits.name, inputAttrs: { style: { width: '3.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', marginRight: '.25rem' } } });
+            line = $('<div></div>').appendTo(el);
+            $('<div></div>').appendTo(line).checkbox({ labelText: 'Feed Temp to Active Body', binding: 'feedBodyTemp' }).attr('title', 'When enabled, the heater\'s built-in water temperature sensor\r\nfeeds the body\'s water temp display. Only updates while\r\nthe body circuit is running.');
         },
         dataBind: function (obj) {
             var self = this, o = self.options, el = self.element;
