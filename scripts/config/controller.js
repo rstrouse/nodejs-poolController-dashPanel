@@ -346,7 +346,29 @@
                 var line = $('<div></div>').appendTo(el);
                 console.log(type);
                 $('<input type="hidden" data-bind="controllerType"></input>').appendTo(line).val(opts.controllerType);
-                $('<div></div>').staticField({ labelText: `Panel Type`, value: type.name }).appendTo(line);
+                if (type.canChange) {
+                    // Show a controller type dropdown when switching is allowed (Nixie/AquaLink)
+                    var changeableTypes = opts.controllerTypes.filter(elem => elem.canChange);
+                    $('<div></div>').pickList({
+                        required: true, value: type.type,
+                        bindColumn: 0, displayColumn: 1, labelText: 'Controller Type', binding: 'controllerType',
+                        columns: [{ binding: 'type', text: 'Type', hidden: true, style: { whiteSpace: 'nowrap' } }, { binding: 'name', hidden: false, text: 'Name', style: { whiteSpace: 'nowrap' } }],
+                        items: changeableTypes, inputAttrs: { style: { width: '9.7rem' } }
+                    }).appendTo(line).on('selchanged', function (evt) {
+                        // When controller type changes, update the model picklist
+                        var newType = opts.controllerTypes.find(elem => elem.type === evt.newItem.type);
+                        var modelPnl = el.find('[data-bind="model"]').closest('.picPickList');
+                        if (newType && newType.models && newType.models.length > 0) {
+                            modelPnl.each(function() { this.items(newType.models); });
+                            modelPnl.show();
+                        } else {
+                            modelPnl.hide();
+                        }
+                        el.find('input[data-bind="controllerType"]').val(evt.newItem.type);
+                    });
+                } else {
+                    $('<div></div>').staticField({ labelText: `Panel Type`, value: type.name }).appendTo(line);
+                }
                 $('<div></div>').pickList({
                     required: true, value: opts.equipment.modules[0].type,
                     bindColumn: 0, displayColumn: 2, labelText: 'Model', binding: 'model',
@@ -356,6 +378,10 @@
                     self._setModelAttributes(evt.newItem);
 
                 })[0].disabled(!makeBool(type.canChange));
+                // Hide model dropdown when models are not applicable (e.g. AquaLink)
+                if (!type.models || type.models.length === 0) {
+                    el.find('[data-bind="model"]').closest('.picPickList').hide();
+                }
                 $('<div></div>').appendTo(el).addClass('ct-narrative');
                 self._setModelAttributes(model);
                 if (typeof opts.equipment.expansions !== 'undefined' && opts.equipment.expansions.length > 0 && type.type === 'intellitouch') {
@@ -908,7 +934,7 @@
                 items: [{ val: 'local', name: 'Local', desc: 'Local ScreenLogic' }, { val: 'remote', name: 'Remote', desc: 'Remote ScreenLogic' }], inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
             });
             $('<div></div>').appendTo(line).inputField({ value: o.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
-            $('<div></div>').appendTo(line).valueSpinner({ value: o.password, canEdit: true, labelText: 'Password', fmtMask: "###0", emptyMask: "----", binding: binding + 'password', min: 1, max: 9999, step: 1, inputAttrs: { maxlength: 4, style: { width: '8.5rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+            $('<div></div>').appendTo(line).inputField({ value: o.password, labelText: 'Password', binding: binding + 'password', inputAttrs: { maxlength: 32, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
 
             $('<div></div>').appendTo(slDivSettings).css({ fontSize: '.8rem' }).configScreenlogicStats();
 
@@ -999,7 +1025,7 @@
                         "enabled": false,
                         "type": "local",
                         "systemName": "Pentair: 00-00-00",
-                        "password": 0000
+                        "password": ""
                     },
                     "localUnit": {
 
