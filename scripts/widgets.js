@@ -1307,6 +1307,9 @@ $.ui.position.fieldTip = {
                         //if (typeof o.inputStyle.width === 'undefined')
                         fld.css({ width: parseInt(o.inputAttrs[ia], 10) * .7 + 'rem' });
                         break;
+                    case 'type':
+                        fld.attr('type', o.inputAttrs[ia]);
+                        break;
                     default:
                         if (ia.startsWith('data')) fld.attr(ia, o.inputAttrs[ia]);
                         break;
@@ -2440,8 +2443,10 @@ $.ui.position.fieldTip = {
                 el.addClass('multiline');
                 $('<textarea class="picInputField-value"></textarea>').addClass('fld-value').appendTo(el);
             }
-            else
-                $('<input type="text" class="picInputField-value"></input>').addClass('fld-value').appendTo(el);
+            else {
+                var inputType = (o.inputAttrs && o.inputAttrs.type) ? o.inputAttrs.type : 'text';
+                $('<input class="picInputField-value"></input>').attr('type', inputType).addClass('fld-value').appendTo(el);
+            }
             
             self.val(o.value);
             el.attr('data-bind', o.binding);

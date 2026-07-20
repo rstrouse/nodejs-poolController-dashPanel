@@ -934,7 +934,7 @@
                 items: [{ val: 'local', name: 'Local', desc: 'Local ScreenLogic' }, { val: 'remote', name: 'Remote', desc: 'Remote ScreenLogic' }], inputAttrs: { style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } }
             });
             $('<div></div>').appendTo(line).inputField({ value: o.systemName, labelText: 'System Name', binding: binding + 'systemName', inputAttrs: { maxlength: 17, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
-            $('<div></div>').appendTo(line).inputField({ value: o.password, labelText: 'Password', binding: binding + 'password', inputAttrs: { maxlength: 32, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
+            $('<div></div>').appendTo(line).inputField({ value: o.password, labelText: 'Password', binding: binding + 'password', inputAttrs: { type: 'password', maxlength: 32, style: { width: '10rem' } }, labelAttrs: { style: { marginLeft: '1rem', width: '8.3rem' } } });
 
             $('<div></div>').appendTo(slDivSettings).css({ fontSize: '.8rem' }).configScreenlogicStats();
 
