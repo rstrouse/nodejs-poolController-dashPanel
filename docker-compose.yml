@@ -28,7 +28,7 @@ services:
       - njspc-dash-logs:/app/logs
       - njspc-dash-uploads:/app/uploads
     healthcheck:
-      test: [ "CMD", "node", "-e", "require('net').createConnection({host:'127.0.0.1',port:5150},c=>{c.end();process.exit(0)}).on('error',()=>process.exit(1))" ]
+      test: ["CMD", "node", "/usr/local/bin/healthcheck.js"]
       interval: 60s
       timeout: 5s
       start_period: 30s
