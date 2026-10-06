@@ -1,5 +1,11 @@
 # Changelog
 
+## [10.0.2] - 2026-10-06
+
+### Bug Fixes
+- **Schedule isOn state**: Reverted the client-side schedule isOn fallback computation added in 10.0.1; the dashboard again uses the server-reported state ([#1199](https://github.com/tagyoureit/nodejs-poolController/discussions/1199#discussioncomment-18287799))
+- **Docker healthcheck**: New `docker/healthcheck.js` reads the port dynamically from `config.json` (with environment variable override detection and port fallback) instead of hard-coding 5150; removed the `curl` dependency and updated the compose healthcheck ([#114](https://github.com/rstrouse/nodejs-poolController-dashPanel/pull/114))
+
 ## [10.0.1] - 2026-08-10
 
 ### Features
