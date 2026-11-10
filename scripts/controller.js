@@ -1262,7 +1262,8 @@
                         { code: 'purple', name: 'Purple', desc: 'A mix of purple and teal.' },
                         { code: 'nurple', name: 'Nurple', desc: 'A mix of purple and black.' },
                         { code: 'bootstrap', name: 'Bootstrap', desc: 'Original Bootstrap inspired theme.' },
-                        { code: 'ios-cupertino', name: 'iOS/Cupertino', desc: 'Cupertino inspired theme.' }
+                        { code: 'ios-cupertino', name: 'iOS/Cupertino', desc: 'Cupertino inspired theme.' },
+                        { code: 'modern', name: 'Modern', desc: 'Clean cards, switches and automatic dark mode.' }
                     ], inputAttrs: { style: { width: '9rem' } }, labelAttrs: { style: { width: '7rem' } }
                 }).on('selchanged', function (evt) {
                     if (evt.newItem) {
