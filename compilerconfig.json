@@ -52,6 +52,10 @@
     "inputFile": "themes/ios-cupertino/theme.scss"
   },
   {
+    "outputFile": "themes/modern/theme.css",
+    "inputFile": "themes/modern/theme.scss"
+  },
+  {
     "outputFile": "themes/bootstrap/intellibrite.css",
     "inputFile": "themes/bootstrap/intellibrite.scss"
   },
